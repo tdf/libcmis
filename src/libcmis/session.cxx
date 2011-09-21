@@ -67,20 +67,23 @@ void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
                 bool bIsCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
                 if ( bIsCmisra && bIsCollectionType )
                 {
+                    xmlChar* pContent = xmlNodeGetContent( pChild );
                     CollectionType type = Unknown;
-                    if ( xmlStrEqual( pChild->content, BAD_CAST( "root" ) ) )
+                    if ( xmlStrEqual( pContent, BAD_CAST( "root" ) ) )
                         type = Root;
-                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "types" ) ) )
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "types" ) ) )
                         type = Types;
-                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "query" ) ) )
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
                         type = Query;
-                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "checkedout" ) ) )
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "checkedout" ) ) )
                         type = Checkedout;
-                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "unfiled" ) ) )
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "unfiled" ) ) )
                         type = Unfiled;
 
                     if ( type != Unknown )
                         m_aCollections[ type ] = collectionRef;
+
+                    xmlFree( pContent );
                 }
             }
         }

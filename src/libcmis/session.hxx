@@ -2,6 +2,7 @@
 #include <map>
 
 #include <libxml/xmlstring.h>
+#include <libxml/xpath.h>
 
 
 enum CollectionType {
