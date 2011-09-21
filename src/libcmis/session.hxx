@@ -1,5 +1,17 @@
 #include <string>
+#include <map>
+
 #include <libxml/xmlstring.h>
+
+
+enum CollectionType {
+    Root,
+    Types,
+    Query,
+    Checkedout,
+    Unfiled,
+    Unknown
+};
 
 class AtomPubSession
 {
@@ -8,16 +20,13 @@ class AtomPubSession
         std::string m_sWorkspace;
 
         // Collections URLs
-        std::string m_sRootCollectionUrl;
-        std::string m_sTypesCollectionUrl;
-        std::string m_sQueryCollectionUrl;
-        std::string m_sCheckedoutCollectionUrl;
-        std::string m_sUnfiledCollectionUrl;
-
+        std::map< CollectionType, std::string > m_aCollections;
 
     public:
         AtomPubSession( std::string sAtomPubUrl );
         ~AtomPubSession( );
+
+        std::string getCollectionUrl( CollectionType );
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );

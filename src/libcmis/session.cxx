@@ -8,16 +8,21 @@
 
 #include "session.hxx"
 
+#define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
+#define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
+#define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
+#define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
+
 using namespace std;
 
 namespace
 {
     void lcl_RegisterNamespaces( xmlXPathContextPtr pXPathCtx )
     {
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "app" ), BAD_CAST( "http://www.w3.org/2007/app" ) );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "atom" ), BAD_CAST( "http://www.w3.org/2005/Atom" ) );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmis" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" ) );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmisra" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" ) );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "app" ),  NS_APP_URL );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
     }
 }
 
@@ -33,8 +38,53 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
+string AtomPubSession::getCollectionUrl( CollectionType type )
+{
+    return m_aCollections[ type ];
+}
+
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
 {
+    int size = 0;
+    if ( pNodeSet )
+        size = pNodeSet->nodeNr;
+
+    for ( int i = 0; i < size; i++ )
+    {
+        xmlNodePtr pNode = pNodeSet->nodeTab[i];
+
+        // Look for the href property
+        xmlChar* pHref = xmlGetProp( pNode, BAD_CAST( "href" ) );
+        if ( pHref )
+        {
+            string collectionRef( ( char* )pHref );
+            xmlFree( pHref );
+
+            // Look for the cmisra:collectionType child
+            for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
+            {
+                bool bIsCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
+                bool bIsCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
+                if ( bIsCmisra && bIsCollectionType )
+                {
+                    CollectionType type = Unknown;
+                    if ( xmlStrEqual( pChild->content, BAD_CAST( "root" ) ) )
+                        type = Root;
+                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "types" ) ) )
+                        type = Types;
+                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "query" ) ) )
+                        type = Query;
+                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "checkedout" ) ) )
+                        type = Checkedout;
+                    else if ( xmlStrEqual( pChild->content, BAD_CAST( "unfiled" ) ) )
+                        type = Unfiled;
+
+                    if ( type != Unknown )
+                        m_aCollections[ type ] = collectionRef;
+                }
+            }
+        }
+    }
 }
 
 size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t nmemb, void* pUser_data )
