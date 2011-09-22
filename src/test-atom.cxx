@@ -7,10 +7,14 @@ using namespace std;
 
 int main ( int argc, char* argv[] )
 {
-    string sUrl( "http://localhost:8080/inmemory/atom" );
-    AtomPubSession session( sUrl );
+    string sAtomUrl( argv[1] );
+    AtomPubSession session( sAtomUrl );
 
-    printf( "root collection URL: %s\n", session.getCollectionUrl( Root ).c_str()  );
+    if ( session.getCollectionUrl( Root ).empty() )
+    {
+        fprintf( stderr, "Missing root collection URL\n" );
+        return 1;
+    }
 
     return 0;
 }
