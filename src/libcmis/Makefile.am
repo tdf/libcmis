@@ -1,12 +1,19 @@
+SUBDIRS = .
+
 INCLUDES = -I$(top_srcdir)/include
 
 libcmis_headers_public = \
-	session.hxx
+	folder.hxx \
+	resource.hxx \
+	session.hxx \
+	atom-session.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
-	session.cxx
+	folder.cxx \
+	resource.cxx \
+	atom-session.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 

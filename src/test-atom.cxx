@@ -1,4 +1,4 @@
-#include <libcmis/session.hxx>
+#include <libcmis/atom-session.hxx>
 
 #include <string>
 #include <cstdio>

@@ -49,7 +49,7 @@ function server()
             i="0"
             started="no"
             echo -n "Waiting for test web server to be started"
-            while test $i -lt 30; do
+            while test $i -lt 120; do
                 sleep 1s
                 curl --silent ${TEST_SERVER_URL} >/dev/null
                 if test $? -eq 0; then

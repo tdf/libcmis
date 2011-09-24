@@ -6,7 +6,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include "session.hxx"
+#include "atom-session.hxx"
 
 #define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
 #define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
@@ -26,7 +26,8 @@ namespace
     }
 }
 
-AtomPubSession::AtomPubSession( string sAtomPubUrl )
+AtomPubSession::AtomPubSession( string sAtomPubUrl ) :
+    Session( )
 {
     m_sAtomPubUrl = sAtomPubUrl;
     
@@ -41,6 +42,15 @@ AtomPubSession::~AtomPubSession( )
 string AtomPubSession::getCollectionUrl( CollectionType type )
 {
     return m_aCollections[ type ];
+}
+
+Folder AtomPubSession::getRootFolder()
+{
+    Folder root( string( "/" ), string( "Root" ) );
+
+    // TODO Get the data and setup the root object
+
+    return root;
 }
 
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
