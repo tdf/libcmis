@@ -1,30 +1,17 @@
 #include <string>
 
-#include <curl/curl.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
 
+#include "atom-folder.hxx"
 #include "atom-session.hxx"
-
-#define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
-#define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
-#define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
-#define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
+#include "atom-utils.hxx"
 
 using namespace std;
 
 namespace
 {
-    void lcl_RegisterNamespaces( xmlXPathContextPtr pXPathCtx )
-    {
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "app" ),  NS_APP_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
-    }
-
     size_t lcl_getXmlWorkspaces( void* pBuffer, size_t size, size_t nmemb, void* pUserData )
     {
         size_t readSize = size;
@@ -37,7 +24,7 @@ namespace
             xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
 
             // Register the Service Document namespaces
-            lcl_RegisterNamespaces( pXPathCtx );
+            atom::registerNamespaces( pXPathCtx );
 
             if ( NULL != pXPathCtx )
             {
@@ -99,7 +86,7 @@ string UriTemplate::createUrl( const string& pattern, map< string, string > vari
         // look for the closing bracket
         size_t pos2 = url.find( '}', pos1 );
         if ( pos2 != string::npos )
-            url.erase( pos1, pos2 - pos1 );
+            url.erase( pos1, pos2 - pos1 + 1 );
 
         pos1 = url.find( '{', pos1 - 1 );
     }
@@ -113,7 +100,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository ) :
     m_sRepository( repository )
 {
     // Pull the content from sAtomPubUrl and parse it
-    http_request( m_sAtomPubUrl, &AtomPubSession::parseServiceDocument, this );
+    atom::http_request( m_sAtomPubUrl, &AtomPubSession::parseServiceDocument, this );
 }
 
 AtomPubSession::~AtomPubSession( )
@@ -125,7 +112,7 @@ list< string > AtomPubSession::getRepositories( string url )
     list< string > repos;
 
     // Parse the service document and get the workspaces
-    http_request( url, lcl_getXmlWorkspaces, &repos );
+    atom::http_request( url, lcl_getXmlWorkspaces, &repos );
 
     return repos;
 }
@@ -140,12 +127,9 @@ string AtomPubSession::getUriTemplate( UriTemplate::Type type )
     return m_aUriTemplates[ type ];
 }
 
-Folder AtomPubSession::getRootFolder()
+Folder* AtomPubSession::getRootFolder()
 {
-    string pattern = getUriTemplate( UriTemplate::ObjectById );
-    map< string, string > vars;
-    vars[URI_TEMPLATE_VAR_ID] = m_sRootId;
-    return getFolder( UriTemplate::createUrl( pattern, vars ) );
+    return getFolder( m_sRootId );
 }
 
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
@@ -271,29 +255,13 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
     }
 }
 
-void AtomPubSession::http_request( string Url, size_t (*pCallback)( void *, size_t, size_t, void* ), void* pData )
+Folder* AtomPubSession::getFolder( string id )
 {
-    curl_global_init( CURL_GLOBAL_ALL );
-    CURL* pHandle = curl_easy_init( );
-
-    // Grab something from the web
-    curl_easy_setopt( pHandle, CURLOPT_URL, Url.c_str() );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, pCallback );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, pData );
-
-    // Perform the query
-    curl_easy_perform( pHandle );
-
-    curl_easy_cleanup( pHandle );
-}
-
-Folder AtomPubSession::getFolder( string urlGet )
-{
-    Folder aFolder;
-    http_request( urlGet, &AtomPubSession::parseFolder, &aFolder );
-    // TODO Handle errors
-
-    return aFolder;
+    string pattern = getUriTemplate( UriTemplate::ObjectById );
+    map< string, string > vars;
+    vars[URI_TEMPLATE_VAR_ID] = id;
+    AtomFolder* folder = new AtomFolder( UriTemplate::createUrl( pattern, vars ) );
+    return folder;
 }
 
 size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t nmemb, void* pUserData )
@@ -308,7 +276,7 @@ size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t 
         xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
 
         // Register the Service Document namespaces
-        lcl_RegisterNamespaces( pXPathCtx );
+        atom::registerNamespaces( pXPathCtx );
 
         if ( NULL != pXPathCtx )
         {
@@ -326,17 +294,11 @@ size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t 
             
             // Get the root node id
             string infosXPath( "//cmisra:repositoryInfo[cmis:repositoryId='" );
-            infosXPath += m_sRepositoryId;
+            infosXPath += session.m_sRepository;
             infosXPath += "']/cmis:rootFolderId/text()";
-            pXPathObj = xmlXPathEvalExpression( BAD_CAST( infosXPath ), pXPathCtx );
-            if ( NULL != pXPathObj && pXPathObj->nodesetval->nodeNr > 0 )
-            {
-                m_sRootId = string( ( char* )pXPathObj->nodesetval->nodeTab[0]->content );
-            }
-            xmlXPathFreeObject( pXPathObj );
+            session.m_sRootId = atom::getXPathValue( pXPathCtx, infosXPath );
         }
         xmlXPathFreeContext( pXPathCtx );
-        
     }
     else
     {
@@ -345,14 +307,5 @@ size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t 
     }
 
     xmlFreeDoc( pDoc );
-    return readSize;
-}
-
-size_t AtomPubSession::parseFolder( void* pBuffer, size_t size, size_t nmemb, void* pUserData )
-{
-    size_t readSize = size;
-
-    // TODO Implement me
-
     return readSize;
 }

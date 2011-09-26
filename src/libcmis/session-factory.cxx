@@ -1,10 +1,11 @@
+#include "atom-session.hxx"
 #include "session-factory.hxx"
 
 using namespace std;
 
-Session SessionFactory::createSession( map< int, string > params )
+Session* SessionFactory::createSession( map< int, string > params )
 {
-    Session session = NULL;
+    Session* session = NULL;
 
     // TODO implement me
     string repository;

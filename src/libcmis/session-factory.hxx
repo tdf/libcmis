@@ -1,3 +1,7 @@
+#ifndef _SESSION_FACTORY_HXX_
+#define _SESSION_FACTORY_HXX_
+
+#include <list>
 #include <map>
 #include <string>
 
@@ -14,7 +18,9 @@ class SessionFactory
 
             The resulting pointer should be deleted by the caller.
           */
-        Session* createSession( std::map< int, std::string > params );
+        static Session* createSession( std::map< int, std::string > params );
 
-        std::list< std::string > getRepositories( std::map< int, std::string > params );
-}
+        static std::list< std::string > getRepositories( std::map< int, std::string > params );
+};
+
+#endif

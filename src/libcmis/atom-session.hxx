@@ -1,3 +1,6 @@
+#ifndef _ATOM_SESSION_HXX_
+#define _ATOM_SESSION_HXX_
+
 #include <list>
 #include <map>
 #include <string>
@@ -6,8 +9,6 @@
 #include <libxml/xpath.h>
 
 #include "session.hxx"
-
-#define URI_TEMPLATE_VAR_ID = std::string( "id" )
 
 struct Collection {
     enum Type
@@ -57,22 +58,16 @@ class AtomPubSession : public Session
 
         // Override session methods
 
-        virtual Folder getRootFolder();
+        virtual Folder* getRootFolder();
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );
         void readUriTemplates( xmlNodeSetPtr pNodeSet );
 
-        Folder getFolder( std::string urlGet );
-        
-        static void http_request( std::string Url,
-                size_t (*pCallback)( void *, size_t, size_t, void* ),
-                void* pData );
-
+        Folder* getFolder( std::string id );
         
         static size_t parseServiceDocument( void* pBuffer, size_t size,
                 size_t nmemb, void* pUserData );
-
-        static size_t parseFolder( void* pBuffer, size_t size,
-                size_t nmemb, void* pUserData );
 };
+
+#endif

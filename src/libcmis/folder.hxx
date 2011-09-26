@@ -1,3 +1,6 @@
+#ifndef _FOLDER_HXX_
+#define _FOLDER_HXX_
+
 #include <string>
 #include <vector>
 
@@ -7,12 +10,8 @@
   */
 class Folder : public Resource
 {
-    private:
-        std::vector< Resource > m_aChildren;
-
     public:
-        Folder( );
-        ~Folder( );
-
-        std::vector< Resource > getChildren( ) { return m_aChildren; }
+        virtual std::vector< Resource > getChildren( ) = 0;
 };
+
+#endif

@@ -6,14 +6,20 @@ libcmis_headers_public = \
 	folder.hxx \
 	resource.hxx \
 	session.hxx \
-	atom-session.hxx
+	session-factory.hxx \
+	atom-session.hxx \
+	atom-folder.hxx \
+	atom-resource.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
-	folder.cxx \
-	resource.cxx \
-	atom-session.cxx
+	session-factory.cxx \
+	atom-folder.cxx \
+	atom-resource.cxx \
+	atom-session.cxx \
+	atom-utils.hxx \
+	atom-utils.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 

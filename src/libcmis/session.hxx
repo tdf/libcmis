@@ -1,3 +1,6 @@
+#ifndef _SESSION_HXX_
+#define _SESSION_HXX_
+
 #include "folder.hxx"
 
 class Session
@@ -6,5 +9,7 @@ class Session
 
         /** Get the Root folder of the repository
           */
-        virtual Folder getRootFolder() = 0;
+        virtual Folder* getRootFolder() = 0;
 };
+
+#endif

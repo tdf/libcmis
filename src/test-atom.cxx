@@ -26,5 +26,24 @@ int main ( int argc, char* argv[] )
         return 1;
     }
 
+    string objectbyid = session.getUriTemplate( UriTemplate::ObjectById );
+    fprintf( stdout, "objectbyid URI Template: %s\n", objectbyid.c_str() );
+    if ( objectbyid.empty() )
+    {
+        fprintf( stderr, "Missing objectbyid uri template\n");
+        return 1;
+    }
+
+    Folder* folder = session.getRootFolder( );
+    fprintf( stdout, "Root name: %s\n", folder->getName( ).c_str() );
+    fprintf( stdout, "Root path: %s\n",folder->getPath( ).c_str() );
+    if ( folder->getName().empty() || folder->getPath().empty() )
+    {
+        fprintf( stderr, "Missing root folder name or path\n" );
+        return 1;
+    }
+
+    delete folder;
+
     return 0;
 }
