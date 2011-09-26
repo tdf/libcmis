@@ -70,6 +70,42 @@ namespace
         return readSize;
     }
 }
+    
+string UriTemplate::createUrl( const string& pattern, map< string, string > variables )
+{
+    string url( pattern );
+
+    // Decompose the pattern and replace the variables by their values
+    map< string, string >::iterator it = variables.begin( );
+    while ( it != variables.end( ) )
+    {
+        string name = "{";
+        name += it->first;
+        name += "}";
+        string value = it->second;
+
+        // Search and replace the variable
+        size_t pos = url.find( name );
+        if ( pos != string::npos )
+            url.replace( pos, name.size(), value );
+
+        ++it;
+    }
+
+    // Cleanup the remaining unset variables
+    size_t pos1 = url.find( '{' );
+    while ( pos1 != string::npos )
+    {
+        // look for the closing bracket
+        size_t pos2 = url.find( '}', pos1 );
+        if ( pos2 != string::npos )
+            url.erase( pos1, pos2 - pos1 );
+
+        pos1 = url.find( '{', pos1 - 1 );
+    }
+    
+    return url;
+}
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repository ) :
     Session( ),
@@ -88,20 +124,28 @@ list< string > AtomPubSession::getRepositories( string url )
 {
     list< string > repos;
 
-    // TODO Parse the document service and get the workspaces
+    // Parse the service document and get the workspaces
     http_request( url, lcl_getXmlWorkspaces, &repos );
 
     return repos;
 }
 
-string AtomPubSession::getCollectionUrl( CollectionType type )
+string AtomPubSession::getCollectionUrl( Collection::Type type )
 {
     return m_aCollections[ type ];
 }
 
+string AtomPubSession::getUriTemplate( UriTemplate::Type type )
+{
+    return m_aUriTemplates[ type ];
+}
+
 Folder AtomPubSession::getRootFolder()
 {
-    return getFolder( getCollectionUrl( Root ) );
+    string pattern = getUriTemplate( UriTemplate::ObjectById );
+    map< string, string > vars;
+    vars[URI_TEMPLATE_VAR_ID] = m_sRootId;
+    return getFolder( UriTemplate::createUrl( pattern, vars ) );
 }
 
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
@@ -124,30 +168,106 @@ void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
             // Look for the cmisra:collectionType child
             for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
             {
-                bool bIsCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
-                bool bIsCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
-                if ( bIsCmisra && bIsCollectionType )
+                bool isCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
+                bool isCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
+                if ( isCmisra && isCollectionType )
                 {
                     xmlChar* pContent = xmlNodeGetContent( pChild );
-                    CollectionType type = Unknown;
-                    if ( xmlStrEqual( pContent, BAD_CAST( "root" ) ) )
-                        type = Root;
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "types" ) ) )
-                        type = Types;
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
-                        type = Query;
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "checkedout" ) ) )
-                        type = Checkedout;
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "unfiled" ) ) )
-                        type = Unfiled;
+                    Collection::Type type = Collection::Root;
+                    bool typeDefined = false;
 
-                    if ( type != Unknown )
+                    if ( xmlStrEqual( pContent, BAD_CAST( "root" ) ) )
+                    {
+                        type = Collection::Root;
+                        typeDefined = true;
+                    }
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "types" ) ) )
+                    {
+                        type = Collection::Types;
+                        typeDefined = true;
+                    }
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
+                    {
+                        type = Collection::Query;
+                        typeDefined = true;
+                    }
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "checkedout" ) ) )
+                    {
+                        type = Collection::Checkedout;
+                        typeDefined = true;
+                    }
+                    else if ( xmlStrEqual( pContent, BAD_CAST( "unfiled" ) ) )
+                    {
+                        type = Collection::Unfiled;
+                        typeDefined = true;
+                    }
+
+                    if ( typeDefined )
                         m_aCollections[ type ] = collectionRef;
 
                     xmlFree( pContent );
                 }
             }
         }
+    }
+}
+
+void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
+{
+    int size = 0;
+    if ( pNodeSet )
+        size = pNodeSet->nodeNr;
+
+    for ( int i = 0; i < size; i++ )
+    {
+        xmlNodePtr pNode = pNodeSet->nodeTab[i];
+
+        string templateUri;
+        UriTemplate::Type type = UriTemplate::ObjectById;
+        bool typeDefined = false;
+
+        // Look for the cmisra:template and cmisra:type children
+        for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
+        {
+            bool bIsCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
+            bool bIsTemplate = xmlStrEqual( pChild->name, BAD_CAST( "template" ) );
+            bool bIsType = xmlStrEqual( pChild->name, BAD_CAST( "type" ) );
+
+            if ( bIsCmisra && bIsTemplate )
+            {
+                xmlChar* pContent = xmlNodeGetContent( pChild );
+                templateUri = string( ( char * )pContent );
+                xmlFree( pContent );
+            }
+            else if ( bIsCmisra && bIsType )
+            {
+                xmlChar* pContent = xmlNodeGetContent( pChild );
+                if ( xmlStrEqual( pContent, BAD_CAST( "objectbyid" ) ) )
+                {
+                    type = UriTemplate::ObjectById;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( pContent, BAD_CAST( "ObjectByPath" ) ) )
+                {
+                    type = UriTemplate::ObjectByPath;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
+                {
+                    type = UriTemplate::Query;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( pContent, BAD_CAST( "TypeById" ) ) )
+                {
+                    type = UriTemplate::TypeById;
+                    typeDefined = true;
+                }
+                xmlFree( pContent );
+            }
+        }
+
+        if ( !templateUri.empty() && typeDefined )
+            m_aUriTemplates[ type ] = templateUri;
     }
 }
 
@@ -192,10 +312,27 @@ size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t 
 
         if ( NULL != pXPathCtx )
         {
+            // Get the collections
             xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), pXPathCtx );
             if ( NULL != pXPathObj )
                 session.readCollections( pXPathObj->nodesetval );
+            xmlXPathFreeObject( pXPathObj );
 
+            // Get the URI templates
+            pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), pXPathCtx );
+            if ( NULL != pXPathObj )
+                session.readUriTemplates( pXPathObj->nodesetval );
+            xmlXPathFreeObject( pXPathObj );
+            
+            // Get the root node id
+            string infosXPath( "//cmisra:repositoryInfo[cmis:repositoryId='" );
+            infosXPath += m_sRepositoryId;
+            infosXPath += "']/cmis:rootFolderId/text()";
+            pXPathObj = xmlXPathEvalExpression( BAD_CAST( infosXPath ), pXPathCtx );
+            if ( NULL != pXPathObj && pXPathObj->nodesetval->nodeNr > 0 )
+            {
+                m_sRootId = string( ( char* )pXPathObj->nodesetval->nodeTab[0]->content );
+            }
             xmlXPathFreeObject( pXPathObj );
         }
         xmlXPathFreeContext( pXPathCtx );

@@ -7,14 +7,29 @@
 
 #include "session.hxx"
 
+#define URI_TEMPLATE_VAR_ID = std::string( "id" )
 
-enum CollectionType {
-    Root,
-    Types,
-    Query,
-    Checkedout,
-    Unfiled,
-    Unknown
+struct Collection {
+    enum Type
+    {
+        Root,
+        Types,
+        Query,
+        Checkedout,
+        Unfiled
+    };
+};
+
+struct UriTemplate {
+    enum Type
+    {
+        ObjectById,
+        ObjectByPath,
+        TypeById,
+        Query
+    };
+
+    static std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 };
 
 class AtomPubSession : public Session
@@ -22,9 +37,13 @@ class AtomPubSession : public Session
     private:
         std::string m_sAtomPubUrl;
         std::string m_sRepository;
+        std::string m_sRootId;
 
         // Collections URLs
-        std::map< CollectionType, std::string > m_aCollections;
+        std::map< Collection::Type, std::string > m_aCollections;
+
+        // URI templates
+        std::map< UriTemplate::Type, std::string > m_aUriTemplates;
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository );
@@ -32,7 +51,9 @@ class AtomPubSession : public Session
 
         static std::list< std::string > getRepositories( std::string url );
 
-        std::string getCollectionUrl( CollectionType );
+        std::string getCollectionUrl( Collection::Type );
+
+        std::string getUriTemplate( UriTemplate::Type );
 
         // Override session methods
 
@@ -40,6 +61,7 @@ class AtomPubSession : public Session
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );
+        void readUriTemplates( xmlNodeSetPtr pNodeSet );
 
         Folder getFolder( std::string urlGet );
         

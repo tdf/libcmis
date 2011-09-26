@@ -20,7 +20,7 @@ int main ( int argc, char* argv[] )
     
     AtomPubSession session( sAtomUrl, firstId );
 
-    if ( session.getCollectionUrl( Root ).empty() )
+    if ( session.getCollectionUrl( Collection::Root ).empty() )
     {
         fprintf( stderr, "Missing root collection URL\n" );
         return 1;
