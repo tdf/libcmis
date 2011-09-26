@@ -9,9 +9,12 @@ class Resource
         std::string m_sName;
 
     public:
-        Resource( std::string path, std::string name );
+        Resource( );
         ~Resource( );
 
         std::string getPath( ) { return m_sPath; }
         std::string getName( ) { return m_sName; }
+
+        void setPath( std::string path ) { m_sPath = path; }
+        void setName( std::string name ) { m_sName = name; }
 };

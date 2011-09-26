@@ -11,7 +11,7 @@ class Folder : public Resource
         std::vector< Resource > m_aChildren;
 
     public:
-        Folder( std::string path, std::string name );
+        Folder( );
         ~Folder( );
 
         std::vector< Resource > getChildren( ) { return m_aChildren; }
