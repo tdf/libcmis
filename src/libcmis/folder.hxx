@@ -14,5 +14,6 @@ class Folder : public virtual Resource
         virtual std::vector< ResourcePtr > getChildren( ) = 0;
         virtual std::string getPath( ) = 0;
 };
+typedef ::boost::shared_ptr< Folder > FolderPtr;
 
 #endif

@@ -34,6 +34,7 @@ namespace atom
         {
             xmlChar* pContent = xmlNodeGetContent( pXPathObj->nodesetval->nodeTab[0] );
             value = string( ( char* )pContent );
+            xmlFree( pContent );
         }
         xmlXPathFreeObject( pXPathObj );
 

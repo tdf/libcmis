@@ -58,13 +58,13 @@ class AtomPubSession : public Session
 
         // Override session methods
 
-        virtual Folder* getRootFolder();
+        virtual FolderPtr getRootFolder();
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );
         void readUriTemplates( xmlNodeSetPtr pNodeSet );
 
-        Folder* getFolder( std::string id );
+        FolderPtr getFolder( std::string id );
 };
 
 #endif

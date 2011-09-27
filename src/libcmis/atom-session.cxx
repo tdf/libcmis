@@ -165,7 +165,7 @@ string AtomPubSession::getUriTemplate( UriTemplate::Type type )
     return m_aUriTemplates[ type ];
 }
 
-Folder* AtomPubSession::getRootFolder()
+FolderPtr AtomPubSession::getRootFolder()
 {
     return getFolder( m_sRootId );
 }
@@ -293,11 +293,11 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
     }
 }
 
-Folder* AtomPubSession::getFolder( string id )
+FolderPtr AtomPubSession::getFolder( string id )
 {
     string pattern = getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
-    AtomFolder* folder = new AtomFolder( UriTemplate::createUrl( pattern, vars ) );
+    FolderPtr folder( new AtomFolder( UriTemplate::createUrl( pattern, vars ) ) );
     return folder;
 }

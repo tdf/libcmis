@@ -34,7 +34,7 @@ int main ( int argc, char* argv[] )
         return 1;
     }
 
-    Folder* folder = session.getRootFolder( );
+    FolderPtr folder = session.getRootFolder( );
     fprintf( stdout, "Root name: %s\n", folder->getName( ).c_str() );
     fprintf( stdout, "Root path: %s\n",folder->getPath( ).c_str() );
     if ( folder->getName().empty() || folder->getPath().empty() )
@@ -53,8 +53,6 @@ int main ( int argc, char* argv[] )
         fprintf( stdout, "  + %s\n", res->getName( ).c_str() );
         ++it;
     }
-
-    delete folder;
 
     return 0;
 }
