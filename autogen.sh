@@ -7,6 +7,6 @@ if [ ! -e ltmain.sh ]; then
 fi
 
 aclocal -I m4
-automake --gnu --add-missing
+automake -a -c --foreign
 autoconf
 test x$NOCONFIGURE = x && ./configure $@
