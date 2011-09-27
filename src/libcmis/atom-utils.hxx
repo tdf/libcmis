@@ -20,9 +20,7 @@ namespace atom
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
-    void http_request( std::string Url,
-            size_t (*pCallback)( void *, size_t, size_t, void* ),
-            void* pData );
+    std::string httpGetRequest( std::string url );
 }
 
 #endif

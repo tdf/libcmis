@@ -17,43 +17,6 @@ namespace
         size_t readSize = size;
 
         list< string >& ids = *( static_cast< list< string >* >( pUserData ) );
-        xmlDocPtr pDoc = xmlReadMemory( ( const char * )pBuffer, size * nmemb, "atompub.xml", NULL, 0 );
-
-        if ( NULL != pDoc )
-        {
-            xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
-
-            // Register the Service Document namespaces
-            atom::registerNamespaces( pXPathCtx );
-
-            if ( NULL != pXPathCtx )
-            {
-                xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:repositoryId/text()" ), pXPathCtx );
-                if ( NULL != pXPathObj )
-                {
-                    int size = 0;
-                    if ( pXPathObj->nodesetval )
-                        size = pXPathObj->nodesetval->nodeNr;
-                    
-                    for ( int i = 0; i < size; i++ )
-                    {
-                        xmlNodePtr pNode = pXPathObj->nodesetval->nodeTab[i];
-                        string workspaceId( ( char* )pNode->content );
-                        ids.push_back( workspaceId );
-                    }
-                }
-
-                xmlXPathFreeObject( pXPathObj );
-            }
-            xmlXPathFreeContext( pXPathCtx );
-            
-        }
-        else
-        {
-            fprintf( stderr, "Failed to parse service document\n" );
-            readSize = 0;
-        }
-        xmlFreeDoc( pDoc );
 
         return readSize;
     }
@@ -101,7 +64,45 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository ) :
     m_sRepository( repository )
 {
     // Pull the content from sAtomPubUrl and parse it
-    atom::http_request( m_sAtomPubUrl, &AtomPubSession::parseServiceDocument, this );
+    string buf = atom::httpGetRequest( m_sAtomPubUrl );
+    
+    xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
+
+    if ( NULL != pDoc )
+    {
+        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
+
+        // Register the Service Document namespaces
+        atom::registerNamespaces( pXPathCtx );
+
+        if ( NULL != pXPathCtx )
+        {
+            // Get the collections
+            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), pXPathCtx );
+            if ( NULL != pXPathObj )
+                readCollections( pXPathObj->nodesetval );
+            xmlXPathFreeObject( pXPathObj );
+
+            // Get the URI templates
+            pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), pXPathCtx );
+            if ( NULL != pXPathObj )
+                readUriTemplates( pXPathObj->nodesetval );
+            xmlXPathFreeObject( pXPathObj );
+            
+            // Get the root node id
+            string infosXPath( "//cmisra:repositoryInfo[cmis:repositoryId='" );
+            infosXPath += m_sRepository;
+            infosXPath += "']/cmis:rootFolderId/text()";
+            m_sRootId = atom::getXPathValue( pXPathCtx, infosXPath );
+        }
+        xmlXPathFreeContext( pXPathCtx );
+    }
+    else
+    {
+        fprintf( stderr, "Failed to parse service document\n" );
+    }
+
+    xmlFreeDoc( pDoc );
 }
 
 AtomPubSession::~AtomPubSession( )
@@ -113,7 +114,43 @@ list< string > AtomPubSession::getRepositories( string url )
     list< string > repos;
 
     // Parse the service document and get the workspaces
-    atom::http_request( url, lcl_getXmlWorkspaces, &repos );
+    string buf = atom::httpGetRequest( url );
+   
+    xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
+    if ( NULL != pDoc )
+    {
+        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
+
+        // Register the Service Document namespaces
+        atom::registerNamespaces( pXPathCtx );
+
+        if ( NULL != pXPathCtx )
+        {
+            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:repositoryId/text()" ), pXPathCtx );
+            if ( NULL != pXPathObj )
+            {
+                int size = 0;
+                if ( pXPathObj->nodesetval )
+                    size = pXPathObj->nodesetval->nodeNr;
+                
+                for ( int i = 0; i < size; i++ )
+                {
+                    xmlNodePtr pNode = pXPathObj->nodesetval->nodeTab[i];
+                    string workspaceId( ( char* )pNode->content );
+                    repos.push_back( workspaceId );
+                }
+            }
+
+            xmlXPathFreeObject( pXPathObj );
+        }
+        xmlXPathFreeContext( pXPathCtx );
+        
+    }
+    else
+    {
+        fprintf( stderr, "Failed to parse service document\n" );
+    }
+    xmlFreeDoc( pDoc );
 
     return repos;
 }
@@ -263,50 +300,4 @@ Folder* AtomPubSession::getFolder( string id )
     vars[URI_TEMPLATE_VAR_ID] = id;
     AtomFolder* folder = new AtomFolder( UriTemplate::createUrl( pattern, vars ) );
     return folder;
-}
-
-size_t AtomPubSession::parseServiceDocument( void* pBuffer, size_t size, size_t nmemb, void* pUserData )
-{
-    AtomPubSession& session = *( static_cast< AtomPubSession* >( pUserData ) );
-
-    size_t readSize = size;
-    xmlDocPtr pDoc = xmlReadMemory( ( const char * )pBuffer, size * nmemb, session.m_sAtomPubUrl.c_str(), NULL, 0 );
-
-    if ( NULL != pDoc )
-    {
-        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
-
-        // Register the Service Document namespaces
-        atom::registerNamespaces( pXPathCtx );
-
-        if ( NULL != pXPathCtx )
-        {
-            // Get the collections
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), pXPathCtx );
-            if ( NULL != pXPathObj )
-                session.readCollections( pXPathObj->nodesetval );
-            xmlXPathFreeObject( pXPathObj );
-
-            // Get the URI templates
-            pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), pXPathCtx );
-            if ( NULL != pXPathObj )
-                session.readUriTemplates( pXPathObj->nodesetval );
-            xmlXPathFreeObject( pXPathObj );
-            
-            // Get the root node id
-            string infosXPath( "//cmisra:repositoryInfo[cmis:repositoryId='" );
-            infosXPath += session.m_sRepository;
-            infosXPath += "']/cmis:rootFolderId/text()";
-            session.m_sRootId = atom::getXPathValue( pXPathCtx, infosXPath );
-        }
-        xmlXPathFreeContext( pXPathCtx );
-    }
-    else
-    {
-        fprintf( stderr, "Failed to parse service document\n" );
-        readSize = 0;
-    }
-
-    xmlFreeDoc( pDoc );
-    return readSize;
 }

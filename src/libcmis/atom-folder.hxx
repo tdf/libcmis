@@ -27,9 +27,6 @@ class AtomFolder : public Folder, public AtomResource
         virtual void extractInfos( xmlDocPtr doc );
 
     private:
-        static size_t parseFolderInfos( void* pBuffer, size_t size, size_t nmemb, void* pUserData );
-        static size_t parseXmlChildren( void* pBuffer, size_t size, size_t nmemb, void* pUserData );
-
         static std::string getChildrenUrl( xmlDocPtr doc );
 };
 

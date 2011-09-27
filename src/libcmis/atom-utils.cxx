@@ -1,8 +1,20 @@
+#include <sstream>
+
 #include <curl/curl.h>
 
 #include "atom-utils.hxx"
 
 using namespace std;
+
+namespace
+{
+    size_t lcl_bufferData( void* buffer, size_t size, size_t nmemb, void* data )
+    {
+        stringstream& out = *( static_cast< stringstream* >( data ) );
+        out.write( ( const char* ) buffer, size * nmemb );
+        return nmemb;
+    }
+}
 
 namespace atom
 {
@@ -23,8 +35,6 @@ namespace atom
             xmlChar* pContent = xmlNodeGetContent( pXPathObj->nodesetval->nodeTab[0] );
             value = string( ( char* )pContent );
         }
-        else
-            fprintf( stderr, "Bad request: %s\n", req.c_str() );
         xmlXPathFreeObject( pXPathObj );
 
         return value;
@@ -35,35 +45,27 @@ namespace atom
         xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
         xmlNodePtr entryCopy = xmlCopyNode( entryNd, 1 );
 
-        if ( !xmlHasProp( entryNd, BAD_CAST( "xmlns:cmis" ) ) )
-        {
-            // Add the namespaces
-            xmlNewProp( entryCopy, BAD_CAST( "xmlns:atom" ),
-                        NS_ATOM_URL );
-            xmlNewProp( entryCopy, BAD_CAST( "xmlns:app" ),
-                        NS_APP_URL );
-            xmlNewProp( entryCopy, BAD_CAST( "xmlns:cmis" ),
-                        NS_CMIS_URL );
-            xmlNewProp( entryCopy, BAD_CAST( "xmlns:cmisra" ),
-                        NS_CMISRA_URL );
-        }
         xmlDocSetRootElement( doc, entryCopy );
         return doc;
     }
 
-    void http_request( string Url, size_t (*pCallback)( void *, size_t, size_t, void* ), void* pData )
+    string httpGetRequest( string url )
     {
+        stringstream stream;
+
         curl_global_init( CURL_GLOBAL_ALL );
         CURL* pHandle = curl_easy_init( );
 
         // Grab something from the web
-        curl_easy_setopt( pHandle, CURLOPT_URL, Url.c_str() );
-        curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, pCallback );
-        curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, pData );
+        curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
+        curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+        curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, &stream );
 
         // Perform the query
         curl_easy_perform( pHandle );
 
         curl_easy_cleanup( pHandle );
+
+        return stream.str();
     }
 }

@@ -65,9 +65,6 @@ class AtomPubSession : public Session
         void readUriTemplates( xmlNodeSetPtr pNodeSet );
 
         Folder* getFolder( std::string id );
-        
-        static size_t parseServiceDocument( void* pBuffer, size_t size,
-                size_t nmemb, void* pUserData );
 };
 
 #endif
