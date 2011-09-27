@@ -59,7 +59,7 @@ void AtomResource::extractInfos( xmlDocPtr doc )
     if ( NULL != pXPathCtx )
     {
         // Get the name
-        string nameReq( "//cmis:propertyString[@queryName='cmis:name']/cmis:value/text()" );
+        string nameReq( "//cmis:propertyString[@propertyDefinitionId=queryName='cmis:name']/cmis:value/text()" );
         m_name = atom::getXPathValue( pXPathCtx, nameReq );
     }
     xmlXPathFreeContext( pXPathCtx );

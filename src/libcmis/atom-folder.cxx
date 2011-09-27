@@ -147,7 +147,7 @@ void AtomFolder::extractInfos( xmlDocPtr doc )
     if ( NULL != pXPathCtx )
     {
         // Get the path
-        string pathReq( "//cmis:propertyString[@queryName='cmis:path']/cmis:value/text()" );
+        string pathReq( "//cmis:propertyString[@propertyDefinitionId='cmis:path']/cmis:value/text()" );
         m_path = atom::getXPathValue( pXPathCtx, pathReq );
     }
     xmlXPathFreeContext( pXPathCtx );
