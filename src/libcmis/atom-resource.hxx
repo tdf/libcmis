@@ -5,7 +5,7 @@
 
 #include "resource.hxx"
 
-class AtomResource : public Resource
+class AtomResource : public virtual Resource
 {
     private:
         std::string m_infosUrl;

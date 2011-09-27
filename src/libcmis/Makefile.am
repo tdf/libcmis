@@ -24,7 +24,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
-	$(DEPS_LIBS)
+	$(DEPS_LIBS) \
+	$(BOOST_SMART_PTR)
 
 libcmisdir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis
 libcmis_HEADERS = $(libcmis_headers_public)

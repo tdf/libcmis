@@ -53,6 +53,7 @@ namespace
             fprintf( stderr, "Failed to parse service document\n" );
             readSize = 0;
         }
+        xmlFreeDoc( pDoc );
 
         return readSize;
     }

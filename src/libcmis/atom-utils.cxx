@@ -30,6 +30,27 @@ namespace atom
         return value;
     }
 
+    xmlDocPtr wrapInDoc( xmlNodePtr entryNd )
+    {
+        xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+        xmlNodePtr entryCopy = xmlCopyNode( entryNd, 1 );
+
+        if ( !xmlHasProp( entryNd, BAD_CAST( "xmlns:cmis" ) ) )
+        {
+            // Add the namespaces
+            xmlNewProp( entryCopy, BAD_CAST( "xmlns:atom" ),
+                        NS_ATOM_URL );
+            xmlNewProp( entryCopy, BAD_CAST( "xmlns:app" ),
+                        NS_APP_URL );
+            xmlNewProp( entryCopy, BAD_CAST( "xmlns:cmis" ),
+                        NS_CMIS_URL );
+            xmlNewProp( entryCopy, BAD_CAST( "xmlns:cmisra" ),
+                        NS_CMISRA_URL );
+        }
+        xmlDocSetRootElement( doc, entryCopy );
+        return doc;
+    }
+
     void http_request( string Url, size_t (*pCallback)( void *, size_t, size_t, void* ), void* pData )
     {
         curl_global_init( CURL_GLOBAL_ALL );

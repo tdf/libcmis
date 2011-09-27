@@ -47,6 +47,11 @@ PKG_CHECK_MODULES(DEPS,
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 
+AC_CONFIG_MACRO_DIR([m4])
+
+m4_pattern_allow([^BOOST_])
+BOOST_SMART_PTR
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h])

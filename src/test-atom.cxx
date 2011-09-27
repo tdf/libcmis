@@ -43,6 +43,17 @@ int main ( int argc, char* argv[] )
         return 1;
     }
 
+    // Look for the children of the folder
+    fprintf( stdout, "Children:\n" );
+    vector< ResourcePtr > children = folder->getChildren( );
+    vector< ResourcePtr >::iterator it = children.begin( );
+    while ( it != children.end( ) )
+    {
+        ResourcePtr res = *it;
+        fprintf( stdout, "  + %s (%s)\n", res->getName( ).c_str(), res->getPath().c_str() );
+        ++it;
+    }
+
     delete folder;
 
     return 0;

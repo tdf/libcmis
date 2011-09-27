@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 /** Class representing a CMIS resource like files and folders.
   */
 class Resource
@@ -12,5 +14,7 @@ class Resource
         virtual std::string getPath( ) = 0;
         virtual std::string getName( ) = 0;
 };
+
+typedef ::boost::shared_ptr< Resource > ResourcePtr;
 
 #endif

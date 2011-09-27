@@ -13,11 +13,12 @@ class AtomFolder : public Folder, public AtomResource
 
     public:
         AtomFolder( std::string url );
+        AtomFolder( xmlNodePtr entryNd );
         ~AtomFolder( );
 
         // virtual pure methods from Folder
-        virtual std::vector< Resource > getChildren( );
-        
+        virtual std::vector< ResourcePtr > getChildren( );
+
         // virtual pure methods from Resource
         virtual std::string getName( );
         virtual std::string getPath( );
@@ -27,6 +28,9 @@ class AtomFolder : public Folder, public AtomResource
 
     private:
         static size_t parseFolderInfos( void* pBuffer, size_t size, size_t nmemb, void* pUserData );
+        static size_t parseXmlChildren( void* pBuffer, size_t size, size_t nmemb, void* pUserData );
+
+        static std::string getChildrenUrl( xmlDocPtr doc );
 };
 
 #endif

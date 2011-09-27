@@ -70,12 +70,12 @@ if test ! -e ${TEST_SERVER}/webapps/inmemory.war; then
     setup_server
 fi
 
-server "start"
+#server "start"
 
 #Run the test
 $1 $REST_URL $SOAP_URL
 result=$?
 
-server "stop"
+#server "stop"
 
 exit $result

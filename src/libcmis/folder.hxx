@@ -8,10 +8,10 @@
 
 /** Class representing a CMIS folder.
   */
-class Folder : public Resource
+class Folder : public virtual Resource
 {
     public:
-        virtual std::vector< Resource > getChildren( ) = 0;
+        virtual std::vector< ResourcePtr > getChildren( ) = 0;
 };
 
 #endif
