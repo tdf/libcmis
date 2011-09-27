@@ -12,6 +12,7 @@ class Folder : public virtual Resource
 {
     public:
         virtual std::vector< ResourcePtr > getChildren( ) = 0;
+        virtual std::string getPath( ) = 0;
 };
 
 #endif

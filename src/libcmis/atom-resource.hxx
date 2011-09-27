@@ -11,14 +11,12 @@ class AtomResource : public virtual Resource
         std::string m_infosUrl;
 
         std::string m_name;
-        std::string m_path;
 
     public:
         AtomResource( std::string url );
         ~AtomResource( );
         
         virtual std::string getName( );
-        virtual std::string getPath( );
 
     protected:
 

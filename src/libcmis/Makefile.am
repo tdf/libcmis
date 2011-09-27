@@ -3,18 +3,21 @@ SUBDIRS = .
 INCLUDES = -I$(top_srcdir)/include
 
 libcmis_headers_public = \
+    content.hxx \
 	folder.hxx \
 	resource.hxx \
 	session.hxx \
 	session-factory.hxx \
-	atom-session.hxx \
+	atom-content.hxx \
 	atom-folder.hxx \
-	atom-resource.hxx
+	atom-resource.hxx \
+	atom-session.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
 	session-factory.cxx \
+	atom-content.cxx \
 	atom-folder.cxx \
 	atom-resource.cxx \
 	atom-session.cxx \

@@ -10,8 +10,6 @@
 class Resource
 {
     public:
-
-        virtual std::string getPath( ) = 0;
         virtual std::string getName( ) = 0;
 };
 

@@ -9,8 +9,7 @@ using namespace std;
   */
 AtomResource::AtomResource( string url ) :
     m_infosUrl( url ),
-    m_name( ),
-    m_path( )
+    m_name( )
 {
 }
 
@@ -21,11 +20,6 @@ AtomResource::~AtomResource( )
 string AtomResource::getName( )
 {
     return m_name;
-}
-
-string AtomResource::getPath( )
-{
-    return m_path;
 }
 
 void AtomResource::extractInfos( xmlDocPtr doc )
@@ -40,10 +34,6 @@ void AtomResource::extractInfos( xmlDocPtr doc )
         // Get the name
         string nameReq( "//cmis:propertyString[@queryName='cmis:name']/cmis:value/text()" );
         m_name = atom::getXPathValue( pXPathCtx, nameReq );
-
-        // Get the path
-        string pathReq( "//cmis:propertyString[@queryName='cmis:path']/cmis:value/text()" );
-        m_path = atom::getXPathValue( pXPathCtx, pathReq );
     }
     xmlXPathFreeContext( pXPathCtx );
 }

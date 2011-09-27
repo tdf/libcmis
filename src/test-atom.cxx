@@ -50,7 +50,7 @@ int main ( int argc, char* argv[] )
     while ( it != children.end( ) )
     {
         ResourcePtr res = *it;
-        fprintf( stdout, "  + %s (%s)\n", res->getName( ).c_str(), res->getPath().c_str() );
+        fprintf( stdout, "  + %s\n", res->getName( ).c_str() );
         ++it;
     }
 

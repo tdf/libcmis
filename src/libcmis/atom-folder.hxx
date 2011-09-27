@@ -9,6 +9,7 @@
 class AtomFolder : public Folder, public AtomResource
 {
     private:
+        std::string m_path;
         std::string m_childrenUrl;
 
     public:
@@ -18,10 +19,10 @@ class AtomFolder : public Folder, public AtomResource
 
         // virtual pure methods from Folder
         virtual std::vector< ResourcePtr > getChildren( );
+        virtual std::string getPath( );
 
         // virtual pure methods from Resource
         virtual std::string getName( );
-        virtual std::string getPath( );
 
     protected:
         virtual void extractInfos( xmlDocPtr doc );

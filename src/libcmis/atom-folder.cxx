@@ -1,3 +1,4 @@
+#include "atom-content.hxx"
 #include "atom-folder.hxx"
 #include "atom-utils.hxx"
 
@@ -9,6 +10,7 @@ namespace
 
 AtomFolder::AtomFolder( string url ) :
     AtomResource( url ),
+    m_path( ),
     m_childrenUrl( )
 {
     string buf  = atom::httpGetRequest( getInfosUrl() );
@@ -25,6 +27,7 @@ AtomFolder::AtomFolder( string url ) :
 
 AtomFolder::AtomFolder( xmlNodePtr entryNd ) :
     AtomResource( string() ),
+    m_path( ),
     m_childrenUrl( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
@@ -70,10 +73,8 @@ vector< ResourcePtr > AtomFolder::getChildren( )
                     }
                     else
                     {
-#if 0
                         ResourcePtr content( new AtomContent( node ) );
                         resource.swap( content );
-#endif
                     }
 
                     if ( resource.get() )
@@ -103,13 +104,26 @@ string AtomFolder::getName( )
 
 string AtomFolder::getPath( )
 {
-    return AtomResource::getPath( );
+    return m_path;
 }
 
 void AtomFolder::extractInfos( xmlDocPtr doc )
 {
     AtomResource::extractInfos( doc );
     m_childrenUrl = AtomFolder::getChildrenUrl( doc );
+
+    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+
+    // Register the Service Document namespaces
+    atom::registerNamespaces( pXPathCtx );
+
+    if ( NULL != pXPathCtx )
+    {
+        // Get the path
+        string pathReq( "//cmis:propertyString[@queryName='cmis:path']/cmis:value/text()" );
+        m_path = atom::getXPathValue( pXPathCtx, pathReq );
+    }
+    xmlXPathFreeContext( pXPathCtx );
 }
 
 string AtomFolder::getChildrenUrl( xmlDocPtr doc )
