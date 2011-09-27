@@ -32,11 +32,23 @@
 
 #include "resource.hxx"
 
+/** Interface for a CMIS Document object.
+  */
 class Content : public virtual Resource
 {
     public:
-        virtual void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ) ) = 0;
+        /** Get the content data using a callback with the same parameters than fwrite.
+            The callback may be called several times.
+          */
+        virtual void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData ) = 0;
+
+        /** Get the content mime type.
+          */
         virtual std::string getContentType( ) = 0;
+
+        /** Get the content length in bytes.
+          */
+        virtual long getContentLength( ) = 0;
 };
 
 #endif

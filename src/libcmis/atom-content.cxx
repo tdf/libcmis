@@ -25,6 +25,10 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#include <stdlib.h>
+
+#include <curl/curl.h>
+
 #include "atom-content.hxx"
 #include "atom-utils.hxx"
 
@@ -61,8 +65,20 @@ AtomContent::~AtomContent( )
 {
 }
 
-void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void* ) )
+void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData )
 {
+    curl_global_init( CURL_GLOBAL_ALL );
+    CURL* pHandle = curl_easy_init( );
+
+    // Grab something from the web
+    curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, pCallback );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, userData );
+
+    // Perform the query
+    curl_easy_perform( pHandle );
+
+    curl_easy_cleanup( pHandle );
 }
 
 void AtomContent::extractInfos( xmlDocPtr doc )
@@ -89,6 +105,12 @@ void AtomContent::extractInfos( xmlDocPtr doc )
                 xmlChar* type = xmlGetProp( contentNd, BAD_CAST( "type" ) );
                 m_contentType = string( ( char* ) type );
                 xmlFree( type );
+
+                // Get the content length
+                string lengthReq( "//cmis:propertyInteger[propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
+                string bytes = atom::getXPathValue( pXPathCtx, lengthReq );
+                m_contentLength = atol( bytes.c_str() );
+
             }
             xmlXPathFreeObject( pXPathObj );
         }

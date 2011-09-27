@@ -38,6 +38,7 @@ class AtomContent : public Content, public AtomResource
     private:
         std::string m_contentUrl;
         std::string m_contentType;
+        long m_contentLength;
 
     public:
         AtomContent( std::string url );
@@ -45,8 +46,9 @@ class AtomContent : public Content, public AtomResource
         ~AtomContent( );
 
         // Override content methods
-        void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ) );
+        void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData );
         std::string getContentType( ) { return m_contentType; }
+        virtual long getContentLength( ){ return m_contentLength; }
     
     protected:
         virtual void extractInfos( xmlDocPtr doc );
