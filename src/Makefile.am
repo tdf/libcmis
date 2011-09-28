@@ -2,15 +2,10 @@ SUBDIRS = libcmis .
 
 INCLUDES = -I$(top_srcdir)/include
 
-check_PROGRAMS = test-atom
+bin_PROGRAMS = cmis-client
 
-test_atom_SOURCES = test-atom.cxx
-test_atom_LDADD = libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
-	$(DEPS_LIBS)
-test_atom_CPPFLAGS = -I$(top_builddir)/lib/libcmis/libcmis.la
-
-# Keep the following in mind when writing the tests:
-#   * All test scripts are taking two arguments, REST_URL and SOAP_URL
-#   * The test server is restarted after each test
-TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
-TESTS = test-atom
+cmis_client_SOURCES = cmis-client.cxx
+cmis_client_LDADD = libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(DEPS_LIBS) \
+	$(BOOST_PROGRAM_OPTIONS_LIBS)
+cmis_client_CPPFLAGS = -I$(top_builddir)/lib/libcmis/libcmis.la

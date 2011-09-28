@@ -21,5 +21,6 @@ tags
 ChangeLog
 libcmis-*.*.*.tar.gz
 test-atom
+cmis-client
 test-server
 *.tar.gz
