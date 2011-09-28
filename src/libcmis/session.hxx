@@ -28,6 +28,7 @@
 #ifndef _SESSION_HXX_
 #define _SESSION_HXX_
 
+#include "cmis-object.hxx"
 #include "folder.hxx"
 
 class Session
@@ -37,6 +38,10 @@ class Session
         /** Get the Root folder of the repository
           */
         virtual FolderPtr getRootFolder() = 0;
+        
+        /** Get a CMIS object from its ID.
+          */
+        virtual CmisObjectPtr getObject( std::string id ) = 0;
 };
 
 #endif

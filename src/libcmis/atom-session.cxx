@@ -32,6 +32,7 @@
 #include <libxml/xpath.h>
 
 #include "atom-folder.hxx"
+#include "atom-content.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 
@@ -197,6 +198,57 @@ FolderPtr AtomPubSession::getRootFolder()
     return getFolder( m_sRootId );
 }
 
+CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
+{
+    CmisObjectPtr cmisObject;
+
+    if ( NULL != doc )
+    {
+        // Get the atom:entry node
+        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+        atom::registerNamespaces( pXPathCtx );
+        if ( NULL != pXPathCtx )
+        {
+            const string& entriesReq( "//atom:entry" );
+            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), pXPathCtx );
+
+            if ( NULL != pXPathObj && NULL != pXPathObj->nodesetval )
+            {
+                xmlNodePtr node = pXPathObj->nodesetval->nodeTab[0];
+                if ( !AtomFolder::getChildrenUrl( doc ).empty() )
+                {
+                    CmisObjectPtr folder( new AtomFolder( this, node ) );
+                    cmisObject.swap( folder );
+                }
+                else
+                {
+                    CmisObjectPtr content( new AtomContent( this, node ) );
+                    cmisObject.swap( content );
+                }
+            }
+            xmlXPathFreeObject( pXPathObj );
+        }
+        xmlXPathFreeContext( pXPathCtx );
+    }
+
+    return cmisObject;
+}
+
+CmisObjectPtr AtomPubSession::getObject( string id )
+{
+    string pattern = getUriTemplate( UriTemplate::ObjectById );
+    map< string, string > vars;
+    vars[URI_TEMPLATE_VAR_ID] = id;
+    string url = UriTemplate::createUrl( pattern, vars );
+
+    string buf = atom::httpGetRequest( url );
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
+    CmisObjectPtr cmisObject = createObjectFromEntryDoc( doc );
+    xmlFreeDoc( doc );
+
+    return cmisObject;
+}
+
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
 {
     int size = 0;
@@ -242,7 +294,7 @@ void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
                     }
                     else if ( xmlStrEqual( pContent, BAD_CAST( "checkedout" ) ) )
                     {
-                        type = Collection::Checkedout;
+                        type = Collection::CheckedOut;
                         typeDefined = true;
                     }
                     else if ( xmlStrEqual( pContent, BAD_CAST( "unfiled" ) ) )
@@ -296,7 +348,7 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
                     type = UriTemplate::ObjectById;
                     typeDefined = true;
                 }
-                else if ( xmlStrEqual( pContent, BAD_CAST( "ObjectByPath" ) ) )
+                else if ( xmlStrEqual( pContent, BAD_CAST( "objectbypath" ) ) )
                 {
                     type = UriTemplate::ObjectByPath;
                     typeDefined = true;
@@ -306,7 +358,7 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
                     type = UriTemplate::Query;
                     typeDefined = true;
                 }
-                else if ( xmlStrEqual( pContent, BAD_CAST( "TypeById" ) ) )
+                else if ( xmlStrEqual( pContent, BAD_CAST( "typebyid" ) ) )
                 {
                     type = UriTemplate::TypeById;
                     typeDefined = true;
@@ -322,9 +374,7 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
 
 FolderPtr AtomPubSession::getFolder( string id )
 {
-    string pattern = getUriTemplate( UriTemplate::ObjectById );
-    map< string, string > vars;
-    vars[URI_TEMPLATE_VAR_ID] = id;
-    FolderPtr folder( new AtomFolder( UriTemplate::createUrl( pattern, vars ) ) );
+    CmisObjectPtr object = getObject( id );
+    FolderPtr folder = boost::dynamic_pointer_cast< Folder >( object );
     return folder;
 }

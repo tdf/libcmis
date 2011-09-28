@@ -25,42 +25,39 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#include "atom-resource.hxx"
-#include "atom-utils.hxx"
+#ifndef _ATOM_OBJECT_HXX_
+#define _ATOM_OBJECT_HXX_
 
-using namespace std;
+#include <libxml/tree.h>
 
-/** Constructor for the resource, the url provided url should point to the resource
-    CMIS properties. The content of the URL isn't extracted and parsed by the constructor:
-    this task is left to the class children.
-  */
-AtomResource::AtomResource( string url ) :
-    m_infosUrl( url ),
-    m_name( )
+#include "cmis-object.hxx"
+
+class AtomPubSession;
+
+class AtomCmisObject : public virtual CmisObject
 {
-}
+    private:
+        AtomPubSession* m_session;
 
-AtomResource::~AtomResource( )
-{
-}
+        std::string m_infosUrl;
 
-string AtomResource::getName( )
-{
-    return m_name;
-}
+        std::string m_id;
+        std::string m_name;
 
-void AtomResource::extractInfos( xmlDocPtr doc )
-{
-    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+    public:
+        AtomCmisObject( AtomPubSession* session, std::string url );
+        ~AtomCmisObject( );
+       
+        // Overridden methods from CmisObject
+        virtual std::string getId( ); 
+        virtual std::string getName( );
 
-    // Register the Service Document namespaces
-    atom::registerNamespaces( pXPathCtx );
+    protected:
 
-    if ( NULL != pXPathCtx )
-    {
-        // Get the name
-        string nameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:name']/cmis:value/text()" );
-        m_name = atom::getXPathValue( pXPathCtx, nameReq );
-    }
-    xmlXPathFreeContext( pXPathCtx );
-}
+        std::string& getInfosUrl( ) { return m_infosUrl; }
+        virtual void extractInfos( xmlDocPtr doc );
+
+        AtomPubSession* getSession( ) { return m_session; }
+};
+
+#endif

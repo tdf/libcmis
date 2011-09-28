@@ -31,9 +31,9 @@
 #include <string>
 
 #include "content.hxx"
-#include "atom-resource.hxx"
+#include "atom-object.hxx"
 
-class AtomContent : public Content, public AtomResource
+class AtomContent : public Content, public AtomCmisObject
 {
     private:
         std::string m_contentUrl;
@@ -41,8 +41,8 @@ class AtomContent : public Content, public AtomResource
         long m_contentLength;
 
     public:
-        AtomContent( std::string url );
-        AtomContent( xmlNodePtr entryNd );
+        AtomContent( AtomPubSession* session, std::string url );
+        AtomContent( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomContent( );
 
         // Override content methods

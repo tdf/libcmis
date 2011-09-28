@@ -31,31 +31,31 @@
 #include <string>
 
 #include "folder.hxx"
-#include "atom-resource.hxx"
+#include "atom-object.hxx"
 
-class AtomFolder : public Folder, public AtomResource
+class AtomFolder : public Folder, public AtomCmisObject
 {
     private:
         std::string m_path;
         std::string m_childrenUrl;
 
     public:
-        AtomFolder( std::string url );
-        AtomFolder( xmlNodePtr entryNd );
+        AtomFolder( AtomPubSession* session, std::string url );
+        AtomFolder( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomFolder( );
 
         // virtual pure methods from Folder
-        virtual std::vector< ResourcePtr > getChildren( );
+        virtual std::vector< CmisObjectPtr > getChildren( );
         virtual std::string getPath( );
 
-        // virtual pure methods from Resource
-        virtual std::string getName( );
+        // Methods provided for testing purpose
+        std::string getChildrenUrl( ) { return m_childrenUrl; }
+        
+        // Utility methods
+        static std::string getChildrenUrl( xmlDocPtr doc );
 
     protected:
         virtual void extractInfos( xmlDocPtr doc );
-
-    private:
-        static std::string getChildrenUrl( xmlDocPtr doc );
 };
 
 #endif

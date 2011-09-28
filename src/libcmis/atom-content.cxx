@@ -30,12 +30,13 @@
 #include <curl/curl.h>
 
 #include "atom-content.hxx"
+#include "atom-session.hxx"
 #include "atom-utils.hxx"
 
 using namespace std;
 
-AtomContent::AtomContent( string url ) :
-    AtomResource( url ),
+AtomContent::AtomContent( AtomPubSession* session, string url ) :
+    AtomCmisObject( session, url ),
     m_contentUrl( ),
     m_contentType( )
 {
@@ -51,8 +52,8 @@ AtomContent::AtomContent( string url ) :
     xmlFreeDoc( doc );
 }
 
-AtomContent::AtomContent( xmlNodePtr entryNd ) :
-    AtomResource( string() ),
+AtomContent::AtomContent( AtomPubSession* session, xmlNodePtr entryNd ) :
+    AtomCmisObject( session, string() ),
     m_contentUrl( ),
     m_contentType( )
 {
@@ -83,7 +84,7 @@ void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void*
 
 void AtomContent::extractInfos( xmlDocPtr doc )
 {
-    AtomResource::extractInfos( doc );
+    AtomCmisObject::extractInfos( doc );
    
    // Get the content url and type 
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
@@ -107,7 +108,7 @@ void AtomContent::extractInfos( xmlDocPtr doc )
                 xmlFree( type );
 
                 // Get the content length
-                string lengthReq( "//cmis:propertyInteger[propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
+                string lengthReq( "//cmis:propertyInteger[@propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
                 string bytes = atom::getXPathValue( pXPathCtx, lengthReq );
                 m_contentLength = atol( bytes.c_str() );
 

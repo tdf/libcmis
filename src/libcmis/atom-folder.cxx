@@ -27,6 +27,7 @@
  */
 #include "atom-content.hxx"
 #include "atom-folder.hxx"
+#include "atom-session.hxx"
 #include "atom-utils.hxx"
 
 using namespace std;
@@ -35,8 +36,8 @@ namespace
 {
 }
 
-AtomFolder::AtomFolder( string url ) :
-    AtomResource( url ),
+AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
+    AtomCmisObject( session, url ),
     m_path( ),
     m_childrenUrl( )
 {
@@ -52,8 +53,8 @@ AtomFolder::AtomFolder( string url ) :
     xmlFreeDoc( doc );
 }
 
-AtomFolder::AtomFolder( xmlNodePtr entryNd ) :
-    AtomResource( string() ),
+AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
+    AtomCmisObject( session, string() ),
     m_path( ),
     m_childrenUrl( )
 {
@@ -67,9 +68,9 @@ AtomFolder::~AtomFolder( )
 {
 }
 
-vector< ResourcePtr > AtomFolder::getChildren( )
+vector< CmisObjectPtr > AtomFolder::getChildren( )
 {
-    vector< ResourcePtr > children;
+    vector< CmisObjectPtr > children;
     
     string buf = atom::httpGetRequest( m_childrenUrl );
 
@@ -89,23 +90,11 @@ vector< ResourcePtr > AtomFolder::getChildren( )
                 for ( int i = 0; i < size; i++ )
                 {
                     xmlNodePtr node = pXPathObj->nodesetval->nodeTab[i];
-
-                    ResourcePtr resource;
-
                     xmlDocPtr entryDoc = atom::wrapInDoc( node );
-                    if ( !AtomFolder::getChildrenUrl( entryDoc ).empty() )
-                    {
-                        ResourcePtr folder( new AtomFolder( node ) );
-                        resource.swap( folder );
-                    }
-                    else
-                    {
-                        ResourcePtr content( new AtomContent( node ) );
-                        resource.swap( content );
-                    }
+                    CmisObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
 
-                    if ( resource.get() )
-                        children.push_back( resource );
+                    if ( cmisObject.get() )
+                        children.push_back( cmisObject );
                     xmlFreeDoc( entryDoc );
                 }
             }
@@ -124,11 +113,6 @@ vector< ResourcePtr > AtomFolder::getChildren( )
     return children;
 }
 
-string AtomFolder::getName( )
-{
-    return AtomResource::getName( );
-}
-
 string AtomFolder::getPath( )
 {
     return m_path;
@@ -136,7 +120,7 @@ string AtomFolder::getPath( )
 
 void AtomFolder::extractInfos( xmlDocPtr doc )
 {
-    AtomResource::extractInfos( doc );
+    AtomCmisObject::extractInfos( doc );
     m_childrenUrl = AtomFolder::getChildrenUrl( doc );
 
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );

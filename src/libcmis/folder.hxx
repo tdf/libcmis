@@ -31,14 +31,14 @@
 #include <string>
 #include <vector>
 
-#include "resource.hxx"
+#include "cmis-object.hxx"
 
 /** Class representing a CMIS folder.
   */
-class Folder : public virtual Resource
+class Folder : public virtual CmisObject
 {
     public:
-        virtual std::vector< ResourcePtr > getChildren( ) = 0;
+        virtual std::vector< CmisObjectPtr > getChildren( ) = 0;
         virtual std::string getPath( ) = 0;
 };
 typedef ::boost::shared_ptr< Folder > FolderPtr;

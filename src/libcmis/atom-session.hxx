@@ -43,7 +43,7 @@ struct Collection {
         Root,
         Types,
         Query,
-        Checkedout,
+        CheckedOut,
         Unfiled
     };
 };
@@ -83,15 +83,23 @@ class AtomPubSession : public Session
 
         std::string getUriTemplate( UriTemplate::Type );
 
+        std::string getRootId( ) { return m_sRootId; }
+
+        // Utility methods
+
+        FolderPtr getFolder( std::string id );
+
+        CmisObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+
         // Override session methods
 
         virtual FolderPtr getRootFolder();
 
+        virtual CmisObjectPtr getObject( std::string id );
+
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );
         void readUriTemplates( xmlNodeSetPtr pNodeSet );
-
-        FolderPtr getFolder( std::string id );
 };
 
 #endif

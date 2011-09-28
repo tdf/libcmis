@@ -25,30 +25,22 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _ATOM_RESOURCE_HXX_
-#define _ATOM_RESOURCE_HXX_
+#ifndef _CMIS_OBJECT_HXX_
+#define _CMIS_OBJECT_HXX_
 
-#include <libxml/tree.h>
+#include <string>
 
-#include "resource.hxx"
+#include <boost/shared_ptr.hpp>
 
-class AtomResource : public virtual Resource
+/** Class representing any CMIS object.
+  */
+class CmisObject
 {
-    private:
-        std::string m_infosUrl;
-
-        std::string m_name;
-
     public:
-        AtomResource( std::string url );
-        ~AtomResource( );
-        
-        virtual std::string getName( );
-
-    protected:
-
-        std::string& getInfosUrl( ) { return m_infosUrl; }
-        virtual void extractInfos( xmlDocPtr doc );
+        virtual std::string getId( ) = 0;
+        virtual std::string getName( ) = 0;
 };
+
+typedef ::boost::shared_ptr< CmisObject > CmisObjectPtr;
 
 #endif

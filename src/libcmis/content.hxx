@@ -30,11 +30,11 @@
 
 #include <string>
 
-#include "resource.hxx"
+#include "cmis-object.hxx"
 
 /** Interface for a CMIS Document object.
   */
-class Content : public virtual Resource
+class Content : public virtual CmisObject
 {
     public:
         /** Get the content data using a callback with the same parameters than fwrite.

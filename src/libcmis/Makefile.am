@@ -5,7 +5,7 @@ INCLUDES = -I$(top_srcdir)/include
 libcmis_headers_public = \
     content.hxx \
 	folder.hxx \
-	resource.hxx \
+	cmis-object.hxx \
 	session.hxx \
 	session-factory.hxx 
 
@@ -14,12 +14,12 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
 	atom-content.hxx \
 	atom-folder.hxx \
-	atom-resource.hxx \
+	atom-object.hxx \
 	atom-session.hxx \
 	session-factory.cxx \
 	atom-content.cxx \
 	atom-folder.cxx \
-	atom-resource.cxx \
+	atom-object.cxx \
 	atom-session.cxx \
 	atom-utils.hxx \
 	atom-utils.cxx
@@ -32,5 +32,16 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 
 libcmisdir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis
 libcmis_HEADERS = $(libcmis_headers_public)
+
+check_PROGRAMS = test-atom
+
+test_atom_SOURCES =	test-atom.cxx
+
+test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
+	$(DEPS_LIBS) \
+	$(CPPUNIT_LIBS)
+
+TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
+TESTS = test-atom
 
 EXTRA_DIST = 
