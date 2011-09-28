@@ -25,10 +25,11 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#include <libcmis/atom-session.hxx>
+#include <libcmis/session-factory.hxx>
 
-#include <string>
 #include <cstdio>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -37,31 +38,21 @@ int main ( int argc, char* argv[] )
     string sAtomUrl( argv[1] );
 
     // Test the getRepositories
-    list< string > ids = AtomPubSession::getRepositories( sAtomUrl );
+    map< int, string > params;
+    params[ATOMPUB_URL] = sAtomUrl;
+    list< string > ids = SessionFactory::getRepositories( params );
     if ( ids.size( ) == 0 )
     {
         fprintf( stderr, "There should be at least one repository ID\n" );
         return 1;
     }
     string firstId = ids.front( );
-    
-    AtomPubSession session( sAtomUrl, firstId );
+    fprintf( stdout, "Using repository %s\n", firstId.c_str() );
+   
+    params[REPOSITORY_ID] = firstId; 
+    Session* session = SessionFactory::createSession( params );
 
-    if ( session.getCollectionUrl( Collection::Root ).empty() )
-    {
-        fprintf( stderr, "Missing root collection URL\n" );
-        return 1;
-    }
-
-    string objectbyid = session.getUriTemplate( UriTemplate::ObjectById );
-    fprintf( stdout, "objectbyid URI Template: %s\n", objectbyid.c_str() );
-    if ( objectbyid.empty() )
-    {
-        fprintf( stderr, "Missing objectbyid uri template\n");
-        return 1;
-    }
-
-    FolderPtr folder = session.getRootFolder( );
+    FolderPtr folder = session->getRootFolder( );
     fprintf( stdout, "Root name: %s\n", folder->getName( ).c_str() );
     fprintf( stdout, "Root path: %s\n",folder->getPath( ).c_str() );
     if ( folder->getName().empty() || folder->getPath().empty() )
@@ -80,6 +71,8 @@ int main ( int argc, char* argv[] )
         fprintf( stdout, "  + %s\n", res->getName( ).c_str() );
         ++it;
     }
+
+    delete session;
 
     return 0;
 }

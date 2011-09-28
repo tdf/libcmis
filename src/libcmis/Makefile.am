@@ -7,15 +7,15 @@ libcmis_headers_public = \
 	folder.hxx \
 	resource.hxx \
 	session.hxx \
-	session-factory.hxx \
-	atom-content.hxx \
-	atom-folder.hxx \
-	atom-resource.hxx \
-	atom-session.hxx
+	session-factory.hxx 
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
+	atom-content.hxx \
+	atom-folder.hxx \
+	atom-resource.hxx \
+	atom-session.hxx \
 	session-factory.cxx \
 	atom-content.cxx \
 	atom-folder.cxx \

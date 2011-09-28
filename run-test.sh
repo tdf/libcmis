@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-TEST_SERVER=test-server
+LIBCMIS_DIR=$PWD/`dirname $0`
+
+TEST_SERVER=${LIBCMIS_DIR}/test-server
 TEST_SERVER_SCRIPT=${TEST_SERVER}/bin/jetty.sh
 
 TEST_SERVER_URL=http://localhost:8080/inmemory
@@ -19,25 +21,26 @@ INMEMORY_WAR=chemistry-opencmis-server-inmemory-${CHEMISTRY_VERSION}.war
 function setup_server()
 {
     # Downloads
-    if test ! -e ${JETTY_NAME}.tar.gz; then
+    if test ! -e  ${LIBCMIS_DIR}/${JETTY_NAME}.tar.gz; then
         echo "Downloading Jetty"
-        curl -o ${JETTY_NAME}.tar.gz http://dist.codehaus.org/jetty/jetty-hightide-${JETTY_VERSION}/${JETTY_NAME}.tar.gz
+        curl -o ${LIBCMIS_DIR}/${JETTY_NAME}.tar.gz \
+            http://dist.codehaus.org/jetty/jetty-hightide-${JETTY_VERSION}/${JETTY_NAME}.tar.gz
     fi
 
-    if test ! -e ${CHEMISTRY_WEBAPPS}; then
+    if test ! -e  ${LIBCMIS_DIR}/${CHEMISTRY_WEBAPPS}; then
         echo "Downloading apache chemistry webapps"
-        curl -o ${CHEMISTRY_WEBAPPS} http://mirror.speednetwork.de/apache/chemistry/opencmis/${CHEMISTRY_VERSION}/${CHEMISTRY_WEBAPPS}
+        curl -o  ${LIBCMIS_DIR}/${CHEMISTRY_WEBAPPS} \
+            http://mirror.speednetwork.de/apache/chemistry/opencmis/${CHEMISTRY_VERSION}/${CHEMISTRY_WEBAPPS}
     fi
 
     # Untar it all
     echo "Uncompressing ${JETTY_NAME}.tar.gz"
-    tar xzf ${JETTY_NAME}.tar.gz
-    mv ${JETTY_NAME} ${TEST_SERVER}
+    tar xzf ${LIBCMIS_DIR}/${JETTY_NAME}.tar.gz -C ${LIBCMIS_DIR}
+    mv ${LIBCMIS_DIR}/${JETTY_NAME} ${TEST_SERVER}
 
     echo "Uncompressing ${CHEMISTRY_WEBAPPS}"
-    echo tar xzf ${CHEMISTRY_WEBAPPS} ${INMEMORY_WAR}
-    tar xzf ${CHEMISTRY_WEBAPPS} ${INMEMORY_WAR}
-    mv ${INMEMORY_WAR} ${TEST_SERVER}/webapps/inmemory.war
+    tar xzf ${LIBCMIS_DIR}/${CHEMISTRY_WEBAPPS} -C ${LIBCMIS_DIR} ${INMEMORY_WAR}
+    mv ${LIBCMIS_DIR}/${INMEMORY_WAR} ${TEST_SERVER}/webapps/inmemory.war
 }
 
 function server()

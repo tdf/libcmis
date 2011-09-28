@@ -34,9 +34,8 @@ Session* SessionFactory::createSession( map< int, string > params )
 {
     Session* session = NULL;
 
-    // TODO implement me
     string repository;
-    map< int, string >::iterator pIt = params.find( ATOMPUB_URL );
+    map< int, string >::iterator pIt = params.find( REPOSITORY_ID );
     if ( pIt != params.end( ) )
         repository = pIt->second;
     
