@@ -36,7 +36,7 @@
 #include <boost/program_options.hpp>
 
 #include <libcmis/session-factory.hxx>
-#include <libcmis/content.hxx>
+#include <libcmis/document.hxx>
 
 using namespace std;
 using namespace ::boost::program_options;
@@ -58,7 +58,7 @@ class CmisClient
     public:
         CmisClient( variables_map& vm ) : m_vm( vm ) { }
 
-        Session* getSession( ) throw ( CommandException );
+        libcmis::Session* getSession( ) throw ( CommandException );
 
         void execute( ) throw ( exception );
 
@@ -67,7 +67,7 @@ class CmisClient
         static options_description getOptionsDescription( );
 };
 
-Session* CmisClient::getSession( ) throw ( CommandException )
+libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
 {
     map< int, string > params;
 
@@ -76,7 +76,7 @@ Session* CmisClient::getSession( ) throw ( CommandException )
     
     string url = m_vm["url"].as<string>();
     params[ATOMPUB_URL] = url;
-    list< string > ids = SessionFactory::getRepositories( params );
+    list< string > ids = libcmis::SessionFactory::getRepositories( params );
 
     // The repository ID is needed to initiate a session
     if ( m_vm.count( "repository" ) != 1 )
@@ -87,7 +87,7 @@ Session* CmisClient::getSession( ) throw ( CommandException )
         throw CommandException( "Please provide the node ids to show as command args" );
 
     params[REPOSITORY_ID] = m_vm["repository"].as< string >();
-    return SessionFactory::createSession( params );
+    return libcmis::SessionFactory::createSession( params );
 }
 
 void CmisClient::execute( ) throw ( exception )
@@ -109,7 +109,7 @@ void CmisClient::execute( ) throw ( exception )
             string url = m_vm["url"].as<string>();
 
             params[ATOMPUB_URL] = url;
-            list< string > ids = SessionFactory::getRepositories( params );
+            list< string > ids = libcmis::SessionFactory::getRepositories( params );
         
             cout << "Repositories: ";
             for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
@@ -122,14 +122,14 @@ void CmisClient::execute( ) throw ( exception )
         }
         else if ( "show-by-id" == command )
         {
-            Session* session = getSession( );
+            libcmis::Session* session = getSession( );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
 
             for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
             {
-                CmisObjectPtr cmisObj = session->getObject( *it );
+                libcmis::CmisObjectPtr cmisObj = session->getObject( *it );
                 cout << "-----------------------" << endl;
                 cout << cmisObj->toString() << endl;
             }
@@ -138,19 +138,19 @@ void CmisClient::execute( ) throw ( exception )
         }
         else if ( "get-content" == command )
         {
-            Session* session = getSession( );
+            libcmis::Session* session = getSession( );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
             if ( objIds.size() == 0 )
                 throw CommandException( "Please provide a content object Id" );
 
-            CmisObjectPtr cmisObj = session->getObject( objIds.front() );
-            Content* content = dynamic_cast< Content* >( cmisObj.get() );
-            if ( NULL != content )
+            libcmis::CmisObjectPtr cmisObj = session->getObject( objIds.front() );
+            libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+            if ( NULL != document )
             {
                 // TODO Handle name clashes
-                FILE* fd = fopen( content->getContentFilename().c_str(), "w" );
-                content->getContent( (size_t (*)( void*, size_t, size_t, void* ) )fwrite, fd );
+                FILE* fd = fopen( document->getContentFilename().c_str(), "w" );
+                document->getContent( (size_t (*)( void*, size_t, size_t, void* ) )fwrite, fd );
                 fclose( fd );
             }
 

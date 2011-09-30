@@ -41,7 +41,9 @@ using namespace std;
 AtomCmisObject::AtomCmisObject( AtomPubSession* session, string url ) :
     m_session( session ),
     m_infosUrl( url ),
-    m_name( )
+    m_name( ),
+    m_baseType( ),
+    m_type( )
 {
 }
 
@@ -59,12 +61,24 @@ string AtomCmisObject::getName( )
     return m_name;
 }
 
+string AtomCmisObject::getBaseType( )
+{
+    return m_baseType;
+}
+
+string AtomCmisObject::getType( )
+{
+    return m_type;
+}
+
 string AtomCmisObject::toString( )
 {
     stringstream buf;
 
     buf << "Id: " << getId() << endl;
     buf << "Name: " << getName() << endl;
+    buf << "Type: " << getType() << endl;
+    buf << "Base type: " << getBaseType() << endl;
 
     return buf.str();
 }
@@ -85,6 +99,14 @@ void AtomCmisObject::extractInfos( xmlDocPtr doc )
         // Get the id
         string idReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectId']/cmis:value/text()" );
         m_id = atom::getXPathValue( pXPathCtx, idReq );
+
+        // Get the base type
+        string baseTypeReq( "//cmis:propertyId[@propertyDefinitionId='cmis:baseTypeId']/cmis:value/text()" );
+        m_baseType = atom::getXPathValue( pXPathCtx, baseTypeReq );
+        
+        // Get the type
+        string typeReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
+        m_type = atom::getXPathValue( pXPathCtx, typeReq );
     }
     xmlXPathFreeContext( pXPathCtx );
 }

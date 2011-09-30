@@ -30,13 +30,13 @@
 
 #include <curl/curl.h>
 
-#include "atom-content.hxx"
+#include "atom-document.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 
 using namespace std;
 
-AtomContent::AtomContent( AtomPubSession* session, string url ) :
+AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
     AtomCmisObject( session, url ),
     m_contentUrl( ),
     m_contentType( ),
@@ -55,7 +55,7 @@ AtomContent::AtomContent( AtomPubSession* session, string url ) :
     xmlFreeDoc( doc );
 }
 
-AtomContent::AtomContent( AtomPubSession* session, xmlNodePtr entryNd ) :
+AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomCmisObject( session, string() ),
     m_contentUrl( ),
     m_contentType( ),
@@ -67,11 +67,11 @@ AtomContent::AtomContent( AtomPubSession* session, xmlNodePtr entryNd ) :
     xmlFreeDoc( doc );
 }
 
-AtomContent::~AtomContent( )
+AtomDocument::~AtomDocument( )
 {
 }
 
-void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData )
+void AtomDocument::getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* pHandle = curl_easy_init( );
@@ -87,11 +87,11 @@ void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void*
     curl_easy_cleanup( pHandle );
 }
 
-string AtomContent::toString( )
+string AtomDocument::toString( )
 {
     stringstream buf;
 
-    buf << "Content Object:" << endl << endl;
+    buf << "Document Object:" << endl << endl;
     buf << AtomCmisObject::toString();
     buf << "Content Type: " << getContentType( ) << endl;
     buf << "Content Length: " << getContentLength( ) << endl;
@@ -100,7 +100,7 @@ string AtomContent::toString( )
     return buf.str();
 }
 
-void AtomContent::extractInfos( xmlDocPtr doc )
+void AtomDocument::extractInfos( xmlDocPtr doc )
 {
     AtomCmisObject::extractInfos( doc );
    

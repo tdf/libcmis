@@ -33,7 +33,7 @@
 #include "folder.hxx"
 #include "atom-object.hxx"
 
-class AtomFolder : public Folder, public AtomCmisObject
+class AtomFolder : public libcmis::Folder, public AtomCmisObject
 {
     private:
         std::string m_path;
@@ -45,7 +45,7 @@ class AtomFolder : public Folder, public AtomCmisObject
         ~AtomFolder( );
 
         // virtual pure methods from Folder
-        virtual std::vector< CmisObjectPtr > getChildren( );
+        virtual std::vector< libcmis::CmisObjectPtr > getChildren( );
         virtual std::string getPath( );
         
         virtual std::string toString( );

@@ -33,14 +33,19 @@
 
 #include "cmis-object.hxx"
 
-/** Class representing a CMIS folder.
-  */
-class Folder : public virtual CmisObject
+namespace libcmis
 {
-    public:
-        virtual std::vector< CmisObjectPtr > getChildren( ) = 0;
-        virtual std::string getPath( ) = 0;
-};
-typedef ::boost::shared_ptr< Folder > FolderPtr;
+
+    /** Class representing a CMIS folder.
+      */
+    class Folder : public virtual CmisObject
+    {
+        public:
+            virtual std::vector< CmisObjectPtr > getChildren( ) = 0;
+            virtual std::string getPath( ) = 0;
+    };
+    typedef ::boost::shared_ptr< Folder > FolderPtr;
+
+}
 
 #endif

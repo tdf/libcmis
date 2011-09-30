@@ -25,37 +25,37 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _ATOM_CONTENT_HXX_
-#define _ATOM_CONTENT_HXX_
+#ifndef _DOCUMENT_HXX_
+#define _DOCUMENT_HXX_
 
 #include <string>
 
-#include "content.hxx"
-#include "atom-object.hxx"
+#include "cmis-object.hxx"
 
-class AtomContent : public Content, public AtomCmisObject
+namespace libcmis
 {
-    private:
-        std::string m_contentUrl;
-        std::string m_contentType;
-        std::string m_contentFilename;
-        long m_contentLength;
+    /** Interface for a CMIS Document object.
+      */
+    class Document : public virtual CmisObject
+    {
+        public:
+            /** Get the content data using a callback with the same parameters than fwrite.
+                The callback may be called several times.
+              */
+            virtual void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData ) = 0;
 
-    public:
-        AtomContent( AtomPubSession* session, std::string url );
-        AtomContent( AtomPubSession* session, xmlNodePtr entryNd );
-        ~AtomContent( );
+            /** Get the content mime type.
+              */
+            virtual std::string getContentType( ) = 0;
+            
+            /** Get the content stream filename.
+              */
+            virtual std::string getContentFilename( ) = 0;
 
-        // Override content methods
-        virtual void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData );
-        virtual std::string getContentType( ) { return m_contentType; }
-        virtual std::string getContentFilename( ) { return m_contentFilename; }
-        virtual long getContentLength( ){ return m_contentLength; }
-        
-        virtual std::string toString( );
-    
-    protected:
-        virtual void extractInfos( xmlDocPtr doc );
-};
+            /** Get the content length in bytes.
+              */
+            virtual long getContentLength( ) = 0;
+    };
+}
 
 #endif

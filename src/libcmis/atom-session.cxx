@@ -31,8 +31,8 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include "atom-document.hxx"
 #include "atom-folder.hxx"
-#include "atom-content.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 
@@ -193,14 +193,14 @@ string AtomPubSession::getUriTemplate( UriTemplate::Type type )
     return m_aUriTemplates[ type ];
 }
 
-FolderPtr AtomPubSession::getRootFolder()
+libcmis::FolderPtr AtomPubSession::getRootFolder()
 {
     return getFolder( m_sRootId );
 }
 
-CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
+libcmis::CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 {
-    CmisObjectPtr cmisObject;
+    libcmis::CmisObjectPtr cmisObject;
 
     if ( NULL != doc )
     {
@@ -217,12 +217,12 @@ CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
                 xmlNodePtr node = pXPathObj->nodesetval->nodeTab[0];
                 if ( !AtomFolder::getChildrenUrl( doc ).empty() )
                 {
-                    CmisObjectPtr folder( new AtomFolder( this, node ) );
+                    libcmis::CmisObjectPtr folder( new AtomFolder( this, node ) );
                     cmisObject.swap( folder );
                 }
                 else
                 {
-                    CmisObjectPtr content( new AtomContent( this, node ) );
+                    libcmis::CmisObjectPtr content( new AtomDocument( this, node ) );
                     cmisObject.swap( content );
                 }
             }
@@ -234,7 +234,7 @@ CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
     return cmisObject;
 }
 
-CmisObjectPtr AtomPubSession::getObject( string id )
+libcmis::CmisObjectPtr AtomPubSession::getObject( string id )
 {
     string pattern = getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
@@ -243,7 +243,7 @@ CmisObjectPtr AtomPubSession::getObject( string id )
 
     string buf = atom::httpGetRequest( url );
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
-    CmisObjectPtr cmisObject = createObjectFromEntryDoc( doc );
+    libcmis::CmisObjectPtr cmisObject = createObjectFromEntryDoc( doc );
     xmlFreeDoc( doc );
 
     return cmisObject;
@@ -372,9 +372,9 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
     }
 }
 
-FolderPtr AtomPubSession::getFolder( string id )
+libcmis::FolderPtr AtomPubSession::getFolder( string id )
 {
-    CmisObjectPtr object = getObject( id );
-    FolderPtr folder = boost::dynamic_pointer_cast< Folder >( object );
+    libcmis::CmisObjectPtr object = getObject( id );
+    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
 }

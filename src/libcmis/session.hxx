@@ -31,17 +31,20 @@
 #include "cmis-object.hxx"
 #include "folder.hxx"
 
-class Session
+namespace libcmis
 {
-    public:
+    class Session
+    {
+        public:
 
-        /** Get the Root folder of the repository
-          */
-        virtual FolderPtr getRootFolder() = 0;
-        
-        /** Get a CMIS object from its ID.
-          */
-        virtual CmisObjectPtr getObject( std::string id ) = 0;
-};
+            /** Get the Root folder of the repository
+              */
+            virtual FolderPtr getRootFolder() = 0;
+            
+            /** Get a CMIS object from its ID.
+              */
+            virtual CmisObjectPtr getObject( std::string id ) = 0;
+    };
+}
 
 #endif

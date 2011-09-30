@@ -32,19 +32,25 @@
 
 #include <boost/shared_ptr.hpp>
 
-/** Class representing any CMIS object.
-  */
-class CmisObject
+namespace libcmis
 {
-    public:
-        virtual std::string getId( ) = 0;
-        virtual std::string getName( ) = 0;
+    /** Class representing any CMIS object.
+      */
+    class CmisObject
+    {
+        public:
+            virtual std::string getId( ) = 0;
+            virtual std::string getName( ) = 0;
 
-        /** Dump the object as a string for debugging or display purpose.
-          */
-        virtual std::string toString( ) = 0;
-};
+            virtual std::string getBaseType( ) = 0;
+            virtual std::string getType( ) = 0;
 
-typedef ::boost::shared_ptr< CmisObject > CmisObjectPtr;
+            /** Dump the object as a string for debugging or display purpose.
+              */
+            virtual std::string toString( ) = 0;
+    };
+
+    typedef ::boost::shared_ptr< CmisObject > CmisObjectPtr;
+}
 
 #endif

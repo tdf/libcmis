@@ -60,7 +60,7 @@ struct UriTemplate {
     static std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 };
 
-class AtomPubSession : public Session
+class AtomPubSession : public libcmis::Session
 {
     private:
         std::string m_sAtomPubUrl;
@@ -87,15 +87,15 @@ class AtomPubSession : public Session
 
         // Utility methods
 
-        FolderPtr getFolder( std::string id );
+        libcmis::FolderPtr getFolder( std::string id );
 
-        CmisObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+        libcmis::CmisObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         // Override session methods
 
-        virtual FolderPtr getRootFolder();
+        virtual libcmis::FolderPtr getRootFolder();
 
-        virtual CmisObjectPtr getObject( std::string id );
+        virtual libcmis::CmisObjectPtr getObject( std::string id );
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );

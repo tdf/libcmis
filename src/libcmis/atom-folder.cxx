@@ -27,7 +27,6 @@
  */
 #include <sstream>
 
-#include "atom-content.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
@@ -70,9 +69,9 @@ AtomFolder::~AtomFolder( )
 {
 }
 
-vector< CmisObjectPtr > AtomFolder::getChildren( )
+vector< libcmis::CmisObjectPtr > AtomFolder::getChildren( )
 {
-    vector< CmisObjectPtr > children;
+    vector< libcmis::CmisObjectPtr > children;
     
     string buf = atom::httpGetRequest( m_childrenUrl );
 
@@ -93,7 +92,7 @@ vector< CmisObjectPtr > AtomFolder::getChildren( )
                 {
                     xmlNodePtr node = pXPathObj->nodesetval->nodeTab[i];
                     xmlDocPtr entryDoc = atom::wrapInDoc( node );
-                    CmisObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
+                    libcmis::CmisObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
 
                     if ( cmisObject.get() )
                         children.push_back( cmisObject );
@@ -129,11 +128,11 @@ string AtomFolder::toString( )
     buf << "Path: " << getPath() << endl;
     buf << "Children [Name (Id)]:" << endl;
 
-    vector< CmisObjectPtr > children = getChildren( );
-    for ( vector< CmisObjectPtr >::iterator it = children.begin( );
+    vector< libcmis::CmisObjectPtr > children = getChildren( );
+    for ( vector< libcmis::CmisObjectPtr >::iterator it = children.begin( );
             it != children.end(); it++ )
     {
-        CmisObjectPtr child = *it;
+        libcmis::CmisObjectPtr child = *it;
         buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;
     }
 

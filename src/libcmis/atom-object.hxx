@@ -34,7 +34,7 @@
 
 class AtomPubSession;
 
-class AtomCmisObject : public virtual CmisObject
+class AtomCmisObject : public virtual libcmis::CmisObject
 {
     private:
         AtomPubSession* m_session;
@@ -43,6 +43,8 @@ class AtomCmisObject : public virtual CmisObject
 
         std::string m_id;
         std::string m_name;
+        std::string m_baseType;
+        std::string m_type;
 
     public:
         AtomCmisObject( AtomPubSession* session, std::string url );
@@ -51,6 +53,9 @@ class AtomCmisObject : public virtual CmisObject
         // Overridden methods from CmisObject
         virtual std::string getId( ); 
         virtual std::string getName( );
+        
+        virtual std::string getBaseType( );
+        virtual std::string getType( );
 
         virtual std::string toString( );
 

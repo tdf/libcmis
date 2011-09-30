@@ -3,7 +3,7 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-#include "atom-content.hxx"
+#include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
 
@@ -16,13 +16,13 @@
 #define TEST_FOLDER_NAME string( "My_Folder-0-0" )
 #define TEST_FOLDER_PATH string( "/My_Folder-0-0" )
 
-#define TEST_CONTENT_ID string( "116" )
-#define TEST_CONTENT_NAME string( "My_Document-1-2" )
-#define TEST_CONTENT_TYPE string( "text/plain" )
+#define TEST_DOCUMENT_ID string( "116" )
+#define TEST_DOCUMENT_NAME string( "My_Document-1-2" )
+#define TEST_DOCUMENT_TYPE string( "text/plain" )
 
 #define TEST_CHILDREN_FOLDER_COUNT 2
-#define TEST_CHILDREN_CONTENT_COUNT 3
-#define TEST_CHILDREN_COUNT vector<CmisObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_CONTENT_COUNT )
+#define TEST_CHILDREN_DOCUMENT_COUNT 3
+#define TEST_CHILDREN_COUNT vector<libcmis::CmisObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
 using namespace std;
 
@@ -33,14 +33,14 @@ class AtomTest : public CppUnit::TestFixture
         void getRepositoriesTest( );
         void sessionCreationTest( );
         void getFolderCreationFromUrlTest( );
-        void getContentCreationFromUrlTest( );
+        void getDocumentCreationFromUrlTest( );
         void getChildrenTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getFolderCreationFromUrlTest );
-        CPPUNIT_TEST( getContentCreationFromUrlTest );
+        CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -90,7 +90,7 @@ void AtomTest::sessionCreationTest( )
 void AtomTest::getFolderCreationFromUrlTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
-    FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
+    libcmis::FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
 
     AtomFolder* atomFolder = dynamic_cast< AtomFolder* >( folder.get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Created folder should be an instance of AtomFolder",
@@ -101,44 +101,44 @@ void AtomTest::getFolderCreationFromUrlTest( )
     CPPUNIT_ASSERT_MESSAGE( "Children URL is missing", !atomFolder->getChildrenUrl( ).empty( ) );
 }
 
-void AtomTest::getContentCreationFromUrlTest( )
+void AtomTest::getDocumentCreationFromUrlTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
-    CmisObjectPtr object = session.getObject( TEST_CONTENT_ID );
+    libcmis::CmisObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
 
-    AtomContent* atomContent = dynamic_cast< AtomContent* >( object.get( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of AtomContent",
-            NULL != atomContent );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content ID", TEST_CONTENT_ID, atomContent->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content name", TEST_CONTENT_NAME, atomContent->getName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content type", TEST_CONTENT_TYPE, atomContent->getContentType( ) );
+    AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of AtomDocument",
+            NULL != atomDocument );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", TEST_DOCUMENT_ID, atomDocument->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", TEST_DOCUMENT_NAME, atomDocument->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", TEST_DOCUMENT_TYPE, atomDocument->getContentType( ) );
 
     // Don't test the exact value... the content is changing at each restart of the InMemory server
-    CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 0 < atomContent->getContentLength( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 0 < atomDocument->getContentLength( ) );
 }
 
 void AtomTest::getChildrenTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
-    FolderPtr folder = session.getRootFolder( );
+    libcmis::FolderPtr folder = session.getRootFolder( );
 
-    vector< CmisObjectPtr > children = folder->getChildren( );
+    vector< libcmis::CmisObjectPtr > children = folder->getChildren( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", TEST_CHILDREN_COUNT, children.size() );
 
     int folderCount = 0;
-    int contentCount = 0;
-    for ( vector< CmisObjectPtr >::iterator it = children.begin( );
+    int documentCount = 0;
+    for ( vector< libcmis::CmisObjectPtr >::iterator it = children.begin( );
           it != children.end( ); it++ )
     {
         if ( NULL != dynamic_cast< AtomFolder* >( it->get() ) )
             ++folderCount;
-        else if ( NULL != dynamic_cast< AtomContent* >( it->get() ) )
-            ++contentCount;
+        else if ( NULL != dynamic_cast< AtomDocument* >( it->get() ) )
+            ++documentCount;
     }
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children",
             TEST_CHILDREN_FOLDER_COUNT, folderCount );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of content children",
-            TEST_CHILDREN_CONTENT_COUNT, contentCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children",
+            TEST_CHILDREN_DOCUMENT_COUNT, documentCount );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
