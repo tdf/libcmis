@@ -61,17 +61,21 @@ class CmisClient
         Session* getSession( ) throw ( CommandException );
 
         void execute( ) throw ( exception );
+
+        void printHelp( );
+
+        static options_description getOptionsDescription( );
 };
 
 Session* CmisClient::getSession( ) throw ( CommandException )
 {
     map< int, string > params;
 
-    if ( m_vm.count( "atom-url" ) == 0 )
-        throw CommandException( "Missing URL" );
+    if ( m_vm.count( "url" ) == 0 )
+        throw CommandException( "Missing Atom binding URL" );
     
-    string atomUrl = m_vm["atom-url"].as<string>();
-    params[ATOMPUB_URL] = atomUrl;
+    string url = m_vm["url"].as<string>();
+    params[ATOMPUB_URL] = url;
     list< string > ids = SessionFactory::getRepositories( params );
 
     // The repository ID is needed to initiate a session
@@ -88,17 +92,23 @@ Session* CmisClient::getSession( ) throw ( CommandException )
 
 void CmisClient::execute( ) throw ( exception )
 {
+    if ( ( m_vm.count( "help" ) > 0 ) || m_vm.count( "command" ) != 1 )
+    {
+        printHelp();
+        return; 
+    }
+
     if ( m_vm.count( "command" ) == 1 )
     {
         string command = m_vm["command"].as<string>();
         if ( "list-repos" == command )
         {
             map< int, string > params;
-            if ( m_vm.count( "atom-url" ) == 0 )
+            if ( m_vm.count( "url" ) == 0 )
                 throw CommandException( "Missing URL" );
-            string atomUrl = m_vm["atom-url"].as<string>();
+            string url = m_vm["url"].as<string>();
 
-            params[ATOMPUB_URL] = atomUrl;
+            params[ATOMPUB_URL] = url;
             list< string > ids = SessionFactory::getRepositories( params );
         
             cout << "Repositories: ";
@@ -146,44 +156,63 @@ void CmisClient::execute( ) throw ( exception )
 
             delete session;
         }
+        else if ( "help" == command )
+        {
+            printHelp();
+        }
 
         // TODO Add some more useful commands here
     }
 }
 
-int main ( int argc, char* argv[] )
+options_description CmisClient::getOptionsDescription( )
 {
     options_description desc( "Allowed options" );
     desc.add_options( )
         ( "help", "Produce help message and exists" )
-        ( "atom-url,a", value< string >(), "URL of the AtomPub binding of the server" )
+        ( "url,u", value< string >(), "URL of the binding of the server" )
         ( "repository,r", value< string >(), "Name of the repository to use" )
-        ( "command", value< string >(), "Command among the following values:\n"
-                                        "    list-repos  :\n"
-                                        "           list the server repositories\n"
-                                        "    show-by-id  :\n"
-                                        "           show the nodes from their ids.\n"
-                                        "           A list of one or more node Ids\n"
-                                        "           is required as arguments.\n"
-                                        "    get-content :\n"
-                                        "           get the content of the node with\n"
-                                        "           the given Id.\n" )
+    ;
+
+    return desc;
+}
+
+void CmisClient::printHelp( )
+{
+    cerr << "CmisClient [options] [command] arguments" << endl;
+
+    cerr << endl << "Commands" << endl;
+    cerr << "   list-repos\n"
+            "           lists the repositories available on the server" << endl;
+    cerr << "   show-by-id <Node Id 1> [... <Node Id N>]\n"
+            "           Dump the nodes informations for all the ids." << endl;
+    cerr << "   get-content <Node Id>\n"
+            "           Saves the stream of the content node in the\n"
+            "           current folder. Any existing file is overwritten." << endl;
+    cerr << "   help\n"
+            "           Print this help message and exits (like --help option)." << endl;
+
+    cerr << endl << getOptionsDescription() << endl;
+}
+
+int main ( int argc, char* argv[] )
+{
+    options_description hidden( "Hidden options" );
+    hidden.add_options( )
+        ( "command", value< string >(), "Command" )
         ( "args", value< vector< string > >(), "Arguments for the command" )
     ;
+
+    options_description allOptions = CmisClient::getOptionsDescription( );
+    allOptions.add( hidden );
 
     positional_options_description pd;
     pd.add( "command", 1 );
     pd.add( "args", -1 );
 
     variables_map vm;
-    store( command_line_parser( argc, argv ).options( desc ).positional( pd ).run( ), vm );
+    store( command_line_parser( argc, argv ).options( allOptions ).positional( pd ).run( ), vm );
     notify( vm );
-
-    if ( vm.count( "help" ) > 0 )
-    {
-        cerr << desc << endl;
-        return 0; 
-    }
 
     CmisClient client( vm );
     try
@@ -195,7 +224,7 @@ int main ( int argc, char* argv[] )
         cerr << "-------------------------" << endl;
         cerr << "ERROR: " << e.what() << endl;
         cerr << "-------------------------" << endl;
-        cerr << desc << endl;
+        client.printHelp();
     }
 
     return 0;
