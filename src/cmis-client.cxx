@@ -26,6 +26,9 @@
  * instead of those above.
  */
 
+#include <stdio.h>
+
+#include <exception>
 #include <iostream>
 #include <map>
 #include <string>
@@ -33,46 +36,68 @@
 #include <boost/program_options.hpp>
 
 #include <libcmis/session-factory.hxx>
+#include <libcmis/content.hxx>
 
 using namespace std;
 using namespace ::boost::program_options;
 
-int main ( int argc, char* argv[] )
+class CommandException : public exception
 {
-    options_description desc( "Allowed options" );
-    desc.add_options( )
-        ( "help", "Produce help message and exists" )
-        ( "atom-url,a", value< string >(), "URL of the AtomPub binding of the server" )
-        ( "repository,r", value< string >(), "Name of the repository to use" )
-        ( "command", value< string >(), "Command among the following values:\n"
-                                        "    list-repos : list the server repositories\n"
-                                        "    show-by-id : show the nodes from their ids.\n"
-                                        "                 A list of one or more node Ids\n"
-                                        "                 is required as arguments." )
-        ( "args", value< vector< string > >(), "Arguments for the command" )
-    ;
+    private:
+        const char* m_msg;
 
-    positional_options_description pd;
-    pd.add( "command", 1 );
-    pd.add( "args", -1 );
+    public:
+        CommandException( const char* msg ) : m_msg( msg ) { }
+        virtual const char* what() const throw() { return m_msg; }
+};
 
-    variables_map vm;
-    store( command_line_parser( argc, argv ).options( desc ).positional( pd ).run( ), vm );
-    notify( vm );
+class CmisClient
+{
+    private:
+        variables_map& m_vm;
+    public:
+        CmisClient( variables_map& vm ) : m_vm( vm ) { }
 
-    if ( vm.count( "atom-url" ) == 0 )
+        Session* getSession( ) throw ( CommandException );
+
+        void execute( ) throw ( exception );
+};
+
+Session* CmisClient::getSession( ) throw ( CommandException )
+{
+    map< int, string > params;
+
+    if ( m_vm.count( "atom-url" ) == 0 )
+        throw CommandException( "Missing URL" );
+    
+    string atomUrl = m_vm["atom-url"].as<string>();
+    params[ATOMPUB_URL] = atomUrl;
+    list< string > ids = SessionFactory::getRepositories( params );
+
+    // The repository ID is needed to initiate a session
+    if ( m_vm.count( "repository" ) != 1 )
+        throw CommandException( "Missing repository ID" );
+
+    // Get the ids of the objects to fetch
+    if ( m_vm.count( "args" ) == 0 )
+        throw CommandException( "Please provide the node ids to show as command args" );
+
+    params[REPOSITORY_ID] = m_vm["repository"].as< string >();
+    return SessionFactory::createSession( params );
+}
+
+void CmisClient::execute( ) throw ( exception )
+{
+    if ( m_vm.count( "command" ) == 1 )
     {
-        cout << desc << endl;
-        return 1;
-    }
-    string atomUrl = vm["atom-url"].as<string>();
-
-    if ( vm.count( "command" ) == 1 )
-    {
-        string command = vm["command"].as<string>();
+        string command = m_vm["command"].as<string>();
         if ( "list-repos" == command )
         {
             map< int, string > params;
+            if ( m_vm.count( "atom-url" ) == 0 )
+                throw CommandException( "Missing URL" );
+            string atomUrl = m_vm["atom-url"].as<string>();
+
             params[ATOMPUB_URL] = atomUrl;
             list< string > ids = SessionFactory::getRepositories( params );
         
@@ -87,30 +112,10 @@ int main ( int argc, char* argv[] )
         }
         else if ( "show-by-id" == command )
         {
-            map< int, string > params;
-            params[ATOMPUB_URL] = atomUrl;
-            list< string > ids = SessionFactory::getRepositories( params );
+            Session* session = getSession( );
 
-            // The repository ID is needed to initiate a session
-            if ( vm.count( "repository" ) != 1 )
-            {
-                cout << "Missing repository ID" << endl;
-                cout << desc << endl;
-                return 1;
-            }
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
-            // Get the ids of the objects to fetch
-            if ( vm.count( "args" ) == 0 )
-            {
-                cout << "Please provide the node ids to show as command args" << endl;
-                cout << desc << endl;
-                return 1;
-            }
-
-            vector< string > objIds = vm["args"].as< vector< string > >( );
-
-            params[REPOSITORY_ID] = vm["repository"].as< string >();
-            Session* session = SessionFactory::createSession( params );
 
             for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
             {
@@ -121,8 +126,76 @@ int main ( int argc, char* argv[] )
 
             delete session;
         }
+        else if ( "get-content" == command )
+        {
+            Session* session = getSession( );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+            if ( objIds.size() == 0 )
+                throw CommandException( "Please provide a content object Id" );
+
+            CmisObjectPtr cmisObj = session->getObject( objIds.front() );
+            Content* content = dynamic_cast< Content* >( cmisObj.get() );
+            if ( NULL != content )
+            {
+                // TODO Handle name clashes
+                FILE* fd = fopen( content->getContentFilename().c_str(), "w" );
+                content->getContent( (size_t (*)( void*, size_t, size_t, void* ) )fwrite, fd );
+                fclose( fd );
+            }
+
+            delete session;
+        }
 
         // TODO Add some more useful commands here
+    }
+}
+
+int main ( int argc, char* argv[] )
+{
+    options_description desc( "Allowed options" );
+    desc.add_options( )
+        ( "help", "Produce help message and exists" )
+        ( "atom-url,a", value< string >(), "URL of the AtomPub binding of the server" )
+        ( "repository,r", value< string >(), "Name of the repository to use" )
+        ( "command", value< string >(), "Command among the following values:\n"
+                                        "    list-repos  :\n"
+                                        "           list the server repositories\n"
+                                        "    show-by-id  :\n"
+                                        "           show the nodes from their ids.\n"
+                                        "           A list of one or more node Ids\n"
+                                        "           is required as arguments.\n"
+                                        "    get-content :\n"
+                                        "           get the content of the node with\n"
+                                        "           the given Id.\n" )
+        ( "args", value< vector< string > >(), "Arguments for the command" )
+    ;
+
+    positional_options_description pd;
+    pd.add( "command", 1 );
+    pd.add( "args", -1 );
+
+    variables_map vm;
+    store( command_line_parser( argc, argv ).options( desc ).positional( pd ).run( ), vm );
+    notify( vm );
+
+    if ( vm.count( "help" ) > 0 )
+    {
+        cerr << desc << endl;
+        return 0; 
+    }
+
+    CmisClient client( vm );
+    try
+    {
+        client.execute( );
+    }
+    catch ( CommandException e )
+    {
+        cerr << "-------------------------" << endl;
+        cerr << "ERROR: " << e.what() << endl;
+        cerr << "-------------------------" << endl;
+        cerr << desc << endl;
     }
 
     return 0;
