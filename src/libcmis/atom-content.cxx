@@ -26,6 +26,7 @@
  * instead of those above.
  */
 #include <stdlib.h>
+#include <sstream>
 
 #include <curl/curl.h>
 
@@ -38,7 +39,9 @@ using namespace std;
 AtomContent::AtomContent( AtomPubSession* session, string url ) :
     AtomCmisObject( session, url ),
     m_contentUrl( ),
-    m_contentType( )
+    m_contentType( ),
+    m_contentFilename( ),
+    m_contentLength( 0 )
 {
     string buf  = atom::httpGetRequest( getInfosUrl() );
     
@@ -55,7 +58,9 @@ AtomContent::AtomContent( AtomPubSession* session, string url ) :
 AtomContent::AtomContent( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomCmisObject( session, string() ),
     m_contentUrl( ),
-    m_contentType( )
+    m_contentType( ),
+    m_contentFilename( ),
+    m_contentLength( 0 )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
     extractInfos( doc );
@@ -80,6 +85,19 @@ void AtomContent::getContent( size_t (*pCallback)( void *, size_t, size_t, void*
     curl_easy_perform( pHandle );
 
     curl_easy_cleanup( pHandle );
+}
+
+string AtomContent::toString( )
+{
+    stringstream buf;
+
+    buf << "Content Object:" << endl << endl;
+    buf << AtomCmisObject::toString();
+    buf << "Content Type: " << getContentType( ) << endl;
+    buf << "Content Length: " << getContentLength( ) << endl;
+    buf << "Content Filename: " << getContentFilename( ) << endl;
+
+    return buf.str();
 }
 
 void AtomContent::extractInfos( xmlDocPtr doc )
@@ -107,11 +125,14 @@ void AtomContent::extractInfos( xmlDocPtr doc )
                 m_contentType = string( ( char* ) type );
                 xmlFree( type );
 
+                // Get the content filename
+                string filenameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:contentStreamFileName']/cmis:value/text()" );
+                m_contentFilename = atom::getXPathValue( pXPathCtx, filenameReq );
+
                 // Get the content length
                 string lengthReq( "//cmis:propertyInteger[@propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
                 string bytes = atom::getXPathValue( pXPathCtx, lengthReq );
                 m_contentLength = atol( bytes.c_str() );
-
             }
             xmlXPathFreeObject( pXPathObj );
         }

@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include <sstream>
+
 #include "atom-object.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
@@ -54,6 +57,16 @@ string AtomCmisObject::getId( )
 string AtomCmisObject::getName( )
 {
     return m_name;
+}
+
+string AtomCmisObject::toString( )
+{
+    stringstream buf;
+
+    buf << "Id: " << getId() << endl;
+    buf << "Name: " << getName() << endl;
+
+    return buf.str();
 }
 
 void AtomCmisObject::extractInfos( xmlDocPtr doc )

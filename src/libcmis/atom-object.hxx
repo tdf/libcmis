@@ -52,6 +52,8 @@ class AtomCmisObject : public virtual CmisObject
         virtual std::string getId( ); 
         virtual std::string getName( );
 
+        virtual std::string toString( );
+
     protected:
 
         std::string& getInfosUrl( ) { return m_infosUrl; }

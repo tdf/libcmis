@@ -45,6 +45,10 @@ class Content : public virtual CmisObject
         /** Get the content mime type.
           */
         virtual std::string getContentType( ) = 0;
+        
+        /** Get the content stream filename.
+          */
+        virtual std::string getContentFilename( ) = 0;
 
         /** Get the content length in bytes.
           */

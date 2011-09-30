@@ -42,10 +42,13 @@ int main ( int argc, char* argv[] )
     options_description desc( "Allowed options" );
     desc.add_options( )
         ( "help", "Produce help message and exists" )
-        ( "atom-url", value< string >(), "URL of the AtomPub binding of the server" )
-        ( "repository", value< string >(), "Name of the repository to use" )
+        ( "atom-url,a", value< string >(), "URL of the AtomPub binding of the server" )
+        ( "repository,r", value< string >(), "Name of the repository to use" )
         ( "command", value< string >(), "Command among the following values:\n"
-                                        "  list-repos\n" )
+                                        "    list-repos : list the server repositories\n"
+                                        "    show-by-id : show the nodes from their ids.\n"
+                                        "                 A list of one or more node Ids\n"
+                                        "                 is required as arguments." )
         ( "args", value< vector< string > >(), "Arguments for the command" )
     ;
 
@@ -59,7 +62,6 @@ int main ( int argc, char* argv[] )
 
     if ( vm.count( "atom-url" ) == 0 )
     {
-        // TODO Show the list of commands available
         cout << desc << endl;
         return 1;
     }
@@ -82,6 +84,42 @@ int main ( int argc, char* argv[] )
                 cout << *it;
             }
             cout << endl;
+        }
+        else if ( "show-by-id" == command )
+        {
+            map< int, string > params;
+            params[ATOMPUB_URL] = atomUrl;
+            list< string > ids = SessionFactory::getRepositories( params );
+
+            // The repository ID is needed to initiate a session
+            if ( vm.count( "repository" ) != 1 )
+            {
+                cout << "Missing repository ID" << endl;
+                cout << desc << endl;
+                return 1;
+            }
+
+            // Get the ids of the objects to fetch
+            if ( vm.count( "args" ) == 0 )
+            {
+                cout << "Please provide the node ids to show as command args" << endl;
+                cout << desc << endl;
+                return 1;
+            }
+
+            vector< string > objIds = vm["args"].as< vector< string > >( );
+
+            params[REPOSITORY_ID] = vm["repository"].as< string >();
+            Session* session = SessionFactory::createSession( params );
+
+            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
+            {
+                CmisObjectPtr cmisObj = session->getObject( *it );
+                cout << "-----------------------" << endl;
+                cout << cmisObj->toString() << endl;
+            }
+
+            delete session;
         }
 
         // TODO Add some more useful commands here

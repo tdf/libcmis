@@ -30,7 +30,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(DEPS_LIBS) \
 	$(BOOST_SMART_PTR)
 
-libcmisdir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis
+libcmisdir = $(includedir)/libcmis
 libcmis_HEADERS = $(libcmis_headers_public)
 
 check_PROGRAMS = test-atom

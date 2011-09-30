@@ -47,6 +47,8 @@ class AtomFolder : public Folder, public AtomCmisObject
         // virtual pure methods from Folder
         virtual std::vector< CmisObjectPtr > getChildren( );
         virtual std::string getPath( );
+        
+        virtual std::string toString( );
 
         // Methods provided for testing purpose
         std::string getChildrenUrl( ) { return m_childrenUrl; }

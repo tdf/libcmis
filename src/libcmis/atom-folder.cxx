@@ -25,6 +25,8 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#include <sstream>
+
 #include "atom-content.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
@@ -116,6 +118,26 @@ vector< CmisObjectPtr > AtomFolder::getChildren( )
 string AtomFolder::getPath( )
 {
     return m_path;
+}
+
+string AtomFolder::toString( )
+{
+    stringstream buf;
+
+    buf << "Folder Object:" << endl << endl;
+    buf << AtomCmisObject::toString();
+    buf << "Path: " << getPath() << endl;
+    buf << "Children [Name (Id)]:" << endl;
+
+    vector< CmisObjectPtr > children = getChildren( );
+    for ( vector< CmisObjectPtr >::iterator it = children.begin( );
+            it != children.end(); it++ )
+    {
+        CmisObjectPtr child = *it;
+        buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;
+    }
+
+    return buf.str();
 }
 
 void AtomFolder::extractInfos( xmlDocPtr doc )

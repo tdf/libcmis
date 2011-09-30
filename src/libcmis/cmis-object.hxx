@@ -39,6 +39,10 @@ class CmisObject
     public:
         virtual std::string getId( ) = 0;
         virtual std::string getName( ) = 0;
+
+        /** Dump the object as a string for debugging or display purpose.
+          */
+        virtual std::string toString( ) = 0;
 };
 
 typedef ::boost::shared_ptr< CmisObject > CmisObjectPtr;
