@@ -39,10 +39,18 @@ namespace libcmis
     class Document : public virtual CmisObject
     {
         public:
-            /** Get the content data using a callback with the same parameters than fwrite.
-                The callback may be called several times.
+            
+            /** Get the content stream or NULL is there is none.
+
+                @param path
+                    Save the stream to the given path. If the path
+                    is NULL, then use a temporary file.
+
+                @return
+                    An opened stream to the content, or NULL if
+                    something wrong happened during the download.
               */
-            virtual void getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData ) = 0;
+            virtual FILE* getContent( const char* path = NULL ) = 0;
 
             /** Get the content mime type.
               */

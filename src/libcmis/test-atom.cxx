@@ -35,6 +35,7 @@ class AtomTest : public CppUnit::TestFixture
         void getFolderCreationFromUrlTest( );
         void getDocumentCreationFromUrlTest( );
         void getChildrenTest( );
+        void getContentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -42,6 +43,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderCreationFromUrlTest );
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -139,6 +141,18 @@ void AtomTest::getChildrenTest( )
             TEST_CHILDREN_FOLDER_COUNT, folderCount );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children",
             TEST_CHILDREN_DOCUMENT_COUNT, documentCount );
+}
+
+void AtomTest::getContentTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    libcmis::CmisObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    FILE* fd = document->getContent( );
+    CPPUNIT_ASSERT_MESSAGE( "Temporary file with content should be returned", NULL != fd );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

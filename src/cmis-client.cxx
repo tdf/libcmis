@@ -149,9 +149,10 @@ void CmisClient::execute( ) throw ( exception )
             if ( NULL != document )
             {
                 // TODO Handle name clashes
-                FILE* fd = fopen( document->getContentFilename().c_str(), "w" );
-                document->getContent( (size_t (*)( void*, size_t, size_t, void* ) )fwrite, fd );
-                fclose( fd );
+                FILE* fd = document->getContent( document->getContentFilename().c_str() );
+
+                if ( fd )
+                    fclose( fd );
             }
 
             delete session;

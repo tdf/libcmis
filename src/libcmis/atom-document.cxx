@@ -71,20 +71,35 @@ AtomDocument::~AtomDocument( )
 {
 }
 
-void AtomDocument::getContent( size_t (*pCallback)( void *, size_t, size_t, void* ), void* userData )
+FILE* AtomDocument::getContent( const char* path )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* pHandle = curl_easy_init( );
 
-    // Grab something from the web
+    FILE* res = NULL;
+    if ( NULL == path )
+        res = tmpfile();
+    else
+        res = fopen( path, "w+b" );
+
     curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, pCallback );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, userData );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION,
+            (size_t (*)( void*, size_t, size_t, void* ) )fwrite );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, res );
 
     // Perform the query
-    curl_easy_perform( pHandle );
+    CURLcode err = curl_easy_perform( pHandle );
+    if ( CURLE_OK == err )
+        rewind( res );
+    else
+    {
+        fclose( res );
+        res = NULL;
+    }
 
     curl_easy_cleanup( pHandle );
+
+    return res;
 }
 
 string AtomDocument::toString( )
