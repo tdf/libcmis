@@ -9,6 +9,8 @@ libcmis_headers_public = \
 	session.hxx \
 	session-factory.hxx 
 
+AM_CXXFLAGS = $(DEPS_CFLAGS)
+
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
