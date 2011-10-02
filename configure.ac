@@ -15,18 +15,14 @@ AC_PREREQ([2.63])
 AC_INIT([libcmis], [libcmis_version])
 AM_INIT_AUTOMAKE
 
-AC_ARG_WITH(hash-container-compat,
-[
-  --with-hash-container-compat use std::hash_foo instead of boost::unordered_foo
-  ],
-,with_hash_container_compat=no)
+AC_ARG_ENABLE(client,
+    AC_HELP_STRING([--disable-client],[Compile only the library, not the client tool]),
+    enable_client=$enableval, enable_client=yes)
 
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
 
 AC_CONFIG_MACRO_DIR([m4])
-
-m4_pattern_allow([^BOOST_])
 
 for top_builddir in . .. ../.. $ac_auxdir $ac_auxdir/..; do
     test -f $top_builddir/configure && break
@@ -41,11 +37,15 @@ AC_PROG_LIBTOOL
 # TODO Check the minimum versions
 PKG_CHECK_MODULES(DEPS,
   [   libxml-2.0 >= 2.7
-      libcurl >= 7.21
   ]
 )
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
+
+# Check for curl
+LIBCURL_CHECK_CONFIG
+AC_SUBST(CURL_CFLAGS)
+AC_SUBST(LIBCURL)
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -56,8 +56,14 @@ AC_SUBST(CPPUNIT_LIBS)
 AC_CONFIG_MACRO_DIR([m4])
 
 m4_pattern_allow([^BOOST_])
+
 BOOST_SMART_PTR
 BOOST_PROGRAM_OPTIONS
+
+if test "x$boost_cv_lib_program_options" != "xyes"; then
+    enable_client="no";
+fi
+AM_CONDITIONAL(ENABLE_CLIENT, test "x$enable_client" = "xyes")
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h])
@@ -75,3 +81,11 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/libcmis/Makefile])
 AC_OUTPUT
+
+echo ""
+echo "libcmis $VERSION"
+echo ""
+echo "              Prefix: ${prefix}"
+echo "      Compiler flags: ${CPPFLAGS}"
+echo "              Client: ${enable_client}"
+echo ""

@@ -9,7 +9,7 @@ libcmis_headers_public = \
 	session.hxx \
 	session-factory.hxx 
 
-AM_CXXFLAGS = $(DEPS_CFLAGS)
+AM_CXXFLAGS = $(DEPS_CFLAGS) $(CURL_CFLAGS)
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -30,6 +30,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(DEPS_LIBS) \
+	$(LIBCURL) \
 	$(BOOST_SMART_PTR)
 
 libcmisdir = $(includedir)/libcmis
@@ -41,6 +42,7 @@ test_atom_SOURCES =	test-atom.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(DEPS_LIBS) \
+	$(LIBCURL) \
 	$(CPPUNIT_LIBS)
 
 TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
