@@ -20,6 +20,13 @@ AC_ARG_ENABLE(client,
 	enable_client=$enableval, enable_client=yes)
 AM_CONDITIONAL(ENABLE_CLIENT, test "x$enable_client" != "xno")
 
+AC_ARG_ENABLE([tests],
+	[AS_HELP_STRING([--disable-tests], [Don not build the unit tests])],
+	[enable_tests="$enableval"],
+	[enable_tests=yes]
+)
+AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" != "xno")
+
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
 	[enable_werror="$enableval"],
@@ -65,9 +72,11 @@ AC_SUBST([XML2_CFLAGS])
 AC_SUBST([XML2_LIBS]) 
 
 # Check for cppunit
-PKG_CHECK_MODULES(CPPUNIT, cppunit >= 1.12 )
-AC_SUBST(CPPUNIT_CFLAGS)
-AC_SUBST(CPPUNIT_LIBS)
+AS_IF([test "x$enable_tests" != "xno"], [
+	PKG_CHECK_MODULES(CPPUNIT, cppunit >= 1.12 )
+	AC_SUBST(CPPUNIT_CFLAGS)
+	AC_SUBST(CPPUNIT_LIBS)
+])
 
 # Check for boost
 m4_pattern_allow([^BOOST_])
@@ -101,6 +110,7 @@ AC_MSG_NOTICE([
 libcmis $VERSION:
               Prefix: ${prefix}
       Compiler flags: ${CXXFLAGS}
-              Client: ${enable_client}
+              client: ${enable_client}
               werror: ${enable_werror}
+               tests: ${enable_tests}
 ])

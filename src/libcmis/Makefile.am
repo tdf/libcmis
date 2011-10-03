@@ -34,6 +34,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 libcmisdir = $(includedir)/libcmis
 libcmis_HEADERS = $(libcmis_headers_public)
 
+if ENABLE_TESTS
 check_PROGRAMS = test-atom
 
 test_atom_SOURCES =	test-atom.cxx
@@ -45,5 +46,4 @@ test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 
 TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
 TESTS = test-atom
-
-EXTRA_DIST = 
+endif
