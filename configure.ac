@@ -18,6 +18,7 @@ AM_INIT_AUTOMAKE
 AC_ARG_ENABLE(client,
     AC_HELP_STRING([--disable-client],[Compile only the library, not the client tool]),
     enable_client=$enableval, enable_client=yes)
+AM_CONDITIONAL(ENABLE_CLIENT, test "x$enable_client" = "xyes")
 
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
@@ -57,12 +58,10 @@ AC_SUBST(CPPUNIT_LIBS)
 m4_pattern_allow([^BOOST_])
 
 BOOST_SMART_PTR
-BOOST_PROGRAM_OPTIONS
 
-if test "x$boost_cv_lib_program_options" != "xyes"; then
-    enable_client="no";
+if test "x$enable_client" = "yes"; then
+    BOOST_PROGRAM_OPTIONS
 fi
-AM_CONDITIONAL(ENABLE_CLIENT, test "x$enable_client" = "xyes")
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h])
