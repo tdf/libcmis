@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: libcmis
 Description: CMIS protocol client library
 Version: @VERSION@
-Libs: -L${libdir} -llibcmis-@LIBCMIS_API_VERSION@
-Cflags: -I${includedir}/libcmis-@LIBCMIS_API_VERSION@
+Libs: -L${libdir} -lcmis-@LIBCMIS_API_VERSION@
+Cflags: -I${includedir}/libcmis
 
