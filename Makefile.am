@@ -9,7 +9,11 @@ pkgconfig_DATA = $(pcfiles)
 pkgconfigdir = $(libdir)/pkgconfig
 
 EXTRA_DIST = \
-	libcmis.pc.in
+	libcmis.pc.in \
+	run-test.sh \
+    COPYING.MPL \
+    COPYING.GPL \
+    COPYING.LGPL
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \
