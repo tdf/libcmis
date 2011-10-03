@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(CURL_CFLAGS)
+INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS)
 
 libcmis_headers_public = \
     document.hxx \

@@ -1,7 +1,7 @@
 SUBDIRS = libcmis .
 
 if ENABLE_CLIENT
-INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS)
+INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 
 bin_PROGRAMS = cmis-client
 

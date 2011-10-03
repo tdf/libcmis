@@ -59,9 +59,10 @@ m4_pattern_allow([^BOOST_])
 
 BOOST_SMART_PTR
 
-if test "x$enable_client" = "yes"; then
+if test "x$enable_client" = "xyes"; then
     BOOST_PROGRAM_OPTIONS
 fi
+AC_SUBST(BOOST_CPPFLAGS)
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h])
