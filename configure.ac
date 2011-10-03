@@ -33,28 +33,27 @@ done
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
-# Checks for libraries.
-# TODO Check the minimum versions
-PKG_CHECK_MODULES(DEPS,
-  [   libxml-2.0 >= 2.7
-  ]
-)
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
-
 # Check for curl
 LIBCURL_CHECK_CONFIG
 AC_SUBST(CURL_CFLAGS)
 AC_SUBST(LIBCURL)
 
-AC_CONFIG_MACRO_DIR([m4])
+# Check for lixml2
+AC_PATH_PROGS([TOOL_XML2_CONFIG], [xml2-config])
+AS_IF([test -n "$TOOL_XML2_CONFIG"],
+      [XML2_CFLAGS=`$TOOL_XML2_CONFIG --cflags`
+       XML2_LIBS=`$TOOL_XML2_CONFIG --libs`],
+      [AC_MSG_ERROR([missing program 'xml2-config'; is 'libxml2' or
+'libxml2-devel' installed?])])
+AC_SUBST([XML2_CFLAGS])
+AC_SUBST([XML2_LIBS]) 
 
+# Check for cppunit
 PKG_CHECK_MODULES(CPPUNIT, cppunit >= 1.12 )
 AC_SUBST(CPPUNIT_CFLAGS)
 AC_SUBST(CPPUNIT_LIBS)
 
-AC_CONFIG_MACRO_DIR([m4])
-
+# Check for boost
 m4_pattern_allow([^BOOST_])
 
 BOOST_SMART_PTR

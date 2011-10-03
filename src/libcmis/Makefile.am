@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-INCLUDES = -I$(top_srcdir)/include $(DEPS_CFLAGS) $(CURL_CFLAGS)
+INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(CURL_CFLAGS)
 
 libcmis_headers_public = \
     document.hxx \
@@ -8,8 +8,6 @@ libcmis_headers_public = \
 	cmis-object.hxx \
 	session.hxx \
 	session-factory.hxx 
-
-AM_CXXFLAGS = $(DEPS_CFLAGS) $(CURL_CFLAGS)
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -29,7 +27,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
-	$(DEPS_LIBS) \
+	$(XML2_LIBS) \
 	$(LIBCURL) \
 	$(BOOST_SMART_PTR)
 
@@ -41,7 +39,7 @@ check_PROGRAMS = test-atom
 test_atom_SOURCES =	test-atom.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
-	$(DEPS_LIBS) \
+	$(XML2_LIBS) \
 	$(LIBCURL) \
 	$(CPPUNIT_LIBS)
 
