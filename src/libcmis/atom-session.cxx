@@ -38,18 +38,6 @@
 
 using namespace std;
 
-namespace
-{
-    size_t lcl_getXmlWorkspaces( void* pBuffer, size_t size, size_t nmemb, void* pUserData )
-    {
-        size_t readSize = size;
-
-        list< string >& ids = *( static_cast< list< string >* >( pUserData ) );
-
-        return readSize;
-    }
-}
-    
 string UriTemplate::createUrl( const string& pattern, map< string, string > variables )
 {
     string url( pattern );
