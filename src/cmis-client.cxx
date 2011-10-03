@@ -184,14 +184,14 @@ void CmisClient::printHelp( )
 
     cerr << endl << "Commands" << endl;
     cerr << "   list-repos\n"
-            "           lists the repositories available on the server" << endl;
+            "           Lists the repositories available on the server" << endl;
     cerr << "   show-by-id <Node Id 1> [... <Node Id N>]\n"
-            "           Dump the nodes informations for all the ids." << endl;
+            "           Dumps the nodes informations for all the ids." << endl;
     cerr << "   get-content <Node Id>\n"
             "           Saves the stream of the content node in the\n"
             "           current folder. Any existing file is overwritten." << endl;
     cerr << "   help\n"
-            "           Print this help message and exits (like --help option)." << endl;
+            "           Prints this help message and exits (like --help option)." << endl;
 
     cerr << endl << getOptionsDescription() << endl;
 }

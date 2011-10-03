@@ -40,7 +40,7 @@ namespace libcmis
     {
         public:
             
-            /** Get the content stream or NULL is there is none.
+            /** Get the content stream or NULL if there is none.
 
                 @param path
                     Save the stream to the given path. If the path
