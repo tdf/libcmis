@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-INCLUDES = -I$(top_srcdir)/include
+INCLUDES = -I$(top_srcdir)/include $(DEPS_CFLAGS) $(CURL_CFLAGS)
 
 libcmis_headers_public = \
     document.hxx \
