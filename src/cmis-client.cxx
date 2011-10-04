@@ -129,7 +129,7 @@ void CmisClient::execute( ) throw ( exception )
 
             for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
             {
-                libcmis::CmisObjectPtr cmisObj = session->getObject( *it );
+                libcmis::ObjectPtr cmisObj = session->getObject( *it );
                 cout << "-----------------------" << endl;
                 cout << cmisObj->toString() << endl;
             }
@@ -144,7 +144,7 @@ void CmisClient::execute( ) throw ( exception )
             if ( objIds.size() == 0 )
                 throw CommandException( "Please provide a content object Id" );
 
-            libcmis::CmisObjectPtr cmisObj = session->getObject( objIds.front() );
+            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
             libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
             if ( NULL != document )
             {

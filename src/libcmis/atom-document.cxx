@@ -37,7 +37,7 @@
 using namespace std;
 
 AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
-    AtomCmisObject( session, url ),
+    AtomObject( session, url ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -56,7 +56,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
 }
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
-    AtomCmisObject( session, string() ),
+    AtomObject( session, string() ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -107,7 +107,7 @@ string AtomDocument::toString( )
     stringstream buf;
 
     buf << "Document Object:" << endl << endl;
-    buf << AtomCmisObject::toString();
+    buf << AtomObject::toString();
     buf << "Content Type: " << getContentType( ) << endl;
     buf << "Content Length: " << getContentLength( ) << endl;
     buf << "Content Filename: " << getContentFilename( ) << endl;
@@ -117,7 +117,7 @@ string AtomDocument::toString( )
 
 void AtomDocument::extractInfos( xmlDocPtr doc )
 {
-    AtomCmisObject::extractInfos( doc );
+    AtomObject::extractInfos( doc );
    
    // Get the content url and type 
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );

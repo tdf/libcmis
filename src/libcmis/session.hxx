@@ -28,7 +28,7 @@
 #ifndef _SESSION_HXX_
 #define _SESSION_HXX_
 
-#include "cmis-object.hxx"
+#include "object.hxx"
 #include "folder.hxx"
 
 namespace libcmis
@@ -43,7 +43,7 @@ namespace libcmis
             
             /** Get a CMIS object from its ID.
               */
-            virtual CmisObjectPtr getObject( std::string id ) = 0;
+            virtual ObjectPtr getObject( std::string id ) = 0;
     };
 }
 

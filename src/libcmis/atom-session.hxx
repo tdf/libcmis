@@ -89,13 +89,13 @@ class AtomPubSession : public libcmis::Session
 
         libcmis::FolderPtr getFolder( std::string id );
 
-        libcmis::CmisObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+        libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         // Override session methods
 
         virtual libcmis::FolderPtr getRootFolder();
 
-        virtual libcmis::CmisObjectPtr getObject( std::string id );
+        virtual libcmis::ObjectPtr getObject( std::string id );
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );

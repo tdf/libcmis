@@ -5,7 +5,7 @@ INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAG
 libcmis_headers_public = \
 	document.hxx \
 	folder.hxx \
-	cmis-object.hxx \
+	object.hxx \
 	session.hxx \
 	session-factory.hxx 
 

@@ -38,7 +38,7 @@ namespace
 }
 
 AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
-    AtomCmisObject( session, url ),
+    AtomObject( session, url ),
     m_path( ),
     m_childrenUrl( )
 {
@@ -55,7 +55,7 @@ AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
 }
 
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
-    AtomCmisObject( session, string() ),
+    AtomObject( session, string() ),
     m_path( ),
     m_childrenUrl( )
 {
@@ -69,9 +69,9 @@ AtomFolder::~AtomFolder( )
 {
 }
 
-vector< libcmis::CmisObjectPtr > AtomFolder::getChildren( )
+vector< libcmis::ObjectPtr > AtomFolder::getChildren( )
 {
-    vector< libcmis::CmisObjectPtr > children;
+    vector< libcmis::ObjectPtr > children;
     
     string buf = atom::httpGetRequest( m_childrenUrl );
 
@@ -92,7 +92,7 @@ vector< libcmis::CmisObjectPtr > AtomFolder::getChildren( )
                 {
                     xmlNodePtr node = pXPathObj->nodesetval->nodeTab[i];
                     xmlDocPtr entryDoc = atom::wrapInDoc( node );
-                    libcmis::CmisObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
+                    libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
 
                     if ( cmisObject.get() )
                         children.push_back( cmisObject );
@@ -124,15 +124,15 @@ string AtomFolder::toString( )
     stringstream buf;
 
     buf << "Folder Object:" << endl << endl;
-    buf << AtomCmisObject::toString();
+    buf << AtomObject::toString();
     buf << "Path: " << getPath() << endl;
     buf << "Children [Name (Id)]:" << endl;
 
-    vector< libcmis::CmisObjectPtr > children = getChildren( );
-    for ( vector< libcmis::CmisObjectPtr >::iterator it = children.begin( );
+    vector< libcmis::ObjectPtr > children = getChildren( );
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
             it != children.end(); it++ )
     {
-        libcmis::CmisObjectPtr child = *it;
+        libcmis::ObjectPtr child = *it;
         buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;
     }
 
@@ -141,7 +141,7 @@ string AtomFolder::toString( )
 
 void AtomFolder::extractInfos( xmlDocPtr doc )
 {
-    AtomCmisObject::extractInfos( doc );
+    AtomObject::extractInfos( doc );
     m_childrenUrl = AtomFolder::getChildrenUrl( doc );
 
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );

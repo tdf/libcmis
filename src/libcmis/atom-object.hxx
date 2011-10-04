@@ -30,11 +30,11 @@
 
 #include <libxml/tree.h>
 
-#include "cmis-object.hxx"
+#include "object.hxx"
 
 class AtomPubSession;
 
-class AtomCmisObject : public virtual libcmis::CmisObject
+class AtomObject : public virtual libcmis::Object
 {
     private:
         AtomPubSession* m_session;
@@ -47,10 +47,10 @@ class AtomCmisObject : public virtual libcmis::CmisObject
         std::string m_type;
 
     public:
-        AtomCmisObject( AtomPubSession* session, std::string url );
-        ~AtomCmisObject( );
+        AtomObject( AtomPubSession* session, std::string url );
+        ~AtomObject( );
        
-        // Overridden methods from CmisObject
+        // Overridden methods from Object
         virtual std::string getId( ); 
         virtual std::string getName( );
         

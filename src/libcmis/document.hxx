@@ -30,13 +30,13 @@
 
 #include <string>
 
-#include "cmis-object.hxx"
+#include "object.hxx"
 
 namespace libcmis
 {
     /** Interface for a CMIS Document object.
       */
-    class Document : public virtual CmisObject
+    class Document : public virtual Object
     {
         public:
             

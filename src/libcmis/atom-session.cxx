@@ -186,9 +186,9 @@ libcmis::FolderPtr AtomPubSession::getRootFolder()
     return getFolder( m_sRootId );
 }
 
-libcmis::CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
+libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 {
-    libcmis::CmisObjectPtr cmisObject;
+    libcmis::ObjectPtr cmisObject;
 
     if ( NULL != doc )
     {
@@ -205,12 +205,12 @@ libcmis::CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
                 xmlNodePtr node = pXPathObj->nodesetval->nodeTab[0];
                 if ( !AtomFolder::getChildrenUrl( doc ).empty() )
                 {
-                    libcmis::CmisObjectPtr folder( new AtomFolder( this, node ) );
+                    libcmis::ObjectPtr folder( new AtomFolder( this, node ) );
                     cmisObject.swap( folder );
                 }
                 else
                 {
-                    libcmis::CmisObjectPtr content( new AtomDocument( this, node ) );
+                    libcmis::ObjectPtr content( new AtomDocument( this, node ) );
                     cmisObject.swap( content );
                 }
             }
@@ -222,7 +222,7 @@ libcmis::CmisObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
     return cmisObject;
 }
 
-libcmis::CmisObjectPtr AtomPubSession::getObject( string id )
+libcmis::ObjectPtr AtomPubSession::getObject( string id )
 {
     string pattern = getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
@@ -231,7 +231,7 @@ libcmis::CmisObjectPtr AtomPubSession::getObject( string id )
 
     string buf = atom::httpGetRequest( url );
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
-    libcmis::CmisObjectPtr cmisObject = createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
     xmlFreeDoc( doc );
 
     return cmisObject;
@@ -362,7 +362,7 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
 
 libcmis::FolderPtr AtomPubSession::getFolder( string id )
 {
-    libcmis::CmisObjectPtr object = getObject( id );
+    libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
 }

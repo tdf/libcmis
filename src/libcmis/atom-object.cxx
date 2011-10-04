@@ -38,7 +38,7 @@ using namespace std;
     CMIS properties. The content of the URL isn't extracted and parsed by the constructor:
     this task is left to the class children.
   */
-AtomCmisObject::AtomCmisObject( AtomPubSession* session, string url ) :
+AtomObject::AtomObject( AtomPubSession* session, string url ) :
     m_session( session ),
     m_infosUrl( url ),
     m_name( ),
@@ -47,31 +47,31 @@ AtomCmisObject::AtomCmisObject( AtomPubSession* session, string url ) :
 {
 }
 
-AtomCmisObject::~AtomCmisObject( )
+AtomObject::~AtomObject( )
 {
 }
 
-string AtomCmisObject::getId( )
+string AtomObject::getId( )
 {
     return m_id;
 }
 
-string AtomCmisObject::getName( )
+string AtomObject::getName( )
 {
     return m_name;
 }
 
-string AtomCmisObject::getBaseType( )
+string AtomObject::getBaseType( )
 {
     return m_baseType;
 }
 
-string AtomCmisObject::getType( )
+string AtomObject::getType( )
 {
     return m_type;
 }
 
-string AtomCmisObject::toString( )
+string AtomObject::toString( )
 {
     stringstream buf;
 
@@ -83,7 +83,7 @@ string AtomCmisObject::toString( )
     return buf.str();
 }
 
-void AtomCmisObject::extractInfos( xmlDocPtr doc )
+void AtomObject::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
 

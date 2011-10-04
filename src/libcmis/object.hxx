@@ -25,18 +25,20 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _CMIS_OBJECT_HXX_
-#define _CMIS_OBJECT_HXX_
+#ifndef _OBJECT_HXX_
+#define _OBJECT_HXX_
 
+#include <ctime>
 #include <string>
 
+#include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace libcmis
 {
     /** Class representing any CMIS object.
       */
-    class CmisObject
+    class Object
     {
         public:
             virtual std::string getId( ) = 0;
@@ -45,12 +47,19 @@ namespace libcmis
             virtual std::string getBaseType( ) = 0;
             virtual std::string getType( ) = 0;
 
+            virtual std::string getCreatedBy( ) = 0;
+            virtual boost::posix_time::ptime getCreationDate( ) = 0;
+            virtual std::string getLastModifiedBy( ) = 0;
+            virtual boost::posix_time::ptime getLastModificationDate( ) = 0;
+
+            virtual std::string getChangeToken( ) = 0;
+
             /** Dump the object as a string for debugging or display purpose.
               */
             virtual std::string toString( ) = 0;
     };
 
-    typedef ::boost::shared_ptr< CmisObject > CmisObjectPtr;
+    typedef ::boost::shared_ptr< Object > ObjectPtr;
 }
 
 #endif

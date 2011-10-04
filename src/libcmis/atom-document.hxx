@@ -33,7 +33,7 @@
 #include "document.hxx"
 #include "atom-object.hxx"
 
-class AtomDocument : public libcmis::Document, public AtomCmisObject
+class AtomDocument : public libcmis::Document, public AtomObject
 {
     private:
         std::string m_contentUrl;

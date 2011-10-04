@@ -22,7 +22,7 @@
 
 #define TEST_CHILDREN_FOLDER_COUNT 2
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
-#define TEST_CHILDREN_COUNT vector<libcmis::CmisObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
+#define TEST_CHILDREN_COUNT vector<libcmis::ObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
 using namespace std;
 
@@ -106,7 +106,7 @@ void AtomTest::getFolderCreationFromUrlTest( )
 void AtomTest::getDocumentCreationFromUrlTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
-    libcmis::CmisObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
 
     AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of AtomDocument",
@@ -124,12 +124,12 @@ void AtomTest::getChildrenTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
-    vector< libcmis::CmisObjectPtr > children = folder->getChildren( );
+    vector< libcmis::ObjectPtr > children = folder->getChildren( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", TEST_CHILDREN_COUNT, children.size() );
 
     int folderCount = 0;
     int documentCount = 0;
-    for ( vector< libcmis::CmisObjectPtr >::iterator it = children.begin( );
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
           it != children.end( ); it++ )
     {
         if ( NULL != dynamic_cast< AtomFolder* >( it->get() ) )
@@ -146,7 +146,7 @@ void AtomTest::getChildrenTest( )
 void AtomTest::getContentTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
-    libcmis::CmisObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
