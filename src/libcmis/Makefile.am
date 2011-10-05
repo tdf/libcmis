@@ -28,7 +28,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(XML2_LIBS) \
-	$(LIBCURL) \
+	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
@@ -42,7 +42,7 @@ test_atom_SOURCES =	test-atom.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
-	$(LIBCURL) \
+	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
