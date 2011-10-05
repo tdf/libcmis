@@ -67,14 +67,11 @@ AC_SUBST(CURL_CFLAGS)
 AC_SUBST(LIBCURL)
 
 # Check for lixml2
-AC_PATH_PROGS([TOOL_XML2_CONFIG], [xml2-config],, [$with_libxml2/bin:$PATH])
-AS_IF([test -n "$TOOL_XML2_CONFIG"],
-	[XML2_CFLAGS=`$TOOL_XML2_CONFIG --cflags`
-	 XML2_LIBS=`$TOOL_XML2_CONFIG --libs`],
-	[AC_MSG_ERROR([missing program 'xml2-config'; is 'libxml2' or
-'libxml2-devel' installed?])])
-AC_SUBST([XML2_CFLAGS])
-AC_SUBST([XML2_LIBS]) 
+PKG_CHECK_MODULES(XML2,[
+	libxml-2.0
+])
+AC_SUBST(XML2_CFLAGS)
+AC_SUBST(XML2_LIBS)
 
 # Check for cppunit
 AS_IF([test "x$enable_tests" != "xno"], [
