@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
@@ -6,6 +8,7 @@
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
+#include "atom-utils.hxx"
 
 // InMemory local test server data
 #define SERVER_ATOM_URL string( "http://localhost:8080/inmemory/atom" )
@@ -24,6 +27,7 @@
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
 #define TEST_CHILDREN_COUNT vector<libcmis::ObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
+using namespace boost;
 using namespace std;
 
 class AtomTest : public CppUnit::TestFixture
@@ -36,6 +40,7 @@ class AtomTest : public CppUnit::TestFixture
         void getDocumentCreationFromUrlTest( );
         void getChildrenTest( );
         void getContentTest( );
+        void parseDateTimeTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -44,6 +49,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentTest );
+        CPPUNIT_TEST( parseDateTimeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -101,6 +107,12 @@ void AtomTest::getFolderCreationFromUrlTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", TEST_FOLDER_NAME, folder->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", TEST_FOLDER_PATH, folder->getPath( ) );
     CPPUNIT_ASSERT_MESSAGE( "Children URL is missing", !atomFolder->getChildrenUrl( ).empty( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomFolder->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomFolder->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !atomFolder->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !atomFolder->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !atomFolder->getChangeToken( ).empty( ) );
 }
 
 void AtomTest::getDocumentCreationFromUrlTest( )
@@ -114,6 +126,12 @@ void AtomTest::getDocumentCreationFromUrlTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", TEST_DOCUMENT_ID, atomDocument->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", TEST_DOCUMENT_NAME, atomDocument->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", TEST_DOCUMENT_TYPE, atomDocument->getContentType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomDocument->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomDocument->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !atomDocument->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !atomDocument->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !atomDocument->getChangeToken( ).empty( ) );
 
     // Don't test the exact value... the content is changing at each restart of the InMemory server
     CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 0 < atomDocument->getContentLength( ) );
@@ -153,6 +171,69 @@ void AtomTest::getContentTest( )
 
     FILE* fd = document->getContent( );
     CPPUNIT_ASSERT_MESSAGE( "Temporary file with content should be returned", NULL != fd );
+}
+
+void AtomTest::parseDateTimeTest( )
+{
+    tm basis;
+    basis.tm_year = 2011 - 1900;
+    basis.tm_mon = 8; // Months are in 0..11 range
+    basis.tm_mday = 28;
+    basis.tm_hour = 12;
+    basis.tm_min = 44;
+    basis.tm_sec = 28;
+
+    // No time zone test
+    {
+        char toParse[50];
+        strftime( toParse, sizeof( toParse ), "%FT%T", &basis );
+        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
+
+        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
+        posix_time::time_duration expTime( basis.tm_hour, basis.tm_min, basis.tm_sec );
+        posix_time::ptime expected( expDate, expTime );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "No time zone case failed", expected, t );
+    }
+    
+    // Z time zone test
+    {
+        char toParse[50];
+        strftime( toParse, sizeof( toParse ), "%FT%TZ", &basis );
+        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
+        
+        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
+        posix_time::time_duration expTime( basis.tm_hour, basis.tm_min, basis.tm_sec );
+        posix_time::ptime expected( expDate, expTime );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Z time zone case failed", expected, t );
+    }
+
+    // +XX:XX time zone test
+    {
+        char toParse[50];
+        strftime( toParse, sizeof( toParse ), "%FT%T+02:00", &basis );
+        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
+        
+        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
+        posix_time::time_duration expTime( basis.tm_hour + 2, basis.tm_min, basis.tm_sec );
+        posix_time::ptime expected( expDate, expTime );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
+    }
+
+    // -XX:XX time zone test
+    {
+        char toParse[50];
+        strftime( toParse, sizeof( toParse ), "%FT%T-02:00", &basis );
+        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
+        
+        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
+        posix_time::time_duration expTime( basis.tm_hour - 2, basis.tm_min, basis.tm_sec );
+        posix_time::ptime expected( expDate, expTime );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

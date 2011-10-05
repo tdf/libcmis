@@ -30,6 +30,8 @@
 
 #include <string>
 
+#include <boost/date_time.hpp>
+
 #include <libxml/xpathInternals.h>
 
 #define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
@@ -48,6 +50,10 @@ namespace atom
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
     std::string httpGetRequest( std::string url );
+   
+    /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
+     */ 
+    boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
 }
 
 #endif

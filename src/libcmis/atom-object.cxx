@@ -32,7 +32,9 @@
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 
+using namespace boost;
 using namespace std;
+
 
 /** Constructor for the object, the url provided url should point to the object
     CMIS properties. The content of the URL isn't extracted and parsed by the constructor:
@@ -43,7 +45,12 @@ AtomObject::AtomObject( AtomPubSession* session, string url ) :
     m_infosUrl( url ),
     m_name( ),
     m_baseType( ),
-    m_type( )
+    m_type( ),
+    m_createdBy( ),
+    m_creationDate( ),
+    m_lastModifiedBy( ),
+    m_lastModificationDate( ),
+    m_changeToken( )
 {
 }
 
@@ -71,6 +78,31 @@ string AtomObject::getType( )
     return m_type;
 }
 
+string AtomObject::getCreatedBy( )
+{
+    return m_createdBy;
+}
+
+posix_time::ptime AtomObject::getCreationDate( )
+{
+    return m_creationDate;
+}
+
+string AtomObject::getLastModifiedBy( )
+{
+    return m_lastModifiedBy;
+}
+
+posix_time::ptime AtomObject::getLastModificationDate( )
+{
+    return m_lastModificationDate;
+}
+
+string AtomObject::getChangeToken( )
+{
+    return m_changeToken;
+}
+
 string AtomObject::toString( )
 {
     stringstream buf;
@@ -79,6 +111,11 @@ string AtomObject::toString( )
     buf << "Name: " << getName() << endl;
     buf << "Type: " << getType() << endl;
     buf << "Base type: " << getBaseType() << endl;
+    buf << "Created on " << posix_time::to_simple_string( getCreationDate() )
+        << " by " << getCreatedBy() << endl;
+    buf << "Last modified on " << posix_time::to_simple_string( getLastModificationDate() )
+        << " by " << getLastModifiedBy() << endl;
+    buf << "Change token: " << getChangeToken() << endl;
 
     return buf.str();
 }
@@ -107,6 +144,27 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         // Get the type
         string typeReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
         m_type = atom::getXPathValue( pXPathCtx, typeReq );
+
+        // Get the createdBy property
+        string createdByReq( "//cmis:propertyString[@propertyDefinitionId='cmis:createdBy']/cmis:value/text()" );
+        m_createdBy = atom::getXPathValue( pXPathCtx, createdByReq );
+
+        // Get the creation date
+        string creationReq( "//cmis:propertyDateTime[@propertyDefinitionId='cmis:creationDate']/cmis:value/text()" );
+        m_creationDate = atom::parseDateTime( atom::getXPathValue( pXPathCtx, creationReq ) );
+
+        // Get the lastModifiedBy property
+        string lastModifByReq( "//cmis:propertyString[@propertyDefinitionId='cmis:lastModifiedBy']/cmis:value/text()" );
+        m_lastModifiedBy = atom::getXPathValue( pXPathCtx, lastModifByReq );
+        
+        // Get the kast modification date
+        string lastModifReq( "//cmis:propertyDateTime[@propertyDefinitionId='cmis:lastModificationDate']/cmis:value/text()" );
+        m_lastModificationDate = atom::parseDateTime( atom::getXPathValue( pXPathCtx, lastModifReq ) );
+
+        // Get the change token
+        string changeTokenReq( "//cmis:propertyString[@propertyDefinitionId='cmis:changeToken']/cmis:value/text()" );
+        m_changeToken = atom::getXPathValue( pXPathCtx, changeTokenReq );
+
     }
     xmlXPathFreeContext( pXPathCtx );
 }

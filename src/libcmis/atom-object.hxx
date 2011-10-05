@@ -46,16 +46,30 @@ class AtomObject : public virtual libcmis::Object
         std::string m_baseType;
         std::string m_type;
 
+        std::string m_createdBy;
+        boost::posix_time::ptime m_creationDate;
+        std::string m_lastModifiedBy;
+        boost::posix_time::ptime m_lastModificationDate;
+
+        std::string m_changeToken;
+
     public:
         AtomObject( AtomPubSession* session, std::string url );
         ~AtomObject( );
        
-        // Overridden methods from Object
+        // Overridden methods from libcmis::Object
         virtual std::string getId( ); 
         virtual std::string getName( );
         
         virtual std::string getBaseType( );
         virtual std::string getType( );
+            
+        virtual std::string getCreatedBy( );
+        virtual boost::posix_time::ptime getCreationDate( );
+        virtual std::string getLastModifiedBy( );
+        virtual boost::posix_time::ptime getLastModificationDate( );
+
+        virtual std::string getChangeToken( );
 
         virtual std::string toString( );
 

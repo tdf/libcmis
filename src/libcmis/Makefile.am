@@ -29,7 +29,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(XML2_LIBS) \
 	$(LIBCURL) \
-	$(BOOST_SMART_PTR)
+	$(BOOST_SMART_PTR_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
 
 libcmisdir = $(includedir)/libcmis
 libcmis_HEADERS = $(libcmis_headers_public)
@@ -42,7 +43,8 @@ test_atom_SOURCES =	test-atom.cxx
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(LIBCURL) \
-	$(CPPUNIT_LIBS)
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
 
 TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
 TESTS = test-atom
