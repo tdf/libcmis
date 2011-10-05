@@ -42,11 +42,6 @@ AS_IF([test x"$GCC" = xyes], [
 	CXXFLAGS="$CXXFLAGS -Wall -pedantic"
 ])
 
-AC_ARG_WITH([libxml2],
-	[AS_HELP_STRING([--with-libxml2=PREFIX], [look for the xml2 library in
-	 PREFIX/lib and headers in PREFIX/include])]
-)
-
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
 
