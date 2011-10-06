@@ -42,6 +42,7 @@ using namespace std;
   */
 AtomObject::AtomObject( AtomPubSession* session, string url ) :
     m_session( session ),
+    m_refreshTimestamp( 0 ),
     m_infosUrl( url ),
     m_id( ),
     m_name( ),
@@ -57,6 +58,7 @@ AtomObject::AtomObject( AtomPubSession* session, string url ) :
 
 AtomObject::AtomObject( const AtomObject& copy ) :
     m_session( copy.m_session ),
+    m_refreshTimestamp( copy.m_refreshTimestamp ),
     m_infosUrl( copy.m_infosUrl ),
     m_id( copy.m_id ),
     m_name( copy.m_name ),
@@ -73,6 +75,7 @@ AtomObject::AtomObject( const AtomObject& copy ) :
 AtomObject& AtomObject::operator=( const AtomObject& copy )
 {
     m_session = copy.m_session;
+    m_refreshTimestamp = copy.m_refreshTimestamp;
     m_infosUrl = copy.m_infosUrl;
     m_id = copy.m_id;
     m_name = copy.m_name;
@@ -134,6 +137,30 @@ posix_time::ptime AtomObject::getLastModificationDate( )
 string AtomObject::getChangeToken( )
 {
     return m_changeToken;
+}
+
+void AtomObject::refreshImpl( xmlDocPtr doc )
+{
+    bool createdDoc = ( NULL == doc );
+    if ( createdDoc )
+    {
+        string buf  = atom::httpGetRequest( getInfosUrl() );
+        doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
+
+        if ( NULL == doc )
+        {
+            // TODO replace by an exception
+            fprintf( stderr, "Failed to parse content infos\n" );
+            return;
+        }
+
+    }
+
+    extractInfos( doc );
+    m_refreshTimestamp = time( NULL );
+
+    if ( createdDoc )
+        xmlFreeDoc( doc );
 }
 
 string AtomObject::toString( )
@@ -201,3 +228,4 @@ void AtomObject::extractInfos( xmlDocPtr doc )
     }
     xmlXPathFreeContext( pXPathCtx );
 }
+

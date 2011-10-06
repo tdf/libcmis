@@ -43,16 +43,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
     m_contentFilename( ),
     m_contentLength( 0 )
 {
-    string buf  = atom::httpGetRequest( getInfosUrl() );
-    
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
-    if ( NULL != doc )
-        extractInfos( doc );
-    else
-    {
-        fprintf( stderr, "Failed to parse content infos\n" );
-    }
-    xmlFreeDoc( doc );
+    refresh( );
 }
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
@@ -63,7 +54,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     m_contentLength( 0 )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
-    extractInfos( doc );
+    refreshImpl( doc );
     xmlFreeDoc( doc );
 }
 

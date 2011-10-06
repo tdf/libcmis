@@ -56,6 +56,11 @@ namespace libcmis
 
             virtual std::string getChangeToken( ) = 0;
 
+            /** Reload the data from the server.
+              */
+            virtual void refresh( ) = 0;
+            virtual time_t getRefreshTimestamp( ) = 0;
+
             /** Dump the object as a string for debugging or display purpose.
               */
             virtual std::string toString( ) = 0;

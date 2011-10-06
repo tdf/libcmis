@@ -38,6 +38,7 @@ class AtomObject : public virtual libcmis::Object
 {
     private:
         AtomPubSession* m_session;
+        time_t m_refreshTimestamp;
 
         std::string m_infosUrl;
 
@@ -74,11 +75,17 @@ class AtomObject : public virtual libcmis::Object
 
         virtual std::string getChangeToken( );
 
+        /** Reload the data from the server.
+              */
+        virtual void refresh( ) { refreshImpl( NULL ); }
+        virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
+
         virtual std::string toString( );
 
     protected:
 
         std::string& getInfosUrl( ) { return m_infosUrl; }
+        virtual void refreshImpl( xmlDocPtr doc );
         virtual void extractInfos( xmlDocPtr doc );
 
         AtomPubSession* getSession( ) { return m_session; }

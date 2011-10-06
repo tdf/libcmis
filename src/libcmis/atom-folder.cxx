@@ -42,16 +42,7 @@ AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
     m_path( ),
     m_childrenUrl( )
 {
-    string buf  = atom::httpGetRequest( getInfosUrl() );
-    
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
-    if ( NULL != doc )
-        extractInfos( doc );
-    else
-    {
-        fprintf( stderr, "Failed to parse folder infos\n" );
-    }
-    xmlFreeDoc( doc );
+    refresh();
 }
 
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
@@ -60,7 +51,7 @@ AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     m_childrenUrl( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
-    extractInfos( doc );
+    refreshImpl( doc );
     xmlFreeDoc( doc );
 }
 
