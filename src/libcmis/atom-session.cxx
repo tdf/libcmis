@@ -77,7 +77,10 @@ string UriTemplate::createUrl( const string& pattern, map< string, string > vari
 AtomPubSession::AtomPubSession( string atomPubUrl, string repository ) :
     Session( ),
     m_sAtomPubUrl( atomPubUrl ),
-    m_sRepository( repository )
+    m_sRepository( repository ),
+    m_sRootId( ),
+    m_aCollections( ),
+    m_aUriTemplates( )
 {
     // Pull the content from sAtomPubUrl and parse it
     string buf = atom::httpGetRequest( m_sAtomPubUrl );

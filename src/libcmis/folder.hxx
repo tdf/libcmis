@@ -41,6 +41,8 @@ namespace libcmis
     class Folder : public virtual Object
     {
         public:
+            virtual ~Folder() { }
+
             virtual std::vector< ObjectPtr > getChildren( ) = 0;
             virtual std::string getPath( ) = 0;
     };

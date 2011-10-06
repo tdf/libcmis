@@ -36,6 +36,7 @@ namespace libcmis
     class Session
     {
         public:
+            virtual ~Session() { };
 
             /** Get the Root folder of the repository
               */

@@ -48,6 +48,14 @@ class CommandException : public exception
 
     public:
         CommandException( const char* msg ) : m_msg( msg ) { }
+        CommandException( const CommandException& copy ) : m_msg( copy.m_msg ) { }
+
+        CommandException& operator=( const CommandException& copy )
+        {
+            m_msg = copy.m_msg;
+            return *this;
+        }
+
         virtual const char* what() const throw() { return m_msg; }
 };
 

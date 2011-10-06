@@ -41,6 +41,8 @@ namespace libcmis
     class Object
     {
         public:
+            virtual ~Object( ) { }
+
             virtual std::string getId( ) = 0;
             virtual std::string getName( ) = 0;
 

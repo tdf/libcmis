@@ -43,6 +43,7 @@ using namespace std;
 AtomObject::AtomObject( AtomPubSession* session, string url ) :
     m_session( session ),
     m_infosUrl( url ),
+    m_id( ),
     m_name( ),
     m_baseType( ),
     m_type( ),
@@ -52,6 +53,38 @@ AtomObject::AtomObject( AtomPubSession* session, string url ) :
     m_lastModificationDate( ),
     m_changeToken( )
 {
+}
+
+AtomObject::AtomObject( const AtomObject& copy ) :
+    m_session( copy.m_session ),
+    m_infosUrl( copy.m_infosUrl ),
+    m_id( copy.m_id ),
+    m_name( copy.m_name ),
+    m_baseType( copy.m_baseType ),
+    m_type( copy.m_type ),
+    m_createdBy( copy.m_createdBy ),
+    m_creationDate( copy.m_creationDate ),
+    m_lastModifiedBy( copy.m_lastModifiedBy ),
+    m_lastModificationDate( copy.m_lastModificationDate ),
+    m_changeToken( copy.m_changeToken )
+{
+}
+
+AtomObject& AtomObject::operator=( const AtomObject& copy )
+{
+    m_session = copy.m_session;
+    m_infosUrl = copy.m_infosUrl;
+    m_id = copy.m_id;
+    m_name = copy.m_name;
+    m_baseType = copy.m_baseType;
+    m_type = copy.m_type;
+    m_createdBy = copy.m_createdBy;
+    m_creationDate = copy.m_creationDate;
+    m_lastModifiedBy = copy.m_lastModifiedBy;
+    m_lastModificationDate = copy.m_lastModificationDate;
+    m_changeToken = copy.m_changeToken;
+
+    return *this;
 }
 
 AtomObject::~AtomObject( )

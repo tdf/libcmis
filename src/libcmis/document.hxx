@@ -39,6 +39,8 @@ namespace libcmis
     class Document : public virtual Object
     {
         public:
+
+            virtual ~Document( ) { }
             
             /** Get the content stream or NULL if there is none.
 

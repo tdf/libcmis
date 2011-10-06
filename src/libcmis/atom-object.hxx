@@ -55,8 +55,11 @@ class AtomObject : public virtual libcmis::Object
 
     public:
         AtomObject( AtomPubSession* session, std::string url );
+        AtomObject( const AtomObject& copy );
         ~AtomObject( );
-       
+
+        AtomObject& operator=( const AtomObject& copy );
+
         // Overridden methods from libcmis::Object
         virtual std::string getId( ); 
         virtual std::string getName( );
