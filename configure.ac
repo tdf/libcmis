@@ -27,6 +27,26 @@ AC_ARG_ENABLE([tests],
 )
 AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" != "xno")
 
+LIBCMIS_API_VERSION=libcmis_api_version
+AC_SUBST(LIBCMIS_API_VERSION)
+
+AC_CONFIG_MACRO_DIR([m4])
+
+for top_builddir in . .. ../.. $ac_auxdir $ac_auxdir/..; do
+	test -f $top_builddir/configure && break
+done
+
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
+AC_LIBTOOL_WIN32_DLL
+
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
 	[enable_werror="$enableval"],
@@ -39,22 +59,8 @@ AS_IF([test x"$enable_werror" != "xno"], [
 AS_IF([test x"$GCC" = xyes], [
 	# Be tough with warnings and produce less careless code
 	CFLAGS="$CFLAGS -Wall -pedantic"
-	CXXFLAGS="$CXXFLAGS -Wall -pedantic"
+	CXXFLAGS="$CXXFLAGS -Wall -pedantic -Weffc++"
 ])
-
-LIBCMIS_API_VERSION=libcmis_api_version
-AC_SUBST(LIBCMIS_API_VERSION)
-
-AC_CONFIG_MACRO_DIR([m4])
-
-for top_builddir in . .. ../.. $ac_auxdir $ac_auxdir/..; do
-	test -f $top_builddir/configure && break
-done
-
-
-# Checks for programs.
-AC_PROG_CXX
-AC_PROG_LIBTOOL
 
 # Check for curl
 PKG_CHECK_MODULES(CURL,[

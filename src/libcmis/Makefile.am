@@ -1,8 +1,6 @@
-SUBDIRS = .
+AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS)
 
-INCLUDES = -I$(top_srcdir)/include $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS)
-
-libcmis_headers_public = \
+libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	document.hxx \
 	folder.hxx \
 	object.hxx \
@@ -24,7 +22,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-utils.hxx \
 	atom-utils.cxx
 
-libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -no-undefined
+libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(XML2_LIBS) \
@@ -32,8 +30,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
-libcmisdir = $(includedir)/libcmis
-libcmis_HEADERS = $(libcmis_headers_public)
+libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis
 
 if ENABLE_TESTS
 check_PROGRAMS = test-atom
