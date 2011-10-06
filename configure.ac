@@ -2,13 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 m4_define([libcmis_major_version], [0])
-m4_define([libcmis_minor_version], [1])
+m4_define([libcmis_minor_version], [2])
 m4_define([libcmis_micro_version], [0])
-m4_define([libcmis_version],
-	[libcmis_major_version.libcmis_minor_version.libcmis_micro_version])
-m4_define([libcmis_minor_api_version], [m4_eval(libcmis_minor_version + libcmis_minor_version%2)])
-m4_define([libcmis_api_version],
-	[libcmis_major_version.libcmis_minor_api_version])
+m4_define([libcmis_api_version], [libcmis_major_version.libcmis_minor_version])
+m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])
 
 
 AC_PREREQ([2.63])
@@ -21,7 +18,7 @@ AC_ARG_ENABLE(client,
 AM_CONDITIONAL(ENABLE_CLIENT, test "x$enable_client" != "xno")
 
 AC_ARG_ENABLE([tests],
-	[AS_HELP_STRING([--disable-tests], [Don not build the unit tests])],
+	[AS_HELP_STRING([--disable-tests], [Do not build the unit tests])],
 	[enable_tests="$enableval"],
 	[enable_tests=yes]
 )

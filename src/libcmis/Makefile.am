@@ -30,7 +30,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
-libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis
+libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@
 
 if ENABLE_TESTS
 check_PROGRAMS = test-atom
