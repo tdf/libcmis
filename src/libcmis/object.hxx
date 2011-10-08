@@ -34,6 +34,10 @@
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
 
+// for compatibility with libcmis in LO tree
+#define CmisObject Object
+#define CmisObjectPtr ObjectPtr
+
 namespace libcmis
 {
     /** Class representing any CMIS object.
