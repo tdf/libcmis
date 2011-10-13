@@ -90,10 +90,6 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
     if ( m_vm.count( "repository" ) != 1 )
         throw CommandException( "Missing repository ID" );
 
-    // Get the ids of the objects to fetch
-    if ( m_vm.count( "args" ) == 0 )
-        throw CommandException( "Please provide the node ids to show as command args" );
-
     params[REPOSITORY_ID] = m_vm["repository"].as< string >();
     return libcmis::SessionFactory::createSession( params );
 }
@@ -128,9 +124,23 @@ void CmisClient::execute( ) throw ( exception )
             }
             cout << endl;
         }
+        else if ( "show-root" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            libcmis::FolderPtr root = session->getRootFolder();
+            cout << "-----------------------" << endl;
+            cout << root->toString() << endl;
+
+            delete session;
+        }
         else if ( "show-by-id" == command )
         {
             libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node ids to show as command args" );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
@@ -193,6 +203,8 @@ void CmisClient::printHelp( )
     cerr << endl << "Commands" << endl;
     cerr << "   list-repos\n"
             "           Lists the repositories available on the server" << endl;
+    cerr << "   show-root\n"
+            "           Dump the root node of the repository." << endl;
     cerr << "   show-by-id <Node Id 1> [... <Node Id N>]\n"
             "           Dumps the nodes informations for all the ids." << endl;
     cerr << "   get-content <Node Id>\n"
