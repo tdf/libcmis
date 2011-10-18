@@ -74,16 +74,18 @@ string UriTemplate::createUrl( const string& pattern, map< string, string > vari
     return url;
 }
 
-AtomPubSession::AtomPubSession( string atomPubUrl, string repository ) :
+AtomPubSession::AtomPubSession( string atomPubUrl, string repository, string username, string password ) :
     Session( ),
     m_sAtomPubUrl( atomPubUrl ),
     m_sRepository( repository ),
+    m_username( username ),
+    m_password( password ),
     m_sRootId( ),
     m_aCollections( ),
     m_aUriTemplates( )
 {
     // Pull the content from sAtomPubUrl and parse it
-    string buf = atom::httpGetRequest( m_sAtomPubUrl );
+    string buf = atom::httpGetRequest( m_sAtomPubUrl, m_username, m_password );
     
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
 
@@ -128,12 +130,12 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
-list< string > AtomPubSession::getRepositories( string url )
+list< string > AtomPubSession::getRepositories( string url, string username, string password )
 {
     list< string > repos;
 
     // Parse the service document and get the workspaces
-    string buf = atom::httpGetRequest( url );
+    string buf = atom::httpGetRequest( url, username, password );
    
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
     if ( NULL != pDoc )
@@ -232,7 +234,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id )
     vars[URI_TEMPLATE_VAR_ID] = id;
     string url = UriTemplate::createUrl( pattern, vars );
 
-    string buf = atom::httpGetRequest( url );
+    string buf = atom::httpGetRequest( url, m_username, m_password );
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
     libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
     xmlFreeDoc( doc );
@@ -260,9 +262,10 @@ void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
             // Look for the cmisra:collectionType child
             for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
             {
-                bool isCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
+                // SharePoint CMIS implementation doesn't follow the spec:
+                // the cmisra namespace is omitted
                 bool isCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
-                if ( isCmisra && isCollectionType )
+                if ( isCollectionType )
                 {
                     xmlChar* pContent = xmlNodeGetContent( pChild );
                     Collection::Type type = Collection::Root;
@@ -321,17 +324,16 @@ void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
         // Look for the cmisra:template and cmisra:type children
         for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
         {
-            bool bIsCmisra =  xmlStrEqual( pChild->ns->href, NS_CMISRA_URL );
             bool bIsTemplate = xmlStrEqual( pChild->name, BAD_CAST( "template" ) );
             bool bIsType = xmlStrEqual( pChild->name, BAD_CAST( "type" ) );
 
-            if ( bIsCmisra && bIsTemplate )
+            if ( bIsTemplate )
             {
                 xmlChar* pContent = xmlNodeGetContent( pChild );
                 templateUri = string( ( char * )pContent );
                 xmlFree( pContent );
             }
-            else if ( bIsCmisra && bIsType )
+            else if ( bIsType )
             {
                 xmlChar* pContent = xmlNodeGetContent( pChild );
                 if ( xmlStrEqual( pContent, BAD_CAST( "objectbyid" ) ) )

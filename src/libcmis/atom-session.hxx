@@ -65,6 +65,8 @@ class AtomPubSession : public libcmis::Session
     private:
         std::string m_sAtomPubUrl;
         std::string m_sRepository;
+        std::string m_username;
+        std::string m_password;
         std::string m_sRootId;
 
         // Collections URLs
@@ -74,16 +76,22 @@ class AtomPubSession : public libcmis::Session
         std::map< UriTemplate::Type, std::string > m_aUriTemplates;
 
     public:
-        AtomPubSession( std::string sAtomPubUrl, std::string repository );
+        AtomPubSession( std::string sAtomPubUrl, std::string repository,
+                        std::string username, std::string password );
         ~AtomPubSession( );
 
-        static std::list< std::string > getRepositories( std::string url );
+        static std::list< std::string > getRepositories( std::string url,
+                        std::string username, std::string password );
 
         std::string getCollectionUrl( Collection::Type );
 
         std::string getUriTemplate( UriTemplate::Type );
 
         std::string getRootId( ) { return m_sRootId; }
+
+        std::string getUsername( ) { return m_username; }
+
+        std::string getPassword( ) { return m_password; }
 
         // Utility methods
 

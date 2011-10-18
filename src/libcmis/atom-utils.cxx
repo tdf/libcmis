@@ -77,7 +77,7 @@ namespace atom
         return doc;
     }
 
-    string httpGetRequest( string url )
+    string httpGetRequest( string url, const string& username, const string& password )
     {
         stringstream stream;
 
@@ -88,6 +88,14 @@ namespace atom
         curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
         curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
         curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, &stream );
+
+        // Set the credentials
+        if ( !username.empty() && !password.empty() )
+        {
+            curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+            curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
+            curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
+        }
 
         // Perform the query
         curl_easy_perform( pHandle );

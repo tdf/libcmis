@@ -73,9 +73,12 @@ class CmisClient
         void printHelp( );
 
         static options_description getOptionsDescription( );
+
+    private:
+        map< int, string > getSessionParams();
 };
 
-libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
+map< int, string > CmisClient::getSessionParams()
 {
     map< int, string > params;
 
@@ -84,13 +87,36 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
     
     string url = m_vm["url"].as<string>();
     params[ATOMPUB_URL] = url;
-    list< string > ids = libcmis::SessionFactory::getRepositories( params );
+
+    // Look for the credentials
+    if ( m_vm.count( "username" ) > 0 )
+    {
+        string username = m_vm["username"].as< string >();
+
+        string password;
+        if ( m_vm.count( "password" ) > 0 )
+            password = m_vm["password"].as< string >();
+
+        if ( !username.empty() && !password.empty() )
+        {
+            params[USERNAME] = username;
+            params[PASSWORD] = password;
+        }
+    }
+
+    return params;
+}
+
+libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
+{
+    map< int, string > params = getSessionParams();
 
     // The repository ID is needed to initiate a session
     if ( m_vm.count( "repository" ) != 1 )
         throw CommandException( "Missing repository ID" );
 
     params[REPOSITORY_ID] = m_vm["repository"].as< string >();
+
     return libcmis::SessionFactory::createSession( params );
 }
 
@@ -107,12 +133,7 @@ void CmisClient::execute( ) throw ( exception )
         string command = m_vm["command"].as<string>();
         if ( "list-repos" == command )
         {
-            map< int, string > params;
-            if ( m_vm.count( "url" ) == 0 )
-                throw CommandException( "Missing URL" );
-            string url = m_vm["url"].as<string>();
-
-            params[ATOMPUB_URL] = url;
+            map< int, string > params = getSessionParams( );
             list< string > ids = libcmis::SessionFactory::getRepositories( params );
         
             cout << "Repositories: ";
@@ -129,8 +150,11 @@ void CmisClient::execute( ) throw ( exception )
             libcmis::Session* session = getSession( );
 
             libcmis::FolderPtr root = session->getRootFolder();
-            cout << "-----------------------" << endl;
-            cout << root->toString() << endl;
+            if ( root.get() )
+            {
+                cout << "-----------------------" << endl;
+                cout << root->toString() << endl;
+            }
 
             delete session;
         }
@@ -189,8 +213,10 @@ options_description CmisClient::getOptionsDescription( )
     options_description desc( "Allowed options" );
     desc.add_options( )
         ( "help", "Produce help message and exists" )
-        ( "url,u", value< string >(), "URL of the binding of the server" )
+        ( "url", value< string >(), "URL of the binding of the server" )
         ( "repository,r", value< string >(), "Name of the repository to use" )
+        ( "username,u", value< string >(), "Username used to authenticate to the repository" )
+        ( "password,p", value< string >(), "Password used to authenticate to the repository" )
     ;
 
     return desc;

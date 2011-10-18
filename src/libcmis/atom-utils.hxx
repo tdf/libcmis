@@ -49,7 +49,7 @@ namespace atom
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
-    std::string httpGetRequest( std::string url );
+    std::string httpGetRequest( std::string url, const std::string& username, const std::string& password );
    
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 

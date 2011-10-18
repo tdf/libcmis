@@ -34,8 +34,10 @@
 
 #include "session.hxx"
 
-#define ATOMPUB_URL 0
-#define REPOSITORY_ID 1
+#define ATOMPUB_URL     0
+#define REPOSITORY_ID   1
+#define USERNAME        2
+#define PASSWORD        3
 
 namespace libcmis
 {

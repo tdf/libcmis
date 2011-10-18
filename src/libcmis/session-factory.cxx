@@ -43,7 +43,27 @@ namespace libcmis
         
         pIt = params.find( ATOMPUB_URL );
         if ( pIt != params.end( ) )
-            session = new AtomPubSession( pIt->second, repository );
+        {
+            string repoId = pIt->second;
+
+            // Look for the username and password
+            pIt = params.find( USERNAME );
+            string username;
+            if ( pIt != params.end( ) )
+                username = pIt->second;
+
+            pIt = params.find( PASSWORD );
+            string password;
+            if ( pIt != params.end( ) )
+                password = pIt->second;
+
+            if ( !username.empty() && password.empty() )
+                password = string();
+            else if ( username.empty() && !password.empty() )
+                username = string();
+
+            session = new AtomPubSession( repoId, repository, username, password );
+        }
 
         return session;
     }
@@ -55,7 +75,25 @@ namespace libcmis
         map< int, string >::iterator pIt = params.find( ATOMPUB_URL );
         if ( pIt != params.end( ) )
         {
-            repos = AtomPubSession::getRepositories( pIt->second );
+            string repoId = pIt->second;
+
+            // Look for the username and password
+            pIt = params.find( USERNAME );
+            string username;
+            if ( pIt != params.end( ) )
+                username = pIt->second;
+
+            pIt = params.find( PASSWORD );
+            string password;
+            if ( pIt != params.end( ) )
+                password = pIt->second;
+
+            if ( !username.empty() && password.empty() )
+                password = string();
+            else if ( username.empty() && !password.empty() )
+                username = string();
+
+            repos = AtomPubSession::getRepositories( repoId, username, password );
         }
 
         return repos;

@@ -14,6 +14,8 @@
 #define SERVER_ATOM_URL string( "http://localhost:8080/inmemory/atom" )
 #define SERVER_REPOSITORIES_COUNT list< string >::size_type( 1 )
 #define SERVER_REPOSITORY string( "A1" )
+#define SERVER_USERNAME string( "tester" )
+#define SERVER_PASSWORD string( "somepass" )
 
 #define TEST_FOLDER_ID string( "101" )
 #define TEST_FOLDER_NAME string( "My_Folder-0-0" )
@@ -55,14 +57,14 @@ class AtomTest : public CppUnit::TestFixture
 
 void AtomTest::getRepositoriesTest()
 {
-    list< string > ids = AtomPubSession::getRepositories( SERVER_ATOM_URL );
+    list< string > ids = AtomPubSession::getRepositories( SERVER_ATOM_URL, SERVER_USERNAME, SERVER_PASSWORD );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "One repository should be found", SERVER_REPOSITORIES_COUNT, ids.size() );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, ids.front() );
 }
 
 void AtomTest::sessionCreationTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD);
 
     // Check for the mandatory collection URLs
     CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
@@ -97,7 +99,7 @@ void AtomTest::sessionCreationTest( )
 
 void AtomTest::getFolderCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
 
     AtomFolder* atomFolder = dynamic_cast< AtomFolder* >( folder.get( ) );
@@ -117,7 +119,7 @@ void AtomTest::getFolderCreationFromUrlTest( )
 
 void AtomTest::getDocumentCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
 
     AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
@@ -139,7 +141,7 @@ void AtomTest::getDocumentCreationFromUrlTest( )
 
 void AtomTest::getChildrenTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
     vector< libcmis::ObjectPtr > children = folder->getChildren( );
@@ -163,7 +165,7 @@ void AtomTest::getChildrenTest( )
 
 void AtomTest::getContentTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     

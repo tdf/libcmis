@@ -144,7 +144,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc )
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
     {
-        string buf  = atom::httpGetRequest( getInfosUrl() );
+        string buf  = atom::httpGetRequest( getInfosUrl(), getSession()->getUsername(), getSession()->getPassword() );
         doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
 
         if ( NULL == doc )
