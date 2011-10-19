@@ -25,6 +25,7 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#include <algorithm>
 #include <stdlib.h>
 #include <sstream>
 
@@ -35,6 +36,39 @@
 #include "atom-utils.hxx"
 
 using namespace std;
+
+namespace
+{
+    size_t lcl_getEncoding( void *ptr, size_t size, size_t nmemb, void *userdata )
+    {
+        atom::EncodedData* data = static_cast< atom::EncodedData* >( userdata );
+
+        string buf( ( const char* ) ptr, size * nmemb );
+
+        size_t sepPos = buf.find( ':' );
+        if ( sepPos != string::npos )
+        {
+            string name( buf, 0, sepPos );
+            if ( "Content-Transfer-Encoding" == name )
+            {
+                string encoding = buf.substr( sepPos + 1 );
+                encoding.erase( remove_if( encoding.begin(), encoding.end(), ptr_fun< int, int> ( isspace ) ), encoding.end() );
+
+                data->setEncoding( encoding );
+            }
+        }
+        
+        return nmemb;
+    }
+
+    size_t lcl_getData( void* ptr, size_t size, size_t nmemb, void* data )
+    {
+        atom::EncodedData* encoded = static_cast< atom::EncodedData* >( data );
+        encoded->decode( ptr, size, nmemb );
+        return nmemb;
+    }
+}
+
 
 AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
     AtomObject( session, url ),
@@ -73,20 +107,39 @@ FILE* AtomDocument::getContent( const char* path )
     else
         res = fopen( path, "w+b" );
 
+    atom::EncodedData* data = new atom::EncodedData( res );
+
     curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION,
-            (size_t (*)( void*, size_t, size_t, void* ) )fwrite );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, res );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, &lcl_getData );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, data );
+
+    curl_easy_setopt( pHandle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEHEADER, data );
+        
+    // Set the credentials
+    string username = getSession()->getUsername();
+    string password = getSession()->getPassword();
+    if ( !username.empty() && !password.empty() )
+    {
+        curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+        curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
+        curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
+    }
 
     // Perform the query
     CURLcode err = curl_easy_perform( pHandle );
     if ( CURLE_OK == err )
+    {
+        data->finish();
         rewind( res );
+    }
     else
     {
         fclose( res );
         res = NULL;
     }
+
+    delete data;
 
     curl_easy_cleanup( pHandle );
 

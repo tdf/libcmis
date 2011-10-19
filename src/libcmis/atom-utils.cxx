@@ -41,10 +41,132 @@ namespace
         out.write( ( const char* ) buffer, size * nmemb );
         return nmemb;
     }
+
+    bool lcl_getBufValue( char encoded, int* value )
+    {
+        static const char chars64[]=
+              "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        
+        bool found = false;
+        const char *i = chars64;
+        while ( !found && *i )
+        {
+            if ( *i == encoded )
+            {
+                found = true;
+                *value = ( i - chars64 );
+            }
+            ++i;
+        }
+        return found;
+    }
 }
 
 namespace atom
 {
+    EncodedData::EncodedData( FILE* stream ) :
+        m_stream( stream ),
+        m_encoding( ),
+        m_pendingValue( 0 ),
+        m_pendingRank( 0 ),
+        m_missingBytes( 0 )
+    {
+    }
+
+    EncodedData::EncodedData( const EncodedData& rCopy ) :
+        m_stream( rCopy.m_stream ),
+        m_encoding( rCopy.m_encoding ),
+        m_pendingValue( rCopy.m_pendingValue ),
+        m_pendingRank( rCopy.m_pendingRank ),
+        m_missingBytes( rCopy.m_missingBytes )
+    {
+    }
+
+    const EncodedData& EncodedData::operator=( const EncodedData& rCopy )
+    {
+        m_stream = rCopy.m_stream;
+        m_encoding = rCopy.m_encoding;
+        m_pendingValue = rCopy.m_pendingValue;
+        m_pendingRank = rCopy.m_pendingRank;
+        m_missingBytes = rCopy.m_missingBytes;
+        return *this;
+    }
+
+    void EncodedData::decode( void* buf, size_t size, size_t nmemb )
+    {
+        if ( 0 == m_encoding.compare( "base64" ) )
+        {
+            decodeBase64( ( const char* )buf, size * nmemb );
+        }
+        else
+            fwrite( buf, size, nmemb, m_stream );
+    }
+
+    void EncodedData::finish( )
+    {
+        if ( m_pendingValue != 0 || m_pendingRank != 0 || m_missingBytes != 0 )
+        {
+            int missingBytes = m_missingBytes;
+            if ( 0 == m_missingBytes )
+                missingBytes = 4 - m_pendingRank;
+
+            char decoded[3];
+            decoded[0] = ( m_pendingValue & 0xFF0000 ) >> 16;
+            decoded[1] = ( m_pendingValue & 0xFF00 ) >> 8;
+            decoded[2] = ( m_pendingValue & 0xFF );
+
+            fwrite( decoded, 1, 3 - missingBytes, m_stream );
+
+            m_pendingRank = 0;
+            m_pendingValue = 0;
+            m_missingBytes = 0;
+        }
+    }
+
+    void EncodedData::decodeBase64( const char* buf, size_t len )
+    {
+        unsigned long blockValue = m_pendingValue;
+        int byteRank = m_pendingRank;
+        int missingBytes = m_missingBytes;
+
+        size_t i = 0;
+        while ( i < len )
+        {
+            int value = 0;
+            if ( lcl_getBufValue( buf[i], &value ) )
+            {
+                blockValue += value << ( ( 3 - byteRank ) * 6 );
+                ++byteRank;
+            }
+            else if ( buf[i] == '=' )
+            {
+                ++missingBytes;
+                ++byteRank;
+            }
+
+            // Reached the end of a block, decode it
+            if ( byteRank >= 4 )
+            {
+                char decoded[3];
+                decoded[0] = ( blockValue & 0xFF0000 ) >> 16;
+                decoded[1] = ( blockValue & 0xFF00 ) >> 8;
+                decoded[2] = ( blockValue & 0xFF );
+
+                fwrite( decoded, 1, 3 - missingBytes, m_stream );
+
+                byteRank = 0;
+                blockValue = 0;
+                missingBytes = 0;
+            }
+            ++i;
+        }
+
+        // Store the values if the last block is incomplete: they may come later
+        m_pendingValue = blockValue;
+        m_pendingRank = byteRank;
+        m_missingBytes = missingBytes;
+    }
+
     void registerNamespaces( xmlXPathContextPtr pXPathCtx )
     {
         xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "app" ),  NS_APP_URL );

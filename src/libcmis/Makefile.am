@@ -35,7 +35,9 @@ libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API
 if ENABLE_TESTS
 check_PROGRAMS = test-atom
 
-test_atom_SOURCES =	test-atom.cxx
+test_atom_SOURCES =	\
+	test-atom.cxx \
+	test-decoder.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \

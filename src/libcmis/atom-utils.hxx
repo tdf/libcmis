@@ -43,6 +43,34 @@
 
 namespace atom
 {
+    /** Class used to decode a stream.
+
+        An instance of this class can hold remaining un-decoded data to use
+        for a future decode call.
+      */
+    class EncodedData
+    {
+        private:
+            FILE* m_stream;
+            std::string m_encoding;
+            unsigned long m_pendingValue;
+            int m_pendingRank;
+            size_t m_missingBytes;
+
+        public:
+            EncodedData( FILE* stream );
+            EncodedData( const EncodedData& rCopy );
+
+            const EncodedData& operator=( const EncodedData& rCopy );
+
+            void setEncoding( std::string encoding ) { m_encoding = encoding; }
+            void decode( void* buf, size_t size, size_t nmemb );
+            void finish( );
+
+        private:
+            void decodeBase64( const char* buf, size_t len );
+    };
+    
     void registerNamespaces( xmlXPathContextPtr pXPathCtx );
 
     std::string getXPathValue( xmlXPathContextPtr pXPathCtx, std::string req ); 
