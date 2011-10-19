@@ -127,6 +127,11 @@ void DecoderTest::noEncodingTest()
     CPPUNIT_ASSERT_EQUAL( string( "pleasure." ), getActual( ) );
 }
 
+/*
+ *  All the test values for the Base64 have been taken from
+ *  the wikipedia article: http://en.wikipedia.org/wiki/Base64
+ */
+
 void DecoderTest::base64SimpleBlockTest( )
 {
     data->setEncoding( BASE64_ENCODING );
