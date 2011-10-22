@@ -205,7 +205,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
             const string& entriesReq( "//atom:entry" );
             xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), pXPathCtx );
 
-            if ( NULL != pXPathObj && NULL != pXPathObj->nodesetval )
+            if ( NULL != pXPathObj && NULL != pXPathObj->nodesetval && ( 0 < pXPathObj->nodesetval->nodeNr ) )
             {
                 xmlNodePtr node = pXPathObj->nodesetval->nodeTab[0];
                 if ( !AtomFolder::getChildrenUrl( doc ).empty() )

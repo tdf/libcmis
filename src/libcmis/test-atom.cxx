@@ -45,6 +45,8 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
+#define TEST_UNEXISTANT_NODE_ID string( "99" )
+
 #define TEST_FOLDER_ID string( "101" )
 #define TEST_FOLDER_NAME string( "My_Folder-0-0" )
 #define TEST_FOLDER_PATH string( "/My_Folder-0-0" )
@@ -64,18 +66,35 @@ class AtomTest : public CppUnit::TestFixture
 {
     public:
 
+        // Generic sesssion factory tests
+
         void getRepositoriesTest( );
         void sessionCreationTest( );
+
+        // Node fetching tests
+
         void getFolderCreationFromUrlTest( );
+        void getUnexistantFolderTest( );
+        void getUnexistantObjectTest( );
+        void getFolderFromOtherNodeTest( );
         void getDocumentCreationFromUrlTest( );
+
+        // Node operations tests
+
         void getChildrenTest( );
         void getContentTest( );
+
+        // Other useful tests.
+
         void parseDateTimeTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getFolderCreationFromUrlTest );
+        CPPUNIT_TEST( getUnexistantFolderTest );
+        CPPUNIT_TEST( getUnexistantObjectTest );
+        CPPUNIT_TEST( getFolderFromOtherNodeTest );
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentTest );
@@ -123,6 +142,33 @@ void AtomTest::sessionCreationTest( )
     // Check that the root id is defined
     CPPUNIT_ASSERT_MESSAGE( "Root node ID is missing",
             !session.getRootId().empty() );
+}
+
+void AtomTest::getUnexistantFolderTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    libcmis::FolderPtr folder = session.getFolder( TEST_UNEXISTANT_NODE_ID );
+
+    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: no such folder",
+            NULL == folder.get( ) );
+}
+
+void AtomTest::getUnexistantObjectTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    libcmis::ObjectPtr object = session.getObject( TEST_UNEXISTANT_NODE_ID );
+
+    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: no such node",
+            NULL == object.get( ) );
+}
+
+void AtomTest::getFolderFromOtherNodeTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    libcmis::FolderPtr folder = session.getFolder( TEST_DOCUMENT_ID );
+
+    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: not a folder",
+            NULL == folder.get( ) );
 }
 
 void AtomTest::getFolderCreationFromUrlTest( )

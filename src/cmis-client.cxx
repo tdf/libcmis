@@ -173,7 +173,10 @@ void CmisClient::execute( ) throw ( exception )
             {
                 libcmis::ObjectPtr cmisObj = session->getObject( *it );
                 cout << "-----------------------" << endl;
-                cout << cmisObj->toString() << endl;
+                if ( cmisObj.get() )
+                    cout << cmisObj->toString() << endl;
+                else
+                    cout << "No such node: " << *it << endl;
             }
 
             delete session;
