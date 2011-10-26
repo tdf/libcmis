@@ -206,6 +206,13 @@ void CmisClient::execute( ) throw ( exception )
         {
             printHelp();
         }
+        else
+        {
+            cerr << "-------------------------" << endl;
+            cerr << "ERROR: Unknown command: " << command << endl;
+            cerr << "-------------------------" << endl;
+            printHelp( );
+        }
 
         // TODO Add some more useful commands here
     }
