@@ -40,7 +40,7 @@ using namespace std;
     CMIS properties. The content of the URL isn't extracted and parsed by the constructor:
     this task is left to the class children.
   */
-AtomObject::AtomObject( AtomPubSession* session, string url ) :
+AtomObject::AtomObject( AtomPubSession* session, string url ) throw ( libcmis::Exception ) :
     m_session( session ),
     m_refreshTimestamp( 0 ),
     m_infosUrl( url ),
@@ -139,7 +139,7 @@ string AtomObject::getChangeToken( )
     return m_changeToken;
 }
 
-void AtomObject::refreshImpl( xmlDocPtr doc )
+void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 {
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )

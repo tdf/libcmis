@@ -35,6 +35,7 @@
 #include <libxml/xmlstring.h>
 #include <libxml/xpath.h>
 
+#include "exception.hxx"
 #include "session.hxx"
 
 struct Collection {
@@ -77,11 +78,11 @@ class AtomPubSession : public libcmis::Session
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
-                        std::string username, std::string password );
+                        std::string username, std::string password ) throw ( libcmis::Exception );
         ~AtomPubSession( );
 
         static std::list< std::string > getRepositories( std::string url,
-                        std::string username, std::string password );
+                        std::string username, std::string password ) throw ( libcmis::Exception );
 
         std::string getCollectionUrl( Collection::Type );
 
@@ -103,7 +104,7 @@ class AtomPubSession : public libcmis::Session
 
         virtual libcmis::FolderPtr getRootFolder();
 
-        virtual libcmis::ObjectPtr getObject( std::string id );
+        virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );

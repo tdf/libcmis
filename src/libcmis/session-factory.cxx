@@ -32,7 +32,7 @@ using namespace std;
 
 namespace libcmis
 {
-    Session* SessionFactory::createSession( map< int, string > params )
+    Session* SessionFactory::createSession( map< int, string > params ) throw ( Exception )
     {
         Session* session = NULL;
 

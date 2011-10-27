@@ -31,8 +31,9 @@
 #include <string>
 
 #include <boost/date_time.hpp>
-
 #include <libxml/xpathInternals.h>
+
+#include "exception.hxx"
 
 #define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
 #define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
@@ -77,7 +78,7 @@ namespace atom
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
-    std::string httpGetRequest( std::string url, const std::string& username, const std::string& password );
+    std::string httpGetRequest( std::string url, const std::string& username, const std::string& password ) throw ( libcmis::Exception );
    
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 

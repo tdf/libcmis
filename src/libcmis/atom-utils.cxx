@@ -199,7 +199,7 @@ namespace atom
         return doc;
     }
 
-    string httpGetRequest( string url, const string& username, const string& password )
+    string httpGetRequest( string url, const string& username, const string& password ) throw ( libcmis::Exception )
     {
         stringstream stream;
 
@@ -219,8 +219,18 @@ namespace atom
             curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
         }
 
+        // Get some feedback when something wrong happens
+        char errBuff[CURL_ERROR_SIZE];
+        curl_easy_setopt( pHandle, CURLOPT_ERRORBUFFER, errBuff );
+        curl_easy_setopt( pHandle, CURLOPT_FAILONERROR, 1 );
+
         // Perform the query
-        curl_easy_perform( pHandle );
+        CURLcode errCode = curl_easy_perform( pHandle );
+        if ( CURLE_OK != errCode )
+        {
+            cerr << "Curl error code: " << errCode << endl;
+            throw libcmis::Exception( string( errBuff ) );
+        }
 
         curl_easy_cleanup( pHandle );
 

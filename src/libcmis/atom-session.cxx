@@ -74,7 +74,7 @@ string UriTemplate::createUrl( const string& pattern, map< string, string > vari
     return url;
 }
 
-AtomPubSession::AtomPubSession( string atomPubUrl, string repository, string username, string password ) :
+AtomPubSession::AtomPubSession( string atomPubUrl, string repository, string username, string password ) throw ( libcmis::Exception ) :
     Session( ),
     m_sAtomPubUrl( atomPubUrl ),
     m_sRepository( repository ),
@@ -130,7 +130,7 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
-list< string > AtomPubSession::getRepositories( string url, string username, string password )
+list< string > AtomPubSession::getRepositories( string url, string username, string password ) throw ( libcmis::Exception )
 {
     list< string > repos;
 
@@ -227,7 +227,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
     return cmisObject;
 }
 
-libcmis::ObjectPtr AtomPubSession::getObject( string id )
+libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Exception )
 {
     string pattern = getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;

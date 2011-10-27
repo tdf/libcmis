@@ -25,34 +25,23 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _SESSION_FACTORY_HXX_
-#define _SESSION_FACTORY_HXX_
+#ifndef _EXCEPTION_HXX_
+#define _EXCEPTION_HXX_
 
-#include <list>
-#include <map>
+#include <exception>
 #include <string>
-
-#include "exception.hxx"
-#include "session.hxx"
-
-#define ATOMPUB_URL     0
-#define REPOSITORY_ID   1
-#define USERNAME        2
-#define PASSWORD        3
 
 namespace libcmis
 {
-    class SessionFactory
+    class Exception : public std::exception
     {
+        private:
+            std::string m_message;
+
         public:
-
-            /** Create a session from the given parameters.
-
-                The resulting pointer should be deleted by the caller.
-              */
-            static Session* createSession( std::map< int, std::string > params ) throw ( Exception );
-
-            static std::list< std::string > getRepositories( std::map< int, std::string > params );
+            Exception( std::string message ) : exception( ), m_message( message ) { }
+            ~Exception( ) throw () { }
+            virtual const char* what() const throw() { return m_message.c_str(); }
     };
 }
 

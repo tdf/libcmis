@@ -60,7 +60,7 @@ AtomFolder::~AtomFolder( )
 {
 }
 
-vector< libcmis::ObjectPtr > AtomFolder::getChildren( )
+vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
     

@@ -45,7 +45,7 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         ~AtomFolder( );
 
         // virtual pure methods from Folder
-        virtual std::vector< libcmis::ObjectPtr > getChildren( );
+        virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
         virtual std::string getPath( );
         
         virtual std::string toString( );

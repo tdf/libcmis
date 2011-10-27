@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 
+#include "exception.hxx"
 #include "object.hxx"
 
 namespace libcmis
@@ -43,7 +44,7 @@ namespace libcmis
         public:
             virtual ~Folder() { }
 
-            virtual std::vector< ObjectPtr > getChildren( ) = 0;
+            virtual std::vector< ObjectPtr > getChildren( ) throw ( Exception ) = 0;
             virtual std::string getPath( ) = 0;
     };
     typedef ::boost::shared_ptr< Folder > FolderPtr;

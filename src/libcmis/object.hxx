@@ -34,6 +34,8 @@
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "exception.hxx"
+
 // for compatibility with libcmis in LO tree
 #define CmisObject Object
 #define CmisObjectPtr ObjectPtr
@@ -62,7 +64,7 @@ namespace libcmis
 
             /** Reload the data from the server.
               */
-            virtual void refresh( ) = 0;
+            virtual void refresh( ) throw ( Exception ) = 0;
             virtual time_t getRefreshTimestamp( ) = 0;
 
             /** Dump the object as a string for debugging or display purpose.

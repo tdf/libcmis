@@ -66,7 +66,7 @@ class CmisClient
     public:
         CmisClient( variables_map& vm ) : m_vm( vm ) { }
 
-        libcmis::Session* getSession( ) throw ( CommandException );
+        libcmis::Session* getSession( ) throw ( CommandException, libcmis::Exception );
 
         void execute( ) throw ( exception );
 
@@ -107,7 +107,7 @@ map< int, string > CmisClient::getSessionParams()
     return params;
 }
 
-libcmis::Session* CmisClient::getSession( ) throw ( CommandException )
+libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::Exception )
 {
     map< int, string > params = getSessionParams();
 
