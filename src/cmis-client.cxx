@@ -104,6 +104,9 @@ map< int, string > CmisClient::getSessionParams()
         }
     }
 
+    if ( m_vm.count( "verbose" ) > 0 )
+        params[VERBOSE] = "yes";
+
     return params;
 }
 
@@ -223,6 +226,7 @@ options_description CmisClient::getOptionsDescription( )
     options_description desc( "Allowed options" );
     desc.add_options( )
         ( "help", "Produce help message and exists" )
+        ( "verbose,v", "Show loads of useful messages for debugging" )
         ( "url", value< string >(), "URL of the binding of the server" )
         ( "repository,r", value< string >(), "Name of the repository to use" )
         ( "username,u", value< string >(), "Username used to authenticate to the repository" )

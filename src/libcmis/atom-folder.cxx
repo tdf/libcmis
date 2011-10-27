@@ -64,7 +64,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
 {
     vector< libcmis::ObjectPtr > children;
     
-    string buf = atom::httpGetRequest( m_childrenUrl, getSession()->getUsername(), getSession()->getPassword() );
+    string buf = getSession()->httpGetRequest( m_childrenUrl );
 
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_childrenUrl.c_str(), NULL, 0 );
     if ( NULL != doc )

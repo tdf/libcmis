@@ -76,13 +76,17 @@ class AtomPubSession : public libcmis::Session
         // URI templates
         std::map< UriTemplate::Type, std::string > m_aUriTemplates;
 
+        bool m_verbose;
+
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
-                        std::string username, std::string password ) throw ( libcmis::Exception );
+                        std::string username, std::string password,
+                        bool verbose ) throw ( libcmis::Exception );
         ~AtomPubSession( );
 
         static std::list< std::string > getRepositories( std::string url,
-                        std::string username, std::string password ) throw ( libcmis::Exception );
+                        std::string username, std::string password,
+                        bool verbose = false ) throw ( libcmis::Exception );
 
         std::string getCollectionUrl( Collection::Type );
 
@@ -99,6 +103,8 @@ class AtomPubSession : public libcmis::Session
         libcmis::FolderPtr getFolder( std::string id );
 
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+
+        std::string httpGetRequest( std::string url );
 
         // Override session methods
 

@@ -39,6 +39,7 @@
 #define REPOSITORY_ID   1
 #define USERNAME        2
 #define PASSWORD        3
+#define VERBOSE         4
 
 namespace libcmis
 {
@@ -48,7 +49,17 @@ namespace libcmis
 
             /** Create a session from the given parameters.
 
-                The resulting pointer should be deleted by the caller.
+                <p>The parameters are:</p>
+                <ul>
+                    <li><b>ATOMPUB_URL</b>: the atompub binding URL</li>
+                    <li><b>REPOSITORY_ID</b>: the repository id to connect to</li>
+                    <li><b>USERNAME</b>: the username to use for the server connection</li>
+                    <li><b>PASSWORD</b>: the password to use for the server connection/li>
+                    <li><b>VERBOSE</b>: if set to a non-empty string, then report as much as
+                            possible infos for debugging purpose.</li>
+                </ul>
+
+                <p>The resulting pointer should be deleted by the caller.</p>
               */
             static Session* createSession( std::map< int, std::string > params ) throw ( Exception );
 

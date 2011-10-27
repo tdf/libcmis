@@ -144,7 +144,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
     {
-        string buf  = atom::httpGetRequest( getInfosUrl(), getSession()->getUsername(), getSession()->getPassword() );
+        string buf  = getSession()->httpGetRequest( getInfosUrl() );
         doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
 
         if ( NULL == doc )

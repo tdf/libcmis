@@ -78,7 +78,8 @@ namespace atom
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
-    std::string httpGetRequest( std::string url, const std::string& username, const std::string& password ) throw ( libcmis::Exception );
+    std::string httpGetRequest( std::string url, const std::string& username,
+                                const std::string& password, bool verbose ) throw ( libcmis::Exception );
    
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 

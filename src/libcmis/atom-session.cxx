@@ -74,7 +74,8 @@ string UriTemplate::createUrl( const string& pattern, map< string, string > vari
     return url;
 }
 
-AtomPubSession::AtomPubSession( string atomPubUrl, string repository, string username, string password ) throw ( libcmis::Exception ) :
+AtomPubSession::AtomPubSession( string atomPubUrl, string repository, 
+        string username, string password, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_sAtomPubUrl( atomPubUrl ),
     m_sRepository( repository ),
@@ -82,10 +83,11 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository, string use
     m_password( password ),
     m_sRootId( ),
     m_aCollections( ),
-    m_aUriTemplates( )
+    m_aUriTemplates( ),
+    m_verbose( verbose )
 {
     // Pull the content from sAtomPubUrl and parse it
-    string buf = atom::httpGetRequest( m_sAtomPubUrl, m_username, m_password );
+    string buf = httpGetRequest( m_sAtomPubUrl );
     
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
 
@@ -130,12 +132,12 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
-list< string > AtomPubSession::getRepositories( string url, string username, string password ) throw ( libcmis::Exception )
+list< string > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     list< string > repos;
 
     // Parse the service document and get the workspaces
-    string buf = atom::httpGetRequest( url, username, password );
+    string buf = atom::httpGetRequest( url, username, password, verbose );
    
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
     if ( NULL != pDoc )
@@ -234,7 +236,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     vars[URI_TEMPLATE_VAR_ID] = id;
     string url = UriTemplate::createUrl( pattern, vars );
 
-    string buf = atom::httpGetRequest( url, m_username, m_password );
+    string buf = httpGetRequest( url );
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
     libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
     xmlFreeDoc( doc );
@@ -370,4 +372,9 @@ libcmis::FolderPtr AtomPubSession::getFolder( string id )
     libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
+}
+
+string AtomPubSession::httpGetRequest( string url )
+{
+    return atom::httpGetRequest( url, m_username, m_password, m_verbose );
 }

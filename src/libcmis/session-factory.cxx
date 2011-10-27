@@ -62,7 +62,13 @@ namespace libcmis
             else if ( username.empty() && !password.empty() )
                 username = string();
 
-            session = new AtomPubSession( repoId, repository, username, password );
+            // Do we have the verbose flag set?
+            bool verbose = false;
+            pIt = params.find( VERBOSE );
+            if ( pIt != params.end( ) && !pIt->second.empty() )
+                verbose = true;
+
+            session = new AtomPubSession( repoId, repository, username, password, verbose );
         }
 
         return session;
@@ -92,8 +98,14 @@ namespace libcmis
                 password = string();
             else if ( username.empty() && !password.empty() )
                 username = string();
+        
+            // Do we have the verbose flag set?
+            bool verbose = false;
+            pIt = params.find( VERBOSE );
+            if ( pIt != params.end( ) && !pIt->second.empty() )
+                verbose = true;
 
-            repos = AtomPubSession::getRepositories( repoId, username, password );
+            repos = AtomPubSession::getRepositories( repoId, username, password, verbose );
         }
 
         return repos;
