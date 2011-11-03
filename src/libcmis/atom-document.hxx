@@ -48,6 +48,7 @@ class AtomDocument : public libcmis::Document, public AtomObject
 
         // Override content methods
         virtual FILE* getContent( const char* path = NULL );
+        virtual std::istream getContent( ) = 0;
         virtual std::string getContentType( ) { return m_contentType; }
         virtual std::string getContentFilename( ) { return m_contentFilename; }
         virtual long getContentLength( ){ return m_contentLength; }

@@ -28,6 +28,7 @@
 #ifndef _DOCUMENT_HXX_
 #define _DOCUMENT_HXX_
 
+#include <istream>
 #include <string>
 
 #include "object.hxx"
@@ -53,6 +54,17 @@ namespace libcmis
                     something wrong happened during the download.
               */
             virtual FILE* getContent( const char* path = NULL ) = 0;
+
+            /** Get the content stream without using a temporary file.
+
+                <p>The stream may not contain anything if there is
+                no content or if something wrong happened during the
+                download.</p>
+
+                @return
+                    An input stream to read the data from.
+              */
+            virtual std::istream getContent( ) = 0;
 
             /** Get the content mime type.
               */

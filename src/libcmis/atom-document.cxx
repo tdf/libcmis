@@ -146,6 +146,50 @@ FILE* AtomDocument::getContent( const char* path )
     return res;
 }
 
+istream getContent( )
+{
+    curl_global_init( CURL_GLOBAL_ALL );
+    CURL* pHandle = curl_easy_init( );
+
+    stringstream stream;
+
+    atom::EncodedData* data = new atom::EncodedData( stream );
+
+    curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, &lcl_getData );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, data );
+
+    curl_easy_setopt( pHandle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
+    curl_easy_setopt( pHandle, CURLOPT_WRITEHEADER, data );
+        
+    // Set the credentials
+    string username = getSession()->getUsername();
+    string password = getSession()->getPassword();
+    if ( !username.empty() && !password.empty() )
+    {
+        curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+        curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
+        curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
+    }
+
+    // Perform the query
+    CURLcode err = curl_easy_perform( pHandle );
+    if ( CURLE_OK == err )
+    {
+        data->finish();
+    }
+    else
+    {
+        // TODO Throw an exception with the error message and code
+    }
+
+    delete data;
+
+    curl_easy_cleanup( pHandle );
+
+    return stream;
+}
+
 string AtomDocument::toString( )
 {
     stringstream buf;
