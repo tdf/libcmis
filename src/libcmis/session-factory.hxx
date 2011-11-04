@@ -63,7 +63,7 @@ namespace libcmis
               */
             static Session* createSession( std::map< int, std::string > params ) throw ( Exception );
 
-            static std::list< std::string > getRepositories( std::map< int, std::string > params );
+            static std::list< std::string > getRepositories( std::map< int, std::string > params ) throw ( Exception );
     };
 }
 

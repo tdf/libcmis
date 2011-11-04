@@ -29,6 +29,7 @@
 #include <stdio.h>
 
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -133,91 +134,100 @@ void CmisClient::execute( ) throw ( exception )
 
     if ( m_vm.count( "command" ) == 1 )
     {
-        string command = m_vm["command"].as<string>();
-        if ( "list-repos" == command )
+        try
         {
-            map< int, string > params = getSessionParams( );
-            list< string > ids = libcmis::SessionFactory::getRepositories( params );
-        
-            cout << "Repositories: ";
-            for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+            string command = m_vm["command"].as<string>();
+            if ( "list-repos" == command )
             {
-                if ( it != ids.begin() )
-                    cout << ", ";
-                cout << *it;
+                map< int, string > params = getSessionParams( );
+                list< string > ids = libcmis::SessionFactory::getRepositories( params );
+            
+                cout << "Repositories: ";
+                for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+                {
+                    if ( it != ids.begin() )
+                        cout << ", ";
+                    cout << *it;
+                }
+                cout << endl;
             }
-            cout << endl;
-        }
-        else if ( "show-root" == command )
-        {
-            libcmis::Session* session = getSession( );
-
-            libcmis::FolderPtr root = session->getRootFolder();
-            if ( root.get() )
+            else if ( "show-root" == command )
             {
-                cout << "-----------------------" << endl;
-                cout << root->toString() << endl;
+                libcmis::Session* session = getSession( );
+
+                libcmis::FolderPtr root = session->getRootFolder();
+                if ( root.get() )
+                {
+                    cout << "------------------------------------------------" << endl;
+                    cout << root->toString() << endl;
+                }
+
+                delete session;
             }
-
-            delete session;
-        }
-        else if ( "show-by-id" == command )
-        {
-            libcmis::Session* session = getSession( );
-
-            // Get the ids of the objects to fetch
-            if ( m_vm.count( "args" ) == 0 )
-                throw CommandException( "Please provide the node ids to show as command args" );
-
-            vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-
-            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
+            else if ( "show-by-id" == command )
             {
-                libcmis::ObjectPtr cmisObj = session->getObject( *it );
-                cout << "-----------------------" << endl;
-                if ( cmisObj.get() )
-                    cout << cmisObj->toString() << endl;
-                else
-                    cout << "No such node: " << *it << endl;
+                libcmis::Session* session = getSession( );
+
+                // Get the ids of the objects to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node ids to show as command args" );
+
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+
+                for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
+                {
+                    libcmis::ObjectPtr cmisObj = session->getObject( *it );
+                    cout << "------------------------------------------------" << endl;
+                    if ( cmisObj.get() )
+                        cout << cmisObj->toString() << endl;
+                    else
+                        cout << "No such node: " << *it << endl;
+                }
+
+                delete session;
             }
-
-            delete session;
-        }
-        else if ( "get-content" == command )
-        {
-            libcmis::Session* session = getSession( );
-
-            vector< string > objIds = m_vm["args"].as< vector< string > >( );
-            if ( objIds.size() == 0 )
-                throw CommandException( "Please provide a content object Id" );
-
-            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-            libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-            if ( NULL != document )
+            else if ( "get-content" == command )
             {
-                // TODO Handle name clashes
-                FILE* fd = document->getContent( document->getContentFilename().c_str() );
+                libcmis::Session* session = getSession( );
 
-                if ( fd )
-                    fclose( fd );
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+                if ( objIds.size() == 0 )
+                    throw CommandException( "Please provide a content object Id" );
+
+                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+                libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+                if ( NULL != document )
+                {
+                    // TODO Handle name clashes
+                    boost::shared_ptr< istream > in = document->getContentStream( );
+                    ofstream out( document->getContentFilename().c_str() );
+                    out << in->rdbuf();
+                    out.close();
+                }
+
+                delete session;
+            }
+            else if ( "help" == command )
+            {
+                printHelp();
+            }
+            else
+            {
+                cerr << "------------------------------------------------" << endl;
+                cerr << "ERROR: Unknown command: " << command << endl;
+                cerr << "------------------------------------------------" << endl;
+                printHelp( );
             }
 
-            delete session;
+            // TODO Add some more useful commands here
         }
-        else if ( "help" == command )
+        catch ( const libcmis::Exception& e )
         {
-            printHelp();
+            cerr << "------------------------------------------------" << endl;
+            cerr << "ERROR: " << e.what() << endl;
+            cerr << "------------------------------------------------" << endl;
         }
-        else
-        {
-            cerr << "-------------------------" << endl;
-            cerr << "ERROR: Unknown command: " << command << endl;
-            cerr << "-------------------------" << endl;
-            printHelp( );
-        }
-
-        // TODO Add some more useful commands here
     }
 }
 
@@ -282,9 +292,9 @@ int main ( int argc, char* argv[] )
     }
     catch ( CommandException e )
     {
-        cerr << "-------------------------" << endl;
+        cerr << "------------------------------------------------" << endl;
         cerr << "ERROR: " << e.what() << endl;
-        cerr << "-------------------------" << endl;
+        cerr << "------------------------------------------------" << endl;
         client.printHelp();
     }
 

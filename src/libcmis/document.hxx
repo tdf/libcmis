@@ -31,6 +31,9 @@
 #include <istream>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
+#include "exception.hxx"
 #include "object.hxx"
 
 namespace libcmis
@@ -52,6 +55,12 @@ namespace libcmis
                 @return
                     An opened stream to the content, or NULL if
                     something wrong happened during the download.
+
+                @deprecated
+                    This method is kept only for compatibility with
+                    previous versions and is likely to be removed soon.
+
+                @see Document::getContentStream()
               */
             virtual FILE* getContent( const char* path = NULL ) = 0;
 
@@ -63,8 +72,13 @@ namespace libcmis
 
                 @return
                     An input stream to read the data from.
+
+                @throws Exception
+                    if anything wrong happened during the file transfer.
+                    In such a case, the content of the stream can't be
+                    guaranteed.
               */
-            virtual std::istream getContent( ) = 0;
+            virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( Exception ) = 0;
 
             /** Get the content mime type.
               */

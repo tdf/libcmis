@@ -74,7 +74,7 @@ namespace libcmis
         return session;
     }
 
-    list< string > SessionFactory::getRepositories( map< int, string > params )
+    list< string > SessionFactory::getRepositories( map< int, string > params ) throw ( Exception )
     {
         list< string > repos;
 

@@ -63,8 +63,16 @@ AtomFolder::~AtomFolder( )
 vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
-    
-    string buf = getSession()->httpGetRequest( m_childrenUrl );
+
+    string buf;
+    try
+    {
+        buf = getSession()->httpGetRequest( m_childrenUrl );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_childrenUrl.c_str(), NULL, 0 );
     if ( NULL != doc )

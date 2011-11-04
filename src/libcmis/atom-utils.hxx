@@ -28,9 +28,11 @@
 #ifndef _ATOM_UTILS_HXX_
 #define _ATOM_UTILS_HXX_
 
+#include <ostream>
 #include <string>
 
 #include <boost/date_time.hpp>
+#include <curl/curl.h>
 #include <libxml/xpathInternals.h>
 
 #include "exception.hxx"
@@ -44,6 +46,29 @@
 
 namespace atom
 {
+    class CurlException : public std::exception
+    {
+        private:
+            std::string m_message;
+            CURLcode    m_code;
+
+        public:
+            CurlException( std::string message, CURLcode code ) :
+                exception( ),
+                m_message( message ),
+                m_code( code )
+            {
+            }
+
+            ~CurlException( ) throw () { }
+            virtual const char* what( ) const throw ();
+
+            CURLcode getErrorCode( ) const { return m_code; }
+            std::string getErrorMessage( ) const { return m_message; }
+
+            libcmis::Exception getCmisException ( ) const;
+    };
+
     /** Class used to decode a stream.
 
         An instance of this class can hold remaining un-decoded data to use
@@ -53,6 +78,8 @@ namespace atom
     {
         private:
             FILE* m_stream;
+            std::ostream* m_outStream;
+
             std::string m_encoding;
             unsigned long m_pendingValue;
             int m_pendingRank;
@@ -60,6 +87,7 @@ namespace atom
 
         public:
             EncodedData( FILE* stream );
+            EncodedData( std::ostream* stream );
             EncodedData( const EncodedData& rCopy );
 
             const EncodedData& operator=( const EncodedData& rCopy );
@@ -69,6 +97,7 @@ namespace atom
             void finish( );
 
         private:
+            void write( void* buf, size_t size, size_t nmemb );
             void decodeBase64( const char* buf, size_t len );
     };
     
@@ -79,7 +108,7 @@ namespace atom
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
     std::string httpGetRequest( std::string url, const std::string& username,
-                                const std::string& password, bool verbose ) throw ( libcmis::Exception );
+                                const std::string& password, bool verbose ) throw ( CurlException );
    
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 

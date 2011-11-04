@@ -64,8 +64,40 @@ namespace
 
 namespace atom
 {
+    const char* CurlException::what( ) const throw ()
+    {
+        stringstream buf;
+        buf << "CURL error - " << m_code << ": " << m_message;
+
+        return buf.str( ).c_str( );
+    }
+
+    libcmis::Exception CurlException::getCmisException( ) const
+    {
+        string msg;
+
+        if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) &&
+             ( string::npos != m_message.find( "403" ) ) )
+        {
+            msg = "Invalid credentials";
+        }
+
+        return libcmis::Exception( msg );
+    }
+
     EncodedData::EncodedData( FILE* stream ) :
         m_stream( stream ),
+        m_outStream( NULL ),
+        m_encoding( ),
+        m_pendingValue( 0 ),
+        m_pendingRank( 0 ),
+        m_missingBytes( 0 )
+    {
+    }
+    
+    EncodedData::EncodedData( ostream* stream ) :
+        m_stream( NULL ),
+        m_outStream( stream ),
         m_encoding( ),
         m_pendingValue( 0 ),
         m_pendingRank( 0 ),
@@ -75,6 +107,7 @@ namespace atom
 
     EncodedData::EncodedData( const EncodedData& rCopy ) :
         m_stream( rCopy.m_stream ),
+        m_outStream( rCopy.m_outStream ),
         m_encoding( rCopy.m_encoding ),
         m_pendingValue( rCopy.m_pendingValue ),
         m_pendingRank( rCopy.m_pendingRank ),
@@ -85,11 +118,20 @@ namespace atom
     const EncodedData& EncodedData::operator=( const EncodedData& rCopy )
     {
         m_stream = rCopy.m_stream;
+        m_outStream = rCopy.m_outStream;
         m_encoding = rCopy.m_encoding;
         m_pendingValue = rCopy.m_pendingValue;
         m_pendingRank = rCopy.m_pendingRank;
         m_missingBytes = rCopy.m_missingBytes;
         return *this;
+    }
+
+    void EncodedData::write( void* buf, size_t size, size_t nmemb )
+    {
+        if ( m_stream )
+            fwrite( buf, size, nmemb, m_stream );
+        else if ( m_outStream )
+            m_outStream->write( ( const char* )buf, size * nmemb );
     }
 
     void EncodedData::decode( void* buf, size_t size, size_t nmemb )
@@ -99,7 +141,7 @@ namespace atom
             decodeBase64( ( const char* )buf, size * nmemb );
         }
         else
-            fwrite( buf, size, nmemb, m_stream );
+            write( buf, size, nmemb );
     }
 
     void EncodedData::finish( )
@@ -115,7 +157,7 @@ namespace atom
             decoded[1] = ( m_pendingValue & 0xFF00 ) >> 8;
             decoded[2] = ( m_pendingValue & 0xFF );
 
-            fwrite( decoded, 1, 3 - missingBytes, m_stream );
+            write( decoded, 1, 3 - missingBytes );
 
             m_pendingRank = 0;
             m_pendingValue = 0;
@@ -152,7 +194,7 @@ namespace atom
                 decoded[1] = ( blockValue & 0xFF00 ) >> 8;
                 decoded[2] = ( blockValue & 0xFF );
 
-                fwrite( decoded, 1, 3 - missingBytes, m_stream );
+                write( decoded, 1, 3 - missingBytes );
 
                 byteRank = 0;
                 blockValue = 0;
@@ -199,7 +241,7 @@ namespace atom
         return doc;
     }
 
-    string httpGetRequest( string url, const string& username, const string& password, bool verbose ) throw ( libcmis::Exception )
+    string httpGetRequest( string url, const string& username, const string& password, bool verbose ) throw ( CurlException )
     {
         stringstream stream;
 
@@ -230,10 +272,7 @@ namespace atom
         // Perform the query
         CURLcode errCode = curl_easy_perform( pHandle );
         if ( CURLE_OK != errCode )
-        {
-            cerr << "Curl error code: " << errCode << endl;
-            throw libcmis::Exception( string( errBuff ) );
-        }
+            throw CurlException( string( errBuff ), errCode );
 
         curl_easy_cleanup( pHandle );
 

@@ -144,7 +144,16 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
     {
-        string buf  = getSession()->httpGetRequest( getInfosUrl() );
+        string buf;
+        try
+        {
+            buf  = getSession()->httpGetRequest( getInfosUrl() );
+        }
+        catch ( const atom::CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
+
         doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
 
         if ( NULL == doc )

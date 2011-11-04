@@ -146,14 +146,14 @@ FILE* AtomDocument::getContent( const char* path )
     return res;
 }
 
-istream getContent( )
+boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* pHandle = curl_easy_init( );
 
-    stringstream stream;
+    boost::shared_ptr< stringstream > stream( new stringstream( ios_base::out | ios_base::in | ios_base::binary ) );
 
-    atom::EncodedData* data = new atom::EncodedData( stream );
+    atom::EncodedData* data = new atom::EncodedData( stream.get() );
 
     curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
     curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, &lcl_getData );
@@ -172,17 +172,17 @@ istream getContent( )
         curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
     }
 
+    // Get some feedback when something wrong happens
+    char errBuff[CURL_ERROR_SIZE];
+    curl_easy_setopt( pHandle, CURLOPT_ERRORBUFFER, errBuff );
+    curl_easy_setopt( pHandle, CURLOPT_FAILONERROR, 1 );
+        
     // Perform the query
     CURLcode err = curl_easy_perform( pHandle );
-    if ( CURLE_OK == err )
-    {
-        data->finish();
-    }
-    else
-    {
-        // TODO Throw an exception with the error message and code
-    }
+    if ( CURLE_OK != err )
+        throw atom::CurlException( string( errBuff ), err ).getCmisException();
 
+    data->finish();
     delete data;
 
     curl_easy_cleanup( pHandle );

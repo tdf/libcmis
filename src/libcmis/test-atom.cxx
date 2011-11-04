@@ -46,6 +46,7 @@
 #define SERVER_PASSWORD string( "somepass" )
 
 #define TEST_UNEXISTANT_NODE_ID string( "99" )
+#define INVALID_ID_EXCEPTION_MSG string( "No such node: 99" )
 
 #define TEST_FOLDER_ID string( "101" )
 #define TEST_FOLDER_NAME string( "My_Folder-0-0" )
@@ -83,6 +84,7 @@ class AtomTest : public CppUnit::TestFixture
 
         void getChildrenTest( );
         void getContentTest( );
+        void getContentStreamTest( );
 
         // Other useful tests.
 
@@ -98,6 +100,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( parseDateTimeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -111,7 +114,7 @@ void AtomTest::getRepositoriesTest()
 
 void AtomTest::sessionCreationTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD);
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
 
     // Check for the mandatory collection URLs
     CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
@@ -146,25 +149,37 @@ void AtomTest::sessionCreationTest( )
 
 void AtomTest::getUnexistantFolderTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr folder = session.getFolder( TEST_UNEXISTANT_NODE_ID );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
 
-    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: no such folder",
-            NULL == folder.get( ) );
+    try
+    {
+        session.getFolder( TEST_UNEXISTANT_NODE_ID );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_ID_EXCEPTION_MSG , string( e.what() ) );
+    }
 }
 
 void AtomTest::getUnexistantObjectTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( TEST_UNEXISTANT_NODE_ID );
-
-    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: no such node",
-            NULL == object.get( ) );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    try
+    {
+        session.getObject( TEST_UNEXISTANT_NODE_ID );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_ID_EXCEPTION_MSG , string( e.what() ) );
+    }
 }
 
 void AtomTest::getFolderFromOtherNodeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::FolderPtr folder = session.getFolder( TEST_DOCUMENT_ID );
 
     CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: not a folder",
@@ -173,7 +188,7 @@ void AtomTest::getFolderFromOtherNodeTest( )
 
 void AtomTest::getFolderCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
 
     AtomFolder* atomFolder = dynamic_cast< AtomFolder* >( folder.get( ) );
@@ -193,7 +208,7 @@ void AtomTest::getFolderCreationFromUrlTest( )
 
 void AtomTest::getDocumentCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
 
     AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
@@ -215,7 +230,7 @@ void AtomTest::getDocumentCreationFromUrlTest( )
 
 void AtomTest::getChildrenTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
     vector< libcmis::ObjectPtr > children = folder->getChildren( );
@@ -239,7 +254,7 @@ void AtomTest::getChildrenTest( )
 
 void AtomTest::getContentTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -247,6 +262,28 @@ void AtomTest::getContentTest( )
 
     FILE* fd = document->getContent( );
     CPPUNIT_ASSERT_MESSAGE( "Temporary file with content should be returned", NULL != fd );
+}
+
+void AtomTest::getContentStreamTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    try
+    {
+        shared_ptr< istream >  is = document->getContentStream( );
+        CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
+        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", is->good() && !is->eof() );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
 }
 
 void AtomTest::parseDateTimeTest( )

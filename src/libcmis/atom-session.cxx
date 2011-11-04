@@ -86,9 +86,18 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
     m_aUriTemplates( ),
     m_verbose( verbose )
 {
-    // Pull the content from sAtomPubUrl and parse it
-    string buf = httpGetRequest( m_sAtomPubUrl );
-    
+    // Pull the content from sAtomPubUrl
+    string buf;
+    try
+    {
+        buf = httpGetRequest( m_sAtomPubUrl );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+   
+    // parse the content
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
 
     if ( NULL != pDoc )
@@ -137,7 +146,15 @@ list< string > AtomPubSession::getRepositories( string url, string username, str
     list< string > repos;
 
     // Parse the service document and get the workspaces
-    string buf = atom::httpGetRequest( url, username, password, verbose );
+    string buf;
+    try
+    {
+        buf = atom::httpGetRequest( url, username, password, verbose );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
    
     xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
     if ( NULL != pDoc )
@@ -236,12 +253,26 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     vars[URI_TEMPLATE_VAR_ID] = id;
     string url = UriTemplate::createUrl( pattern, vars );
 
-    string buf = httpGetRequest( url );
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
-    libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
-    xmlFreeDoc( doc );
-
-    return cmisObject;
+    try
+    {
+        string buf = httpGetRequest( url );
+        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
+        libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
+        xmlFreeDoc( doc );
+        return cmisObject;
+    }
+    catch ( const atom::CurlException& e )
+    {
+        if ( ( e.getErrorCode( ) == CURLE_HTTP_RETURNED_ERROR ) &&
+             ( string::npos != e.getErrorMessage( ).find( "404" ) ) )
+        {
+            string msg = "No such node: ";
+            msg += id;
+            throw libcmis::Exception( msg );
+        }
+        else
+            throw e.getCmisException();
+    }
 }
 
 void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
