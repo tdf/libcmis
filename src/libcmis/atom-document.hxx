@@ -50,6 +50,8 @@ class AtomDocument : public libcmis::Document, public AtomObject
         // Override content methods
         virtual FILE* getContent( const char* path = NULL );
         virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
+        virtual void setContentStream( std::istream& is, std::string contentType,
+                                       bool overwrite = true ) throw ( libcmis::Exception );
         virtual std::string getContentType( ) { return m_contentType; }
         virtual std::string getContentFilename( ) { return m_contentFilename; }
         virtual long getContentLength( ){ return m_contentLength; }

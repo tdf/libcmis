@@ -55,6 +55,8 @@
 #define TEST_DOCUMENT_ID string( "116" )
 #define TEST_DOCUMENT_NAME string( "My_Document-1-2" )
 #define TEST_DOCUMENT_TYPE string( "text/plain" )
+#define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
+#define TEST_SAMPLE_MIME_TYPE string( "plain/text" )
 
 #define TEST_CHILDREN_FOLDER_COUNT 2
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
@@ -85,6 +87,7 @@ class AtomTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void getContentTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
 
         // Other useful tests.
 
@@ -101,6 +104,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( parseDateTimeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -118,29 +122,29 @@ void AtomTest::sessionCreationTest( )
 
     // Check for the mandatory collection URLs
     CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
-            !session.getCollectionUrl( Collection::Root ).empty() );
+            !session.getWorkspace().getCollectionUrl( atom::Collection::Root ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "types collection URL missing",
-            !session.getCollectionUrl( Collection::Types ).empty() );
+            !session.getWorkspace().getCollectionUrl( atom::Collection::Types ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "query collection URL missing",
-            !session.getCollectionUrl( Collection::Query ).empty() );
+            !session.getWorkspace().getCollectionUrl( atom::Collection::Query ).empty() );
 
     // The optional collection URLs are present on InMemory, so check them
     CPPUNIT_ASSERT_MESSAGE( "checkedout collection URL missing",
-            !session.getCollectionUrl( Collection::CheckedOut ).empty() );
+            !session.getWorkspace().getCollectionUrl( atom::Collection::CheckedOut ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "unfiled collection URL missing",
-            !session.getCollectionUrl( Collection::Unfiled ).empty() );
+            !session.getWorkspace().getCollectionUrl( atom::Collection::Unfiled ).empty() );
 
     // Check for the mandatory URI template URLs
     CPPUNIT_ASSERT_MESSAGE( "objectbyid URI template URL missing",
-            !session.getUriTemplate( UriTemplate::ObjectById ).empty() );
+            !session.getWorkspace().getUriTemplate( atom::UriTemplate::ObjectById ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "objectbypath URI template URL missing",
-            !session.getUriTemplate( UriTemplate::ObjectByPath ).empty() );
+            !session.getWorkspace().getUriTemplate( atom::UriTemplate::ObjectByPath ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "typebyid URI template URL missing",
-            !session.getUriTemplate( UriTemplate::TypeById ).empty() );
+            !session.getWorkspace().getUriTemplate( atom::UriTemplate::TypeById ).empty() );
     
     // The optional URI template URL is present on InMemory, so check it
     CPPUNIT_ASSERT_MESSAGE( "query URI template URL missing",
-            !session.getUriTemplate( UriTemplate::Query ).empty() );
+            !session.getWorkspace().getUriTemplate( atom::UriTemplate::Query ).empty() );
 
     // Check that the root id is defined
     CPPUNIT_ASSERT_MESSAGE( "Root node ID is missing",
@@ -277,6 +281,37 @@ void AtomTest::getContentStreamTest( )
         shared_ptr< istream >  is = document->getContentStream( );
         CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
         CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", is->good() && !is->eof() );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void AtomTest::setContentStreamTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    try
+    {
+        stringstream is( TEST_SAMPLE_CONTENT );
+        document->setContentStream( is, TEST_SAMPLE_MIME_TYPE );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
+                SERVER_USERNAME, document->getLastModifiedBy( ) );
+
+        // Get the new content to check is has been properly uploaded
+        shared_ptr< istream > newIs = document->getContentStream( );
+        stringstream os;
+        os << newIs->rdbuf();
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
+                TEST_SAMPLE_CONTENT, os.str() );
     }
     catch ( const libcmis::Exception& e )
     {

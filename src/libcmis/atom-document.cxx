@@ -190,6 +190,10 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     return stream;
 }
 
+void AtomDocument::setContentStream( istream& is, string contentType, bool overwrite ) throw ( libcmis::Exception )
+{
+}
+
 string AtomDocument::toString( )
 {
     stringstream buf;

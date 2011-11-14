@@ -38,7 +38,7 @@
 
 using namespace std;
 
-string UriTemplate::createUrl( const string& pattern, map< string, string > variables )
+string atom::UriTemplate::createUrl( const string& pattern, map< string, string > variables )
 {
     string url( pattern );
 
@@ -81,9 +81,8 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
     m_sRepository( repository ),
     m_username( username ),
     m_password( password ),
-    m_sRootId( ),
-    m_aCollections( ),
-    m_aUriTemplates( ),
+    m_workspace( ),
+    m_repositoriesIds( ),
     m_verbose( verbose )
 {
     // Pull the content from sAtomPubUrl
@@ -98,43 +97,51 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
     }
    
     // parse the content
-    xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
 
-    if ( NULL != pDoc )
+    if ( NULL != doc )
     {
-        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
         // Register the Service Document namespaces
-        atom::registerNamespaces( pXPathCtx );
+        atom::registerNamespaces( xpathCtx );
 
-        if ( NULL != pXPathCtx )
+        if ( NULL != xpathCtx )
         {
-            // Get the collections
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), pXPathCtx );
-            if ( NULL != pXPathObj )
-                readCollections( pXPathObj->nodesetval );
-            xmlXPathFreeObject( pXPathObj );
+            string workspacesXPath( "//app:workspace" );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( workspacesXPath.c_str() ), xpathCtx );
 
-            // Get the URI templates
-            pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), pXPathCtx );
-            if ( NULL != pXPathObj )
-                readUriTemplates( pXPathObj->nodesetval );
-            xmlXPathFreeObject( pXPathObj );
-            
-            // Get the root node id
-            string infosXPath( "//cmisra:repositoryInfo[cmis:repositoryId='" );
-            infosXPath += m_sRepository;
-            infosXPath += "']/cmis:rootFolderId/text()";
-            m_sRootId = atom::getXPathValue( pXPathCtx, infosXPath );
+            if ( xpathObj != NULL )
+            {
+                int nbWorkspaces = 0;
+                if ( xpathObj->nodesetval )
+                    nbWorkspaces = xpathObj->nodesetval->nodeNr;
+
+                for ( int i = 0; i < nbWorkspaces; i++ )
+                {
+                    try
+                    {
+                        atom::Workspace ws( xpathObj->nodesetval->nodeTab[i] );
+                        if ( ws.getId( ) == m_sRepository )
+                            m_workspace = ws;
+
+                        m_repositoriesIds.push_back( ws.getId() );
+                    }
+                    catch ( const libcmis::Exception& e )
+                    {
+                        // Invalid repository, don't take care of this
+                    }
+                }
+            }
         }
-        xmlXPathFreeContext( pXPathCtx );
+        xmlXPathFreeContext( xpathCtx );
     }
     else
     {
         fprintf( stderr, "Failed to parse service document\n" );
     }
 
-    xmlFreeDoc( pDoc );
+    xmlFreeDoc( doc );
 }
 
 AtomPubSession::~AtomPubSession( )
@@ -195,19 +202,9 @@ list< string > AtomPubSession::getRepositories( string url, string username, str
     return repos;
 }
 
-string AtomPubSession::getCollectionUrl( Collection::Type type )
-{
-    return m_aCollections[ type ];
-}
-
-string AtomPubSession::getUriTemplate( UriTemplate::Type type )
-{
-    return m_aUriTemplates[ type ];
-}
-
 libcmis::FolderPtr AtomPubSession::getRootFolder()
 {
-    return getFolder( m_sRootId );
+    return getFolder( m_workspace.getRootId() );
 }
 
 libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
@@ -248,10 +245,10 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 
 libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Exception )
 {
-    string pattern = getUriTemplate( UriTemplate::ObjectById );
+    string pattern = m_workspace.getUriTemplate( atom::UriTemplate::ObjectById );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
-    string url = UriTemplate::createUrl( pattern, vars );
+    string url = atom::UriTemplate::createUrl( pattern, vars );
 
     try
     {
@@ -272,129 +269,6 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
         }
         else
             throw e.getCmisException();
-    }
-}
-
-void AtomPubSession::readCollections( xmlNodeSetPtr pNodeSet )
-{
-    int size = 0;
-    if ( pNodeSet )
-        size = pNodeSet->nodeNr;
-
-    for ( int i = 0; i < size; i++ )
-    {
-        xmlNodePtr pNode = pNodeSet->nodeTab[i];
-
-        // Look for the href property
-        xmlChar* pHref = xmlGetProp( pNode, BAD_CAST( "href" ) );
-        if ( pHref )
-        {
-            string collectionRef( ( char* )pHref );
-            xmlFree( pHref );
-
-            // Look for the cmisra:collectionType child
-            for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
-            {
-                // SharePoint CMIS implementation doesn't follow the spec:
-                // the cmisra namespace is omitted
-                bool isCollectionType = xmlStrEqual( pChild->name, BAD_CAST( "collectionType" ) );
-                if ( isCollectionType )
-                {
-                    xmlChar* pContent = xmlNodeGetContent( pChild );
-                    Collection::Type type = Collection::Root;
-                    bool typeDefined = false;
-
-                    if ( xmlStrEqual( pContent, BAD_CAST( "root" ) ) )
-                    {
-                        type = Collection::Root;
-                        typeDefined = true;
-                    }
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "types" ) ) )
-                    {
-                        type = Collection::Types;
-                        typeDefined = true;
-                    }
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
-                    {
-                        type = Collection::Query;
-                        typeDefined = true;
-                    }
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "checkedout" ) ) )
-                    {
-                        type = Collection::CheckedOut;
-                        typeDefined = true;
-                    }
-                    else if ( xmlStrEqual( pContent, BAD_CAST( "unfiled" ) ) )
-                    {
-                        type = Collection::Unfiled;
-                        typeDefined = true;
-                    }
-
-                    if ( typeDefined )
-                        m_aCollections[ type ] = collectionRef;
-
-                    xmlFree( pContent );
-                }
-            }
-        }
-    }
-}
-
-void AtomPubSession::readUriTemplates( xmlNodeSetPtr pNodeSet )
-{
-    int size = 0;
-    if ( pNodeSet )
-        size = pNodeSet->nodeNr;
-
-    for ( int i = 0; i < size; i++ )
-    {
-        xmlNodePtr pNode = pNodeSet->nodeTab[i];
-
-        string templateUri;
-        UriTemplate::Type type = UriTemplate::ObjectById;
-        bool typeDefined = false;
-
-        // Look for the cmisra:template and cmisra:type children
-        for ( xmlNodePtr pChild = pNode->children; pChild; pChild = pChild->next )
-        {
-            bool bIsTemplate = xmlStrEqual( pChild->name, BAD_CAST( "template" ) );
-            bool bIsType = xmlStrEqual( pChild->name, BAD_CAST( "type" ) );
-
-            if ( bIsTemplate )
-            {
-                xmlChar* pContent = xmlNodeGetContent( pChild );
-                templateUri = string( ( char * )pContent );
-                xmlFree( pContent );
-            }
-            else if ( bIsType )
-            {
-                xmlChar* pContent = xmlNodeGetContent( pChild );
-                if ( xmlStrEqual( pContent, BAD_CAST( "objectbyid" ) ) )
-                {
-                    type = UriTemplate::ObjectById;
-                    typeDefined = true;
-                }
-                else if ( xmlStrEqual( pContent, BAD_CAST( "objectbypath" ) ) )
-                {
-                    type = UriTemplate::ObjectByPath;
-                    typeDefined = true;
-                }
-                else if ( xmlStrEqual( pContent, BAD_CAST( "query" ) ) )
-                {
-                    type = UriTemplate::Query;
-                    typeDefined = true;
-                }
-                else if ( xmlStrEqual( pContent, BAD_CAST( "typebyid" ) ) )
-                {
-                    type = UriTemplate::TypeById;
-                    typeDefined = true;
-                }
-                xmlFree( pContent );
-            }
-        }
-
-        if ( !templateUri.empty() && typeDefined )
-            m_aUriTemplates[ type ] = templateUri;
     }
 }
 

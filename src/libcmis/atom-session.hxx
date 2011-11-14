@@ -37,29 +37,7 @@
 
 #include "exception.hxx"
 #include "session.hxx"
-
-struct Collection {
-    enum Type
-    {
-        Root,
-        Types,
-        Query,
-        CheckedOut,
-        Unfiled
-    };
-};
-
-struct UriTemplate {
-    enum Type
-    {
-        ObjectById,
-        ObjectByPath,
-        TypeById,
-        Query
-    };
-
-    static std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
-};
+#include "atom-workspace.hxx"
 
 class AtomPubSession : public libcmis::Session
 {
@@ -68,13 +46,9 @@ class AtomPubSession : public libcmis::Session
         std::string m_sRepository;
         std::string m_username;
         std::string m_password;
-        std::string m_sRootId;
+        atom::Workspace m_workspace;
 
-        // Collections URLs
-        std::map< Collection::Type, std::string > m_aCollections;
-
-        // URI templates
-        std::map< UriTemplate::Type, std::string > m_aUriTemplates;
+        std::vector< std::string > m_repositoriesIds;
 
         bool m_verbose;
 
@@ -88,15 +62,13 @@ class AtomPubSession : public libcmis::Session
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        std::string getCollectionUrl( Collection::Type );
-
-        std::string getUriTemplate( UriTemplate::Type );
-
-        std::string getRootId( ) { return m_sRootId; }
+        std::string getRootId( ) { return m_workspace.getRootId( ); }
 
         std::string getUsername( ) { return m_username; }
 
         std::string getPassword( ) { return m_password; }
+
+        atom::Workspace& getWorkspace( ) { return m_workspace; }
 
         // Utility methods
 
@@ -111,10 +83,6 @@ class AtomPubSession : public libcmis::Session
         virtual libcmis::FolderPtr getRootFolder();
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
-
-    private:
-        void readCollections( xmlNodeSetPtr pNodeSet );
-        void readUriTemplates( xmlNodeSetPtr pNodeSet );
 };
 
 #endif

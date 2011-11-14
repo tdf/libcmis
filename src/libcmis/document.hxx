@@ -80,6 +80,19 @@ namespace libcmis
               */
             virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( Exception ) = 0;
 
+            /** Set or replace the content stream of the document.
+
+                @param is the input stream containing the new data for the content stream
+                @param contentType the mime-type of the new content stream
+                @param overwrite if set to false, don't overwrite the content stream if one is already set.
+
+                @throw Exception if anything happens during the upload like a wrong authentication, 
+                                no rights to set the stream, server doesn't have the ContentStreamUpdatability
+                                capability.
+              */
+            virtual void setContentStream( std::istream& is, std::string contentType,
+                                           bool overwrite = true ) throw ( Exception ) = 0;
+
             /** Get the content mime type.
               */
             virtual std::string getContentType( ) = 0;
