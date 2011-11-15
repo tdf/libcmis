@@ -48,7 +48,7 @@ class AtomPubSession : public libcmis::Session
         std::string m_password;
         atom::Workspace m_workspace;
 
-        std::vector< std::string > m_repositoriesIds;
+        std::list< std::string > m_repositoriesIds;
 
         bool m_verbose;
 

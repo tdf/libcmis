@@ -150,56 +150,8 @@ AtomPubSession::~AtomPubSession( )
 
 list< string > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
-    list< string > repos;
-
-    // Parse the service document and get the workspaces
-    string buf;
-    try
-    {
-        buf = atom::httpGetRequest( url, username, password, verbose );
-    }
-    catch ( const atom::CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-   
-    xmlDocPtr pDoc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
-    if ( NULL != pDoc )
-    {
-        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( pDoc );
-
-        // Register the Service Document namespaces
-        atom::registerNamespaces( pXPathCtx );
-
-        if ( NULL != pXPathCtx )
-        {
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:repositoryId/text()" ), pXPathCtx );
-            if ( NULL != pXPathObj )
-            {
-                int size = 0;
-                if ( pXPathObj->nodesetval )
-                    size = pXPathObj->nodesetval->nodeNr;
-                
-                for ( int i = 0; i < size; i++ )
-                {
-                    xmlNodePtr pNode = pXPathObj->nodesetval->nodeTab[i];
-                    string workspaceId( ( char* )pNode->content );
-                    repos.push_back( workspaceId );
-                }
-            }
-
-            xmlXPathFreeObject( pXPathObj );
-        }
-        xmlXPathFreeContext( pXPathCtx );
-        
-    }
-    else
-    {
-        fprintf( stderr, "Failed to parse service document\n" );
-    }
-    xmlFreeDoc( pDoc );
-
-    return repos;
+    AtomPubSession session( url, string(), username, password, verbose );
+    return session.m_repositoriesIds;
 }
 
 libcmis::FolderPtr AtomPubSession::getRootFolder()
