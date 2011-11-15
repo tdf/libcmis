@@ -32,6 +32,7 @@
 #include <map>
 #include <string>
 
+#include <curl/curl.h>
 #include <libxml/xmlstring.h>
 #include <libxml/xpath.h>
 
@@ -84,5 +85,31 @@ class AtomPubSession : public libcmis::Session
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
 };
+
+namespace atom
+{
+    class CurlException : public std::exception
+    {
+        private:
+            std::string m_message;
+            CURLcode    m_code;
+
+        public:
+            CurlException( std::string message, CURLcode code ) :
+                exception( ),
+                m_message( message ),
+                m_code( code )
+            {
+            }
+
+            ~CurlException( ) throw () { }
+            virtual const char* what( ) const throw ();
+
+            CURLcode getErrorCode( ) const { return m_code; }
+            std::string getErrorMessage( ) const { return m_message; }
+
+            libcmis::Exception getCmisException ( ) const;
+    };
+}
 
 #endif

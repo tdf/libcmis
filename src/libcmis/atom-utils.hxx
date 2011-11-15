@@ -32,7 +32,6 @@
 #include <string>
 
 #include <boost/date_time.hpp>
-#include <curl/curl.h>
 #include <libxml/xpathInternals.h>
 
 #include "exception.hxx"
@@ -46,29 +45,6 @@
 
 namespace atom
 {
-    class CurlException : public std::exception
-    {
-        private:
-            std::string m_message;
-            CURLcode    m_code;
-
-        public:
-            CurlException( std::string message, CURLcode code ) :
-                exception( ),
-                m_message( message ),
-                m_code( code )
-            {
-            }
-
-            ~CurlException( ) throw () { }
-            virtual const char* what( ) const throw ();
-
-            CURLcode getErrorCode( ) const { return m_code; }
-            std::string getErrorMessage( ) const { return m_message; }
-
-            libcmis::Exception getCmisException ( ) const;
-    };
-
     /** Class used to decode a stream.
 
         An instance of this class can hold remaining un-decoded data to use
@@ -107,9 +83,6 @@ namespace atom
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
-    std::string httpGetRequest( std::string url, const std::string& username,
-                                const std::string& password, bool verbose ) throw ( CurlException );
-   
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 
     boost::posix_time::ptime parseDateTime( std::string dateTimeStr );

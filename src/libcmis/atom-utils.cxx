@@ -35,13 +35,6 @@ using namespace std;
 
 namespace
 {
-    size_t lcl_bufferData( void* buffer, size_t size, size_t nmemb, void* data )
-    {
-        stringstream& out = *( static_cast< stringstream* >( data ) );
-        out.write( ( const char* ) buffer, size * nmemb );
-        return nmemb;
-    }
-
     bool lcl_getBufValue( char encoded, int* value )
     {
         static const char chars64[]=
@@ -64,27 +57,6 @@ namespace
 
 namespace atom
 {
-    const char* CurlException::what( ) const throw ()
-    {
-        stringstream buf;
-        buf << "CURL error - " << m_code << ": " << m_message;
-
-        return buf.str( ).c_str( );
-    }
-
-    libcmis::Exception CurlException::getCmisException( ) const
-    {
-        string msg;
-
-        if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) &&
-             ( string::npos != m_message.find( "403" ) ) )
-        {
-            msg = "Invalid credentials";
-        }
-
-        return libcmis::Exception( msg );
-    }
-
     EncodedData::EncodedData( FILE* stream ) :
         m_stream( stream ),
         m_outStream( NULL ),
@@ -239,44 +211,6 @@ namespace atom
 
         xmlDocSetRootElement( doc, entryCopy );
         return doc;
-    }
-
-    string httpGetRequest( string url, const string& username, const string& password, bool verbose ) throw ( CurlException )
-    {
-        stringstream stream;
-
-        curl_global_init( CURL_GLOBAL_ALL );
-        CURL* pHandle = curl_easy_init( );
-
-        // Grab something from the web
-        curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
-        curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-        curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, &stream );
-
-        // Set the credentials
-        if ( !username.empty() && !password.empty() )
-        {
-            curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-            curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
-            curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
-        }
-
-        // Get some feedback when something wrong happens
-        char errBuff[CURL_ERROR_SIZE];
-        curl_easy_setopt( pHandle, CURLOPT_ERRORBUFFER, errBuff );
-        curl_easy_setopt( pHandle, CURLOPT_FAILONERROR, 1 );
-
-        if ( verbose )
-            curl_easy_setopt( pHandle, CURLOPT_VERBOSE, 1 );
-
-        // Perform the query
-        CURLcode errCode = curl_easy_perform( pHandle );
-        if ( CURLE_OK != errCode )
-            throw CurlException( string( errBuff ), errCode );
-
-        curl_easy_cleanup( pHandle );
-
-        return stream.str();
     }
 
     boost::posix_time::ptime parseDateTime( string dateTimeStr )
