@@ -241,7 +241,7 @@ libcmis::FolderPtr AtomPubSession::getFolder( string id )
     return folder;
 }
 
-string AtomPubSession::httpGetRequest( string url )
+string AtomPubSession::httpGetRequest( string url ) throw ( atom::CurlException )
 {
     stringstream stream;
 
@@ -249,9 +249,20 @@ string AtomPubSession::httpGetRequest( string url )
     CURL* pHandle = curl_easy_init( );
 
     // Grab something from the web
-    curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
     curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
     curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, &stream );
+
+    httpRunRequest( pHandle, url );
+
+    curl_easy_cleanup( pHandle );
+
+    return stream.str();
+}
+
+void AtomPubSession::httpRunRequest( CURL* pHandle, string url ) throw ( atom::CurlException )
+{
+    // Grab something from the web
+    curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
 
     // Set the credentials
     if ( !m_username.empty() && !m_password.empty() )
@@ -273,10 +284,6 @@ string AtomPubSession::httpGetRequest( string url )
     CURLcode errCode = curl_easy_perform( pHandle );
     if ( CURLE_OK != errCode )
         throw atom::CurlException( string( errBuff ), errCode );
-
-    curl_easy_cleanup( pHandle );
-
-    return stream.str();
 }
 
 namespace atom

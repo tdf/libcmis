@@ -99,7 +99,7 @@ AtomDocument::~AtomDocument( )
 FILE* AtomDocument::getContent( const char* path )
 {
     curl_global_init( CURL_GLOBAL_ALL );
-    CURL* pHandle = curl_easy_init( );
+    CURL* handle = curl_easy_init( );
 
     FILE* res = NULL;
     if ( NULL == path )
@@ -109,39 +109,33 @@ FILE* AtomDocument::getContent( const char* path )
 
     atom::EncodedData* data = new atom::EncodedData( res );
 
-    curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, &lcl_getData );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, data );
+    curl_easy_setopt( handle, CURLOPT_URL, m_contentUrl.c_str() );
+    curl_easy_setopt( handle, CURLOPT_WRITEFUNCTION, &lcl_getData );
+    curl_easy_setopt( handle, CURLOPT_WRITEDATA, data );
 
-    curl_easy_setopt( pHandle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEHEADER, data );
+    curl_easy_setopt( handle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
+    curl_easy_setopt( handle, CURLOPT_WRITEHEADER, data );
+
+    try
+    {
+        getSession()->httpRunRequest( handle, m_contentUrl );
         
-    // Set the credentials
-    string username = getSession()->getUsername();
-    string password = getSession()->getPassword();
-    if ( !username.empty() && !password.empty() )
-    {
-        curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-        curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
-        curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
-    }
-
-    // Perform the query
-    CURLcode err = curl_easy_perform( pHandle );
-    if ( CURLE_OK == err )
-    {
         data->finish();
         rewind( res );
+
+        delete data;
+        curl_easy_cleanup( handle );
     }
-    else
+    catch ( const atom::CurlException& e )
     {
         fclose( res );
         res = NULL;
+
+        delete data;
+        curl_easy_cleanup( handle );
+
+        throw e;
     }
-
-    delete data;
-
-    curl_easy_cleanup( pHandle );
 
     return res;
 }
@@ -149,43 +143,33 @@ FILE* AtomDocument::getContent( const char* path )
 boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
 {
     curl_global_init( CURL_GLOBAL_ALL );
-    CURL* pHandle = curl_easy_init( );
+    CURL* handle = curl_easy_init( );
 
     boost::shared_ptr< stringstream > stream( new stringstream( ios_base::out | ios_base::in | ios_base::binary ) );
 
     atom::EncodedData* data = new atom::EncodedData( stream.get() );
 
-    curl_easy_setopt( pHandle, CURLOPT_URL, m_contentUrl.c_str() );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, &lcl_getData );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, data );
+    curl_easy_setopt( handle, CURLOPT_WRITEFUNCTION, &lcl_getData );
+    curl_easy_setopt( handle, CURLOPT_WRITEDATA, data );
 
-    curl_easy_setopt( pHandle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEHEADER, data );
-        
-    // Set the credentials
-    string username = getSession()->getUsername();
-    string password = getSession()->getPassword();
-    if ( !username.empty() && !password.empty() )
+    curl_easy_setopt( handle, CURLOPT_HEADERFUNCTION, lcl_getEncoding );
+    curl_easy_setopt( handle, CURLOPT_WRITEHEADER, data );
+
+    try
     {
-        curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-        curl_easy_setopt( pHandle, CURLOPT_USERNAME, username.c_str() );
-        curl_easy_setopt( pHandle, CURLOPT_PASSWORD, password.c_str() );
+        getSession()->httpRunRequest( handle, m_contentUrl );
+        data->finish();
+    
+        delete data;
+        curl_easy_cleanup( handle );
     }
+    catch ( const atom::CurlException& e )
+    {
+        delete data;
+        curl_easy_cleanup( handle );
 
-    // Get some feedback when something wrong happens
-    char errBuff[CURL_ERROR_SIZE];
-    curl_easy_setopt( pHandle, CURLOPT_ERRORBUFFER, errBuff );
-    curl_easy_setopt( pHandle, CURLOPT_FAILONERROR, 1 );
-        
-    // Perform the query
-    CURLcode err = curl_easy_perform( pHandle );
-    if ( CURLE_OK != err )
-        throw atom::CurlException( string( errBuff ), err ).getCmisException();
-
-    data->finish();
-    delete data;
-
-    curl_easy_cleanup( pHandle );
+        throw e;
+    }
 
     return stream;
 }
