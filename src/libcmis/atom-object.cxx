@@ -157,11 +157,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
 
         if ( NULL == doc )
-        {
-            // TODO replace by an exception
-            fprintf( stderr, "Failed to parse content infos\n" );
-            return;
-        }
+            throw libcmis::Exception( "Failed to parse object infos" );
 
     }
 
@@ -198,6 +194,10 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 
     if ( NULL != pXPathCtx )
     {
+        // Get the infos URL as we may not have it
+        string selfReq( "//atom:link[@rel='self']/@href" );
+        m_infosUrl = atom::getXPathValue( pXPathCtx, selfReq ) ;
+
         // Get the name
         string nameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:name']/cmis:value/text()" );
         m_name = atom::getXPathValue( pXPathCtx, nameReq );
@@ -226,7 +226,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         string lastModifByReq( "//cmis:propertyString[@propertyDefinitionId='cmis:lastModifiedBy']/cmis:value/text()" );
         m_lastModifiedBy = atom::getXPathValue( pXPathCtx, lastModifByReq );
         
-        // Get the kast modification date
+        // Get the last modification date
         string lastModifReq( "//cmis:propertyDateTime[@propertyDefinitionId='cmis:lastModificationDate']/cmis:value/text()" );
         m_lastModificationDate = atom::parseDateTime( atom::getXPathValue( pXPathCtx, lastModifReq ) );
 

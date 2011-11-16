@@ -46,6 +46,15 @@ namespace
         out.write( ( const char* ) buffer, size * nmemb );
         return nmemb;
     }
+
+    size_t lcl_readStream( void* buffer, size_t size, size_t nmemb, void* data )
+    {
+        istream& is = *( static_cast< istream* >( data ) );
+        char* out = ( char * ) buffer;
+        is.read( out, size * nmemb );
+
+        return is.gcount( ) / size;
+    }
 }
 
 string atom::UriTemplate::createUrl( const string& pattern, map< string, string > variables )
@@ -147,9 +156,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
         xmlXPathFreeContext( xpathCtx );
     }
     else
-    {
-        fprintf( stderr, "Failed to parse service document\n" );
-    }
+        throw libcmis::Exception( "Failed to parse service document" );
 
     xmlFreeDoc( doc );
 }
@@ -259,6 +266,28 @@ string AtomPubSession::httpGetRequest( string url ) throw ( atom::CurlException 
     return stream.str();
 }
 
+void AtomPubSession::httpPutRequest( string url, istream& is, string contentType ) throw ( atom::CurlException )
+{
+    curl_global_init( CURL_GLOBAL_ALL );
+    CURL* handle = curl_easy_init( );
+   
+    // Get the stream length
+    is.seekg( 0, ios::end );
+    long size = is.tellg( );
+    is.seekg( 0, ios::beg );
+    curl_easy_setopt( handle, CURLOPT_INFILESIZE, size );
+    curl_easy_setopt( handle, CURLOPT_READDATA, &is );
+    curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
+    curl_easy_setopt( handle, CURLOPT_UPLOAD, 1 );
+
+    // TODO Define a CURLOPT_IOCTLFUNCTION callback to rewind in
+    // multipass authentication cases (like for SharePoint)
+
+    httpRunRequest( handle, url );
+
+    curl_easy_cleanup( handle );
+}
+
 void AtomPubSession::httpRunRequest( CURL* pHandle, string url ) throw ( atom::CurlException )
 {
     // Grab something from the web
@@ -283,7 +312,7 @@ void AtomPubSession::httpRunRequest( CURL* pHandle, string url ) throw ( atom::C
     // Perform the query
     CURLcode errCode = curl_easy_perform( pHandle );
     if ( CURLE_OK != errCode )
-        throw atom::CurlException( string( errBuff ), errCode );
+        throw atom::CurlException( string( errBuff ), errCode, url );
 }
 
 namespace atom
@@ -304,6 +333,16 @@ namespace atom
              ( string::npos != m_message.find( "403" ) ) )
         {
             msg = "Invalid credentials";
+        }
+        else if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) &&
+             ( string::npos != m_message.find( "404" ) ) )
+        {
+            msg = "Invalid URL: " + m_url;
+        }
+        else
+        {
+            msg = what();
+            msg += ": " + m_url;
         }
 
         return libcmis::Exception( msg );

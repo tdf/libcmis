@@ -28,6 +28,7 @@
 #ifndef _ATOM_SESSION_HXX_
 #define _ATOM_SESSION_HXX_
 
+#include <istream>
 #include <list>
 #include <map>
 #include <string>
@@ -47,12 +48,14 @@ namespace atom
         private:
             std::string m_message;
             CURLcode    m_code;
+            std::string m_url;
 
         public:
-            CurlException( std::string message, CURLcode code ) :
+            CurlException( std::string message, CURLcode code, std::string url ) :
                 exception( ),
                 m_message( message ),
-                m_code( code )
+                m_code( code ),
+                m_url( url )
             {
             }
 
@@ -104,6 +107,7 @@ class AtomPubSession : public libcmis::Session
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         std::string httpGetRequest( std::string url ) throw ( atom::CurlException );
+        void httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
 
         void httpRunRequest( CURL* handle, std::string url ) throw ( atom::CurlException );
 

@@ -303,15 +303,17 @@ void AtomTest::setContentStreamTest( )
         stringstream is( TEST_SAMPLE_CONTENT );
         document->setContentStream( is, TEST_SAMPLE_MIME_TYPE );
 
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
-                SERVER_USERNAME, document->getLastModifiedBy( ) );
-
         // Get the new content to check is has been properly uploaded
         shared_ptr< istream > newIs = document->getContentStream( );
         stringstream os;
         os << newIs->rdbuf();
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
                 TEST_SAMPLE_CONTENT, os.str() );
+       
+        // Testing other values like LastModifiedBy or LastModificationTime
+        // is server dependent... don't do it. 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
+                ( long )TEST_SAMPLE_CONTENT.size(), document->getContentLength() );
     }
     catch ( const libcmis::Exception& e )
     {

@@ -134,7 +134,7 @@ FILE* AtomDocument::getContent( const char* path )
         delete data;
         curl_easy_cleanup( handle );
 
-        throw e;
+        throw e.getCmisException( );
     }
 
     return res;
@@ -168,7 +168,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
         delete data;
         curl_easy_cleanup( handle );
 
-        throw e;
+        throw e.getCmisException( );
     }
 
     return stream;
@@ -176,6 +176,26 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
 
 void AtomDocument::setContentStream( istream& is, string contentType, bool overwrite ) throw ( libcmis::Exception )
 {
+    string overwriteStr( "false" );
+    if ( overwrite )
+        overwriteStr = "true";
+
+    string putUrl( m_contentUrl );
+    if ( putUrl.find( '?' ) != string::npos )
+        putUrl += "&";
+    else
+        putUrl += "?";
+    putUrl += "overwriteFlag=" + overwriteStr;
+
+    try
+    {
+        getSession()->httpPutRequest( putUrl, is, contentType );
+        refresh( );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 }
 
 string AtomDocument::toString( )
