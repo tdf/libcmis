@@ -241,6 +241,35 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     }
 }
 
+libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmis::Exception )
+{
+    string pattern = m_workspace.getUriTemplate( atom::UriTemplate::ObjectByPath );
+    map< string, string > vars;
+    vars[URI_TEMPLATE_VAR_PATH] = path;
+    string url = atom::UriTemplate::createUrl( pattern, vars );
+
+    try
+    {
+        string buf = httpGetRequest( url );
+        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
+        libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
+        xmlFreeDoc( doc );
+        return cmisObject;
+    }
+    catch ( const atom::CurlException& e )
+    {
+        if ( ( e.getErrorCode( ) == CURLE_HTTP_RETURNED_ERROR ) &&
+             ( string::npos != e.getErrorMessage( ).find( "404" ) ) )
+        {
+            string msg = "No node corresponding to path: ";
+            msg += path;
+            throw libcmis::Exception( msg );
+        }
+        else
+            throw e.getCmisException();
+    }
+}
+
 libcmis::FolderPtr AtomPubSession::getFolder( string id )
 {
     libcmis::ObjectPtr object = getObject( id );

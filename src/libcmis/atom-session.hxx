@@ -116,6 +116,8 @@ class AtomPubSession : public libcmis::Session
         virtual libcmis::FolderPtr getRootFolder();
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
+        
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
 };
 
 #endif

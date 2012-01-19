@@ -41,8 +41,6 @@
 #define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
 #define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
 
-#define URI_TEMPLATE_VAR_ID std::string( "id" )
-
 namespace atom
 {
     /** Class used to decode a stream.

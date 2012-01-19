@@ -187,6 +187,29 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "show-by-path" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                // Get the paths of the objects to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node paths to show as command args" );
+
+                vector< string > objPaths = m_vm["args"].as< vector< string > >( );
+
+
+                for ( vector< string >::iterator it = objPaths.begin(); it != objPaths.end(); it++ )
+                {
+                    libcmis::ObjectPtr cmisObj = session->getObjectByPath( *it );
+                    cout << "------------------------------------------------" << endl;
+                    if ( cmisObj.get() )
+                        cout << cmisObj->toString() << endl;
+                    else
+                        cout << "No such node: " << *it << endl;
+                }
+
+                delete session;
+            }
             else if ( "get-content" == command )
             {
                 libcmis::Session* session = getSession( );
@@ -257,6 +280,8 @@ void CmisClient::printHelp( )
             "           Dump the root node of the repository." << endl;
     cerr << "   show-by-id <Node Id 1> [... <Node Id N>]\n"
             "           Dumps the nodes informations for all the ids." << endl;
+    cerr << "   show-by-path <Node Path 1> [... <Node Path N>]\n"
+            "           Dumps the nodes informations for all the paths." << endl;
     cerr << "   get-content <Node Id>\n"
             "           Saves the stream of the content node in the\n"
             "           current folder. Any existing file is overwritten." << endl;

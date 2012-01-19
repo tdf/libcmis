@@ -62,6 +62,10 @@
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
 #define TEST_CHILDREN_COUNT vector<libcmis::ObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
+#define TEST_PATH_VALID string( "/My_Folder-0-0/My_Document-1-2" )
+#define TEST_PATH_INVALID string( "/some/dummy/path" )
+#define INVALID_PATH_EXCEPTION_MSG string( "No node corresponding to path: /some/dummy/path" )
+
 using namespace boost;
 using namespace std;
 
@@ -81,6 +85,8 @@ class AtomTest : public CppUnit::TestFixture
         void getUnexistantObjectTest( );
         void getFolderFromOtherNodeTest( );
         void getDocumentCreationFromUrlTest( );
+        void getByPathValidTest( );
+        void getByPathInvalidTest( );
 
         // Node operations tests
 
@@ -101,6 +107,8 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getUnexistantObjectTest );
         CPPUNIT_TEST( getFolderFromOtherNodeTest );
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
+        CPPUNIT_TEST( getByPathValidTest );
+        CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
@@ -230,6 +238,37 @@ void AtomTest::getDocumentCreationFromUrlTest( )
 
     // Don't test the exact value... the content is changing at each restart of the InMemory server
     CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 0 < atomDocument->getContentLength( ) );
+}
+
+void AtomTest::getByPathValidTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    try
+    {
+        libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_VALID );
+
+        CPPUNIT_ASSERT_MESSAGE( "Missing return object", object.get() );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void AtomTest::getByPathInvalidTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    try
+    {
+        libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_INVALID );
+        CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_PATH_EXCEPTION_MSG , string( e.what() ) );
+    }
 }
 
 void AtomTest::getChildrenTest( )

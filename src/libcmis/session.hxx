@@ -44,7 +44,11 @@ namespace libcmis
             
             /** Get a CMIS object from its ID.
               */
-            virtual ObjectPtr getObject( std::string id ) = 0;
+            virtual ObjectPtr getObject( std::string id ) throw ( Exception ) = 0;
+
+            /** Get a CMIS object from one of its path.
+              */
+            virtual ObjectPtr getObjectByPath( std::string path ) throw ( Exception ) = 0;
     };
 }
 

@@ -35,6 +35,9 @@
 
 #include "exception.hxx"
 
+#define URI_TEMPLATE_VAR_ID std::string( "id" )
+#define URI_TEMPLATE_VAR_PATH std::string( "path" )
+
 namespace atom
 {
     struct Collection {
