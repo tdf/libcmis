@@ -34,6 +34,7 @@
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "allowable-actions.hxx"
 #include "exception.hxx"
 
 // for compatibility with libcmis in LO tree
@@ -61,6 +62,8 @@ namespace libcmis
             virtual boost::posix_time::ptime getLastModificationDate( ) = 0;
 
             virtual std::string getChangeToken( ) = 0;
+
+            virtual boost::shared_ptr< AllowableActions > getAllowableActions( ) = 0;
 
             /** Reload the data from the server.
               */

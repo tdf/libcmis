@@ -84,6 +84,8 @@ namespace atom
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 
     boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
+
+    bool parseBool( std::string str ) throw ( libcmis::Exception );
 }
 
 #endif

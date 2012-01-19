@@ -98,6 +98,7 @@ class AtomTest : public CppUnit::TestFixture
         // Other useful tests.
 
         void parseDateTimeTest( );
+        void parseBoolTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -114,6 +115,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( parseDateTimeTest );
+        CPPUNIT_TEST( parseBoolTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -422,6 +424,33 @@ void AtomTest::parseDateTimeTest( )
         posix_time::ptime expected( expDate, expTime );
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
+    }
+}
+
+void AtomTest::parseBoolTest( )
+{
+    // 'true' test
+    {
+        bool result = atom::parseBool( string( "true" ) );
+        CPPUNIT_ASSERT_MESSAGE( "'true' can't be parsed properly", result );
+    }
+    
+    // '1' test
+    {
+        bool result = atom::parseBool( string( "1" ) );
+        CPPUNIT_ASSERT_MESSAGE( "'1' can't be parsed properly", result );
+    }
+
+    // 'false' test
+    {
+        bool result = atom::parseBool( string( "false" ) );
+        CPPUNIT_ASSERT_MESSAGE( "'false' can't be parsed properly", !result );
+    }
+    
+    // '0' test
+    {
+        bool result = atom::parseBool( string( "0" ) );
+        CPPUNIT_ASSERT_MESSAGE( "'0' can't be parsed properly", !result );
     }
 }
 

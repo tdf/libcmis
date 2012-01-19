@@ -52,7 +52,8 @@ AtomObject::AtomObject( AtomPubSession* session, string url ) throw ( libcmis::E
     m_creationDate( ),
     m_lastModifiedBy( ),
     m_lastModificationDate( ),
-    m_changeToken( )
+    m_changeToken( ),
+    m_allowableActions( )
 {
 }
 
@@ -68,7 +69,8 @@ AtomObject::AtomObject( const AtomObject& copy ) :
     m_creationDate( copy.m_creationDate ),
     m_lastModifiedBy( copy.m_lastModifiedBy ),
     m_lastModificationDate( copy.m_lastModificationDate ),
-    m_changeToken( copy.m_changeToken )
+    m_changeToken( copy.m_changeToken ),
+    m_allowableActions( copy.m_allowableActions )
 {
 }
 
@@ -86,6 +88,7 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     m_lastModifiedBy = copy.m_lastModifiedBy;
     m_lastModificationDate = copy.m_lastModificationDate;
     m_changeToken = copy.m_changeToken;
+    m_allowableActions = copy.m_allowableActions;
 
     return *this;
 }
@@ -139,6 +142,11 @@ string AtomObject::getChangeToken( )
     return m_changeToken;
 }
 
+shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
+{
+    return m_allowableActions;
+}
+
 void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 {
     bool createdDoc = ( NULL == doc );
@@ -189,7 +197,6 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
 
-    // Register the Service Document namespaces
     atom::registerNamespaces( pXPathCtx );
 
     if ( NULL != pXPathCtx )
@@ -234,7 +241,16 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         string changeTokenReq( "//cmis:propertyString[@propertyDefinitionId='cmis:changeToken']/cmis:value/text()" );
         m_changeToken = atom::getXPathValue( pXPathCtx, changeTokenReq );
 
+        // Get the URL to the allowableActions
+        string allowableActionsReq( "//atom:link[@rel='http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions']/attribute::href" );
+        string allowableActionsUrl = atom::getXPathValue( pXPathCtx, allowableActionsReq );
+        if ( !allowableActionsUrl.empty() )
+        {
+            shared_ptr< AtomAllowableActions > allowableActions( new AtomAllowableActions( m_session, allowableActionsUrl ) );
+            m_allowableActions.swap( allowableActions );
+        }
     }
+
     xmlXPathFreeContext( pXPathCtx );
 }
 

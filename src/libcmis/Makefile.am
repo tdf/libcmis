@@ -5,7 +5,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	folder.hxx \
 	object.hxx \
 	session.hxx \
-	session-factory.hxx 
+	session-factory.hxx \
+    allowable-actions.hxx	
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -22,7 +23,10 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-utils.hxx \
 	atom-utils.cxx \
 	atom-workspace.hxx \
-	atom-workspace.cxx
+	atom-workspace.cxx \
+	atom-allowable-actions.hxx \
+	atom-allowable-actions.cxx \
+	allowable-actions.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined
 

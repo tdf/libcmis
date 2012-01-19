@@ -259,4 +259,16 @@ namespace atom
 
         return t;
     }
+
+    bool parseBool( string boolStr ) throw ( libcmis::Exception )
+    {
+        bool value = false;
+        if ( boolStr == "true" || boolStr == "1" )
+            value = true;
+        else if ( boolStr == "false" || boolStr == "0" )
+            value = false;
+        else
+            throw libcmis::Exception( "Invalid xsd:boolean input" );
+        return value;
+    }
 }

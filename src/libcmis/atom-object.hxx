@@ -30,6 +30,7 @@
 
 #include <libxml/tree.h>
 
+#include "atom-allowable-actions.hxx"
 #include "object.hxx"
 
 class AtomPubSession;
@@ -54,6 +55,8 @@ class AtomObject : public virtual libcmis::Object
 
         std::string m_changeToken;
 
+        boost::shared_ptr< AtomAllowableActions > m_allowableActions;
+
     public:
         AtomObject( AtomPubSession* session, std::string url ) throw ( libcmis::Exception );
         AtomObject( const AtomObject& copy );
@@ -74,6 +77,7 @@ class AtomObject : public virtual libcmis::Object
         virtual boost::posix_time::ptime getLastModificationDate( );
 
         virtual std::string getChangeToken( );
+        virtual boost::shared_ptr< libcmis::AllowableActions > getAllowableActions( );
 
         /** Reload the data from the server.
               */
