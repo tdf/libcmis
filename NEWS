@@ -15,3 +15,6 @@
     * Handle all the authentication methods that can be handled by
       libcurl like Basic, NTLM...
     * Decode base64 encoded content sent by SharePoint
+    * Set the content of a document
+    * Query nodes by path
+    * Get the allowable actions for a node
