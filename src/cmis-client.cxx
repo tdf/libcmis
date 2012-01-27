@@ -271,7 +271,7 @@ options_description CmisClient::getOptionsDescription( )
 
 void CmisClient::printHelp( )
 {
-    cerr << "CmisClient [options] [command] arguments" << endl;
+    cerr << "cmis-client [options] [command] arguments" << endl;
 
     cerr << endl << "Commands" << endl;
     cerr << "   list-repos\n"

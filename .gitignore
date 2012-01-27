@@ -24,3 +24,4 @@ test-atom
 cmis-client
 test-server
 *.tar.gz
+*.1

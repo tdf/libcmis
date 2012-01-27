@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = src doc
 ACLOCAL_AMFLAGS = -I m4
 
 pcfiles = libcmis-@LIBCMIS_API_VERSION@.pc

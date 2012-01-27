@@ -44,6 +44,12 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_LIBTOOL_WIN32_DLL
 
+# TODO Check for docbook-to-man
+AC_CHECK_PROG(DOCBOOK2X,[docbook-to-man],[docbook2X])
+if test "x$DOCBOOK2X" = "x"; then
+    AC_MSG_ERROR([docbook-to-man is missing. Install docbook2X package.])
+fi
+
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
 	[enable_werror="$enableval"],
@@ -105,7 +111,8 @@ AC_TYPE_SIZE_T
 AC_CONFIG_FILES([Makefile
 	libcmis.pc
 	src/Makefile
-	src/libcmis/Makefile])
+	src/libcmis/Makefile
+	doc/Makefile])
 AC_OUTPUT
 
 AC_MSG_NOTICE([
