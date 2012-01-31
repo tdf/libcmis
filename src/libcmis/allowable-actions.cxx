@@ -65,4 +65,10 @@ namespace libcmis
 
         return allowed;
     }
+    
+    bool AllowableActions::isDefined( ObjectAction::Type action )
+    {
+        map< ObjectAction::Type, bool>::iterator it = m_states.find( action );
+        return it != m_states.end();
+    }
 }

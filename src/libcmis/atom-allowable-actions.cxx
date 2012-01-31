@@ -62,7 +62,7 @@ namespace atom
     {
         try
         {
-            parseType( string( ( char* ) node->name ) );
+            m_type = parseType( string( ( char* ) node->name ) );
             m_valid = true;
         }
         catch ( const libcmis::Exception& e )
@@ -217,7 +217,9 @@ void AtomAllowableActions::refresh( ) throw ( libcmis::Exception )
                 {
                     atom::ObjectAction action( child );
                     if ( action.isValid( ) )
-                        m_states[ action.getType( ) ] = action.isEnabled();
+                        m_states.insert( pair< libcmis::ObjectAction::Type, bool >(
+                                    action.getType( ),
+                                    action.isEnabled() ) );
                 }
             }
             xmlXPathFreeObject( xpathObj );

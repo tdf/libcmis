@@ -90,6 +90,11 @@ namespace libcmis
             /** Returns the permissions for the corresponding actions.
               */
             bool isAllowed( ObjectAction::Type action );
+
+            /** Returns true if the action was defined, false if the default
+                value is used.
+              */
+            bool isDefined( ObjectAction::Type action );
     };
 }
 
