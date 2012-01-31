@@ -64,6 +64,9 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
 {
     vector< libcmis::ObjectPtr > children;
 
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetChildren ) )
+        throw libcmis::Exception( string( "GetChildren not allowed on node " ) + getId() );
+
     string buf;
     try
     {

@@ -142,6 +142,8 @@ FILE* AtomDocument::getContent( const char* path )
 
 boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
 {
+    if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
+        throw libcmis::Exception( string( "GetContentStream is not allowed on document " ) + getId() );
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* handle = curl_easy_init( );
 
@@ -176,6 +178,9 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
 
 void AtomDocument::setContentStream( istream& is, string contentType, bool overwrite ) throw ( libcmis::Exception )
 {
+    if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
+        throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
+
     string overwriteStr( "false" );
     if ( overwrite )
         overwriteStr = "true";
