@@ -131,6 +131,11 @@ string AtomFolder::getPath( )
     return m_path;
 }
 
+bool AtomFolder::isRootFolder( )
+{
+    return m_parentId.empty( );
+}
+
 string AtomFolder::toString( )
 {
     stringstream buf;

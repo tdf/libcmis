@@ -49,6 +49,8 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
         virtual std::string getPath( );
+
+        virtual bool isRootFolder( );
         
         virtual std::string toString( );
 

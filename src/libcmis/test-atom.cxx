@@ -161,6 +161,8 @@ void AtomTest::sessionCreationTest( )
     // Check that the root id is defined
     CPPUNIT_ASSERT_MESSAGE( "Root node ID is missing",
             !session.getRootId().empty() );
+    CPPUNIT_ASSERT_MESSAGE( "Root folder isn't considering itself a root",
+            session.getRootFolder( )->isRootFolder() );
 }
 
 void AtomTest::getUnexistantFolderTest( )
@@ -215,6 +217,8 @@ void AtomTest::getFolderCreationFromUrlTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", TEST_FOLDER_PATH, folder->getPath( ) );
     CPPUNIT_ASSERT_MESSAGE( "Children URL is missing", !atomFolder->getChildrenUrl( ).empty( ) );
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", atomFolder->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder",
+            !atomFolder->isRootFolder() );
 
     CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomFolder->getCreatedBy( ).empty( ) );
     CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomFolder->getCreationDate( ).is_not_a_date_time() );
