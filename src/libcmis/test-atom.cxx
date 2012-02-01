@@ -289,10 +289,6 @@ void AtomTest::getAllowableActionsTest( )
     CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
             toCheck->isDefined( libcmis::ObjectAction::ApplyACL ) );
 
-    CPPUNIT_ASSERT_MESSAGE( "DeleteObject allowable action should be false on the root node",
-            toCheck->isDefined( libcmis::ObjectAction::DeleteObject ) &&
-            !toCheck->isAllowed( libcmis::ObjectAction::DeleteObject ) );
-    
     CPPUNIT_ASSERT_MESSAGE( "GetChildren allowable action should be true",
             toCheck->isDefined( libcmis::ObjectAction::GetChildren ) &&
             toCheck->isAllowed( libcmis::ObjectAction::GetChildren ) );
