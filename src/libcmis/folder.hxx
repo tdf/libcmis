@@ -44,6 +44,7 @@ namespace libcmis
         public:
             virtual ~Folder() { }
 
+            virtual ::boost::shared_ptr< Folder > getFolderParent( ) throw ( Exception ) = 0;
             virtual std::vector< ObjectPtr > getChildren( ) throw ( Exception ) = 0;
             virtual std::string getPath( ) = 0;
     };

@@ -40,7 +40,8 @@ namespace
 AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
     AtomObject( session, url ),
     m_path( ),
-    m_childrenUrl( )
+    m_childrenUrl( ),
+    m_parentId( )
 {
     refresh();
 }
@@ -48,7 +49,8 @@ AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomObject( session, string() ),
     m_path( ),
-    m_childrenUrl( )
+    m_childrenUrl( ),
+    m_parentId( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
     refreshImpl( doc );
@@ -58,6 +60,14 @@ AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
 
 AtomFolder::~AtomFolder( )
 {
+}
+
+libcmis::FolderPtr AtomFolder::getFolderParent( ) throw ( libcmis::Exception )
+{
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetFolderParent ) )
+        throw libcmis::Exception( string( "GetFolderParent not allowed on node " ) + getId() );
+
+    return getSession()->getFolder( m_parentId ); 
 }
 
 vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
@@ -128,6 +138,7 @@ string AtomFolder::toString( )
     buf << "Folder Object:" << endl << endl;
     buf << AtomObject::toString();
     buf << "Path: " << getPath() << endl;
+    buf << "Folder Parent Id: " << m_parentId << endl;
     buf << "Children [Name (Id)]:" << endl;
 
     vector< libcmis::ObjectPtr > children = getChildren( );
@@ -156,6 +167,10 @@ void AtomFolder::extractInfos( xmlDocPtr doc )
         // Get the path
         string pathReq( "//cmis:propertyString[@propertyDefinitionId='cmis:path']/cmis:value/text()" );
         m_path = atom::getXPathValue( pXPathCtx, pathReq );
+        
+        // Get the parent id
+        string parentIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:parentId']/cmis:value/text()" );
+        m_parentId = atom::getXPathValue( pXPathCtx, parentIdReq );
     }
     xmlXPathFreeContext( pXPathCtx );
 }

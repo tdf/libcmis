@@ -38,6 +38,7 @@ class AtomFolder : public libcmis::Folder, public AtomObject
     private:
         std::string m_path;
         std::string m_childrenUrl;
+        std::string m_parentId;
 
     public:
         AtomFolder( AtomPubSession* session, std::string url );
@@ -45,6 +46,7 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         ~AtomFolder( );
 
         // virtual pure methods from Folder
+        virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
         virtual std::string getPath( );
         
