@@ -56,6 +56,17 @@
       <arg choice="opt">-p <replaceable>secret</replaceable></arg>
       <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <arg choice="plain">--input-file <replaceable>path/to/file</replaceable></arg>
+      <arg choice="plain">--input-type <replaceable>mime/type</replaceable></arg>
+      <arg choice="plain">set-content <replaceable>id</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <group choice="plain">
         <arg>show-by-id</arg>
         <arg>show-by-path</arg>
@@ -76,117 +87,147 @@
 	</para>
   </refsect1>
   <refsect1>
-		<title>OPTIONS</title>
-		<refsect2>
-			<title>OPTIONS</title>
-			<variablelist>
-				<varlistentry>
-					<term>-v, --verbose</term>
-					<listitem>
-						<para>
+    <title>OPTIONS</title>
+    <refsect2>
+      <title>GLOBAL OPTIONS</title>
+      <variablelist>
+        <varlistentry>
+          <term>-v, --verbose</term>
+          <listitem>
+            <para>
 							Shows a lot of information to monitor what is happening behind the scene.
 							This helps a lot to debug libcmis.
 						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>--help</term>
-					<listitem>
-						<para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--help</term>
+          <listitem>
+            <para>
 							Show the help and exit. This is equivalent to use the help command.
 						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>--url <replaceable class="parameter">url://to/binding</replaceable></term>
-					<listitem>
-						<para>
-							<replaceable class="parameter">repo-id</replaceable> needs to point to the AtomPub service document.
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--url <replaceable class="parameter">url://to/binding</replaceable></term>
+          <listitem>
+            <para><replaceable class="parameter">repo-id</replaceable> needs to point to the AtomPub service document.
 							Note that only AtomPub binding is currently supported by libcmis.
 						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>-r,--repository <replaceable class="parameter">repo-id</replaceable></term>
-					<listitem>
-						<para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>-r,--repository <replaceable class="parameter">repo-id</replaceable></term>
+          <listitem>
+            <para>
 							Operate on the <replaceable class="parameter">repo-id</replaceable> CMIS repository.
 						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>-u,--username <replaceable class="parameter">login</replaceable></term>
-					<listitem>
-						<para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>-u,--username <replaceable class="parameter">login</replaceable></term>
+          <listitem>
+            <para>
 							Connect as <replaceable class="parameter">login</replaceable> to the CMIS server.
 							If not provided connect anonymously.
 						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>-p,--password <replaceable class="parameter">secret</replaceable></term>
-					<listitem>
-						<para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>-p,--password <replaceable class="parameter">secret</replaceable></term>
+          <listitem>
+            <para>
 							Use <replaceable class="parameter">secret</replaceable> to authenticate on the CMIS server.
 						</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
-		</refsect2>
-		<refsect2>
-			<title>COMMANDS</title>
-			<varlistentry>
-				<term>help</term>
-				<listitem>
-					<para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+    <refsect2>
+      <title>SET-CONTENT OPTIONS</title>
+      <variablelist>
+        <varlistentry>
+          <term>--input-file <replaceable class="parameter">path/to/file</replaceable></term>
+          <listitem>
+            <para>
+              Upload <replaceable class="parameter">path/to/file</replaceable> as the new content stream
+              of the object.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--input-type <replaceable class="parameter">mime/type</replaceable></term>
+          <listitem>
+            <para>
+              Set the mime type of the new content stream of the object to <replaceable class="parameter">mime/type</replaceable>.
+						</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+    <refsect2>
+      <title>COMMANDS</title>
+      <varlistentry>
+        <term>help</term>
+        <listitem>
+          <para>
 						Show the help and exit.
 					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>list-repos</term>
-				<listitem>
-					<para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>list-repos</term>
+        <listitem>
+          <para>
 						List the repositories available on the server.
 					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>show-root</term>
-				<listitem>
-					<para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>show-root</term>
+        <listitem>
+          <para>
 						Displays the root node infos and children.
 					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>get-content <replaceable class="parameter">id</replaceable></term>
-				<listitem>
-					<para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>get-content <replaceable class="parameter">id</replaceable></term>
+        <listitem>
+          <para>
 						Download the content of the CMIS object corresponding to 
 						<replaceable class="parameter">id</replaceable> in the current directory.
 					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>show-by-id <replaceable class="parameter">arg...</replaceable></term>
-				<listitem>
-					<para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>set-content <replaceable class="parameter">id</replaceable></term>
+        <listitem>
+          <para>
+						Upload a file as the content stream of the CMIS object corresponding to 
+						<replaceable class="parameter">id</replaceable>.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>show-by-id <replaceable class="parameter">arg...</replaceable></term>
+        <listitem>
+          <para>
 						Displays the infos and children (if any) of all the CMIS objects corresponding
 						to the listed ids.
 					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>show-by-path <replaceable class="parameter">arg...</replaceable></term>
-				<listitem>
-					<para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>show-by-path <replaceable class="parameter">arg...</replaceable></term>
+        <listitem>
+          <para>
 						Displays the infos and children (if any) of all the CMIS objects corresponding
 						to the listed paths.
 					</para>
-				</listitem>
-			</varlistentry>
-		</refsect2>
+        </listitem>
+      </varlistentry>
+    </refsect2>
   </refsect1>
   <refsect1>
     <title>USAGE</title>
