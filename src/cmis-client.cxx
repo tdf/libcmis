@@ -45,10 +45,11 @@ using namespace ::boost::program_options;
 class CommandException : public exception
 {
     private:
-        const char* m_msg;
+        string m_msg;
 
     public:
-        CommandException( const char* msg ) : m_msg( msg ) { }
+        CommandException( string msg ) : m_msg( msg ) { }
+        ~CommandException( ) throw( ) { }
         CommandException( const CommandException& copy ) : m_msg( copy.m_msg ) { }
 
         CommandException& operator=( const CommandException& copy )
@@ -57,7 +58,7 @@ class CommandException : public exception
             return *this;
         }
 
-        virtual const char* what() const throw() { return m_msg; }
+        virtual const char* what() const throw() { return m_msg.c_str(); }
 };
 
 class CmisClient
@@ -228,6 +229,40 @@ void CmisClient::execute( ) throw ( exception )
                     out << in->rdbuf();
                     out.close();
                 }
+                else
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
+
+                delete session;
+            }
+            else if ( "set-content" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+                if ( objIds.size() ==0 )
+                    throw CommandException( "Please provide a content object Id" );
+
+                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+                libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+                if ( NULL != document )
+                {
+                    if ( m_vm.count( "input-file" ) == 0 )
+                        throw CommandException( "Missing --input-file" );
+                    if ( m_vm.count( "input-type" ) == 0 )
+                        throw CommandException( "Missing --input-type" );
+
+                    string type = m_vm["input-type"].as<string>();
+                    string filename = m_vm["input-file"].as<string>();
+                    ifstream is( filename.c_str(), ifstream::in );
+                    if ( is.fail( ) )
+                        throw CommandException( string( "Unable to open file " ) + filename );
+
+                    document->setContentStream( is, type );
+
+                    is.close( );
+                }
+                else
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
 
                 delete session;
             }
@@ -266,6 +301,13 @@ options_description CmisClient::getOptionsDescription( )
         ( "password,p", value< string >(), "Password used to authenticate to the repository" )
     ;
 
+    options_description setcontentOpts( "set-content options" );
+    setcontentOpts.add_options( )
+        ( "input-file", value< string >(), "File to push to the repository" )
+        ( "input-type", value< string >(), "Mime type of the file to push to the repository" )
+    ;
+
+    desc.add( setcontentOpts );
     return desc;
 }
 
@@ -285,6 +327,9 @@ void CmisClient::printHelp( )
     cerr << "   get-content <Node Id>\n"
             "           Saves the stream of the content node in the\n"
             "           current folder. Any existing file is overwritten." << endl;
+    cerr << "   set-content <Node Id>\n"
+            "           Replaces the stream of the content node by the\n"
+            "           file selected with --input-file." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 
