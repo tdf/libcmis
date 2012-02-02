@@ -309,11 +309,17 @@ void AtomPubSession::httpPutRequest( string url, istream& is, string contentType
     curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( handle, CURLOPT_UPLOAD, 1 );
 
+    struct curl_slist *headers_slist = NULL;
+    string contentTypeHeader = string( "Content-Type:" ) + contentType;
+    headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
+    curl_easy_setopt( handle, CURLOPT_HTTPHEADER, headers_slist );
+
     // TODO Define a CURLOPT_IOCTLFUNCTION callback to rewind in
     // multipass authentication cases (like for SharePoint)
 
     httpRunRequest( handle, url );
 
+    curl_slist_free_all( headers_slist );
     curl_easy_cleanup( handle );
 }
 
@@ -367,6 +373,11 @@ namespace atom
              ( string::npos != m_message.find( "404" ) ) )
         {
             msg = "Invalid URL: " + m_url;
+        }
+        else if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) && 
+             ( string::npos != m_message.find( "409" ) ) )
+        {
+            msg = "Editing conflict error";
         }
         else
         {

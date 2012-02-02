@@ -192,6 +192,10 @@ void AtomDocument::setContentStream( istream& is, string contentType, bool overw
         putUrl += "?";
     putUrl += "overwriteFlag=" + overwriteStr;
 
+    // Use the changeToken if set on the object
+    if ( !getChangeToken().empty() )
+        putUrl += "changeToken=" + getChangeToken();
+
     try
     {
         getSession()->httpPutRequest( putUrl, is, contentType );
