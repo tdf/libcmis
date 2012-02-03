@@ -37,6 +37,7 @@
 class AtomDocument : public libcmis::Document, public AtomObject
 {
     private:
+        std::string m_parentsUrl;
         std::string m_contentUrl;
         std::string m_contentType;
         std::string m_contentFilename;
@@ -46,6 +47,8 @@ class AtomDocument : public libcmis::Document, public AtomObject
         AtomDocument( AtomPubSession* session, std::string url );
         AtomDocument( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomDocument( );
+
+        virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
 
         // Override content methods
         virtual FILE* getContent( const char* path = NULL );

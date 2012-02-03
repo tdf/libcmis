@@ -30,6 +30,7 @@
 
 #include <istream>
 #include <string>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 
@@ -38,6 +39,8 @@
 
 namespace libcmis
 {
+    class Folder;
+
     /** Interface for a CMIS Document object.
       */
     class Document : public virtual Object
@@ -45,6 +48,14 @@ namespace libcmis
         public:
 
             virtual ~Document( ) { }
+
+            /** Get the folder parents for the document.
+
+                Note that an unfiled document will have no parent folder.
+
+                @return the parents folder if any.
+              */
+            virtual std::vector< boost::shared_ptr< Folder > > getParents( ) throw ( Exception ) = 0;
             
             /** Get the content stream or NULL if there is none.
 

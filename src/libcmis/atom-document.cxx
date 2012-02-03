@@ -72,6 +72,7 @@ namespace
 
 AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
     AtomObject( session, url ),
+    m_parentsUrl( ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -82,6 +83,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomObject( session, string() ),
+    m_parentsUrl( ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -94,6 +96,64 @@ AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
 
 AtomDocument::~AtomDocument( )
 {
+}
+
+vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Exception )
+{
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetObjectParents ) )
+        throw libcmis::Exception( string( "GetObjectParents not allowed on node " ) + getId() );
+
+    vector< libcmis::FolderPtr > parents;
+
+    // TODO Execute the m_parentsUrl query
+    string buf;
+    try
+    {
+        buf = getSession()->httpGetRequest( m_parentsUrl );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_parentsUrl.c_str(), NULL, 0 );
+    if ( NULL != doc )
+    {
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        atom::registerNamespaces( xpathCtx );
+        if ( NULL != xpathCtx )
+        {
+            const string& entriesReq( "//atom:entry" );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
+
+            if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+            {
+                int size = xpathObj->nodesetval->nodeNr;
+                for ( int i = 0; i < size; i++ )
+                {
+                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                    xmlDocPtr entryDoc = atom::wrapInDoc( node );
+                    libcmis::ObjectPtr object = getSession()->createObjectFromEntryDoc( entryDoc );
+                    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
+
+                    if ( folder.get() )
+                        parents.push_back( folder );
+                    xmlFreeDoc( entryDoc );
+                }
+            }
+
+            xmlXPathFreeObject( xpathObj );
+        }
+
+        xmlXPathFreeContext( xpathCtx );
+    }
+    else
+    {
+        throw new libcmis::Exception( "Failed to parse folder infos" );
+    }
+    xmlFreeDoc( doc );
+
+    return parents;
 }
 
 FILE* AtomDocument::getContent( const char* path )
@@ -194,7 +254,7 @@ void AtomDocument::setContentStream( istream& is, string contentType, bool overw
 
     // Use the changeToken if set on the object
     if ( !getChangeToken().empty() )
-        putUrl += "changeToken=" + getChangeToken();
+        putUrl += "&changeToken=" + getChangeToken();
 
     try
     {
@@ -213,6 +273,11 @@ string AtomDocument::toString( )
 
     buf << "Document Object:" << endl << endl;
     buf << AtomObject::toString();
+    buf << "Parents ids: ";
+    vector< libcmis::FolderPtr > parents = getParents( );
+    for ( vector< libcmis::FolderPtr >::iterator it = parents.begin(); it != parents.end(); ++it )
+        buf << "'" << ( *it )->getId( ) << "' ";
+    buf << endl;
     buf << "Content Type: " << getContentType( ) << endl;
     buf << "Content Length: " << getContentLength( ) << endl;
     buf << "Content Filename: " << getContentFilename( ) << endl;
@@ -232,7 +297,9 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
 
         if ( NULL != pXPathCtx )
         {
-            // Get the children collection url
+            string upReq( "//atom:link[@rel='up']/attribute::href" );
+            m_parentsUrl = atom::getXPathValue( pXPathCtx, upReq );
+
             xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//atom:content" ), pXPathCtx );
             if ( pXPathObj && pXPathObj->nodesetval && pXPathObj->nodesetval->nodeNr > 0 )
             {

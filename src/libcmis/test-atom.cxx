@@ -57,6 +57,8 @@
 #define TEST_DOCUMENT_TYPE string( "text/plain" )
 #define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
 #define TEST_SAMPLE_MIME_TYPE string( "plain/text" )
+#define TEST_DOCUMENT_PARENTS_COUNT vector< libcmis::FolderPtr >::size_type( 1 )
+#define TEST_DOCUMENT_PARENT string( "101" )
 
 #define TEST_CHILDREN_FOLDER_COUNT 2
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
@@ -92,6 +94,7 @@ class AtomTest : public CppUnit::TestFixture
 
         void getAllowableActionsTest( );
         void getChildrenTest( );
+        void getObjectParentsTest( );
         void getContentTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
@@ -113,6 +116,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
@@ -316,6 +320,22 @@ void AtomTest::getChildrenTest( )
             TEST_CHILDREN_FOLDER_COUNT, folderCount );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children",
             TEST_CHILDREN_DOCUMENT_COUNT, documentCount );
+}
+
+void AtomTest::getObjectParentsTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+    vector< libcmis::FolderPtr > actual = document->getParents( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents",
+           TEST_DOCUMENT_PARENTS_COUNT, actual.size() );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent ID",
+            TEST_DOCUMENT_PARENT, actual.front( )->getId( ) );
 }
 
 void AtomTest::getContentTest( )
