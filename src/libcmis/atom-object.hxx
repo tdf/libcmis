@@ -43,18 +43,7 @@ class AtomObject : public virtual libcmis::Object
 
         std::string m_infosUrl;
 
-        std::string m_id;
-        std::string m_name;
-        std::string m_baseType;
-        std::string m_type;
-
-        std::string m_createdBy;
-        boost::posix_time::ptime m_creationDate;
-        std::string m_lastModifiedBy;
-        boost::posix_time::ptime m_lastModificationDate;
-
-        std::string m_changeToken;
-
+        std::map< std::string, libcmis::PropertyPtr > m_properties;
         boost::shared_ptr< AtomAllowableActions > m_allowableActions;
 
     public:
@@ -77,6 +66,9 @@ class AtomObject : public virtual libcmis::Object
         virtual boost::posix_time::ptime getLastModificationDate( );
 
         virtual std::string getChangeToken( );
+        virtual bool isImmutable( );
+
+        virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
         virtual boost::shared_ptr< libcmis::AllowableActions > getAllowableActions( );
 
         /** Reload the data from the server.

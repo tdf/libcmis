@@ -30,6 +30,7 @@
 
 #include "atom-allowable-actions.hxx"
 #include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -74,7 +75,7 @@ namespace atom
         try
         {
             xmlChar* content = xmlNodeGetContent( node );
-            m_enabled = atom::parseBool( string( ( char* )content ) );
+            m_enabled = libcmis::parseBool( string( ( char* )content ) );
             xmlFree( content );
         }
         catch ( const libcmis::Exception& e )

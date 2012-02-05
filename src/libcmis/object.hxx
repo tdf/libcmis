@@ -29,6 +29,7 @@
 #define _OBJECT_HXX_
 
 #include <ctime>
+#include <map>
 #include <string>
 
 #include <boost/date_time.hpp>
@@ -36,6 +37,7 @@
 
 #include "allowable-actions.hxx"
 #include "exception.hxx"
+#include "property.hxx"
 
 // for compatibility with libcmis in LO tree
 #define CmisObject Object
@@ -62,7 +64,9 @@ namespace libcmis
             virtual boost::posix_time::ptime getLastModificationDate( ) = 0;
 
             virtual std::string getChangeToken( ) = 0;
+            virtual bool isImmutable( ) = 0;
 
+            virtual std::map< std::string, PropertyPtr >& getProperties( ) = 0;
             virtual boost::shared_ptr< AllowableActions > getAllowableActions( ) = 0;
 
             /** Reload the data from the server.

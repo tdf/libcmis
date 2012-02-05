@@ -26,8 +26,6 @@
  * instead of those above.
  */
 
-#include <ctime>
-
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
@@ -56,7 +54,6 @@
 #define TEST_DOCUMENT_NAME string( "My_Document-1-2" )
 #define TEST_DOCUMENT_TYPE string( "text/plain" )
 #define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
-#define TEST_SAMPLE_MIME_TYPE string( "plain/text" )
 #define TEST_DOCUMENT_PARENTS_COUNT vector< libcmis::FolderPtr >::size_type( 1 )
 #define TEST_DOCUMENT_PARENT string( "101" )
 
@@ -99,11 +96,6 @@ class AtomTest : public CppUnit::TestFixture
         void getContentStreamTest( );
         void setContentStreamTest( );
 
-        // Other useful tests.
-
-        void parseDateTimeTest( );
-        void parseBoolTest( );
-
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -120,8 +112,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
-        CPPUNIT_TEST( parseDateTimeTest );
-        CPPUNIT_TEST( parseBoolTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -383,7 +373,7 @@ void AtomTest::setContentStreamTest( )
     try
     {
         stringstream is( TEST_SAMPLE_CONTENT );
-        document->setContentStream( is, TEST_SAMPLE_MIME_TYPE );
+        document->setContentStream( is, TEST_DOCUMENT_TYPE );
 
         // Get the new content to check is has been properly uploaded
         shared_ptr< istream > newIs = document->getContentStream( );
@@ -402,96 +392,6 @@ void AtomTest::setContentStreamTest( )
         string msg = "Unexpected exception: ";
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
-    }
-}
-
-void AtomTest::parseDateTimeTest( )
-{
-    tm basis;
-    basis.tm_year = 2011 - 1900;
-    basis.tm_mon = 8; // Months are in 0..11 range
-    basis.tm_mday = 28;
-    basis.tm_hour = 12;
-    basis.tm_min = 44;
-    basis.tm_sec = 28;
-
-    // No time zone test
-    {
-        char toParse[50];
-        strftime( toParse, sizeof( toParse ), "%FT%T", &basis );
-        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
-
-        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
-        posix_time::time_duration expTime( basis.tm_hour, basis.tm_min, basis.tm_sec );
-        posix_time::ptime expected( expDate, expTime );
-
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "No time zone case failed", expected, t );
-    }
-    
-    // Z time zone test
-    {
-        char toParse[50];
-        strftime( toParse, sizeof( toParse ), "%FT%TZ", &basis );
-        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
-        
-        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
-        posix_time::time_duration expTime( basis.tm_hour, basis.tm_min, basis.tm_sec );
-        posix_time::ptime expected( expDate, expTime );
-
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Z time zone case failed", expected, t );
-    }
-
-    // +XX:XX time zone test
-    {
-        char toParse[50];
-        strftime( toParse, sizeof( toParse ), "%FT%T+02:00", &basis );
-        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
-        
-        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
-        posix_time::time_duration expTime( basis.tm_hour + 2, basis.tm_min, basis.tm_sec );
-        posix_time::ptime expected( expDate, expTime );
-
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
-    }
-
-    // -XX:XX time zone test
-    {
-        char toParse[50];
-        strftime( toParse, sizeof( toParse ), "%FT%T-02:00", &basis );
-        posix_time::ptime t = atom::parseDateTime( string( toParse ) );
-        
-        gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
-        posix_time::time_duration expTime( basis.tm_hour - 2, basis.tm_min, basis.tm_sec );
-        posix_time::ptime expected( expDate, expTime );
-
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
-    }
-}
-
-void AtomTest::parseBoolTest( )
-{
-    // 'true' test
-    {
-        bool result = atom::parseBool( string( "true" ) );
-        CPPUNIT_ASSERT_MESSAGE( "'true' can't be parsed properly", result );
-    }
-    
-    // '1' test
-    {
-        bool result = atom::parseBool( string( "1" ) );
-        CPPUNIT_ASSERT_MESSAGE( "'1' can't be parsed properly", result );
-    }
-
-    // 'false' test
-    {
-        bool result = atom::parseBool( string( "false" ) );
-        CPPUNIT_ASSERT_MESSAGE( "'false' can't be parsed properly", !result );
-    }
-    
-    // '0' test
-    {
-        bool result = atom::parseBool( string( "0" ) );
-        CPPUNIT_ASSERT_MESSAGE( "'0' can't be parsed properly", !result );
     }
 }
 

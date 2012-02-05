@@ -6,7 +6,9 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	object.hxx \
 	session.hxx \
 	session-factory.hxx \
-    allowable-actions.hxx	
+    allowable-actions.hxx \
+	property.hxx \
+	xml-utils.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -26,7 +28,9 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-workspace.cxx \
 	atom-allowable-actions.hxx \
 	atom-allowable-actions.cxx \
-	allowable-actions.cxx
+	allowable-actions.cxx \
+	property.cxx \
+	xml-utils.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined
 
@@ -43,7 +47,8 @@ check_PROGRAMS = test-atom
 
 test_atom_SOURCES =	\
 	test-atom.cxx \
-	test-decoder.cxx
+	test-decoder.cxx \
+	test-xmlutils.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \

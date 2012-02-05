@@ -31,6 +31,7 @@
 #include "atom-object.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace boost;
 using namespace std;
@@ -44,15 +45,7 @@ AtomObject::AtomObject( AtomPubSession* session, string url ) throw ( libcmis::E
     m_session( session ),
     m_refreshTimestamp( 0 ),
     m_infosUrl( url ),
-    m_id( ),
-    m_name( ),
-    m_baseType( ),
-    m_type( ),
-    m_createdBy( ),
-    m_creationDate( ),
-    m_lastModifiedBy( ),
-    m_lastModificationDate( ),
-    m_changeToken( ),
+    m_properties( ),
     m_allowableActions( )
 {
 }
@@ -61,15 +54,7 @@ AtomObject::AtomObject( const AtomObject& copy ) :
     m_session( copy.m_session ),
     m_refreshTimestamp( copy.m_refreshTimestamp ),
     m_infosUrl( copy.m_infosUrl ),
-    m_id( copy.m_id ),
-    m_name( copy.m_name ),
-    m_baseType( copy.m_baseType ),
-    m_type( copy.m_type ),
-    m_createdBy( copy.m_createdBy ),
-    m_creationDate( copy.m_creationDate ),
-    m_lastModifiedBy( copy.m_lastModifiedBy ),
-    m_lastModificationDate( copy.m_lastModificationDate ),
-    m_changeToken( copy.m_changeToken ),
+    m_properties( copy.m_properties ),
     m_allowableActions( copy.m_allowableActions )
 {
 }
@@ -79,15 +64,7 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     m_session = copy.m_session;
     m_refreshTimestamp = copy.m_refreshTimestamp;
     m_infosUrl = copy.m_infosUrl;
-    m_id = copy.m_id;
-    m_name = copy.m_name;
-    m_baseType = copy.m_baseType;
-    m_type = copy.m_type;
-    m_createdBy = copy.m_createdBy;
-    m_creationDate = copy.m_creationDate;
-    m_lastModifiedBy = copy.m_lastModifiedBy;
-    m_lastModificationDate = copy.m_lastModificationDate;
-    m_changeToken = copy.m_changeToken;
+    m_properties = copy.m_properties;
     m_allowableActions = copy.m_allowableActions;
 
     return *this;
@@ -99,47 +76,97 @@ AtomObject::~AtomObject( )
 
 string AtomObject::getId( )
 {
-    return m_id;
+    string name;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        name = it->second->getStrings( ).front( );
+    return name;
 }
 
 string AtomObject::getName( )
 {
-    return m_name;
+    string name;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:name" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        name = it->second->getStrings( ).front( );
+    return name;
 }
 
 string AtomObject::getBaseType( )
 {
-    return m_baseType;
+    string value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:baseTypeId" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        value = it->second->getStrings( ).front( );
+    return value;
 }
 
 string AtomObject::getType( )
 {
-    return m_type;
+    string value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectTypeId" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        value = it->second->getStrings( ).front( );
+    return value;
 }
 
 string AtomObject::getCreatedBy( )
 {
-    return m_createdBy;
+    string value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:createdBy" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        value = it->second->getStrings( ).front( );
+    return value;
 }
 
 posix_time::ptime AtomObject::getCreationDate( )
 {
-    return m_creationDate;
+    posix_time::ptime value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
+        value = it->second->getDateTimes( ).front( );
+    return value;
 }
 
 string AtomObject::getLastModifiedBy( )
 {
-    return m_lastModifiedBy;
+    string value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModifiedBy" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        value = it->second->getStrings( ).front( );
+    return value;
 }
 
 posix_time::ptime AtomObject::getLastModificationDate( )
 {
-    return m_lastModificationDate;
+    posix_time::ptime value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
+        value = it->second->getDateTimes( ).front( );
+    return value;
+}
+
+bool AtomObject::isImmutable( )
+{
+    bool value = false;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getBools( ).empty( ) )
+        value = it->second->getBools( ).front( );
+    return value;
 }
 
 string AtomObject::getChangeToken( )
 {
-    return m_changeToken;
+    string value;
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:changeToken" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        value = it->second->getStrings( ).front( );
+    return value;
+}
+
+std::map< std::string, libcmis::PropertyPtr >& AtomObject::getProperties( )
+{
+    return m_properties;
 }
 
 shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
@@ -190,67 +217,76 @@ string AtomObject::toString( )
         << " by " << getLastModifiedBy() << endl;
     buf << "Change token: " << getChangeToken() << endl;
 
+    // Write remaining properties
+    static const char* skippedProps[] = {
+        "cmis:name", "cmis:baseTypeId", "cmis:objectTypeId", "cmis:createdBy",
+        "cmis:creationDate", "cmis:lastModifiedBy", "cmis:lastModificationDate",
+        "cmis::changeToken"
+    };
+    int skippedCount = sizeof( skippedProps ) / sizeof( char* );
+
+    for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin();
+            it != getProperties( ).end( ); ++it )
+    {
+        string propId = it->first;
+        bool toSkip = false;
+        for ( int i = 0; i < skippedCount && !toSkip; ++i )
+        {
+            toSkip = propId == skippedProps[i];
+        }
+
+        if ( !toSkip )
+        {
+            libcmis::PropertyPtr prop = it->second;
+            buf << prop->getDisplayName( ) << "( " << prop->getId( ) << " ): " << endl;
+            vector< string > strValues = prop->getStrings( );
+            for ( vector< string >::iterator valueIt = strValues.begin( );
+                  valueIt != strValues.end( ); ++valueIt )
+            {
+                buf << "\t" << *valueIt << endl; 
+            }
+        }
+    }
+
     return buf.str();
 }
 
 void AtomObject::extractInfos( xmlDocPtr doc )
 {
-    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
-    atom::registerNamespaces( pXPathCtx );
+    atom::registerNamespaces( xpathCtx );
 
-    if ( NULL != pXPathCtx )
+    if ( NULL != xpathCtx )
     {
         // Get the infos URL as we may not have it
         string selfReq( "//atom:link[@rel='self']/@href" );
-        m_infosUrl = atom::getXPathValue( pXPathCtx, selfReq ) ;
-
-        // Get the name
-        string nameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:name']/cmis:value/text()" );
-        m_name = atom::getXPathValue( pXPathCtx, nameReq );
+        m_infosUrl = atom::getXPathValue( xpathCtx, selfReq ) ;
         
-        // Get the id
-        string idReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectId']/cmis:value/text()" );
-        m_id = atom::getXPathValue( pXPathCtx, idReq );
-
-        // Get the base type
-        string baseTypeReq( "//cmis:propertyId[@propertyDefinitionId='cmis:baseTypeId']/cmis:value/text()" );
-        m_baseType = atom::getXPathValue( pXPathCtx, baseTypeReq );
-        
-        // Get the type
-        string typeReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
-        m_type = atom::getXPathValue( pXPathCtx, typeReq );
-
-        // Get the createdBy property
-        string createdByReq( "//cmis:propertyString[@propertyDefinitionId='cmis:createdBy']/cmis:value/text()" );
-        m_createdBy = atom::getXPathValue( pXPathCtx, createdByReq );
-
-        // Get the creation date
-        string creationReq( "//cmis:propertyDateTime[@propertyDefinitionId='cmis:creationDate']/cmis:value/text()" );
-        m_creationDate = atom::parseDateTime( atom::getXPathValue( pXPathCtx, creationReq ) );
-
-        // Get the lastModifiedBy property
-        string lastModifByReq( "//cmis:propertyString[@propertyDefinitionId='cmis:lastModifiedBy']/cmis:value/text()" );
-        m_lastModifiedBy = atom::getXPathValue( pXPathCtx, lastModifByReq );
-        
-        // Get the last modification date
-        string lastModifReq( "//cmis:propertyDateTime[@propertyDefinitionId='cmis:lastModificationDate']/cmis:value/text()" );
-        m_lastModificationDate = atom::parseDateTime( atom::getXPathValue( pXPathCtx, lastModifReq ) );
-
-        // Get the change token
-        string changeTokenReq( "//cmis:propertyString[@propertyDefinitionId='cmis:changeToken']/cmis:value/text()" );
-        m_changeToken = atom::getXPathValue( pXPathCtx, changeTokenReq );
-
         // Get the URL to the allowableActions
         string allowableActionsReq( "//atom:link[@rel='http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions']/attribute::href" );
-        string allowableActionsUrl = atom::getXPathValue( pXPathCtx, allowableActionsReq );
+        string allowableActionsUrl = atom::getXPathValue( xpathCtx, allowableActionsReq );
         if ( !allowableActionsUrl.empty() )
         {
             shared_ptr< AtomAllowableActions > allowableActions( new AtomAllowableActions( m_session, allowableActionsUrl ) );
             m_allowableActions.swap( allowableActions );
         }
+
+        string propertiesReq( "//cmis:properties/*" );
+        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
+        if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+        {
+            int size = xpathObj->nodesetval->nodeNr;
+            for ( int i = 0; i < size; i++ )
+            {
+                xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                libcmis::PropertyPtr property = libcmis::parseProperty( node );
+                m_properties.insert( std::pair< string, libcmis::PropertyPtr >( property->getId(), property ) );
+            }
+        }
+        xmlXPathFreeObject( xpathObj );
     }
 
-    xmlXPathFreeContext( pXPathCtx );
+    xmlXPathFreeContext( xpathCtx );
 }
 
