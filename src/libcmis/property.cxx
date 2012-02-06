@@ -57,6 +57,30 @@ namespace libcmis
     {
     }
 
+    void Property::toXml( xmlTextWriterPtr writer )
+    {
+        string xmlType = string( "cmis:" ) + getXmlType( );
+        xmlTextWriterStartElement( writer, BAD_CAST( xmlType.c_str( ) ) );
+        
+        // Write the attributes
+        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "propertyDefinitionId" ),
+                "%s", BAD_CAST( getId( ).c_str( ) ) );
+        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "localName" ),
+                "%s", BAD_CAST( getLocalName( ).c_str( ) ) );
+        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "displayName" ),
+                "%s", BAD_CAST( getDisplayName( ).c_str( ) ) );
+        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "queryName" ),
+                "%s", BAD_CAST( getQueryName( ).c_str( ) ) );
+        
+        // Write the values
+        for ( vector< string >::iterator it = m_strValues.begin( ); it != m_strValues.end( ); ++it )
+        {
+            xmlTextWriterWriteElement( writer, BAD_CAST( "cmis:value" ), BAD_CAST( it->c_str( ) ) );
+        }
+
+        xmlTextWriterEndElement( writer );
+    }
+
     IntegerProperty::IntegerProperty( std::string id, std::string localName,
             std::string displayName, std::string queryName, std::vector< std::string > values ) :
         Property( id, localName, displayName, queryName, values, Property::Integer ),

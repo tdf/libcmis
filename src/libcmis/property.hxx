@@ -29,6 +29,7 @@
 #define _PROPERTY_HXX_
 
 #include <libxml/tree.h>
+#include <libxml/xmlwriter.h>
 
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
@@ -59,6 +60,8 @@ namespace libcmis
             Type m_type;
             std::vector< std::string > m_strValues;
 
+        protected:
+            virtual std::string getXmlType( ) = 0;
 
         public:
 
@@ -87,6 +90,8 @@ namespace libcmis
             virtual std::vector< std::string > getStrings( ) { return m_strValues; }
             virtual std::vector< long > getLongs( ) = 0;
             virtual std::vector< double > getDoubles( ) = 0;
+
+            virtual void toXml( xmlTextWriterPtr writer );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;
 
@@ -94,6 +99,9 @@ namespace libcmis
     {
         private:
             std::vector< long > m_values;
+        
+        protected:     
+            virtual std::string getXmlType( ) { return std::string( "propertyInteger" ); }
 
         public:
             IntegerProperty( std::string id, std::string localName,
@@ -110,6 +118,9 @@ namespace libcmis
     {
         private:
             std::vector< double > m_values;
+        
+        protected:     
+            virtual std::string getXmlType( ) { return std::string( "propertyDecimal" ); }
 
         public:
             DecimalProperty( std::string id, std::string localName,
@@ -126,6 +137,9 @@ namespace libcmis
     {
         private:
             std::vector< bool > m_values;
+        
+        protected:     
+            virtual std::string getXmlType( ) { return std::string( "propertyBoolean" ); }
 
         public:
             BoolProperty( std::string id, std::string localName,
@@ -142,6 +156,9 @@ namespace libcmis
     {
         private:
             std::vector< boost::posix_time::ptime > m_values;
+        
+        protected: 
+            virtual std::string getXmlType( ) { return std::string( "propertyDateTime" ); }
 
         public:
             DateTimeProperty( std::string id, std::string localName,
@@ -156,6 +173,9 @@ namespace libcmis
     
     class StringProperty : public Property
     {
+        protected: 
+            virtual std::string getXmlType( ) { return std::string( "propertyString" ); }
+
         public:
             StringProperty( std::string id, std::string localName,
                     std::string displayName, std::string queryName,
@@ -169,6 +189,9 @@ namespace libcmis
 
     class IdProperty : public StringProperty
     {
+        protected:        
+            virtual std::string getXmlType( ) { return std::string( "propertyId" ); }
+
         public:
             IdProperty( std::string id, std::string localName,
                     std::string displayName, std::string queryName,
@@ -177,6 +200,9 @@ namespace libcmis
     
     class HtmlProperty : public StringProperty
     {
+        protected:     
+            virtual std::string getXmlType( ) { return std::string( "propertyHtml" ); }
+
         public:
             HtmlProperty( std::string id, std::string localName,
                     std::string displayName, std::string queryName,
@@ -185,6 +211,9 @@ namespace libcmis
     
     class UriProperty : public StringProperty
     {
+        protected: 
+            virtual std::string getXmlType( ) { return std::string( "propertyUri" ); }
+        
         public:
             UriProperty( std::string id, std::string localName,
                     std::string displayName, std::string queryName,

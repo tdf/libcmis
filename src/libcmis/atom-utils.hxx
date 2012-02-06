@@ -35,8 +35,6 @@
 
 #define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
 #define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
-#define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
-#define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
 
 namespace atom
 {

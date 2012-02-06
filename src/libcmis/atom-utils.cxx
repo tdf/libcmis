@@ -30,6 +30,7 @@
 #include <curl/curl.h>
 
 #include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 

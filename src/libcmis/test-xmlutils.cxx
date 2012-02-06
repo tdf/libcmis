@@ -27,12 +27,16 @@
  */
 
 #include <ctime>
+#include <sstream>
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
+#include "property.hxx"
 #include "xml-utils.hxx"
 
 using namespace boost;
@@ -40,18 +44,40 @@ using namespace std;
 
 class XmlTest : public CppUnit::TestFixture
 {
+    private:
+        // Test helper functions for parser and writer tests
+        xmlNodePtr getXmlNode( string str );
+        const char* getXmlns( );
+        string writeXml( libcmis::PropertyPtr property );
+
     public:
 
+        // Parser tests
         void parseDateTimeTest( );
         void parseBoolTest( );
         void parseIntegerTest( );
         void parseDoubleTest( );
+        
+        void parsePropertyStringTest( );
+        void parsePropertyIntegerTest( );
+        void parsePropertyDateTimeTest( );
+        void parsePropertyBoolTest( );
+
+        // Writer tests
+        void propertyStringAsXmlTest( ); 
+        void propertyIntegerAsXmlTest( ); 
 
         CPPUNIT_TEST_SUITE( XmlTest );
         CPPUNIT_TEST( parseDateTimeTest );
         CPPUNIT_TEST( parseBoolTest );
         CPPUNIT_TEST( parseIntegerTest );
         CPPUNIT_TEST( parseDoubleTest );
+        CPPUNIT_TEST( parsePropertyStringTest );
+        CPPUNIT_TEST( parsePropertyIntegerTest );
+        CPPUNIT_TEST( parsePropertyDateTimeTest );
+        CPPUNIT_TEST( parsePropertyBoolTest );
+        CPPUNIT_TEST( propertyStringAsXmlTest );
+        CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -229,6 +255,159 @@ void XmlTest::parseDoubleTest( )
                    string( "Invalid xsd:decimal input: 123.456bad" ), string( e.what() ) );
         }
     }
+}
+
+void XmlTest::parsePropertyStringTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyString " << getXmlns( )
+        <<            "propertyDefinitionId=\"ID\" "
+        <<            "queryName=\"QUERY_NAME\" "
+        <<            "displayName=\"DISPLAY_NAME\" "
+        <<            "localName=\"LOCAL_NAME\">"
+        <<      "<cmis:value>VALUE 1</cmis:value>"
+        <<      "<cmis:value>VALUE 2</cmis:value>"
+        << "</cmis:propertyString>";
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getStrings( ).size( ) );
+}
+
+void XmlTest::parsePropertyIntegerTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyInteger " << getXmlns( )
+        <<            "propertyDefinitionId=\"ID\" "
+        <<            "queryName=\"QUERY_NAME\" "
+        <<            "displayName=\"DISPLAY_NAME\" "
+        <<            "localName=\"LOCAL_NAME\">"
+        <<      "<cmis:value>12345</cmis:value>"
+        <<      "<cmis:value>67890</cmis:value>"
+        << "</cmis:propertyInteger>";
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getLongs( ).size( ) );
+}
+
+void XmlTest::parsePropertyDateTimeTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyDateTime " << getXmlns( )
+        <<            "propertyDefinitionId=\"ID\" "
+        <<            "queryName=\"QUERY_NAME\" "
+        <<            "displayName=\"DISPLAY_NAME\" "
+        <<            "localName=\"LOCAL_NAME\">"
+        <<      "<cmis:value>2012-01-19T09:06:57.388Z</cmis:value>"
+        <<      "<cmis:value>2011-01-19T09:06:57.388Z</cmis:value>"
+        << "</cmis:propertyDateTime>";
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getDateTimes( ).size( ) );
+}
+
+void XmlTest::parsePropertyBoolTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyBoolean " << getXmlns( )
+        <<            "propertyDefinitionId=\"ID\" "
+        <<            "queryName=\"QUERY_NAME\" "
+        <<            "displayName=\"DISPLAY_NAME\" "
+        <<            "localName=\"LOCAL_NAME\">"
+        <<      "<cmis:value>true</cmis:value>"
+        << "</cmis:propertyBoolean>";
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 1 ), actual->getBools( ).size( ) );
+}
+
+void XmlTest::propertyStringAsXmlTest( )
+{
+    vector< string > values;
+    values.push_back( string( "Value 1" ) );
+    values.push_back( string( "Value 2" ) );
+    libcmis::PropertyPtr property( new libcmis::StringProperty(
+                string( "ID" ), string( "LOCAL" ),
+                string( "DISPLAY" ), string( "QUERY" ), values ) );
+
+    string actual = writeXml( property );
+
+    stringstream expected;
+    expected << "<?xml version=\"1.0\"?>\n"
+             << "<cmis:propertyString propertyDefinitionId=\"ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
+             << "<cmis:value>Value 1</cmis:value>"
+             << "<cmis:value>Value 2</cmis:value>"
+             << "</cmis:propertyString>\n";
+
+    CPPUNIT_ASSERT_EQUAL( expected.str( ), actual );
+}
+
+void XmlTest::propertyIntegerAsXmlTest( )
+{
+    vector< string > values;
+    values.push_back( string( "123" ) );
+    values.push_back( string( "456" ) );
+    libcmis::PropertyPtr property( new libcmis::IntegerProperty(
+                string( "ID" ), string( "LOCAL" ),
+                string( "DISPLAY" ), string( "QUERY" ), values ) );
+
+    string actual = writeXml( property );
+
+    stringstream expected;
+    expected << "<?xml version=\"1.0\"?>\n"
+             << "<cmis:propertyInteger propertyDefinitionId=\"ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
+             << "<cmis:value>123</cmis:value>"
+             << "<cmis:value>456</cmis:value>"
+             << "</cmis:propertyInteger>\n";
+
+    CPPUNIT_ASSERT_EQUAL( expected.str( ), actual );
+}
+
+const char* XmlTest::getXmlns( )
+{
+    return "xmlns:cmis=\"http://docs.oasis-open.org/ns/cmis/core/200908/\" xmlns:cmisra=\"http://docs.oasis-open.org/ns/cmis/restatom/200908/\" ";
+}
+
+xmlNodePtr XmlTest::getXmlNode( string str )
+{
+    xmlNodePtr node = NULL;
+    xmlDocPtr doc = xmlReadMemory( str.c_str( ), str.size( ), "tester", NULL, 0 );
+    if ( NULL != doc )
+        node = xmlDocGetRootElement( doc );
+
+    return node;
+}
+
+string XmlTest::writeXml( libcmis::PropertyPtr property )
+{
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    property->toXml( writer );
+    xmlTextWriterEndDocument( writer );
+
+    string str( ( const char * )xmlBufferContent( buf ) );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    return str;
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );

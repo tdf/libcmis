@@ -34,6 +34,10 @@
 
 #include "exception.hxx"
 
+#define NS_CMIS_PREFIX BAD_CAST( "cmis" )
+#define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
+#define NS_CMISRA_PREFIX BAD_CAST( "cmisra" )
+#define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
 
 namespace libcmis
 {
