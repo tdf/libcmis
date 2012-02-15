@@ -38,6 +38,7 @@
 #include "allowable-actions.hxx"
 #include "exception.hxx"
 #include "property.hxx"
+#include "xmlserializable.hxx"
 
 // for compatibility with libcmis in LO tree
 #define CmisObject Object
@@ -47,7 +48,7 @@ namespace libcmis
 {
     /** Class representing any CMIS object.
       */
-    class Object
+    class Object : public XmlSerializable
     {
         public:
             virtual ~Object( ) { }

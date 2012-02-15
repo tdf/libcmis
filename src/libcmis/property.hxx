@@ -37,9 +37,11 @@
 #include <string>
 #include <vector>
 
+#include "xmlserializable.hxx"
+
 namespace libcmis
 {
-    class Property
+    class Property : public XmlSerializable
     {
         public:
 

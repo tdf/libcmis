@@ -78,6 +78,8 @@ class AtomObject : public virtual libcmis::Object
 
         virtual std::string toString( );
 
+        virtual void toXml( xmlTextWriterPtr writer );
+
     protected:
 
         std::string& getInfosUrl( ) { return m_infosUrl; }

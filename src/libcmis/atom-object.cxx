@@ -251,6 +251,31 @@ string AtomObject::toString( )
     return buf.str();
 }
 
+void AtomObject::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( getCreatedBy( ).c_str( ) ) );
+    xmlTextWriterEndElement( writer );
+    
+    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( getName( ).c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
+
+    // Output the properties
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmis:properties" ) );
+    for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin( );
+            it != getProperties( ).end( ); ++it )
+    {
+        it->second->toXml( writer );
+    }
+    xmlTextWriterEndElement( writer ); // cmis:properties
+    xmlTextWriterEndElement( writer ); // cmisra:object
+
+    xmlTextWriterEndElement( writer ); // atom:entry
+}
+
 void AtomObject::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
@@ -262,7 +287,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         // Get the infos URL as we may not have it
         string selfReq( "//atom:link[@rel='self']/@href" );
         m_infosUrl = atom::getXPathValue( xpathCtx, selfReq ) ;
-        
+
         // Get the URL to the allowableActions
         string allowableActionsReq( "//atom:link[@rel='http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions']/attribute::href" );
         string allowableActionsUrl = atom::getXPathValue( xpathCtx, allowableActionsReq );

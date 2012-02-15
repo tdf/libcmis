@@ -48,7 +48,7 @@ class XmlTest : public CppUnit::TestFixture
         // Test helper functions for parser and writer tests
         xmlNodePtr getXmlNode( string str );
         const char* getXmlns( );
-        string writeXml( libcmis::PropertyPtr property );
+        string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
 
     public:
 
@@ -393,13 +393,13 @@ xmlNodePtr XmlTest::getXmlNode( string str )
     return node;
 }
 
-string XmlTest::writeXml( libcmis::PropertyPtr property )
+string XmlTest::writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable )
 {
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
-    property->toXml( writer );
+    serializable->toXml( writer );
     xmlTextWriterEndDocument( writer );
 
     string str( ( const char * )xmlBufferContent( buf ) );
