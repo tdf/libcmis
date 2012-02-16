@@ -70,19 +70,8 @@ namespace
 }
 
 
-AtomDocument::AtomDocument( AtomPubSession* session, string url ) :
-    AtomObject( session, url ),
-    m_parentsUrl( ),
-    m_contentUrl( ),
-    m_contentType( ),
-    m_contentFilename( ),
-    m_contentLength( 0 )
-{
-    refresh( );
-}
-
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
-    AtomObject( session, string() ),
+    AtomObject( session ),
     m_parentsUrl( ),
     m_contentUrl( ),
     m_contentType( ),
@@ -290,20 +279,20 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
     AtomObject::extractInfos( doc );
    
    // Get the content url and type 
-    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
     if ( NULL != doc )
     {
-        atom::registerNamespaces( pXPathCtx );
+        atom::registerNamespaces( xpathCtx );
 
-        if ( NULL != pXPathCtx )
+        if ( NULL != xpathCtx )
         {
             string upReq( "//atom:link[@rel='up']/attribute::href" );
-            m_parentsUrl = atom::getXPathValue( pXPathCtx, upReq );
+            m_parentsUrl = atom::getXPathValue( xpathCtx, upReq );
 
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( "//atom:content" ), pXPathCtx );
-            if ( pXPathObj && pXPathObj->nodesetval && pXPathObj->nodesetval->nodeNr > 0 )
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//atom:content" ), xpathCtx );
+            if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
             {
-                xmlNodePtr contentNd = pXPathObj->nodesetval->nodeTab[0];
+                xmlNodePtr contentNd = xpathObj->nodesetval->nodeTab[0];
                 xmlChar* src = xmlGetProp( contentNd, BAD_CAST( "src" ) );
                 m_contentUrl = string( ( char* ) src );
                 xmlFree( src );
@@ -314,15 +303,15 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
 
                 // Get the content filename
                 string filenameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:contentStreamFileName']/cmis:value/text()" );
-                m_contentFilename = atom::getXPathValue( pXPathCtx, filenameReq );
+                m_contentFilename = atom::getXPathValue( xpathCtx, filenameReq );
 
                 // Get the content length
                 string lengthReq( "//cmis:propertyInteger[@propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
-                string bytes = atom::getXPathValue( pXPathCtx, lengthReq );
+                string bytes = atom::getXPathValue( xpathCtx, lengthReq );
                 m_contentLength = atol( bytes.c_str() );
             }
-            xmlXPathFreeObject( pXPathObj );
+            xmlXPathFreeObject( xpathObj );
         }
-        xmlXPathFreeContext( pXPathCtx );
+        xmlXPathFreeContext( xpathCtx );
     }
 }

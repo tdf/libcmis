@@ -41,7 +41,6 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         std::string m_parentId;
 
     public:
-        AtomFolder( AtomPubSession* session, std::string url );
         AtomFolder( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomFolder( );
 

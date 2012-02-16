@@ -184,16 +184,16 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
     if ( NULL != doc )
     {
         // Get the atom:entry node
-        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
-        atom::registerNamespaces( pXPathCtx );
-        if ( NULL != pXPathCtx )
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        atom::registerNamespaces( xpathCtx );
+        if ( NULL != xpathCtx )
         {
             const string& entriesReq( "//atom:entry" );
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), pXPathCtx );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
 
-            if ( NULL != pXPathObj && NULL != pXPathObj->nodesetval && ( 0 < pXPathObj->nodesetval->nodeNr ) )
+            if ( NULL != xpathObj && NULL != xpathObj->nodesetval && ( 0 < xpathObj->nodesetval->nodeNr ) )
             {
-                xmlNodePtr node = pXPathObj->nodesetval->nodeTab[0];
+                xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
                 if ( !AtomFolder::getChildrenUrl( doc ).empty() )
                 {
                     libcmis::ObjectPtr folder( new AtomFolder( this, node ) );
@@ -205,9 +205,9 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
                     cmisObject.swap( content );
                 }
             }
-            xmlXPathFreeObject( pXPathObj );
+            xmlXPathFreeObject( xpathObj );
         }
-        xmlXPathFreeContext( pXPathCtx );
+        xmlXPathFreeContext( xpathCtx );
     }
 
     return cmisObject;

@@ -182,28 +182,28 @@ namespace atom
         m_missingBytes = missingBytes;
     }
 
-    void registerNamespaces( xmlXPathContextPtr pXPathCtx )
+    void registerNamespaces( xmlXPathContextPtr xpathCtx )
     {
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "app" ),  NS_APP_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "ns3" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/messaging/200908/" ) );
-        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "app" ),  NS_APP_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "ns3" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/messaging/200908/" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
     }
     
-    string getXPathValue( xmlXPathContextPtr pXPathCtx, string req )
+    string getXPathValue( xmlXPathContextPtr xpathCtx, string req )
     {
         string value;
-        xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( req.c_str() ), pXPathCtx );
-        if ( pXPathObj && pXPathObj->nodesetval && pXPathObj->nodesetval->nodeNr > 0 )
+        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( req.c_str() ), xpathCtx );
+        if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
         {
-            xmlChar* pContent = xmlNodeGetContent( pXPathObj->nodesetval->nodeTab[0] );
+            xmlChar* pContent = xmlNodeGetContent( xpathObj->nodesetval->nodeTab[0] );
             value = string( ( char* )pContent );
             xmlFree( pContent );
         }
-        xmlXPathFreeObject( pXPathObj );
+        xmlXPathFreeObject( xpathObj );
 
         return value;
     }

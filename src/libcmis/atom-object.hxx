@@ -47,7 +47,7 @@ class AtomObject : public virtual libcmis::Object
         boost::shared_ptr< AtomAllowableActions > m_allowableActions;
 
     public:
-        AtomObject( AtomPubSession* session, std::string url ) throw ( libcmis::Exception );
+        AtomObject( AtomPubSession* session ) throw ( libcmis::Exception );
         AtomObject( const AtomObject& copy );
         ~AtomObject( );
 

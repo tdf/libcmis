@@ -40,14 +40,10 @@ using namespace boost;
 using namespace std;
 
 
-/** Constructor for the object, the url provided url should point to the object
-    CMIS properties. The content of the URL isn't extracted and parsed by the constructor:
-    this task is left to the class children.
-  */
-AtomObject::AtomObject( AtomPubSession* session, string url ) throw ( libcmis::Exception ) :
+AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_session( session ),
     m_refreshTimestamp( 0 ),
-    m_infosUrl( url ),
+    m_infosUrl( ),
     m_properties( ),
     m_allowableActions( )
 {

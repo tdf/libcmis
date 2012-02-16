@@ -44,7 +44,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
         long m_contentLength;
 
     public:
-        AtomDocument( AtomPubSession* session, std::string url );
         AtomDocument( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomDocument( );
 

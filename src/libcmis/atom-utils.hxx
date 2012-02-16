@@ -70,9 +70,9 @@ namespace atom
             void decodeBase64( const char* buf, size_t len );
     };
     
-    void registerNamespaces( xmlXPathContextPtr pXPathCtx );
+    void registerNamespaces( xmlXPathContextPtr xpathCtx );
 
-    std::string getXPathValue( xmlXPathContextPtr pXPathCtx, std::string req ); 
+    std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req ); 
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 }

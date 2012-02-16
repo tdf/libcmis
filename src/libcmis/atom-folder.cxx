@@ -37,17 +37,8 @@ namespace
 {
 }
 
-AtomFolder::AtomFolder( AtomPubSession* session, string url ) :
-    AtomObject( session, url ),
-    m_path( ),
-    m_childrenUrl( ),
-    m_parentId( )
-{
-    refresh();
-}
-
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
-    AtomObject( session, string() ),
+    AtomObject( session ),
     m_path( ),
     m_childrenUrl( ),
     m_parentId( )
@@ -90,19 +81,19 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
     xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_childrenUrl.c_str(), NULL, 0 );
     if ( NULL != doc )
     {
-        xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
-        atom::registerNamespaces( pXPathCtx );
-        if ( NULL != pXPathCtx )
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        atom::registerNamespaces( xpathCtx );
+        if ( NULL != xpathCtx )
         {
             const string& entriesReq( "//atom:entry" );
-            xmlXPathObjectPtr pXPathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), pXPathCtx );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
 
-            if ( NULL != pXPathObj && NULL != pXPathObj->nodesetval )
+            if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
             {
-                int size = pXPathObj->nodesetval->nodeNr;
+                int size = xpathObj->nodesetval->nodeNr;
                 for ( int i = 0; i < size; i++ )
                 {
-                    xmlNodePtr node = pXPathObj->nodesetval->nodeTab[i];
+                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
                     xmlDocPtr entryDoc = atom::wrapInDoc( node );
                     libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
 
@@ -112,10 +103,10 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
                 }
             }
 
-            xmlXPathFreeObject( pXPathObj );
+            xmlXPathFreeObject( xpathObj );
         }
 
-        xmlXPathFreeContext( pXPathCtx );
+        xmlXPathFreeContext( xpathCtx );
     }
     else
     {
@@ -162,38 +153,38 @@ void AtomFolder::extractInfos( xmlDocPtr doc )
     AtomObject::extractInfos( doc );
     m_childrenUrl = AtomFolder::getChildrenUrl( doc );
 
-    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
+    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
     // Register the Service Document namespaces
-    atom::registerNamespaces( pXPathCtx );
+    atom::registerNamespaces( xpathCtx );
 
-    if ( NULL != pXPathCtx )
+    if ( NULL != xpathCtx )
     {
         // Get the path
         string pathReq( "//cmis:propertyString[@propertyDefinitionId='cmis:path']/cmis:value/text()" );
-        m_path = atom::getXPathValue( pXPathCtx, pathReq );
+        m_path = atom::getXPathValue( xpathCtx, pathReq );
         
         // Get the parent id
         string parentIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:parentId']/cmis:value/text()" );
-        m_parentId = atom::getXPathValue( pXPathCtx, parentIdReq );
+        m_parentId = atom::getXPathValue( xpathCtx, parentIdReq );
     }
-    xmlXPathFreeContext( pXPathCtx );
+    xmlXPathFreeContext( xpathCtx );
 }
 
 string AtomFolder::getChildrenUrl( xmlDocPtr doc )
 {
     string childrenUrl;
 
-    xmlXPathContextPtr pXPathCtx = xmlXPathNewContext( doc );
-    atom::registerNamespaces( pXPathCtx );
+    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+    atom::registerNamespaces( xpathCtx );
 
-    if ( NULL != pXPathCtx )
+    if ( NULL != xpathCtx )
     {
         // Get the children collection url
         string downReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']/attribute::href" );
-        childrenUrl = atom::getXPathValue( pXPathCtx, downReq );
+        childrenUrl = atom::getXPathValue( xpathCtx, downReq );
     }
-    xmlXPathFreeContext( pXPathCtx );
+    xmlXPathFreeContext( xpathCtx );
 
     return childrenUrl;
 }
