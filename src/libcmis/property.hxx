@@ -93,6 +93,8 @@ namespace libcmis
             virtual std::vector< long > getLongs( ) = 0;
             virtual std::vector< double > getDoubles( ) = 0;
 
+            virtual void setValues( std::vector< std::string > strValues );
+
             virtual void toXml( xmlTextWriterPtr writer );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;
@@ -114,6 +116,8 @@ namespace libcmis
             virtual std::vector< bool > getBools( );
             virtual std::vector< long > getLongs( ) { return m_values; }
             virtual std::vector< double > getDoubles( );
+
+            virtual void setValues( std::vector< std::string > strValues );
     };
     
     class DecimalProperty : public Property
@@ -133,6 +137,8 @@ namespace libcmis
             virtual std::vector< bool > getBools( );
             virtual std::vector< long > getLongs( );
             virtual std::vector< double > getDoubles( ) { return m_values; }
+
+            virtual void setValues( std::vector< std::string > strValues );
     };
     
     class BoolProperty : public Property
@@ -152,6 +158,8 @@ namespace libcmis
             virtual std::vector< bool > getBools( ) { return m_values; }
             virtual std::vector< long > getLongs( );
             virtual std::vector< double > getDoubles( );
+
+            virtual void setValues( std::vector< std::string > strValues );
     };
     
     class DateTimeProperty : public Property
@@ -171,6 +179,8 @@ namespace libcmis
             virtual std::vector< bool > getBools( );
             virtual std::vector< long > getLongs( );
             virtual std::vector< double > getDoubles( );
+
+            virtual void setValues( std::vector< std::string > strValues );
     };
     
     class StringProperty : public Property

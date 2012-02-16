@@ -68,6 +68,8 @@ namespace libcmis
             virtual bool isImmutable( ) = 0;
 
             virtual std::map< std::string, PropertyPtr >& getProperties( ) = 0;
+            virtual void updateProperties( ) throw ( Exception ) = 0;
+
             virtual boost::shared_ptr< AllowableActions > getAllowableActions( ) = 0;
 
             /** Reload the data from the server.

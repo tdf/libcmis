@@ -45,6 +45,9 @@ namespace libcmis
      */ 
     boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
 
+    /// Write a UTC time object to an xsd:dateTime string
+    std::string writeDateTime( boost::posix_time::ptime time );
+
     bool parseBool( std::string str ) throw ( Exception );
 
     long parseInteger( std::string str ) throw ( Exception );

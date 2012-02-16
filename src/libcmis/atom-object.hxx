@@ -69,6 +69,8 @@ class AtomObject : public virtual libcmis::Object
         virtual bool isImmutable( );
 
         virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
+        virtual void updateProperties( ) throw ( libcmis::Exception );
+
         virtual boost::shared_ptr< libcmis::AllowableActions > getAllowableActions( );
 
         /** Reload the data from the server.

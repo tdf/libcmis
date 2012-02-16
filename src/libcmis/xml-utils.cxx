@@ -82,6 +82,13 @@ namespace libcmis
         return t;
     }
 
+    string writeDateTime( boost::posix_time::ptime time )
+    {
+        string str = boost::posix_time::to_iso_extended_string( time );
+        str += "Z";
+        return str;
+    }
+
     bool parseBool( string boolStr ) throw ( Exception )
     {
         bool value = false;

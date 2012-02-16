@@ -28,6 +28,8 @@
 
 #include <sstream>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include "atom-object.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
@@ -169,6 +171,35 @@ std::map< std::string, libcmis::PropertyPtr >& AtomObject::getProperties( )
     return m_properties;
 }
 
+void AtomObject::updateProperties( ) throw ( libcmis::Exception )
+{
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    // output only the readwrite properties
+    AtomObject copy( *this );
+    // TODO remove the readonly properties from the copy before serializing
+    copy.toXml( writer );
+
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    try
+    {
+        getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+}
+
 shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
 {
     return m_allowableActions;
@@ -254,12 +285,18 @@ string AtomObject::toString( )
 void AtomObject::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:atom" ), NS_ATOM_URL );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), NS_CMIS_URL );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), NS_CMISRA_URL );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( getCreatedBy( ).c_str( ) ) );
     xmlTextWriterEndElement( writer );
-    
+
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( getName( ).c_str( ) ) );
+
+    posix_time::ptime now( posix_time::second_clock::universal_time( ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:updated" ), BAD_CAST( libcmis::writeDateTime( now ).c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
 

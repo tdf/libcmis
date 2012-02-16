@@ -27,7 +27,6 @@
  */
 
 #include "property.hxx"
-
 #include "xml-utils.hxx"
 
 using namespace std;
@@ -53,8 +52,14 @@ namespace libcmis
         m_displayName( displayName ),
         m_queryName( queryName ),
         m_type( type ),
-        m_strValues( strValues )
+        m_strValues( )
     {
+        setValues( strValues );
+    }
+
+    void Property::setValues( vector< string > strValues )
+    {
+        m_strValues = strValues;
     }
 
     void Property::toXml( xmlTextWriterPtr writer )
@@ -86,20 +91,9 @@ namespace libcmis
         Property( id, localName, displayName, queryName, values, Property::Integer ),
         m_values( )
     {
-        // Parse the values into long
-        for ( vector< string >::iterator it = values.begin(); it != values.end( ); ++it )
-        {
-            try
-            {
-                m_values.push_back( parseInteger( *it ) );
-            }
-            catch( const Exception& e )
-            {
-                // Just ignore the unparsable value
-            }
-        }
+        setValues( values );
     }
-            
+
     vector< boost::posix_time::ptime > IntegerProperty::getDateTimes( )
     {
         return vector< boost::posix_time::ptime >( );
@@ -114,18 +108,18 @@ namespace libcmis
     {
         return vector< double >( );
     }
-    
-    DecimalProperty::DecimalProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::Decimal ),
-        m_values( )
+
+    void IntegerProperty::setValues( vector< string > strValues )
     {
-        // Parse the values into doubles
-        for ( vector< string >::iterator it = values.begin(); it != values.end( ); ++it )
+        Property::setValues( strValues );
+        m_values.clear( );
+        
+        // Parse the values into long
+        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
         {
             try
             {
-                m_values.push_back( parseDouble( *it ) );
+                m_values.push_back( parseInteger( *it ) );
             }
             catch( const Exception& e )
             {
@@ -133,7 +127,15 @@ namespace libcmis
             }
         }
     }
-            
+    
+    DecimalProperty::DecimalProperty( std::string id, std::string localName,
+            std::string displayName, std::string queryName, std::vector< std::string > values ) :
+        Property( id, localName, displayName, queryName, values, Property::Decimal ),
+        m_values( )
+    {
+        setValues( values );
+    }
+
     vector< boost::posix_time::ptime > DecimalProperty::getDateTimes( )
     {
         return vector< boost::posix_time::ptime >( );
@@ -149,23 +151,31 @@ namespace libcmis
         return vector< long > ( );
     }
     
-    BoolProperty::BoolProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::Bool ),
-        m_values( )
+    void DecimalProperty::setValues( vector< string > strValues )
     {
-        // Parse the values into bools
-        for ( vector< string >::iterator it = values.begin(); it != values.end( ); ++it )
+        Property::setValues( strValues );
+        m_values.clear( );
+
+        // Parse the values into doubles
+        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
         {
             try
             {
-                m_values.push_back( parseBool( *it ) );
+                m_values.push_back( parseDouble( *it ) );
             }
             catch( const Exception& e )
             {
                 // Just ignore the unparsable value
             }
         }
+    }
+    
+    BoolProperty::BoolProperty( std::string id, std::string localName,
+            std::string displayName, std::string queryName, std::vector< std::string > values ) :
+        Property( id, localName, displayName, queryName, values, Property::Bool ),
+        m_values( )
+    {
+        setValues( values );
     }
             
     vector< boost::posix_time::ptime > BoolProperty::getDateTimes( )
@@ -182,15 +192,32 @@ namespace libcmis
     {
         return vector< double >( );
     }
+
+    void BoolProperty::setValues( vector< string > strValues )
+    {
+        Property::setValues( strValues );
+        m_values.clear( );
+
+        // Parse the values into bools
+        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
+        {
+            try
+            {
+                m_values.push_back( parseBool( *it ) );
+            }
+            catch( const Exception& e )
+            {
+                // Just ignore the unparsable value
+            }
+        }
+    }
     
     DateTimeProperty::DateTimeProperty( std::string id, std::string localName,
             std::string displayName, std::string queryName, std::vector< std::string > values ) :
         Property( id, localName, displayName, queryName, values, Property::DateTime ),
         m_values( )
     {
-        // Parse the values into ptime
-        for ( vector< string >::iterator it = values.begin(); it != values.end( ); ++it )
-            m_values.push_back( parseDateTime( *it ) );
+        setValues( values );
     }
     
     vector< bool > DateTimeProperty::getBools( )
@@ -206,6 +233,16 @@ namespace libcmis
     vector< double > DateTimeProperty::getDoubles( )
     {
         return vector< double >( );
+    }
+
+    void DateTimeProperty::setValues( vector< string > strValues )
+    {
+        Property::setValues( strValues );
+        m_values.clear( );
+
+        // Parse the values into ptime
+        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
+            m_values.push_back( parseDateTime( *it ) );
     }
     
     StringProperty::StringProperty( std::string id, std::string localName,

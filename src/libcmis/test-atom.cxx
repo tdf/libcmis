@@ -65,6 +65,10 @@
 #define TEST_PATH_INVALID string( "/some/dummy/path" )
 #define INVALID_PATH_EXCEPTION_MSG string( "No node corresponding to path: /some/dummy/path" )
 
+#define TEST_UPDATE_DOCUMENT_ID string( "114" )
+#define TEST_UPDATED_PROPERTY_NAME string( "cmis:name" )
+#define TEST_UPDATED_PROPERTY_VALUE string( "New name" )
+
 using namespace boost;
 using namespace std;
 
@@ -95,6 +99,7 @@ class AtomTest : public CppUnit::TestFixture
         void getContentTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
+        void updatePropertiesTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -112,6 +117,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -393,6 +399,26 @@ void AtomTest::setContentStreamTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void AtomTest::updatePropertiesTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( TEST_UPDATE_DOCUMENT_ID );
+
+    map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
+    CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
+
+    vector< string > values;
+    values.push_back( TEST_UPDATED_PROPERTY_VALUE );
+    it->second->setValues( values );
+
+    object->updateProperties( );
+
+    libcmis::ObjectPtr updated = session.getObject( TEST_UPDATE_DOCUMENT_ID );
+    it = updated->getProperties( ).find( TEST_UPDATED_PROPERTY_VALUE );
+    CPPUNIT_ASSERT_MESSAGE( "Property to check for change not found", it != updated->getProperties( ).end( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Property not updated", TEST_UPDATED_PROPERTY_VALUE, it->second->getStrings( ).front( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
