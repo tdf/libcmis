@@ -31,6 +31,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "atom-object.hxx"
+#include "atom-object-type.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 #include "xml-utils.hxx"
@@ -198,6 +199,12 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     {
         throw e.getCmisException( );
     }
+}
+
+libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
+{
+    libcmis::ObjectTypePtr typeDescription( new AtomObjectType( m_session, getType() ) );
+    return typeDescription;
 }
 
 shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )

@@ -190,7 +190,7 @@ string AtomFolder::getChildrenUrl( xmlDocPtr doc )
     if ( NULL != pXPathCtx )
     {
         // Get the children collection url
-        string downReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']//attribute::href" );
+        string downReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']/attribute::href" );
         childrenUrl = atom::getXPathValue( pXPathCtx, downReq );
     }
     xmlXPathFreeContext( pXPathCtx );

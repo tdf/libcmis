@@ -43,6 +43,16 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
+#define TEST_UNEXISTANT_TYPE_ID string( "bad_type" )
+#define INVALID_TYPE_ID_EXCEPTION_MSG string( "No such type: bad_type" )
+
+#define TEST_TYPE_ID string( "ComplexType" )
+#define PARENT_TYPE_ID string( "cmis:document" )
+#define BASE_TYPE_ID string( "cmis:document" )
+
+#define CHILDREN_TEST_TYPE_ID string( "cmis:document" )
+#define CHILDREN_TEST_COUNT 5
+
 #define TEST_UNEXISTANT_NODE_ID string( "99" )
 #define INVALID_ID_EXCEPTION_MSG string( "No such node: 99" )
 
@@ -81,8 +91,12 @@ class AtomTest : public CppUnit::TestFixture
         void getRepositoriesTest( );
         void sessionCreationTest( );
 
-        // Node fetching tests
+        // Types fetching tests
+        void getUnexistantTypeTest( );
+        void getNormalTypeTest( );
+        void getTypeChildrenTest( );
 
+        // Node fetching tests
         void getFolderCreationFromUrlTest( );
         void getUnexistantFolderTest( );
         void getUnexistantObjectTest( );
@@ -104,6 +118,9 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
+        CPPUNIT_TEST( getUnexistantTypeTest );
+        CPPUNIT_TEST( getNormalTypeTest );
+        CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getFolderCreationFromUrlTest );
         CPPUNIT_TEST( getUnexistantFolderTest );
         CPPUNIT_TEST( getUnexistantObjectTest );
@@ -163,6 +180,42 @@ void AtomTest::sessionCreationTest( )
             !session.getRootId().empty() );
     CPPUNIT_ASSERT_MESSAGE( "Root folder isn't considering itself a root",
             session.getRootFolder( )->isRootFolder() );
+}
+
+void AtomTest::getUnexistantTypeTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    try
+    {
+        session.getType( TEST_UNEXISTANT_TYPE_ID );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_TYPE_ID_EXCEPTION_MSG , string( e.what() ) );
+    }
+}
+
+void AtomTest::getNormalTypeTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    libcmis::ObjectTypePtr type = session.getType( TEST_TYPE_ID );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent type", PARENT_TYPE_ID, type->getParentType( )->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", BASE_TYPE_ID, type->getParentType( )->getId( ) );
+
+}
+
+void AtomTest::getTypeChildrenTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    libcmis::ObjectTypePtr type = session.getType( CHILDREN_TEST_TYPE_ID );
+    vector< libcmis::ObjectTypePtr > children = type->getChildren( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children imported", CHILDREN_TEST_COUNT, int( children.size() ) );
 }
 
 void AtomTest::getUnexistantFolderTest( )

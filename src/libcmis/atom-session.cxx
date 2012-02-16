@@ -33,6 +33,7 @@
 
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
+#include "atom-object-type.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
 
@@ -268,6 +269,12 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmi
         else
             throw e.getCmisException();
     }
+}
+
+libcmis::ObjectTypePtr AtomPubSession::getType( string id ) throw ( libcmis::Exception )
+{
+    libcmis::ObjectTypePtr type( new AtomObjectType( this, id ) );
+    return type;
 }
 
 libcmis::FolderPtr AtomPubSession::getFolder( string id )

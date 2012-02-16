@@ -4,6 +4,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	document.hxx \
 	folder.hxx \
 	object.hxx \
+	object-type.hxx \
 	session.hxx \
 	session-factory.hxx \
     allowable-actions.hxx \
@@ -16,6 +17,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-document.hxx \
 	atom-folder.hxx \
 	atom-object.hxx \
+	atom-object-type.hxx \
+	atom-object-type.cxx \
 	atom-session.hxx \
 	session-factory.cxx \
 	atom-document.cxx \

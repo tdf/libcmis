@@ -37,6 +37,7 @@
 
 #include "allowable-actions.hxx"
 #include "exception.hxx"
+#include "object-type.hxx"
 #include "property.hxx"
 #include "xmlserializable.hxx"
 
@@ -70,6 +71,7 @@ namespace libcmis
             virtual std::map< std::string, PropertyPtr >& getProperties( ) = 0;
             virtual void updateProperties( ) throw ( Exception ) = 0;
 
+            virtual ObjectTypePtr getTypeDescription( ) = 0;
             virtual boost::shared_ptr< AllowableActions > getAllowableActions( ) = 0;
 
             /** Reload the data from the server.

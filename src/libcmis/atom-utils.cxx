@@ -188,6 +188,9 @@ namespace atom
         xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
         xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
         xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "ns3" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/messaging/200908/" ) );
+        xmlXPathRegisterNs( pXPathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
     }
     
     string getXPathValue( xmlXPathContextPtr pXPathCtx, string req )

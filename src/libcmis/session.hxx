@@ -28,6 +28,7 @@
 #ifndef _SESSION_HXX_
 #define _SESSION_HXX_
 
+#include "object-type.hxx"
 #include "object.hxx"
 #include "folder.hxx"
 
@@ -49,6 +50,10 @@ namespace libcmis
             /** Get a CMIS object from one of its path.
               */
             virtual ObjectPtr getObjectByPath( std::string path ) throw ( Exception ) = 0;
+
+            /** Get a CMIS object type from its ID.
+              */
+            virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
     };
 }
 
