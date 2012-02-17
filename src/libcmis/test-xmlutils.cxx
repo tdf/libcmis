@@ -36,7 +36,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include "object-type.hxx"
 #include "property.hxx"
+#include "property-type.hxx"
 #include "xml-utils.hxx"
 
 using namespace boost;
@@ -80,6 +82,106 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST_SUITE_END( );
 };
+
+/** Dummy ObjectType implementation used as a PropertyType factory.
+  */
+class ObjectTypeDummy : public libcmis::ObjectType
+{
+    private:
+        map< string, libcmis::PropertyTypePtr > m_properties;
+
+    public:
+        ObjectTypeDummy( );
+        virtual ~ObjectTypeDummy() { };
+
+        virtual string getId( ) { return string( ); }
+        virtual string getLocalName( ) { return string( ); }
+        virtual string getLocalNamespace( ) { return string( ); }
+        virtual string getDisplayName( ) { return string( ); }
+        virtual string getQueryName( ) { return string( ); }
+        virtual string getDescription( ) { return string( ); }
+
+        virtual libcmis::ObjectTypePtr  getParentType( ) throw ( libcmis::Exception )
+        {
+            libcmis::ObjectTypePtr empty;
+            return empty;
+        }
+
+        virtual libcmis::ObjectTypePtr  getBaseType( ) throw ( libcmis::Exception )
+        {
+            libcmis::ObjectTypePtr empty;
+            return empty;
+        }
+
+        virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception )
+        {
+            vector< libcmis::ObjectTypePtr > empty;
+            return empty;
+        }
+        
+        virtual bool isCreatable( ) { return false; }
+        virtual bool isFileable( ) { return false; }
+        virtual bool isQueryable( ) { return false; }
+        virtual bool isFulltextIndexed( ) { return false; }
+        virtual bool isIncludedInSupertypeQuery( ) { return false; }
+        virtual bool isControllablePolicy( ) { return false; }
+        virtual bool isControllableACL( ) { return false; }
+
+        virtual map< string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_properties; }
+
+        virtual string toString( ) { return string( ); }
+};
+
+ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
+{
+    // String Property
+    {
+        libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
+        prop->setId( string( "STR-ID" ) );
+        prop->setLocalName( string( "LOCAL" ) );
+        prop->setDisplayName( string( "DISPLAY" ) );
+        prop->setQueryName( string( "QUERY" ) );
+        prop->setTypeFromXml( "string" );
+
+        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+    }
+    
+    // Integer Property
+    {
+        libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
+        prop->setId( string( "INT-ID" ) );
+        prop->setLocalName( string( "LOCAL" ) );
+        prop->setDisplayName( string( "DISPLAY" ) );
+        prop->setQueryName( string( "QUERY" ) );
+        prop->setTypeFromXml( "integer" );
+
+        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+    }
+    
+    // DateTime Property
+    {
+        libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
+        prop->setId( string( "DATE-ID" ) );
+        prop->setLocalName( string( "LOCAL" ) );
+        prop->setDisplayName( string( "DISPLAY" ) );
+        prop->setQueryName( string( "QUERY" ) );
+        prop->setTypeFromXml( "datetime" );
+
+        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+    }
+    
+    // Boolean Property
+    {
+        libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
+        prop->setId( string( "BOOL-ID" ) );
+        prop->setLocalName( string( "LOCAL" ) );
+        prop->setDisplayName( string( "DISPLAY" ) );
+        prop->setQueryName( string( "QUERY" ) );
+        prop->setTypeFromXml( "boolean" );
+
+        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+    }
+}
 
 void XmlTest::parseDateTimeTest( )
 {
@@ -261,19 +363,14 @@ void XmlTest::parsePropertyStringTest( )
 {
     stringstream buf;
     buf << "<cmis:propertyString " << getXmlns( )
-        <<            "propertyDefinitionId=\"ID\" "
-        <<            "queryName=\"QUERY_NAME\" "
-        <<            "displayName=\"DISPLAY_NAME\" "
-        <<            "localName=\"LOCAL_NAME\">"
+        <<            "propertyDefinitionId=\"STR-ID\">"
         <<      "<cmis:value>VALUE 1</cmis:value>"
         <<      "<cmis:value>VALUE 2</cmis:value>"
         << "</cmis:propertyString>";
-    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType( )->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getStrings( ).size( ) );
 }
 
@@ -281,19 +378,14 @@ void XmlTest::parsePropertyIntegerTest( )
 {
     stringstream buf;
     buf << "<cmis:propertyInteger " << getXmlns( )
-        <<            "propertyDefinitionId=\"ID\" "
-        <<            "queryName=\"QUERY_NAME\" "
-        <<            "displayName=\"DISPLAY_NAME\" "
-        <<            "localName=\"LOCAL_NAME\">"
+        <<            "propertyDefinitionId=\"INT-ID\">"
         <<      "<cmis:value>12345</cmis:value>"
         <<      "<cmis:value>67890</cmis:value>"
         << "</cmis:propertyInteger>";
-    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "INT-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getLongs( ).size( ) );
 }
 
@@ -301,19 +393,14 @@ void XmlTest::parsePropertyDateTimeTest( )
 {
     stringstream buf;
     buf << "<cmis:propertyDateTime " << getXmlns( )
-        <<            "propertyDefinitionId=\"ID\" "
-        <<            "queryName=\"QUERY_NAME\" "
-        <<            "displayName=\"DISPLAY_NAME\" "
-        <<            "localName=\"LOCAL_NAME\">"
+        <<            "propertyDefinitionId=\"DATE-ID\">"
         <<      "<cmis:value>2012-01-19T09:06:57.388Z</cmis:value>"
         <<      "<cmis:value>2011-01-19T09:06:57.388Z</cmis:value>"
         << "</cmis:propertyDateTime>";
-    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "DATE-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getDateTimes( ).size( ) );
 }
 
@@ -321,18 +408,13 @@ void XmlTest::parsePropertyBoolTest( )
 {
     stringstream buf;
     buf << "<cmis:propertyBoolean " << getXmlns( )
-        <<            "propertyDefinitionId=\"ID\" "
-        <<            "queryName=\"QUERY_NAME\" "
-        <<            "displayName=\"DISPLAY_NAME\" "
-        <<            "localName=\"LOCAL_NAME\">"
+        <<            "propertyDefinitionId=\"BOOL-ID\">"
         <<      "<cmis:value>true</cmis:value>"
         << "</cmis:propertyBoolean>";
-    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ) );
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "ID" ), actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong query name parsed", string( "QUERY_NAME" ), actual->getQueryName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong display name parsed", string( "DISPLAY_NAME" ), actual->getDisplayName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong local name parsed", string( "LOCAL_NAME" ), actual->getLocalName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "BOOL-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 1 ), actual->getBools( ).size( ) );
 }
 
@@ -341,15 +423,17 @@ void XmlTest::propertyStringAsXmlTest( )
     vector< string > values;
     values.push_back( string( "Value 1" ) );
     values.push_back( string( "Value 2" ) );
-    libcmis::PropertyPtr property( new libcmis::StringProperty(
-                string( "ID" ), string( "LOCAL" ),
-                string( "DISPLAY" ), string( "QUERY" ), values ) );
+
+    ObjectTypeDummy factory;
+    map< string, libcmis::PropertyTypePtr >::iterator it = factory.getPropertiesTypes( ).find( "STR-ID" );
+    CPPUNIT_ASSERT_MESSAGE( "Missing property type to setup fixture", it != factory.getPropertiesTypes( ).end() );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
 
     string actual = writeXml( property );
 
     stringstream expected;
     expected << "<?xml version=\"1.0\"?>\n"
-             << "<cmis:propertyString propertyDefinitionId=\"ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
+             << "<cmis:propertyString propertyDefinitionId=\"STR-ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
              << "<cmis:value>Value 1</cmis:value>"
              << "<cmis:value>Value 2</cmis:value>"
              << "</cmis:propertyString>\n";
@@ -362,15 +446,17 @@ void XmlTest::propertyIntegerAsXmlTest( )
     vector< string > values;
     values.push_back( string( "123" ) );
     values.push_back( string( "456" ) );
-    libcmis::PropertyPtr property( new libcmis::IntegerProperty(
-                string( "ID" ), string( "LOCAL" ),
-                string( "DISPLAY" ), string( "QUERY" ), values ) );
+
+    ObjectTypeDummy factory;
+    map< string, libcmis::PropertyTypePtr >::iterator it = factory.getPropertiesTypes( ).find( "INT-ID" );
+    CPPUNIT_ASSERT_MESSAGE( "Missing property type to setup fixture", it != factory.getPropertiesTypes( ).end() );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
 
     string actual = writeXml( property );
 
     stringstream expected;
     expected << "<?xml version=\"1.0\"?>\n"
-             << "<cmis:propertyInteger propertyDefinitionId=\"ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
+             << "<cmis:propertyInteger propertyDefinitionId=\"INT-ID\" localName=\"LOCAL\" displayName=\"DISPLAY\" queryName=\"QUERY\">"
              << "<cmis:value>123</cmis:value>"
              << "<cmis:value>456</cmis:value>"
              << "</cmis:propertyInteger>\n";

@@ -60,6 +60,8 @@ class AtomObjectType : public libcmis::ObjectType
         bool m_controllablePolicy;
         bool m_controllableAcl;
 
+        std::map< std::string, libcmis::PropertyTypePtr > m_propertiesTypes;
+
     public:
         AtomObjectType( AtomPubSession* session, std::string id ) throw ( libcmis::Exception );
         AtomObjectType( AtomPubSession* session, xmlNodePtr node ) throw ( libcmis::Exception );
@@ -91,6 +93,8 @@ class AtomObjectType : public libcmis::ObjectType
         virtual bool isIncludedInSupertypeQuery( ) { return m_includedInSupertypeQuery; }
         virtual bool isControllablePolicy( ) { return m_controllablePolicy; }
         virtual bool isControllableACL( ) { return m_controllableAcl; }
+
+        virtual std::map< std::string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
 
         virtual std::string toString( );
 

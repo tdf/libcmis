@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "object-type.hxx"
 #include "property.hxx"
 #include "xml-utils.hxx"
 
@@ -44,15 +45,13 @@ namespace
 
 namespace libcmis
 {
-    Property::Property( std::string id, std::string localName,
-                      std::string displayName, std::string queryName,
-                      std::vector< std::string > strValues, Type type ) :
-        m_id( id ),
-        m_localName( localName ),
-        m_displayName( displayName ),
-        m_queryName( queryName ),
-        m_type( type ),
-        m_strValues( )
+    Property::Property( PropertyTypePtr propertyType, std::vector< std::string > strValues ) :
+        m_propertyType( propertyType ),
+        m_strValues( ),
+        m_boolValues( ),
+        m_longValues( ),
+        m_doubleValues( ),
+        m_dateTimeValues( )
     {
         setValues( strValues );
     }
@@ -60,22 +59,56 @@ namespace libcmis
     void Property::setValues( vector< string > strValues )
     {
         m_strValues = strValues;
+        m_boolValues.clear( );
+        m_longValues.clear( );
+        m_doubleValues.clear( );
+        m_dateTimeValues.clear( );
+
+        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
+        {
+            try
+            {
+                switch ( getPropertyType( )->getType( ) )
+                {
+                    case PropertyType::Integer:
+                        m_longValues.push_back( parseInteger( *it ) );
+                        break;
+                    case PropertyType::Decimal:
+                        m_doubleValues.push_back( parseDouble( *it ) );
+                        break;
+                    case PropertyType::Bool:
+                        m_boolValues.push_back( parseBool( *it ) );
+                        break;
+                    case PropertyType::DateTime:
+                        m_dateTimeValues.push_back( parseDateTime( *it ) );
+                        break;
+                    default:
+                    case PropertyType::String:
+                        // Nothing to convert for strings
+                        break;
+                }
+            }
+            catch( const Exception& )
+            {
+                // Just ignore the unparsable values
+            }
+        }
     }
 
     void Property::toXml( xmlTextWriterPtr writer )
     {
-        string xmlType = string( "cmis:" ) + getXmlType( );
+        string xmlType = string( "cmis:property" ) + getPropertyType()->getXmlType( );
         xmlTextWriterStartElement( writer, BAD_CAST( xmlType.c_str( ) ) );
         
         // Write the attributes
         xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "propertyDefinitionId" ),
-                "%s", BAD_CAST( getId( ).c_str( ) ) );
+                "%s", BAD_CAST( getPropertyType()->getId( ).c_str( ) ) );
         xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "localName" ),
-                "%s", BAD_CAST( getLocalName( ).c_str( ) ) );
+                "%s", BAD_CAST( getPropertyType()->getLocalName( ).c_str( ) ) );
         xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "displayName" ),
-                "%s", BAD_CAST( getDisplayName( ).c_str( ) ) );
+                "%s", BAD_CAST( getPropertyType()->getDisplayName( ).c_str( ) ) );
         xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "queryName" ),
-                "%s", BAD_CAST( getQueryName( ).c_str( ) ) );
+                "%s", BAD_CAST( getPropertyType()->getQueryName( ).c_str( ) ) );
         
         // Write the values
         for ( vector< string >::iterator it = m_strValues.begin( ); it != m_strValues.end( ); ++it )
@@ -85,216 +118,10 @@ namespace libcmis
 
         xmlTextWriterEndElement( writer );
     }
-
-    IntegerProperty::IntegerProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::Integer ),
-        m_values( )
-    {
-        setValues( values );
-    }
-
-    vector< boost::posix_time::ptime > IntegerProperty::getDateTimes( )
-    {
-        return vector< boost::posix_time::ptime >( );
-    }
-
-    vector< bool > IntegerProperty::getBools( )
-    {
-        return vector< bool > ( );
-    }
-
-    vector< double > IntegerProperty::getDoubles( )
-    {
-        return vector< double >( );
-    }
-
-    void IntegerProperty::setValues( vector< string > strValues )
-    {
-        Property::setValues( strValues );
-        m_values.clear( );
-        
-        // Parse the values into long
-        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
-        {
-            try
-            {
-                m_values.push_back( parseInteger( *it ) );
-            }
-            catch( const Exception& e )
-            {
-                // Just ignore the unparsable value
-            }
-        }
-    }
     
-    DecimalProperty::DecimalProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::Decimal ),
-        m_values( )
-    {
-        setValues( values );
-    }
-
-    vector< boost::posix_time::ptime > DecimalProperty::getDateTimes( )
-    {
-        return vector< boost::posix_time::ptime >( );
-    }
-
-    vector< bool > DecimalProperty::getBools( )
-    {
-        return vector< bool > ( );
-    }
-
-    vector< long > DecimalProperty::getLongs( )
-    {
-        return vector< long > ( );
-    }
-    
-    void DecimalProperty::setValues( vector< string > strValues )
-    {
-        Property::setValues( strValues );
-        m_values.clear( );
-
-        // Parse the values into doubles
-        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
-        {
-            try
-            {
-                m_values.push_back( parseDouble( *it ) );
-            }
-            catch( const Exception& e )
-            {
-                // Just ignore the unparsable value
-            }
-        }
-    }
-    
-    BoolProperty::BoolProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::Bool ),
-        m_values( )
-    {
-        setValues( values );
-    }
-            
-    vector< boost::posix_time::ptime > BoolProperty::getDateTimes( )
-    {
-        return vector< boost::posix_time::ptime >( );
-    }
-
-    vector< long > BoolProperty::getLongs( )
-    {
-        return vector< long >( );
-    }
-
-    vector< double > BoolProperty::getDoubles( )
-    {
-        return vector< double >( );
-    }
-
-    void BoolProperty::setValues( vector< string > strValues )
-    {
-        Property::setValues( strValues );
-        m_values.clear( );
-
-        // Parse the values into bools
-        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
-        {
-            try
-            {
-                m_values.push_back( parseBool( *it ) );
-            }
-            catch( const Exception& e )
-            {
-                // Just ignore the unparsable value
-            }
-        }
-    }
-    
-    DateTimeProperty::DateTimeProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::DateTime ),
-        m_values( )
-    {
-        setValues( values );
-    }
-    
-    vector< bool > DateTimeProperty::getBools( )
-    {
-        return vector< bool > ( );
-    }
-    
-    vector< long > DateTimeProperty::getLongs( )
-    {
-        return vector< long >( );
-    }
-
-    vector< double > DateTimeProperty::getDoubles( )
-    {
-        return vector< double >( );
-    }
-
-    void DateTimeProperty::setValues( vector< string > strValues )
-    {
-        Property::setValues( strValues );
-        m_values.clear( );
-
-        // Parse the values into ptime
-        for ( vector< string >::iterator it = strValues.begin(); it != strValues.end( ); ++it )
-            m_values.push_back( parseDateTime( *it ) );
-    }
-    
-    StringProperty::StringProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        Property( id, localName, displayName, queryName, values, Property::String )
-    {
-    }
-            
-    vector< boost::posix_time::ptime > StringProperty::getDateTimes( )
-    {
-        return vector< boost::posix_time::ptime >( );
-    }
-    
-    vector< bool > StringProperty::getBools( )
-    {
-        return vector< bool >( );
-    }
-    
-    vector< long > StringProperty::getLongs( )
-    {
-        return vector< long >( );
-    }
-
-    vector< double > StringProperty::getDoubles( )
-    {
-        return vector< double >( );
-    }
-
-    IdProperty::IdProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        StringProperty( id, localName, displayName, queryName, values )
-    {
-    }
-    
-    HtmlProperty::HtmlProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        StringProperty( id, localName, displayName, queryName, values )
-    {
-    }
-
-    UriProperty::UriProperty( std::string id, std::string localName,
-            std::string displayName, std::string queryName, std::vector< std::string > values ) :
-        StringProperty( id, localName, displayName, queryName, values )
-    {
-    }
-
-    PropertyPtr parseProperty( xmlNodePtr node )
+    PropertyPtr parseProperty( xmlNodePtr node, ObjectTypePtr objectType )
     {
         string id = lcl_getAttributeValue( node, "propertyDefinitionId" );
-        string localName = lcl_getAttributeValue( node, "localName" );
-        string displayName = lcl_getAttributeValue( node, "displayName" );
-        string queryName = lcl_getAttributeValue( node, "queryName" );
 
         // Find the value nodes
         vector< string > values;
@@ -309,37 +136,11 @@ namespace libcmis
         }
 
         PropertyPtr property;
-        if ( xmlStrEqual( node->name, BAD_CAST( "propertyInteger" ) ) )
+
+        map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
+        if ( it != objectType->getPropertiesTypes().end( ) )
         {
-            property.reset( new IntegerProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyDateTime" ) ) )
-        {
-            property.reset( new DateTimeProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyBoolean" ) ) )
-        {
-            property.reset( new BoolProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyDecimal" ) ) )
-        {
-            property.reset( new DecimalProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyId" ) ) )
-        {
-            property.reset( new IdProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyUri" ) ) )
-        {
-            property.reset( new UriProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else if( xmlStrEqual( node->name, BAD_CAST( "propertyHtml" ) ) )
-        {
-            property.reset( new HtmlProperty ( id, localName, displayName, queryName, values ) );
-        }
-        else
-        {
-            property.reset( new StringProperty ( id, localName, displayName, queryName, values ) );
+            property.reset( new Property( it->second, values ) );
         }
         return property;
     }

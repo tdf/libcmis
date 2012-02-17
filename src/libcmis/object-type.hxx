@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "exception.hxx"
+#include "property-type.hxx"
 
 namespace libcmis
 {
@@ -62,6 +63,8 @@ namespace libcmis
             virtual bool isIncludedInSupertypeQuery( ) = 0;
             virtual bool isControllablePolicy( ) = 0;
             virtual bool isControllableACL( ) = 0;
+
+            virtual std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) = 0;
 
             virtual std::string toString( ) = 0; 
     };

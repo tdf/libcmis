@@ -55,7 +55,8 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) throw ( lib
     m_fulltextIndexed( false ),
     m_includedInSupertypeQuery( false ),
     m_controllablePolicy( false ),
-    m_controllableAcl( false )
+    m_controllableAcl( false ),
+    m_propertiesTypes( )
 {
     refresh( );
 }
@@ -79,7 +80,8 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, xmlNodePtr entryNd ) th
     m_fulltextIndexed( false ),
     m_includedInSupertypeQuery( false ),
     m_controllablePolicy( false ),
-    m_controllableAcl( false )
+    m_controllableAcl( false ),
+    m_propertiesTypes( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
     refreshImpl( doc );
@@ -105,7 +107,8 @@ AtomObjectType::AtomObjectType( const AtomObjectType& copy ) :
     m_fulltextIndexed( copy.m_fulltextIndexed ),
     m_includedInSupertypeQuery( copy.m_includedInSupertypeQuery ),
     m_controllablePolicy( copy.m_controllablePolicy ),
-    m_controllableAcl( copy.m_controllableAcl )
+    m_controllableAcl( copy.m_controllableAcl ),
+    m_propertiesTypes( copy.m_propertiesTypes )
 {
 }
 
@@ -134,6 +137,7 @@ AtomObjectType& AtomObjectType::operator=( const AtomObjectType& copy )
     m_includedInSupertypeQuery = copy.m_includedInSupertypeQuery;
     m_controllablePolicy = copy.m_controllablePolicy;
     m_controllableAcl = copy.m_controllableAcl;
+    m_propertiesTypes = copy.m_propertiesTypes;
 
     return *this;
 }
@@ -222,7 +226,18 @@ string AtomObjectType::toString( )
     buf << "Controllable policy: " << isControllablePolicy( ) << endl;
     buf << "Controllable ACL: " << isControllableACL( ) << endl;
 
-    buf << "Property Definitions: " << "TODO implement me" << endl;
+    buf << "Property Definitions [RO/RW (id) Name]: " << endl;
+    map< string, libcmis::PropertyTypePtr > propsTypes = getPropertiesTypes( );
+    for ( map< string, libcmis::PropertyTypePtr >::iterator it = propsTypes.begin( ); it != propsTypes.end( ); ++it )
+    {
+        libcmis::PropertyTypePtr propType = it->second;
+        string updatable( "RO" );
+        if ( propType->isUpdatable( ) )
+            updatable = string( "RW" );
+
+        buf << "    " << updatable << "\t (" << propType->getId( ) << ")\t" 
+            << propType->getDisplayName( ) << endl;
+    }
 
     return buf.str();
 }
@@ -327,7 +342,8 @@ void AtomObjectType::extractInfos( xmlDocPtr doc ) throw ( libcmis::Exception )
                     m_controllableAcl = libcmis::parseBool( value );
                 else 
                 {
-                    // TODO Import the properties
+                    libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );
+                    m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( type->getId(), type ) );
                 }
 
                 xmlFree( content );

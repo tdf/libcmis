@@ -42,6 +42,7 @@ class AtomObject : public virtual libcmis::Object
         time_t m_refreshTimestamp;
 
         std::string m_infosUrl;
+        std::string m_typeId;
 
         std::map< std::string, libcmis::PropertyPtr > m_properties;
         boost::shared_ptr< AtomAllowableActions > m_allowableActions;

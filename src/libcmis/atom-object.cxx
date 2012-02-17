@@ -39,11 +39,11 @@
 using namespace boost;
 using namespace std;
 
-
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_session( session ),
     m_refreshTimestamp( 0 ),
     m_infosUrl( ),
+    m_typeId( ),
     m_properties( ),
     m_allowableActions( )
 {
@@ -53,6 +53,7 @@ AtomObject::AtomObject( const AtomObject& copy ) :
     m_session( copy.m_session ),
     m_refreshTimestamp( copy.m_refreshTimestamp ),
     m_infosUrl( copy.m_infosUrl ),
+    m_typeId( copy.m_typeId ),
     m_properties( copy.m_properties ),
     m_allowableActions( copy.m_allowableActions )
 {
@@ -63,6 +64,7 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     m_session = copy.m_session;
     m_refreshTimestamp = copy.m_refreshTimestamp;
     m_infosUrl = copy.m_infosUrl;
+    m_typeId = copy.m_typeId;
     m_properties = copy.m_properties;
     m_allowableActions = copy.m_allowableActions;
 
@@ -175,9 +177,16 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    // output only the readwrite properties
+    // Copy and remove the readonly properties before serializing
     AtomObject copy( *this );
-    // TODO remove the readonly properties from the copy before serializing
+    map< string, libcmis::PropertyPtr >& props = copy.getProperties( );
+    for ( map< string, libcmis::PropertyPtr >::iterator it = props.begin( ); it != props.end( ); )
+    {
+        if ( !it->second->getPropertyType( )->isUpdatable( ) )
+            props.erase( it++ );
+        else
+            ++it;
+    }
     copy.toXml( writer );
 
     xmlTextWriterEndDocument( writer );
@@ -199,7 +208,8 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
 
 libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
 {
-    libcmis::ObjectTypePtr typeDescription( new AtomObjectType( m_session, getType() ) );
+    // Don't use the type from the properties as it may not be read yet.
+    libcmis::ObjectTypePtr typeDescription( new AtomObjectType( m_session, m_typeId ) );
     return typeDescription;
 }
 
@@ -272,7 +282,7 @@ string AtomObject::toString( )
         if ( !toSkip )
         {
             libcmis::PropertyPtr prop = it->second;
-            buf << prop->getDisplayName( ) << "( " << prop->getId( ) << " ): " << endl;
+            buf << prop->getPropertyType( )->getDisplayName( ) << "( " << prop->getPropertyType()->getId( ) << " ): " << endl;
             vector< string > strValues = prop->getStrings( );
             for ( vector< string >::iterator valueIt = strValues.begin( );
                   valueIt != strValues.end( ); ++valueIt )
@@ -337,6 +347,10 @@ void AtomObject::extractInfos( xmlDocPtr doc )
             m_allowableActions.swap( allowableActions );
         }
 
+        // First get the type id as it will give us the property definitions
+        string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
+        m_typeId = atom::getXPathValue( xpathCtx, typeIdReq );
+
         string propertiesReq( "//cmis:properties/*" );
         xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
         if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
@@ -345,8 +359,8 @@ void AtomObject::extractInfos( xmlDocPtr doc )
             for ( int i = 0; i < size; i++ )
             {
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                libcmis::PropertyPtr property = libcmis::parseProperty( node );
-                m_properties.insert( std::pair< string, libcmis::PropertyPtr >( property->getId(), property ) );
+                libcmis::PropertyPtr property = libcmis::parseProperty( node, getTypeDescription( ) );
+                m_properties.insert( std::pair< string, libcmis::PropertyPtr >( property->getPropertyType( )->getId(), property ) );
             }
         }
         xmlXPathFreeObject( xpathObj );

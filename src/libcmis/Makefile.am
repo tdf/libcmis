@@ -9,6 +9,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	session-factory.hxx \
     allowable-actions.hxx \
 	property.hxx \
+	property-type.hxx \
 	xml-utils.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
@@ -33,6 +34,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-allowable-actions.cxx \
 	allowable-actions.cxx \
 	property.cxx \
+	property-type.cxx \
 	xml-utils.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined

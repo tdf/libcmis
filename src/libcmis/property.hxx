@@ -37,202 +37,46 @@
 #include <string>
 #include <vector>
 
+#include "property-type.hxx"
 #include "xmlserializable.hxx"
 
 namespace libcmis
 {
+    class ObjectType;
+
     class Property : public XmlSerializable
     {
-        public:
-
-            enum Type
-            {
-                String,
-                Integer,
-                Decimal,
-                Bool,
-                DateTime
-            };
-
         private:
-            std::string m_id;
-            std::string m_localName;
-            std::string m_displayName;
-            std::string m_queryName;
-            Type m_type;
+            PropertyTypePtr m_propertyType;
             std::vector< std::string > m_strValues;
-
-        protected:
-            virtual std::string getXmlType( ) = 0;
+            std::vector< bool > m_boolValues;
+            std::vector< long > m_longValues;
+            std::vector< double > m_doubleValues;
+            std::vector< boost::posix_time::ptime > m_dateTimeValues;
 
         public:
 
             /** Property constructor allowing to use different values for the id and names.
               */
-            Property( std::string id, std::string localName,
-                      std::string displayName, std::string queryName,
-                      std::vector< std::string > strValues, Type type );
+            Property( PropertyTypePtr propertyType, std::vector< std::string > strValues );
 
-            virtual ~Property( ){ }
+            ~Property( ){ }
 
-            std::string getId( ) { return m_id; }
-            std::string getLocalName( ) { return m_localName; }
-            std::string getDisplayName( ) { return m_displayName; }
-            std::string getQueryName( ) { return m_queryName; }
-            
-            void setId( std::string id ) { m_id = id; }
-            void setLocalName( std::string localName ) { m_localName = localName; }
-            void setDisplayName( std::string displayName ) { m_displayName = displayName; }
-            void setQueryName( std::string queryName ) { m_queryName = queryName; }
+            PropertyTypePtr getPropertyType( ) { return m_propertyType; }
 
-            Type getType( ) { return m_type; }
+            std::vector< boost::posix_time::ptime > getDateTimes( ) { return m_dateTimeValues; }
+            std::vector< bool > getBools( ) { return m_boolValues; }
+            std::vector< std::string > getStrings( ) { return m_strValues; }
+            std::vector< long > getLongs( ) { return m_longValues; }
+            std::vector< double > getDoubles( ) { return m_doubleValues; }
 
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( ) = 0;
-            virtual std::vector< bool > getBools( ) = 0;
-            virtual std::vector< std::string > getStrings( ) { return m_strValues; }
-            virtual std::vector< long > getLongs( ) = 0;
-            virtual std::vector< double > getDoubles( ) = 0;
+            void setValues( std::vector< std::string > strValues );
 
-            virtual void setValues( std::vector< std::string > strValues );
-
-            virtual void toXml( xmlTextWriterPtr writer );
+            void toXml( xmlTextWriterPtr writer );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;
-
-    class IntegerProperty : public Property
-    {
-        private:
-            std::vector< long > m_values;
-        
-        protected:     
-            virtual std::string getXmlType( ) { return std::string( "propertyInteger" ); }
-
-        public:
-            IntegerProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-            
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( );
-            virtual std::vector< bool > getBools( );
-            virtual std::vector< long > getLongs( ) { return m_values; }
-            virtual std::vector< double > getDoubles( );
-
-            virtual void setValues( std::vector< std::string > strValues );
-    };
     
-    class DecimalProperty : public Property
-    {
-        private:
-            std::vector< double > m_values;
-        
-        protected:     
-            virtual std::string getXmlType( ) { return std::string( "propertyDecimal" ); }
-
-        public:
-            DecimalProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-            
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( );
-            virtual std::vector< bool > getBools( );
-            virtual std::vector< long > getLongs( );
-            virtual std::vector< double > getDoubles( ) { return m_values; }
-
-            virtual void setValues( std::vector< std::string > strValues );
-    };
-    
-    class BoolProperty : public Property
-    {
-        private:
-            std::vector< bool > m_values;
-        
-        protected:     
-            virtual std::string getXmlType( ) { return std::string( "propertyBoolean" ); }
-
-        public:
-            BoolProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-            
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( );
-            virtual std::vector< bool > getBools( ) { return m_values; }
-            virtual std::vector< long > getLongs( );
-            virtual std::vector< double > getDoubles( );
-
-            virtual void setValues( std::vector< std::string > strValues );
-    };
-    
-    class DateTimeProperty : public Property
-    {
-        private:
-            std::vector< boost::posix_time::ptime > m_values;
-        
-        protected: 
-            virtual std::string getXmlType( ) { return std::string( "propertyDateTime" ); }
-
-        public:
-            DateTimeProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-            
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( ) { return m_values; }
-            virtual std::vector< bool > getBools( );
-            virtual std::vector< long > getLongs( );
-            virtual std::vector< double > getDoubles( );
-
-            virtual void setValues( std::vector< std::string > strValues );
-    };
-    
-    class StringProperty : public Property
-    {
-        protected: 
-            virtual std::string getXmlType( ) { return std::string( "propertyString" ); }
-
-        public:
-            StringProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-            
-            virtual std::vector< boost::posix_time::ptime > getDateTimes( );
-            virtual std::vector< bool > getBools( );
-            virtual std::vector< long > getLongs( );
-            virtual std::vector< double > getDoubles( );
-    };
-
-    class IdProperty : public StringProperty
-    {
-        protected:        
-            virtual std::string getXmlType( ) { return std::string( "propertyId" ); }
-
-        public:
-            IdProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-    };
-    
-    class HtmlProperty : public StringProperty
-    {
-        protected:     
-            virtual std::string getXmlType( ) { return std::string( "propertyHtml" ); }
-
-        public:
-            HtmlProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-    };
-    
-    class UriProperty : public StringProperty
-    {
-        protected: 
-            virtual std::string getXmlType( ) { return std::string( "propertyUri" ); }
-        
-        public:
-            UriProperty( std::string id, std::string localName,
-                    std::string displayName, std::string queryName,
-                    std::vector< std::string > values );
-    };
-    
-    PropertyPtr parseProperty( xmlNodePtr node );
+    PropertyPtr parseProperty( xmlNodePtr node, boost::shared_ptr< ObjectType > objectType );
 }
 
 #endif
