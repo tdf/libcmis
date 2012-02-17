@@ -56,6 +56,8 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) throw ( lib
     m_includedInSupertypeQuery( false ),
     m_controllablePolicy( false ),
     m_controllableAcl( false ),
+    m_versionable( false ),
+    m_contentStreamAllowed( libcmis::ObjectType::Allowed ),
     m_propertiesTypes( )
 {
     refresh( );
@@ -81,6 +83,8 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, xmlNodePtr entryNd ) th
     m_includedInSupertypeQuery( false ),
     m_controllablePolicy( false ),
     m_controllableAcl( false ),
+    m_versionable( false ),
+    m_contentStreamAllowed( libcmis::ObjectType::Allowed ),
     m_propertiesTypes( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
@@ -108,6 +112,8 @@ AtomObjectType::AtomObjectType( const AtomObjectType& copy ) :
     m_includedInSupertypeQuery( copy.m_includedInSupertypeQuery ),
     m_controllablePolicy( copy.m_controllablePolicy ),
     m_controllableAcl( copy.m_controllableAcl ),
+    m_versionable( copy.m_versionable ),
+    m_contentStreamAllowed( copy.m_contentStreamAllowed ),
     m_propertiesTypes( copy.m_propertiesTypes )
 {
 }
@@ -137,6 +143,8 @@ AtomObjectType& AtomObjectType::operator=( const AtomObjectType& copy )
     m_includedInSupertypeQuery = copy.m_includedInSupertypeQuery;
     m_controllablePolicy = copy.m_controllablePolicy;
     m_controllableAcl = copy.m_controllableAcl;
+    m_versionable = copy.m_versionable;
+    m_contentStreamAllowed = copy.m_contentStreamAllowed;
     m_propertiesTypes = copy.m_propertiesTypes;
 
     return *this;
@@ -340,6 +348,18 @@ void AtomObjectType::extractInfos( xmlDocPtr doc ) throw ( libcmis::Exception )
                     m_controllablePolicy = libcmis::parseBool( value );
                 else if ( xmlStrEqual( child->name, BAD_CAST( "controllableACL" ) ) )
                     m_controllableAcl = libcmis::parseBool( value );
+                else if ( xmlStrEqual( child->name, BAD_CAST( "versionable" ) ) )
+                    m_versionable = libcmis::parseBool( value );
+                else if ( xmlStrEqual( child->name, BAD_CAST( "contentStreamAllowed" ) ) )
+                {
+                    libcmis::ObjectType::ContentStreamAllowed streamAllowed = libcmis::ObjectType::Allowed;
+                    if ( value == "notallowed" )
+                        streamAllowed = libcmis::ObjectType::NotAllowed;
+                    else if ( value == "required" )
+                        streamAllowed = libcmis::ObjectType::Required;
+
+                    m_contentStreamAllowed = streamAllowed;
+                }
                 else 
                 {
                     libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );

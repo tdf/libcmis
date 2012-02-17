@@ -59,6 +59,8 @@ class AtomObjectType : public libcmis::ObjectType
         bool m_includedInSupertypeQuery;
         bool m_controllablePolicy;
         bool m_controllableAcl;
+        bool m_versionable;
+        libcmis::ObjectType::ContentStreamAllowed m_contentStreamAllowed;
 
         std::map< std::string, libcmis::PropertyTypePtr > m_propertiesTypes;
 
@@ -93,6 +95,8 @@ class AtomObjectType : public libcmis::ObjectType
         virtual bool isIncludedInSupertypeQuery( ) { return m_includedInSupertypeQuery; }
         virtual bool isControllablePolicy( ) { return m_controllablePolicy; }
         virtual bool isControllableACL( ) { return m_controllableAcl; }
+        virtual bool isVersionable( ) { return m_versionable; }
+        virtual libcmis::ObjectType::ContentStreamAllowed getContentStreamAllowed( ) { return m_contentStreamAllowed; }
 
         virtual std::map< std::string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
 

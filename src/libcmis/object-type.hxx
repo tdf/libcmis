@@ -43,6 +43,14 @@ namespace libcmis
     class ObjectType
     {
         public:
+
+            enum ContentStreamAllowed
+            {
+                NotAllowed,
+                Allowed,
+                Required
+            };
+
             virtual ~ObjectType() { };
 
             virtual std::string getId( ) = 0;
@@ -63,6 +71,8 @@ namespace libcmis
             virtual bool isIncludedInSupertypeQuery( ) = 0;
             virtual bool isControllablePolicy( ) = 0;
             virtual bool isControllableACL( ) = 0;
+            virtual bool isVersionable( ) = 0;
+            virtual ContentStreamAllowed getContentStreamAllowed( ) = 0;
 
             virtual std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) = 0;
 
