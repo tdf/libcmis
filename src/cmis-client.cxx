@@ -165,6 +165,33 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "type-by-id" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                // Get the ids of the types to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node ids to show as command args" );
+
+                vector< string > ids = m_vm["args"].as< vector< string > >( );
+
+
+                for ( vector< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+                {
+                    cout << "------------------------------------------------" << endl;
+                    try
+                    {
+                        libcmis::ObjectTypePtr type = session->getType( *it );
+                        cout << type->toString() << endl;
+                    }
+                    catch ( const libcmis::Exception& e )
+                    {
+                        cout << e.what() << endl;
+                    }
+                }
+
+                delete session;
+            }
             else if ( "show-by-id" == command )
             {
                 libcmis::Session* session = getSession( );
@@ -320,15 +347,17 @@ void CmisClient::printHelp( )
             "           Lists the repositories available on the server" << endl;
     cerr << "   show-root\n"
             "           Dump the root node of the repository." << endl;
-    cerr << "   show-by-id <Node Id 1> [... <Node Id N>]\n"
-            "           Dumps the nodes informations for all the ids." << endl;
-    cerr << "   show-by-path <Node Path 1> [... <Node Path N>]\n"
-            "           Dumps the nodes informations for all the paths." << endl;
-    cerr << "   get-content <Node Id>\n"
-            "           Saves the stream of the content node in the\n"
+    cerr << "   type-by-id <Type Id 1> [... <Type Id N>]\n"
+            "           Dumps the type informations for all the ids." << endl;
+    cerr << "   show-by-id <Object Id 1> [... <Object Id N>]\n"
+            "           Dumps the objects informations for all the ids." << endl;
+    cerr << "   show-by-path <Object Path 1> [... <Object Path N>]\n"
+            "           Dumps the objects informations for all the paths." << endl;
+    cerr << "   get-content <Object Id>\n"
+            "           Saves the stream of the content object in the\n"
             "           current folder. Any existing file is overwritten." << endl;
-    cerr << "   set-content <Node Id>\n"
-            "           Replaces the stream of the content node by the\n"
+    cerr << "   set-content <Object Id>\n"
+            "           Replaces the stream of the content object by the\n"
             "           file selected with --input-file." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;

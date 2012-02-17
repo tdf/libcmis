@@ -5,7 +5,7 @@
     <date>2012-01-27</date>
   </refentryinfo>
   <refmeta>
-    <refentrytitle><application>cmis-client</application></refentrytitle>
+    <refentrytitle>cmis-client</refentrytitle>
     <manvolnum>1</manvolnum>
     <refmiscinfo>cmis-client 0.2.0</refmiscinfo>
   </refmeta>
@@ -68,6 +68,7 @@
       <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <group choice="plain">
+        <arg>type-by-id</arg>
         <arg>show-by-id</arg>
         <arg>show-by-path</arg>
       </group>
@@ -206,6 +207,15 @@
           <para>
 						Upload a file as the content stream of the CMIS object corresponding to 
 						<replaceable class="parameter">id</replaceable>.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>type-by-id <replaceable class="parameter">arg...</replaceable></term>
+        <listitem>
+          <para>
+						Displays the infos and children (if any) of all the CMIS types corresponding
+						to the listed ids.
 					</para>
         </listitem>
       </varlistentry>

@@ -206,6 +206,13 @@ string AtomObjectType::toString( )
 
     buf << "Parent type: " << m_parentTypeId << endl;
     buf << "Base type: " << m_baseTypeId << endl;
+    buf << "Children types [(id) Name]: " << endl;
+    vector< libcmis::ObjectTypePtr > children = getChildren( );
+    for ( vector< libcmis::ObjectTypePtr >::iterator it = children.begin(); it != children.end(); ++it )
+    {
+        libcmis::ObjectTypePtr type = *it;
+        buf << "    (" << type->getId( ) << ")\t" << type->getDisplayName( ) << endl;
+    } 
 
     buf << "Creatable: " << isCreatable( ) << endl;
     buf << "Fileable: " << isFileable( ) << endl;
