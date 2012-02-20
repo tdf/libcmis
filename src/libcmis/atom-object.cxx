@@ -44,6 +44,7 @@ AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_refreshTimestamp( 0 ),
     m_infosUrl( ),
     m_typeId( ),
+    m_typeDescription( ),
     m_properties( ),
     m_allowableActions( )
 {
@@ -54,6 +55,7 @@ AtomObject::AtomObject( const AtomObject& copy ) :
     m_refreshTimestamp( copy.m_refreshTimestamp ),
     m_infosUrl( copy.m_infosUrl ),
     m_typeId( copy.m_typeId ),
+    m_typeDescription( copy.m_typeDescription ),
     m_properties( copy.m_properties ),
     m_allowableActions( copy.m_allowableActions )
 {
@@ -65,6 +67,7 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     m_refreshTimestamp = copy.m_refreshTimestamp;
     m_infosUrl = copy.m_infosUrl;
     m_typeId = copy.m_typeId;
+    m_typeDescription = copy.m_typeDescription;
     m_properties = copy.m_properties;
     m_allowableActions = copy.m_allowableActions;
 
@@ -220,8 +223,10 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
 libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
 {
     // Don't use the type from the properties as it may not be read yet.
-    libcmis::ObjectTypePtr typeDescription( new AtomObjectType( m_session, m_typeId ) );
-    return typeDescription;
+    if ( !m_typeDescription.get( ) )
+        m_typeDescription.reset( new AtomObjectType( m_session, m_typeId ) );
+
+    return m_typeDescription;
 }
 
 shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )

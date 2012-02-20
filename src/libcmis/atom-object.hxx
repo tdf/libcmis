@@ -43,6 +43,7 @@ class AtomObject : public virtual libcmis::Object
 
         std::string m_infosUrl;
         std::string m_typeId;
+        libcmis::ObjectTypePtr m_typeDescription;
 
         std::map< std::string, libcmis::PropertyPtr > m_properties;
         boost::shared_ptr< AtomAllowableActions > m_allowableActions;
