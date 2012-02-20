@@ -18,3 +18,5 @@
     * Set the content of a document
     * Query nodes by path
     * Get the allowable actions for a node
+    * Object properties can be updated
+    * Query object types
