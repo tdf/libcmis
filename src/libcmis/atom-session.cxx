@@ -286,27 +286,31 @@ libcmis::FolderPtr AtomPubSession::getFolder( string id )
 
 string AtomPubSession::httpGetRequest( string url ) throw ( atom::CurlException )
 {
-    stringstream stream;
-
     curl_global_init( CURL_GLOBAL_ALL );
-    CURL* pHandle = curl_easy_init( );
+    CURL* handle = curl_easy_init( );
+    
+    // Get the response to the stringstream
+    stringstream stream;
+    curl_easy_setopt( handle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    curl_easy_setopt( handle, CURLOPT_WRITEDATA, &stream );
 
-    // Grab something from the web
-    curl_easy_setopt( pHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( pHandle, CURLOPT_WRITEDATA, &stream );
+    httpRunRequest( handle, url );
 
-    httpRunRequest( pHandle, url );
+    curl_easy_cleanup( handle );
 
-    curl_easy_cleanup( pHandle );
-
-    return stream.str();
+    return stream.str( );
 }
 
-void AtomPubSession::httpPutRequest( string url, istream& is, string contentType ) throw ( atom::CurlException )
+string AtomPubSession::httpPutRequest( string url, istream& is, string contentType ) throw ( atom::CurlException )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* handle = curl_easy_init( );
-   
+    
+    // Get the response to the stringstream
+    stringstream stream;
+    curl_easy_setopt( handle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    curl_easy_setopt( handle, CURLOPT_WRITEDATA, &stream );
+
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
@@ -328,31 +332,33 @@ void AtomPubSession::httpPutRequest( string url, istream& is, string contentType
 
     curl_slist_free_all( headers_slist );
     curl_easy_cleanup( handle );
+
+    return stream.str( );
 }
 
-void AtomPubSession::httpRunRequest( CURL* pHandle, string url ) throw ( atom::CurlException )
+void AtomPubSession::httpRunRequest( CURL* handle, string url ) throw ( atom::CurlException )
 {
     // Grab something from the web
-    curl_easy_setopt( pHandle, CURLOPT_URL, url.c_str() );
+    curl_easy_setopt( handle, CURLOPT_URL, url.c_str() );
 
     // Set the credentials
     if ( !m_username.empty() && !m_password.empty() )
     {
-        curl_easy_setopt( pHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-        curl_easy_setopt( pHandle, CURLOPT_USERNAME, m_username.c_str() );
-        curl_easy_setopt( pHandle, CURLOPT_PASSWORD, m_password.c_str() );
+        curl_easy_setopt( handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+        curl_easy_setopt( handle, CURLOPT_USERNAME, m_username.c_str() );
+        curl_easy_setopt( handle, CURLOPT_PASSWORD, m_password.c_str() );
     }
 
     // Get some feedback when something wrong happens
     char errBuff[CURL_ERROR_SIZE];
-    curl_easy_setopt( pHandle, CURLOPT_ERRORBUFFER, errBuff );
-    curl_easy_setopt( pHandle, CURLOPT_FAILONERROR, 1 );
+    curl_easy_setopt( handle, CURLOPT_ERRORBUFFER, errBuff );
+    curl_easy_setopt( handle, CURLOPT_FAILONERROR, 1 );
 
     if ( m_verbose )
-        curl_easy_setopt( pHandle, CURLOPT_VERBOSE, 1 );
+        curl_easy_setopt( handle, CURLOPT_VERBOSE, 1 );
 
     // Perform the query
-    CURLcode errCode = curl_easy_perform( pHandle );
+    CURLcode errCode = curl_easy_perform( handle );
     if ( CURLE_OK != errCode )
         throw atom::CurlException( string( errBuff ), errCode, url );
 }

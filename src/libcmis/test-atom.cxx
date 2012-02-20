@@ -426,6 +426,7 @@ void AtomTest::setContentStreamTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    dynamic_cast< AtomObject* >( object.get() )->unsetRefreshTimestamp( );
     
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
 
@@ -433,6 +434,8 @@ void AtomTest::setContentStreamTest( )
     {
         stringstream is( TEST_SAMPLE_CONTENT );
         document->setContentStream( is, TEST_DOCUMENT_TYPE );
+        
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Get the new content to check is has been properly uploaded
         shared_ptr< istream > newIs = document->getContentStream( );
@@ -440,7 +443,7 @@ void AtomTest::setContentStreamTest( )
         os << newIs->rdbuf();
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
                 TEST_SAMPLE_CONTENT, os.str() );
-       
+    
         // Testing other values like LastModifiedBy or LastModificationTime
         // is server dependent... don't do it. 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
@@ -458,6 +461,7 @@ void AtomTest::updatePropertiesTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_UPDATE_DOCUMENT_ID );
+    dynamic_cast< AtomObject* >( object.get() )->unsetRefreshTimestamp( );
 
     map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
     CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
@@ -468,10 +472,11 @@ void AtomTest::updatePropertiesTest( )
 
     object->updateProperties( );
 
-    libcmis::ObjectPtr updated = session.getObject( TEST_UPDATE_DOCUMENT_ID );
-    it = updated->getProperties( ).find( TEST_UPDATED_PROPERTY_VALUE );
-    CPPUNIT_ASSERT_MESSAGE( "Property to check for change not found", it != updated->getProperties( ).end( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Property not updated", TEST_UPDATED_PROPERTY_VALUE, it->second->getStrings( ).front( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during update", object->getRefreshTimestamp( ) > 0 );
+
+    it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
+    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != object->getProperties( ).end( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", TEST_UPDATED_PROPERTY_VALUE, it->second->getStrings().front( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

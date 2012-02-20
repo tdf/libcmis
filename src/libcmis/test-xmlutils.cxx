@@ -126,6 +126,11 @@ class ObjectTypeDummy : public libcmis::ObjectType
         virtual bool isIncludedInSupertypeQuery( ) { return false; }
         virtual bool isControllablePolicy( ) { return false; }
         virtual bool isControllableACL( ) { return false; }
+        virtual bool isVersionable( ) { return false; }
+        virtual libcmis::ObjectType::ContentStreamAllowed getContentStreamAllowed( )
+        {
+            return libcmis::ObjectType::Allowed;
+        }
 
         virtual map< string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_properties; }
 

@@ -54,6 +54,9 @@ class AtomObject : public virtual libcmis::Object
 
         AtomObject& operator=( const AtomObject& copy );
 
+        /// This method is provided to reset the timestamp to 0 for testing purpose
+        void unsetRefreshTimestamp( ) { m_refreshTimestamp = 0; };
+
         // Overridden methods from libcmis::Object
         virtual std::string getId( ); 
         virtual std::string getName( );

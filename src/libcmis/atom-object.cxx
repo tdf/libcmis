@@ -172,6 +172,9 @@ std::map< std::string, libcmis::PropertyPtr >& AtomObject::getProperties( )
 
 void AtomObject::updateProperties( ) throw ( libcmis::Exception )
 {
+    if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
+        throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
+
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
@@ -196,14 +199,22 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );
 
+    string respBuf;
     try
     {
-        getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
+        respBuf = getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const atom::CurlException& e )
     {
         throw e.getCmisException( );
     }
+
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+
+    refreshImpl( doc );
+    xmlFreeDoc( doc );
 }
 
 libcmis::ObjectTypePtr AtomObject::getTypeDescription( )

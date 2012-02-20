@@ -107,7 +107,7 @@ class AtomPubSession : public libcmis::Session
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         std::string httpGetRequest( std::string url ) throw ( atom::CurlException );
-        void httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
+        std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
 
         void httpRunRequest( CURL* handle, std::string url ) throw ( atom::CurlException );
 
