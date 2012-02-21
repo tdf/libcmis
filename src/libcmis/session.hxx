@@ -51,6 +51,10 @@ namespace libcmis
               */
             virtual ObjectPtr getObjectByPath( std::string path ) throw ( Exception ) = 0;
 
+            /** Get a CMIS folder from its ID.
+              */
+            virtual libcmis::FolderPtr getFolder( std::string id ) throw ( Exception ) = 0;
+
             /** Get a CMIS object type from its ID.
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;

@@ -2,7 +2,7 @@
 <!DOCTYPE refentry>
 <refentry>
   <refentryinfo>
-    <date>2012-01-27</date>
+    <date>2012-02-21</date>
   </refentryinfo>
   <refmeta>
     <refentrytitle>cmis-client</refentrytitle>
@@ -59,6 +59,17 @@
       <arg choice="plain">--input-file <replaceable>path/to/file</replaceable></arg>
       <arg choice="plain">--input-type <replaceable>mime/type</replaceable></arg>
       <arg choice="plain">set-content <replaceable>id</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <arg choice="opt">--object-type <replaceable>some:cmistype</replaceable></arg>
+      <arg choice="opt" rep="repeat">--object-property <replaceable>prop-id=prop-value</replaceable></arg>
+      <arg choice="plain">create-folder <replaceable>parent-id name</replaceable></arg>
     </cmdsynopsis>
     <cmdsynopsis>
       <command>cmis-client</command>
@@ -145,7 +156,7 @@
       </variablelist>
     </refsect2>
     <refsect2>
-      <title>SET-CONTENT OPTIONS</title>
+      <title>MODIFICATION OPERATIONS OPTIONS</title>
       <variablelist>
         <varlistentry>
           <term>--input-file <replaceable class="parameter">path/to/file</replaceable></term>
@@ -161,6 +172,24 @@
           <listitem>
             <para>
               Set the mime type of the new content stream of the object to <replaceable class="parameter">mime/type</replaceable>.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--object-type <replaceable class="parameter">some:cmistype</replaceable></term>
+          <listitem>
+            <para>
+              Set the object type of the CMIS object to be created to <replaceable class="parameter">some:cmistype</replaceable>.
+              This is the equivalent of --object-property cmis:objectTypeId=some:cmistype.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--object-property <replaceable class="parameter">prop-id=prop-value</replaceable></term>
+          <listitem>
+            <para>
+              Set a property to be updated or added to the CMIS object. <replaceable class="parameter">prop-id</replaceable> is
+              the property definition id and <replaceable class="parameter">prop-value</replaceable> is the value to set on it.
 						</para>
           </listitem>
         </varlistentry>
@@ -207,6 +236,16 @@
           <para>
 						Upload a file as the content stream of the CMIS object corresponding to 
 						<replaceable class="parameter">id</replaceable>.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>create-folder <replaceable class="parameter">parent-id name</replaceable></term>
+        <listitem>
+          <para>
+            Create a sub folder in folder <replaceable class="parameter">parent-id</replaceable>
+            named <replaceable class="parameter">name</replaceable>. The default type of the folder
+            to create is cmis:folder, but this can be changed using --object-type option.
 					</para>
         </listitem>
       </varlistentry>

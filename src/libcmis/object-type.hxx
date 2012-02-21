@@ -60,8 +60,8 @@ namespace libcmis
             virtual std::string getQueryName( ) = 0;
             virtual std::string getDescription( ) = 0;
 
-            virtual boost::shared_ptr< ObjectType>  getParentType( ) throw ( Exception ) = 0;
-            virtual boost::shared_ptr< ObjectType>  getBaseType( ) throw ( Exception ) = 0;
+            virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception ) = 0;
+            virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception ) = 0;
             virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( ) throw ( Exception ) = 0;
             
             virtual bool isCreatable( ) = 0;

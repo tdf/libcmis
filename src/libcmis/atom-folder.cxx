@@ -127,6 +127,54 @@ bool AtomFolder::isRootFolder( )
     return m_parentId.empty( );
 }
 
+libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >& properties )
+{
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateFolder ) )
+        throw libcmis::Exception( string( "CreateFolder not allowed on folder " ) + getId() );
+
+    // Actually create the folder
+    AtomObject object( getSession() );
+    object.getProperties( ).swap( properties );
+    
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    // Copy and remove the readonly properties before serializing
+    object.toXml( writer );
+
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    string respBuf;
+    try
+    {
+        respBuf = getSession( )->httpPostRequest( m_childrenUrl, is, "application/atom+xml;type=entry" );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    xmlFreeDoc( doc );
+
+    libcmis::FolderPtr newFolder = boost::dynamic_pointer_cast< libcmis::Folder >( created );
+    if ( !newFolder.get( ) )
+        throw libcmis::Exception( string( "Created object is not a folder: " ) + created->getId( ) );
+
+    return newFolder;
+}
+
 string AtomFolder::toString( )
 {
     stringstream buf;

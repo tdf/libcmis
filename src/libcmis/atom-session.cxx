@@ -277,7 +277,7 @@ libcmis::ObjectTypePtr AtomPubSession::getType( string id ) throw ( libcmis::Exc
     return type;
 }
 
-libcmis::FolderPtr AtomPubSession::getFolder( string id )
+libcmis::FolderPtr AtomPubSession::getFolder( string id ) throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
@@ -319,6 +319,41 @@ string AtomPubSession::httpPutRequest( string url, istream& is, string contentTy
     curl_easy_setopt( handle, CURLOPT_READDATA, &is );
     curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( handle, CURLOPT_UPLOAD, 1 );
+
+    struct curl_slist *headers_slist = NULL;
+    string contentTypeHeader = string( "Content-Type:" ) + contentType;
+    headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
+    curl_easy_setopt( handle, CURLOPT_HTTPHEADER, headers_slist );
+
+    // TODO Define a CURLOPT_IOCTLFUNCTION callback to rewind in
+    // multipass authentication cases (like for SharePoint)
+
+    httpRunRequest( handle, url );
+
+    curl_slist_free_all( headers_slist );
+    curl_easy_cleanup( handle );
+
+    return stream.str( );
+}
+
+string AtomPubSession::httpPostRequest( string url, istream& is, string contentType ) throw ( atom::CurlException )
+{
+    curl_global_init( CURL_GLOBAL_ALL );
+    CURL* handle = curl_easy_init( );
+    
+    // Get the response to the stringstream
+    stringstream stream;
+    curl_easy_setopt( handle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    curl_easy_setopt( handle, CURLOPT_WRITEDATA, &stream );
+
+    // Get the stream length
+    is.seekg( 0, ios::end );
+    long size = is.tellg( );
+    is.seekg( 0, ios::beg );
+    curl_easy_setopt( handle, CURLOPT_POSTFIELDSIZE, size );
+    curl_easy_setopt( handle, CURLOPT_READDATA, &is );
+    curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
+    curl_easy_setopt( handle, CURLOPT_POST, 1 );
 
     struct curl_slist *headers_slist = NULL;
     string contentTypeHeader = string( "Content-Type:" ) + contentType;

@@ -50,6 +50,8 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         virtual std::string getPath( );
 
         virtual bool isRootFolder( );
+
+        virtual libcmis::FolderPtr createFolder( std::map< std::string, libcmis::PropertyPtr >& properties );
         
         virtual std::string toString( );
 

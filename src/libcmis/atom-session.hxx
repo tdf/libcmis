@@ -102,12 +102,11 @@ class AtomPubSession : public libcmis::Session
 
         // Utility methods
 
-        libcmis::FolderPtr getFolder( std::string id );
-
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         std::string httpGetRequest( std::string url ) throw ( atom::CurlException );
         std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
+        std::string httpPostRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
 
         void httpRunRequest( CURL* handle, std::string url ) throw ( atom::CurlException );
 
@@ -118,6 +117,8 @@ class AtomPubSession : public libcmis::Session
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
         
         virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
+        
+        virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 };

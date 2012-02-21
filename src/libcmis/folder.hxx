@@ -28,6 +28,7 @@
 #ifndef _FOLDER_HXX_
 #define _FOLDER_HXX_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -49,6 +50,8 @@ namespace libcmis
             virtual std::string getPath( ) = 0;
 
             virtual bool isRootFolder( ) = 0;
+
+            virtual ::boost::shared_ptr< Folder > createFolder( std::map< std::string, PropertyPtr >& properties ) = 0;
     };
     typedef ::boost::shared_ptr< Folder > FolderPtr;
 

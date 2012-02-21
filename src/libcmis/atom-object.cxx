@@ -318,9 +318,12 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), NS_CMIS_URL );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), NS_CMISRA_URL );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( getCreatedBy( ).c_str( ) ) );
-    xmlTextWriterEndElement( writer );
+    if ( !getCreatedBy( ).empty( ) )
+    {
+        xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
+        xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( getCreatedBy( ).c_str( ) ) );
+        xmlTextWriterEndElement( writer );
+    }
 
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( getName( ).c_str( ) ) );
 

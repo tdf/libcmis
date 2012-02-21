@@ -78,6 +78,7 @@ class CmisClient
 
     private:
         map< int, string > getSessionParams();
+        map< string, string > getObjectProperties( );
 };
 
 map< int, string > CmisClient::getSessionParams()
@@ -110,6 +111,27 @@ map< int, string > CmisClient::getSessionParams()
         params[VERBOSE] = "yes";
 
     return params;
+}
+
+map< string, string > CmisClient::getObjectProperties( )
+{
+    map< string, string > result;
+    if ( m_vm.count( "object-property" ) > 0 )
+    {
+        vector< string > params = m_vm["object-property"].as< vector< string > >( );
+        for ( vector< string >::iterator it = params.begin( ); it != params.end( ); ++it )
+        {
+            size_t pos = it->find( "=" );
+            if ( pos != string::npos )
+            {
+                string name = it->substr( 0, pos );
+                string value = it->substr( pos + 1 );
+                result.insert( pair< string, string >( name, value ) );
+            }
+        }
+    }
+
+    return result;
 }
 
 libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::Exception )
@@ -293,6 +315,68 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "create-folder" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                vector< string > args = m_vm["args"].as< vector< string > >( );
+                if ( args.size() < 2 )
+                    throw CommandException( "Please provide a parent Id and folder name" );
+
+                libcmis::FolderPtr parent = session->getFolder( args[0] );
+
+                // Get the folder type to create
+                string folderType( "cmis:folder" );
+                if ( m_vm.count( "object-type" ) != 0 )
+                    folderType = m_vm["object-type"].as<string>( );
+
+                libcmis::ObjectTypePtr type = session->getType( folderType );
+                if ( "cmis:folder" != type->getBaseType( )->getId( ) )
+                    throw CommandException( string( "Not a folder type: " ) + folderType );
+
+                map< string, libcmis::PropertyPtr > properties;
+                map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
+
+                // Set the name
+                map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
+                if ( typeIt == propertiesTypes.end( ) )
+                    throw CommandException( string( "No cmis:name on the object type... weird" ) );
+                vector< string > nameValues;
+                nameValues.push_back( args[1] );
+                libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+                
+                // Set the objectTypeId
+                typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
+                if ( typeIt == propertiesTypes.end( ) )
+                    throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
+                vector< string > typeIdValues;
+                typeIdValues.push_back( folderType );
+                libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
+                
+                // Checks for the properties to set if any
+                map< string, string > propsToSet = getObjectProperties( );
+                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
+                {
+                    // Create the CMIS property if it exists
+                    typeIt = propertiesTypes.find( it->first );
+                    if ( typeIt != propertiesTypes.end( ) )
+                    {
+                        vector< string > values;
+                        values.push_back( it->second );
+                        libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                        properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
+                    }
+                }
+
+                libcmis::FolderPtr created = parent->createFolder( properties );
+
+                cout << "------------------------------------------------" << endl;
+                cout << created->toString() << endl;
+
+                delete session;
+            }
             else if ( "help" == command )
             {
                 printHelp();
@@ -328,10 +412,13 @@ options_description CmisClient::getOptionsDescription( )
         ( "password,p", value< string >(), "Password used to authenticate to the repository" )
     ;
 
-    options_description setcontentOpts( "set-content options" );
+    options_description setcontentOpts( "modification operations options" );
     setcontentOpts.add_options( )
         ( "input-file", value< string >(), "File to push to the repository" )
         ( "input-type", value< string >(), "Mime type of the file to push to the repository" )
+        ( "object-type", value< string >(), "CMIS type of the object to create" )
+        ( "object-property", value< string >(), "under the form prop-id=prop-value, defines a property"
+                                                "to be set on the object" )
     ;
 
     desc.add( setcontentOpts );
@@ -359,6 +446,8 @@ void CmisClient::printHelp( )
     cerr << "   set-content <Object Id>\n"
             "           Replaces the stream of the content object by the\n"
             "           file selected with --input-file." << endl;
+    cerr << "   create-folder <Parent Id> <Folder Name>\n"
+            "           Creates a new folder inside the folder <Parent Id> named <Folder Name>." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 
