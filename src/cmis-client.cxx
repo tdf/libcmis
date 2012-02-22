@@ -377,6 +377,40 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "update-object" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                vector< string > args = m_vm["args"].as< vector< string > >( );
+                if ( args.size() != 1 )
+                    throw CommandException( "Please provide an object id" );
+
+                libcmis::ObjectPtr object = session->getObject( args[0] );
+                libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
+
+                map< string, libcmis::PropertyPtr >& properties = object->getProperties( );
+
+                // Checks for the properties to set if any
+                map< string, string > propsToSet = getObjectProperties( );
+                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
+                {
+                    // Create the CMIS property if it exists
+                    map< string, libcmis::PropertyPtr >::iterator propIt = properties.find( it->first );
+                    if ( propIt != properties.end( ) && propIt->second->getPropertyType( )->isUpdatable( ) )
+                    {
+                        vector< string > values;
+                        values.push_back( it->second );
+                        propIt->second->setValues( values );
+                    }
+                }
+
+                object->updateProperties( );
+
+                cout << "------------------------------------------------" << endl;
+                cout << object->toString() << endl;
+
+                delete session;
+            }
             else if ( "help" == command )
             {
                 printHelp();
@@ -417,7 +451,7 @@ options_description CmisClient::getOptionsDescription( )
         ( "input-file", value< string >(), "File to push to the repository" )
         ( "input-type", value< string >(), "Mime type of the file to push to the repository" )
         ( "object-type", value< string >(), "CMIS type of the object to create" )
-        ( "object-property", value< string >(), "under the form prop-id=prop-value, defines a property"
+        ( "object-property", value< vector< string > >(), "under the form prop-id=prop-value, defines a property"
                                                 "to be set on the object" )
     ;
 
@@ -448,6 +482,9 @@ void CmisClient::printHelp( )
             "           file selected with --input-file." << endl;
     cerr << "   create-folder <Parent Id> <Folder Name>\n"
             "           Creates a new folder inside the folder <Parent Id> named <Folder Name>." << endl;
+    cerr << "   update-object <Object Id>\n"
+            "           Update the object matching id <Object Id> with the properties\n"
+            "           defined with --object-property." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 

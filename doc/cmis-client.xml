@@ -78,6 +78,16 @@
       <arg choice="opt">-p <replaceable>secret</replaceable></arg>
       <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <arg choice="opt" rep="repeat">--object-property <replaceable>prop-id=prop-value</replaceable></arg>
+      <arg choice="plain">update-object <replaceable>object-id</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <group choice="plain">
         <arg>type-by-id</arg>
         <arg>show-by-id</arg>
@@ -246,6 +256,15 @@
             Create a sub folder in folder <replaceable class="parameter">parent-id</replaceable>
             named <replaceable class="parameter">name</replaceable>. The default type of the folder
             to create is cmis:folder, but this can be changed using --object-type option.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>update-object <replaceable class="parameter">object-id</replaceable></term>
+        <listitem>
+          <para>
+            Replace the writeable properties given with --object-property option on the object
+            matching id <replaceable class="parameter">object-id</replaceable>.
 					</para>
         </listitem>
       </varlistentry>
