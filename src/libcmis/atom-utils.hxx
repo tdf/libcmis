@@ -50,6 +50,7 @@ namespace atom
             std::ostream* m_outStream;
 
             std::string m_encoding;
+            bool m_decode;
             unsigned long m_pendingValue;
             int m_pendingRank;
             size_t m_missingBytes;
@@ -63,11 +64,13 @@ namespace atom
 
             void setEncoding( std::string encoding ) { m_encoding = encoding; }
             void decode( void* buf, size_t size, size_t nmemb );
+            void encode( void* buf, size_t size, size_t nmemb );
             void finish( );
 
         private:
             void write( void* buf, size_t size, size_t nmemb );
             void decodeBase64( const char* buf, size_t len );
+            void encodeBase64( const char* buf, size_t len );
     };
     
     void registerNamespaces( xmlXPathContextPtr xpathCtx );

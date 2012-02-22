@@ -57,17 +57,24 @@ class DecoderTest : public CppUnit::TestFixture
 
         void noEncodingTest();
 
-        void base64SimpleBlockTest( );
-        void base64PaddedBlockTest( );
-        void base64NoEqualsPaddedBlockTest( );
-        void base64SplitRunsTest( );
+        void base64DecodeSimpleBlockTest( );
+        void base64DecodePaddedBlockTest( );
+        void base64DecodeNoEqualsPaddedBlockTest( );
+        void base64DecodeSplitRunsTest( );
+
+        void base64EncodeSimpleBlockTest( );
+        void base64EncodePaddedBlockTest( );
+        void base64EncodeSplitRunsTest( );
 
         CPPUNIT_TEST_SUITE( DecoderTest );
         CPPUNIT_TEST( noEncodingTest );
-        CPPUNIT_TEST( base64SimpleBlockTest );
-        CPPUNIT_TEST( base64PaddedBlockTest );
-        CPPUNIT_TEST( base64NoEqualsPaddedBlockTest );
-        CPPUNIT_TEST( base64SplitRunsTest );
+        CPPUNIT_TEST( base64DecodeSimpleBlockTest );
+        CPPUNIT_TEST( base64DecodePaddedBlockTest );
+        CPPUNIT_TEST( base64DecodeNoEqualsPaddedBlockTest );
+        CPPUNIT_TEST( base64DecodeSplitRunsTest );
+        CPPUNIT_TEST( base64EncodeSimpleBlockTest );
+        CPPUNIT_TEST( base64EncodePaddedBlockTest );
+        CPPUNIT_TEST( base64EncodeSplitRunsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -132,37 +139,71 @@ void DecoderTest::noEncodingTest()
  *  the wikipedia article: http://en.wikipedia.org/wiki/Base64
  */
 
-void DecoderTest::base64SimpleBlockTest( )
+void DecoderTest::base64DecodeSimpleBlockTest( )
 {
     data->setEncoding( BASE64_ENCODING );
-    data->decode( ( void* )"cGxlYXN1cmUu", 1, 12 );
+    string input( "cGxlYXN1cmUu" );
+    data->decode( ( void* )input.c_str( ), 1, input.size() );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "pleasure." ), getActual( ) );
 }
 
-void DecoderTest::base64PaddedBlockTest( )
+void DecoderTest::base64DecodePaddedBlockTest( )
 {
     data->setEncoding( BASE64_ENCODING );
-    data->decode( ( void* )"c3VyZS4=", 1, 8 );
+    string input( "c3VyZS4=" );
+    data->decode( ( void* )input.c_str( ), 1, input.size( ) );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "sure." ), getActual( ) );
 }
 
-void DecoderTest::base64NoEqualsPaddedBlockTest( )
+void DecoderTest::base64DecodeNoEqualsPaddedBlockTest( )
 {
     data->setEncoding( BASE64_ENCODING );
-    data->decode( ( void* )"c3VyZS4", 1, 7 );
+    string input( "c3VyZS4" );
+    data->decode( ( void* )input.c_str( ), 1, input.size( ) );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "sure." ), getActual( ) );
 }
 
-void DecoderTest::base64SplitRunsTest( )
+void DecoderTest::base64DecodeSplitRunsTest( )
 {
     data->setEncoding( BASE64_ENCODING );
-    data->decode( ( void* )"cGxlYXN1c", 1, 9 );
-    data->decode( ( void* )"mUu", 1, 3 );
+    string input1( "cGxlYXN1c" );
+    data->decode( ( void* )input1.c_str( ), 1, input1.size( ) );
+    string input2( "mUu" );
+    data->decode( ( void* )input2.c_str( ), 1, input2.size( ) );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "pleasure." ), getActual( ) );
+}
+
+void DecoderTest::base64EncodeSimpleBlockTest( )
+{
+    data->setEncoding( BASE64_ENCODING );
+    string input( "pleasure." );
+    data->encode( ( void* )input.c_str(), 1, input.size() );
+    data->finish( );
+    CPPUNIT_ASSERT_EQUAL( string( "cGxlYXN1cmUu" ), getActual( ) );
+}
+
+void DecoderTest::base64EncodePaddedBlockTest( )
+{
+    data->setEncoding( BASE64_ENCODING );
+    string input( "sure." );
+    data->encode( ( void* )input.c_str(), 1, input.size() );
+    data->finish( );
+    CPPUNIT_ASSERT_EQUAL( string( "c3VyZS4=" ), getActual( ) );
+}
+
+void DecoderTest::base64EncodeSplitRunsTest( )
+{
+    data->setEncoding( BASE64_ENCODING );
+    string input1( "plea" );
+    data->encode( ( void* )input1.c_str(), 1, input1.size() );
+    string input2( "sure." );
+    data->encode( ( void* )input2.c_str(), 1, input2.size() );
+    data->finish( );
+    CPPUNIT_ASSERT_EQUAL( string( "cGxlYXN1cmUu" ), getActual( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( DecoderTest );

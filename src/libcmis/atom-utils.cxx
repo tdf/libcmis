@@ -36,11 +36,11 @@ using namespace std;
 
 namespace
 {
+    static const char chars64[]=
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
     bool lcl_getBufValue( char encoded, int* value )
     {
-        static const char chars64[]=
-              "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        
         bool found = false;
         const char *i = chars64;
         while ( !found && *i )
@@ -62,6 +62,7 @@ namespace atom
         m_stream( stream ),
         m_outStream( NULL ),
         m_encoding( ),
+        m_decode( false ),
         m_pendingValue( 0 ),
         m_pendingRank( 0 ),
         m_missingBytes( 0 )
@@ -72,30 +73,33 @@ namespace atom
         m_stream( NULL ),
         m_outStream( stream ),
         m_encoding( ),
+        m_decode( false ),
         m_pendingValue( 0 ),
         m_pendingRank( 0 ),
         m_missingBytes( 0 )
     {
     }
 
-    EncodedData::EncodedData( const EncodedData& rCopy ) :
-        m_stream( rCopy.m_stream ),
-        m_outStream( rCopy.m_outStream ),
-        m_encoding( rCopy.m_encoding ),
-        m_pendingValue( rCopy.m_pendingValue ),
-        m_pendingRank( rCopy.m_pendingRank ),
-        m_missingBytes( rCopy.m_missingBytes )
+    EncodedData::EncodedData( const EncodedData& copy ) :
+        m_stream( copy.m_stream ),
+        m_outStream( copy.m_outStream ),
+        m_encoding( copy.m_encoding ),
+        m_decode( copy.m_decode ),
+        m_pendingValue( copy.m_pendingValue ),
+        m_pendingRank( copy.m_pendingRank ),
+        m_missingBytes( copy.m_missingBytes )
     {
     }
 
-    const EncodedData& EncodedData::operator=( const EncodedData& rCopy )
+    const EncodedData& EncodedData::operator=( const EncodedData& copy )
     {
-        m_stream = rCopy.m_stream;
-        m_outStream = rCopy.m_outStream;
-        m_encoding = rCopy.m_encoding;
-        m_pendingValue = rCopy.m_pendingValue;
-        m_pendingRank = rCopy.m_pendingRank;
-        m_missingBytes = rCopy.m_missingBytes;
+        m_stream = copy.m_stream;
+        m_outStream = copy.m_outStream;
+        m_encoding = copy.m_encoding;
+        m_decode = copy.m_decode;
+        m_pendingValue = copy.m_pendingValue;
+        m_pendingRank = copy.m_pendingRank;
+        m_missingBytes = copy.m_missingBytes;
         return *this;
     }
 
@@ -109,6 +113,7 @@ namespace atom
 
     void EncodedData::decode( void* buf, size_t size, size_t nmemb )
     {
+        m_decode = true;
         if ( 0 == m_encoding.compare( "base64" ) )
         {
             decodeBase64( ( const char* )buf, size * nmemb );
@@ -117,24 +122,58 @@ namespace atom
             write( buf, size, nmemb );
     }
 
+    void EncodedData::encode( void* buf, size_t size, size_t nmemb )
+    {
+        m_decode = false;
+        if ( 0 == m_encoding.compare( "base64" ) )
+        {
+            encodeBase64( ( const char* )buf, size * nmemb );
+        }
+        else
+            write( buf, size, nmemb );
+    }
+
     void EncodedData::finish( )
     {
-        if ( m_pendingValue != 0 || m_pendingRank != 0 || m_missingBytes != 0 )
+        // Flushes the last bytes in base64 encoding / decoding if any
+        if ( 0 == m_encoding.compare( "base64" ) )
         {
-            int missingBytes = m_missingBytes;
-            if ( 0 == m_missingBytes )
-                missingBytes = 4 - m_pendingRank;
+            if ( m_decode && ( m_pendingValue != 0 || m_pendingRank != 0 || m_missingBytes != 0 ) )
+            {
+                int missingBytes = m_missingBytes;
+                if ( 0 == m_missingBytes )
+                    missingBytes = 4 - m_pendingRank;
 
-            char decoded[3];
-            decoded[0] = ( m_pendingValue & 0xFF0000 ) >> 16;
-            decoded[1] = ( m_pendingValue & 0xFF00 ) >> 8;
-            decoded[2] = ( m_pendingValue & 0xFF );
+                char decoded[3];
+                decoded[0] = ( m_pendingValue & 0xFF0000 ) >> 16;
+                decoded[1] = ( m_pendingValue & 0xFF00 ) >> 8;
+                decoded[2] = ( m_pendingValue & 0xFF );
 
-            write( decoded, 1, 3 - missingBytes );
+                write( decoded, 1, 3 - missingBytes );
 
-            m_pendingRank = 0;
-            m_pendingValue = 0;
-            m_missingBytes = 0;
+                m_pendingRank = 0;
+                m_pendingValue = 0;
+                m_missingBytes = 0;
+            }
+            else if ( !m_decode && ( m_pendingValue != 0 || m_pendingRank != 0 ) )
+            {
+                // Missing bytes should be zeroed: no need to do it
+                char encoded[4];
+                encoded[0] = chars64[ ( m_pendingValue & 0xFC0000 ) >> 18 ];
+                encoded[1] = chars64[ ( m_pendingValue & 0x03F000 ) >> 12 ];
+                encoded[2] = chars64[ ( m_pendingValue & 0x000FC0 ) >> 6  ];
+                encoded[3] = chars64[ ( m_pendingValue & 0x00003F )       ];
+
+                // Output the padding
+                int nEquals = 3 - m_pendingRank;
+                for ( int i = 0; i < nEquals; ++i )
+                    encoded[ 3 - i ] =  '=';
+
+                write( encoded, 1, 4 );
+
+                m_pendingRank = 0;
+                m_pendingValue = 0;
+            }
         }
     }
 
@@ -180,6 +219,39 @@ namespace atom
         m_pendingValue = blockValue;
         m_pendingRank = byteRank;
         m_missingBytes = missingBytes;
+    }
+
+    void EncodedData::encodeBase64( const char* buf, size_t len )
+    {
+        unsigned long blockValue = m_pendingValue;
+        int byteRank = m_pendingRank;
+
+        size_t i = 0;
+        while ( i < len )
+        {
+            blockValue += buf[i] << ( 2 - byteRank ) * 8;
+            ++byteRank;
+
+            // Reached the end of a block, encode it
+            if ( byteRank >= 3 )
+            {
+                char encoded[4];
+                encoded[0] = chars64[ ( blockValue & 0xFC0000 ) >> 18 ];
+                encoded[1] = chars64[ ( blockValue & 0x03F000 ) >> 12 ];
+                encoded[2] = chars64[ ( blockValue & 0x000FC0 ) >> 6  ];
+                encoded[3] = chars64[ ( blockValue & 0x00003F )       ];
+
+                write( encoded, 1, 4 );
+
+                byteRank = 0;
+                blockValue = 0;
+            }
+            ++i;
+        }
+
+        // Store the values if the last block is incomplete: they may come later
+        m_pendingValue = blockValue;
+        m_pendingRank = byteRank;
     }
 
     void registerNamespaces( xmlXPathContextPtr xpathCtx )
