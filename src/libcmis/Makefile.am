@@ -1,16 +1,18 @@
 AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS)
 
 libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
-	document.hxx \
-	folder.hxx \
-	object.hxx \
-	object-type.hxx \
-	session.hxx \
-	session-factory.hxx \
     allowable-actions.hxx \
-	property.hxx \
+	document.hxx \
+	exception.hxx \
+	folder.hxx \
+	object-type.hxx \
+	object.hxx \
 	property-type.hxx \
-	xml-utils.hxx
+	property.hxx \
+	session-factory.hxx \
+	session.hxx \
+	xml-utils.hxx \
+	xmlserializable.hxx
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
