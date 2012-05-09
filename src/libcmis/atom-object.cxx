@@ -36,7 +36,6 @@
 #include "atom-utils.hxx"
 #include "xml-utils.hxx"
 
-using namespace boost;
 using namespace std;
 
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
@@ -123,9 +122,9 @@ string AtomObject::getCreatedBy( )
     return value;
 }
 
-posix_time::ptime AtomObject::getCreationDate( )
+boost::posix_time::ptime AtomObject::getCreationDate( )
 {
-    posix_time::ptime value;
+    boost::posix_time::ptime value;
     map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
     if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
         value = it->second->getDateTimes( ).front( );
@@ -141,9 +140,9 @@ string AtomObject::getLastModifiedBy( )
     return value;
 }
 
-posix_time::ptime AtomObject::getLastModificationDate( )
+boost::posix_time::ptime AtomObject::getLastModificationDate( )
 {
-    posix_time::ptime value;
+    boost::posix_time::ptime value;
     map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
     if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
         value = it->second->getDateTimes( ).front( );
@@ -229,7 +228,7 @@ libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
     return m_typeDescription;
 }
 
-shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
+boost::shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
 {
     return m_allowableActions;
 }
@@ -271,9 +270,9 @@ string AtomObject::toString( )
     buf << "Name: " << getName() << endl;
     buf << "Type: " << getType() << endl;
     buf << "Base type: " << getBaseType() << endl;
-    buf << "Created on " << posix_time::to_simple_string( getCreationDate() )
+    buf << "Created on " << boost::posix_time::to_simple_string( getCreationDate() )
         << " by " << getCreatedBy() << endl;
-    buf << "Last modified on " << posix_time::to_simple_string( getLastModificationDate() )
+    buf << "Last modified on " << boost::posix_time::to_simple_string( getLastModificationDate() )
         << " by " << getLastModifiedBy() << endl;
     buf << "Change token: " << getChangeToken() << endl;
 
@@ -327,7 +326,7 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( getName( ).c_str( ) ) );
 
-    posix_time::ptime now( posix_time::second_clock::universal_time( ) );
+    boost::posix_time::ptime now( boost::posix_time::second_clock::universal_time( ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:updated" ), BAD_CAST( libcmis::writeDateTime( now ).c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
@@ -362,7 +361,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         string allowableActionsUrl = atom::getXPathValue( xpathCtx, allowableActionsReq );
         if ( !allowableActionsUrl.empty() )
         {
-            shared_ptr< AtomAllowableActions > allowableActions( new AtomAllowableActions( m_session, allowableActionsUrl ) );
+            boost::shared_ptr< AtomAllowableActions > allowableActions( new AtomAllowableActions( m_session, allowableActionsUrl ) );
             m_allowableActions.swap( allowableActions );
         }
 
