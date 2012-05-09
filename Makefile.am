@@ -13,7 +13,8 @@ EXTRA_DIST = \
 	run-test.sh \
     COPYING.MPL \
     COPYING.GPL \
-    COPYING.LGPL
+    COPYING.LGPL \
+	src/libcmis/makefile.mk
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \

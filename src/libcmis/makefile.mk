@@ -24,12 +24,19 @@ CFLAGS+=$(CURL_CFLAGS)
 .ENDIF
 
 SLOFILES= \
-	$(SLO)$/session-factory.obj \
+    $(SLO)$/allowable-actions.obj \
+	$(SLO)$/atom-allowable-actions.obj \
 	$(SLO)$/atom-document.obj \
 	$(SLO)$/atom-folder.obj \
+	$(SLO)$/atom-object-type.obj \
 	$(SLO)$/atom-object.obj \
 	$(SLO)$/atom-session.obj \
-	$(SLO)$/atom-utils.obj
+	$(SLO)$/atom-utils.obj \
+	$(SLO)$/atom-workspace.obj \
+	$(SLO)$/property-type.obj \
+	$(SLO)$/property.obj \
+	$(SLO)$/session-factory.obj \
+	$(SLO)$/xml-utils.obj
 
 LIB1ARCHIV=$(LB)$/libcmislib.a
 LIB1TARGET=$(SLB)$/$(TARGET).lib
