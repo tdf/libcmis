@@ -50,12 +50,24 @@ namespace atom
             CURLcode    m_code;
             std::string m_url;
 
+            bool        m_cancelled;
+
         public:
             CurlException( std::string message, CURLcode code, std::string url ) :
                 exception( ),
                 m_message( message ),
                 m_code( code ),
-                m_url( url )
+                m_url( url ),
+                m_cancelled( false )
+            {
+            }
+            
+            CurlException( std::string message ) :
+                exception( ),
+                m_message( message ),
+                m_code( CURLE_OK ),
+                m_url( ),
+                m_cancelled( true )
             {
             }
 
@@ -64,6 +76,7 @@ namespace atom
 
             CURLcode getErrorCode( ) const { return m_code; }
             std::string getErrorMessage( ) const { return m_message; }
+            bool isCancelled( ) const { return m_cancelled; }
 
             libcmis::Exception getCmisException ( ) const;
     };
@@ -76,11 +89,13 @@ class AtomPubSession : public libcmis::Session
         std::string m_sRepository;
         std::string m_username;
         std::string m_password;
+        bool m_authProvided;
         atom::Workspace m_workspace;
 
         std::list< std::string > m_repositoriesIds;
 
         bool m_verbose;
+        libcmis::Session::connection_callback m_cnxCallback;
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
@@ -92,13 +107,13 @@ class AtomPubSession : public libcmis::Session
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        std::string getRootId( ) { return m_workspace.getRootId( ); }
+        std::string getRootId( ) { return getWorkspace().getRootId( ); }
 
         std::string getUsername( ) { return m_username; }
 
         std::string getPassword( ) { return m_password; }
 
-        atom::Workspace& getWorkspace( ) { return m_workspace; }
+        atom::Workspace& getWorkspace( );
 
         // Utility methods
 
@@ -121,6 +136,12 @@ class AtomPubSession : public libcmis::Session
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
+
+        virtual void setConnectionCallback( libcmis::Session::connection_callback callback ) { m_cnxCallback = callback; }
+
+    private:
+
+        void initialize( );
 };
 
 #endif

@@ -35,11 +35,11 @@
 #include "exception.hxx"
 #include "session.hxx"
 
-#define ATOMPUB_URL     0
-#define REPOSITORY_ID   1
-#define USERNAME        2
-#define PASSWORD        3
-#define VERBOSE         4
+#define ATOMPUB_URL         0
+#define REPOSITORY_ID       1
+#define USERNAME            2
+#define PASSWORD            3
+#define VERBOSE             4
 
 namespace libcmis
 {

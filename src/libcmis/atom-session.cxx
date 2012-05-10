@@ -101,80 +101,97 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
     m_sRepository( repository ),
     m_username( username ),
     m_password( password ),
+    m_authProvided( false ),
     m_workspace( ),
     m_repositoriesIds( ),
-    m_verbose( verbose )
+    m_verbose( verbose ),
+    m_cnxCallback( NULL )
 {
-    // Pull the content from sAtomPubUrl
-    string buf;
-    try
-    {
-        buf = httpGetRequest( m_sAtomPubUrl );
-    }
-    catch ( const atom::CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-   
-    // parse the content
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
-
-    if ( NULL != doc )
-    {
-        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-
-        // Register the Service Document namespaces
-        atom::registerNamespaces( xpathCtx );
-
-        if ( NULL != xpathCtx )
-        {
-            string workspacesXPath( "//app:workspace" );
-            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( workspacesXPath.c_str() ), xpathCtx );
-
-            if ( xpathObj != NULL )
-            {
-                int nbWorkspaces = 0;
-                if ( xpathObj->nodesetval )
-                    nbWorkspaces = xpathObj->nodesetval->nodeNr;
-
-                for ( int i = 0; i < nbWorkspaces; i++ )
-                {
-                    try
-                    {
-                        atom::Workspace ws( xpathObj->nodesetval->nodeTab[i] );
-                        if ( ws.getId( ) == m_sRepository )
-                            m_workspace = ws;
-
-                        m_repositoriesIds.push_back( ws.getId() );
-                    }
-                    catch ( const libcmis::Exception& e )
-                    {
-                        // Invalid repository, don't take care of this
-                    }
-                }
-            }
-        }
-        xmlXPathFreeContext( xpathCtx );
-    }
-    else
-        throw libcmis::Exception( "Failed to parse service document" );
-
-    xmlFreeDoc( doc );
 }
 
 AtomPubSession::~AtomPubSession( )
 {
 }
 
+void AtomPubSession::initialize( )
+{
+    if ( m_repositoriesIds.empty() )
+    {
+        // Pull the content from sAtomPubUrl
+        string buf;
+        try
+        {
+            buf = httpGetRequest( m_sAtomPubUrl );
+        }
+        catch ( const atom::CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
+       
+        // parse the content
+        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_sAtomPubUrl.c_str(), NULL, 0 );
+
+        if ( NULL != doc )
+        {
+            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+
+            // Register the Service Document namespaces
+            atom::registerNamespaces( xpathCtx );
+
+            if ( NULL != xpathCtx )
+            {
+                string workspacesXPath( "//app:workspace" );
+                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( workspacesXPath.c_str() ), xpathCtx );
+
+                if ( xpathObj != NULL )
+                {
+                    int nbWorkspaces = 0;
+                    if ( xpathObj->nodesetval )
+                        nbWorkspaces = xpathObj->nodesetval->nodeNr;
+
+                    for ( int i = 0; i < nbWorkspaces; i++ )
+                    {
+                        try
+                        {
+                            atom::Workspace ws( xpathObj->nodesetval->nodeTab[i] );
+                            if ( ws.getId( ) == m_sRepository )
+                                m_workspace = ws;
+
+                            m_repositoriesIds.push_back( ws.getId() );
+                        }
+                        catch ( const libcmis::Exception& e )
+                        {
+                            // Invalid repository, don't take care of this
+                        }
+                    }
+                }
+            }
+            xmlXPathFreeContext( xpathCtx );
+        }
+        else
+            throw libcmis::Exception( "Failed to parse service document" );
+
+        xmlFreeDoc( doc );
+    }
+
+}
+
 list< string > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     AtomPubSession session( url, string(), username, password, verbose );
+    session.initialize( );
     return session.m_repositoriesIds;
+}
+
+atom::Workspace& AtomPubSession::getWorkspace( )
+{
+    initialize( );
+    return m_workspace;
 }
 
 libcmis::FolderPtr AtomPubSession::getRootFolder()
 {
-    return getFolder( m_workspace.getRootId() );
+    return getFolder( getWorkspace().getRootId() );
 }
 
 libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
@@ -215,7 +232,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 
 libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Exception )
 {
-    string pattern = m_workspace.getUriTemplate( atom::UriTemplate::ObjectById );
+    string pattern = getWorkspace().getUriTemplate( atom::UriTemplate::ObjectById );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
     string url = atom::UriTemplate::createUrl( pattern, vars );
@@ -244,7 +261,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
 
 libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmis::Exception )
 {
-    string pattern = m_workspace.getUriTemplate( atom::UriTemplate::ObjectByPath );
+    string pattern = getWorkspace().getUriTemplate( atom::UriTemplate::ObjectByPath );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_PATH] = path;
     string url = atom::UriTemplate::createUrl( pattern, vars );
@@ -377,6 +394,15 @@ void AtomPubSession::httpRunRequest( CURL* handle, string url ) throw ( atom::Cu
     curl_easy_setopt( handle, CURLOPT_URL, url.c_str() );
 
     // Set the credentials
+    if ( m_cnxCallback && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
+    {
+        m_authProvided = m_cnxCallback( m_username, m_password );
+        if ( !m_authProvided )
+        {
+            throw atom::CurlException( "User cancelled authentication request" );
+        }
+    }
+
     if ( !m_username.empty() && !m_password.empty() )
     {
         curl_easy_setopt( handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
@@ -403,7 +429,9 @@ namespace atom
     const char* CurlException::what( ) const throw ()
     {
         stringstream buf;
-        buf << "CURL error - " << m_code << ": " << m_message;
+        if ( !isCancelled( ) )
+            buf << "CURL error - " << m_code << ": ";
+        buf << m_message;
 
         return buf.str( ).c_str( );
     }
@@ -430,7 +458,8 @@ namespace atom
         else
         {
             msg = what();
-            msg += ": " + m_url;
+            if ( !isCancelled( ) )
+                msg += ": " + m_url;
         }
 
         return libcmis::Exception( msg );

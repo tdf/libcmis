@@ -11,6 +11,7 @@
 
   * Generic
     * Support for authentication in the API
+    * Callback for providing interactive authentication
   * AtomPub binding
     * Handle all the authentication methods that can be handled by
       libcurl like Basic, NTLM...

@@ -43,6 +43,8 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
+#define CANCELLED_EXCEPTION_MSG string( "User cancelled authentication request" )
+
 #define TEST_UNEXISTANT_TYPE_ID string( "bad_type" )
 #define INVALID_TYPE_ID_EXCEPTION_MSG string( "No such type: bad_type" )
 
@@ -90,6 +92,7 @@ class AtomTest : public CppUnit::TestFixture
 
         void getRepositoriesTest( );
         void sessionCreationTest( );
+        void authCallbackTest( );
 
         // Types fetching tests
         void getUnexistantTypeTest( );
@@ -120,6 +123,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
+        CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
         CPPUNIT_TEST( getNormalTypeTest );
         CPPUNIT_TEST( getTypeChildrenTest );
@@ -184,6 +188,35 @@ void AtomTest::sessionCreationTest( )
             !session.getRootId().empty() );
     CPPUNIT_ASSERT_MESSAGE( "Root folder isn't considering itself a root",
             session.getRootFolder( )->isRootFolder() );
+}
+
+bool cancelCallback( string& username, string& password )
+{
+    return false;
+}
+
+bool missingPasswordCallback( string& username, string& password )
+{
+    password = SERVER_PASSWORD;
+    return true;
+}
+
+void AtomTest::authCallbackTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ), false);
+    session.setConnectionCallback( &cancelCallback );
+    try
+    {
+        session.getRootFolder( );
+        CPPUNIT_FAIL( "Should raise an exception saying the user cancelled the authentication" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", CANCELLED_EXCEPTION_MSG , string( e.what() ) );
+    }
+    
+    session.setConnectionCallback( &missingPasswordCallback );
+    session.getRootFolder( );
 }
 
 void AtomTest::getUnexistantTypeTest( )

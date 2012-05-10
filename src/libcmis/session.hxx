@@ -37,6 +37,13 @@ namespace libcmis
     class Session
     {
         public:
+
+            /** Function pointer for the connection callback. The function implementing it needs to
+                fill the username and password parameters and return true. Returning false means
+                that the user cancelled the authentication and will fail the query.
+              */
+            typedef bool ( *connection_callback )( std::string& username, std::string& password );
+
             virtual ~Session() { };
 
             /** Get the Root folder of the repository
@@ -58,6 +65,10 @@ namespace libcmis
             /** Get a CMIS object type from its ID.
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
+
+            /** Set a connection callback for providing authentication interactively.
+              */
+            virtual void setConnectionCallback( connection_callback callback ) = 0;
     };
 }
 
