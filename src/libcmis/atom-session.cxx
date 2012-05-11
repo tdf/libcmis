@@ -56,6 +56,33 @@ namespace
 
         return is.gcount( ) / size;
     }
+
+    curlioerr lcl_ioctlStream( CURL* handle, int cmd, void* data )
+    {
+        curlioerr errCode = CURLIOE_OK;
+
+        switch ( cmd )
+        {
+            case CURLIOCMD_RESTARTREAD:
+                {
+                    istream& is = *( static_cast< istream* >( data ) );
+                    is.clear( );
+                    is.seekg( 0, ios::beg );
+
+                    if ( !is.good() )
+                    {
+                        fprintf ( stderr, "rewind failed\n" );
+                        errCode = CURLIOE_FAILRESTART;
+                    }
+                }
+                break;
+            case CURLIOCMD_NOP:
+                break;
+            default:
+                errCode = CURLIOE_UNKNOWNCMD;
+        }
+        return errCode;
+    }
 }
 
 string atom::UriTemplate::createUrl( const string& pattern, map< string, string > variables )
@@ -336,14 +363,13 @@ string AtomPubSession::httpPutRequest( string url, istream& is, string contentTy
     curl_easy_setopt( handle, CURLOPT_READDATA, &is );
     curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( handle, CURLOPT_UPLOAD, 1 );
+    curl_easy_setopt( handle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( handle, CURLOPT_IOCTLDATA, &is );
 
     struct curl_slist *headers_slist = NULL;
     string contentTypeHeader = string( "Content-Type:" ) + contentType;
     headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
     curl_easy_setopt( handle, CURLOPT_HTTPHEADER, headers_slist );
-
-    // TODO Define a CURLOPT_IOCTLFUNCTION callback to rewind in
-    // multipass authentication cases (like for SharePoint)
 
     httpRunRequest( handle, url );
 
@@ -353,7 +379,7 @@ string AtomPubSession::httpPutRequest( string url, istream& is, string contentTy
     return stream.str( );
 }
 
-string AtomPubSession::httpPostRequest( string url, istream& is, string contentType ) throw ( atom::CurlException )
+string AtomPubSession::httpPostRequest( string url, istringstream& is, string contentType ) throw ( atom::CurlException )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     CURL* handle = curl_easy_init( );
@@ -371,14 +397,13 @@ string AtomPubSession::httpPostRequest( string url, istream& is, string contentT
     curl_easy_setopt( handle, CURLOPT_READDATA, &is );
     curl_easy_setopt( handle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( handle, CURLOPT_POST, 1 );
+    curl_easy_setopt( handle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( handle, CURLOPT_IOCTLDATA, &is );
 
     struct curl_slist *headers_slist = NULL;
     string contentTypeHeader = string( "Content-Type:" ) + contentType;
     headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
     curl_easy_setopt( handle, CURLOPT_HTTPHEADER, headers_slist );
-
-    // TODO Define a CURLOPT_IOCTLFUNCTION callback to rewind in
-    // multipass authentication cases (like for SharePoint)
 
     httpRunRequest( handle, url );
 

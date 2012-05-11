@@ -121,7 +121,7 @@ class AtomPubSession : public libcmis::Session
 
         std::string httpGetRequest( std::string url ) throw ( atom::CurlException );
         std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
-        std::string httpPostRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
+        std::string httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( atom::CurlException );
 
         void httpRunRequest( CURL* handle, std::string url ) throw ( atom::CurlException );
 
