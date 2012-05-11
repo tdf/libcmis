@@ -37,6 +37,8 @@ namespace
     string lcl_getAttributeValue( xmlNodePtr node, const char* attributeName )
     {
         xmlChar* xmlStr = xmlGetProp( node, BAD_CAST( attributeName ) );
+        if ( xmlStr == NULL )
+            throw libcmis::Exception( "Missing attribute" );
         string value( ( char * ) xmlStr );
         xmlFree( xmlStr );
         return value;
@@ -121,27 +123,35 @@ namespace libcmis
     
     PropertyPtr parseProperty( xmlNodePtr node, ObjectTypePtr objectType )
     {
-        string id = lcl_getAttributeValue( node, "propertyDefinitionId" );
-
-        // Find the value nodes
-        vector< string > values;
-        for ( xmlNodePtr child = node->children; child; child = child->next )
-        {
-            if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
-            {
-                xmlChar* content = xmlNodeGetContent( child );
-                values.push_back( string( ( char * ) content ) );
-                xmlFree( content );
-            }
-        }
-
         PropertyPtr property;
 
-        map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
-        if ( it != objectType->getPropertiesTypes().end( ) )
+        try
         {
-            property.reset( new Property( it->second, values ) );
+            string id = lcl_getAttributeValue( node, "propertyDefinitionId" );
+
+            // Find the value nodes
+            vector< string > values;
+            for ( xmlNodePtr child = node->children; child; child = child->next )
+            {
+                if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
+                {
+                    xmlChar* content = xmlNodeGetContent( child );
+                    values.push_back( string( ( char * ) content ) );
+                    xmlFree( content );
+                }
+            }
+
+            map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
+            if ( it != objectType->getPropertiesTypes().end( ) )
+            {
+                property.reset( new Property( it->second, values ) );
+            }
         }
+        catch ( const Exception& )
+        {
+            // Ignore that non-property node
+        }
+
         return property;
     }
 }

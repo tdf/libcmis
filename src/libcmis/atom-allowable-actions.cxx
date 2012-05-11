@@ -216,11 +216,15 @@ void AtomAllowableActions::refresh( ) throw ( libcmis::Exception )
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
                 for ( xmlNodePtr child = node->children; child; child = child->next )
                 {
-                    atom::ObjectAction action( child );
-                    if ( action.isValid( ) )
-                        m_states.insert( pair< libcmis::ObjectAction::Type, bool >(
-                                    action.getType( ),
-                                    action.isEnabled() ) );
+                    // Check for non text children... "\n" is also a node ;)
+                    if ( !xmlNodeIsText( child ) )
+                    {
+                        atom::ObjectAction action( child );
+                        if ( action.isValid( ) )
+                            m_states.insert( pair< libcmis::ObjectAction::Type, bool >(
+                                        action.getType( ),
+                                        action.isEnabled() ) );
+                    }
                 }
             }
             xmlXPathFreeObject( xpathObj );

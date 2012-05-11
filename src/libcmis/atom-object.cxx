@@ -378,7 +378,11 @@ void AtomObject::extractInfos( xmlDocPtr doc )
             {
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
                 libcmis::PropertyPtr property = libcmis::parseProperty( node, getTypeDescription( ) );
-                m_properties.insert( std::pair< string, libcmis::PropertyPtr >( property->getPropertyType( )->getId(), property ) );
+                if ( property.get( ) )
+                    m_properties.insert(
+                            std::pair< string, libcmis::PropertyPtr >(
+                                property->getPropertyType( )->getId(),
+                                property ) );
             }
         }
         xmlXPathFreeObject( xpathObj );
