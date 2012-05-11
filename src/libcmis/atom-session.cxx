@@ -105,7 +105,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repository,
     m_workspace( ),
     m_repositoriesIds( ),
     m_verbose( verbose ),
-    m_cnxCallback( NULL )
+    m_authProvider( )
 {
 }
 
@@ -394,9 +394,9 @@ void AtomPubSession::httpRunRequest( CURL* handle, string url ) throw ( atom::Cu
     curl_easy_setopt( handle, CURLOPT_URL, url.c_str() );
 
     // Set the credentials
-    if ( m_cnxCallback && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
+    if ( m_authProvider.get() && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
     {
-        m_authProvided = m_cnxCallback( m_username, m_password );
+        m_authProvided = m_authProvider->authenticationQuery( m_username, m_password );
         if ( !m_authProvided )
         {
             throw atom::CurlException( "User cancelled authentication request" );

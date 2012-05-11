@@ -28,21 +28,31 @@
 #ifndef _SESSION_HXX_
 #define _SESSION_HXX_
 
+#include <string>
+#include <boost/shared_ptr.hpp>
+
 #include "object-type.hxx"
 #include "object.hxx"
 #include "folder.hxx"
 
 namespace libcmis
 {
+    class AuthProvider 
+    {
+        public:
+            virtual ~AuthProvider() { };
+
+            /** The function implementing it needs to fill the username and password parameters
+                and return true. Returning false means that the user cancelled the authentication
+                and will fail the query.
+              */
+            virtual bool authenticationQuery( std::string& username, std::string& password ) = 0;
+    };
+    typedef ::boost::shared_ptr< AuthProvider > AuthProviderPtr;
+
     class Session
     {
         public:
-
-            /** Function pointer for the connection callback. The function implementing it needs to
-                fill the username and password parameters and return true. Returning false means
-                that the user cancelled the authentication and will fail the query.
-              */
-            typedef bool ( *connection_callback )( std::string& username, std::string& password );
 
             virtual ~Session() { };
 
@@ -66,9 +76,9 @@ namespace libcmis
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
 
-            /** Set a connection callback for providing authentication interactively.
+            /** Set an authentication provider for providing authentication interactively.
               */
-            virtual void setConnectionCallback( connection_callback callback ) = 0;
+            virtual void setAuthenticationProvider( AuthProviderPtr provider ) = 0;
     };
 }
 

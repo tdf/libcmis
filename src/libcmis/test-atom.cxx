@@ -190,33 +190,45 @@ void AtomTest::sessionCreationTest( )
             session.getRootFolder( )->isRootFolder() );
 }
 
-bool cancelCallback( string& username, string& password )
+class TestAuthProvider : public libcmis::AuthProvider
 {
-    return false;
-}
+    bool m_fail;
 
-bool missingPasswordCallback( string& username, string& password )
-{
-    password = SERVER_PASSWORD;
-    return true;
-}
+    public:
+        TestAuthProvider( bool fail ) : m_fail( fail ) { }
+
+        bool authenticationQuery( std::string& username, std::string& password )
+        {
+            password = SERVER_PASSWORD;
+            return !m_fail;
+        }
+};
 
 void AtomTest::authCallbackTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ), false);
-    session.setConnectionCallback( &cancelCallback );
-    try
+
+    // Test cancelled authentication
     {
-        session.getRootFolder( );
-        CPPUNIT_FAIL( "Should raise an exception saying the user cancelled the authentication" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", CANCELLED_EXCEPTION_MSG , string( e.what() ) );
+        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( true ) );
+        session.setAuthenticationProvider( authProvider );
+        try
+        {
+            session.getRootFolder( );
+            CPPUNIT_FAIL( "Should raise an exception saying the user cancelled the authentication" );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", CANCELLED_EXCEPTION_MSG , string( e.what() ) );
+        }
     }
     
-    session.setConnectionCallback( &missingPasswordCallback );
-    session.getRootFolder( );
+    // Test provided authentication
+    {
+        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( false ) );
+        session.setAuthenticationProvider( authProvider );
+        session.getRootFolder( );
+    }
 }
 
 void AtomTest::getUnexistantTypeTest( )

@@ -95,7 +95,7 @@ class AtomPubSession : public libcmis::Session
         std::list< std::string > m_repositoriesIds;
 
         bool m_verbose;
-        libcmis::Session::connection_callback m_cnxCallback;
+        libcmis::AuthProviderPtr m_authProvider;
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
@@ -137,7 +137,7 @@ class AtomPubSession : public libcmis::Session
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 
-        virtual void setConnectionCallback( libcmis::Session::connection_callback callback ) { m_cnxCallback = callback; }
+        virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
 
     private:
 
