@@ -57,7 +57,7 @@ namespace
         return is.gcount( ) / size;
     }
 
-    curlioerr lcl_ioctlStream( CURL* handle, int cmd, void* data )
+    curlioerr lcl_ioctlStream( CURL* /*handle*/, int cmd, void* data )
     {
         curlioerr errCode = CURLIOE_OK;
 
