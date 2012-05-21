@@ -303,10 +303,11 @@ void CmisClient::execute( ) throw ( exception )
                     string type = m_vm["input-type"].as<string>();
                     string filename = m_vm["input-file"].as<string>();
                     ifstream is( filename.c_str(), ifstream::in );
+                    ostream os( is.rdbuf( ) );
                     if ( is.fail( ) )
                         throw CommandException( string( "Unable to open file " ) + filename );
 
-                    document->setContentStream( is, type );
+                    document->setContentStream( os, type );
 
                     is.close( );
                 }

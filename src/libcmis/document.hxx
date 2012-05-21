@@ -29,6 +29,7 @@
 #define _DOCUMENT_HXX_
 
 #include <istream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -93,7 +94,7 @@ namespace libcmis
 
             /** Set or replace the content stream of the document.
 
-                @param is the input stream containing the new data for the content stream
+                @param is the output stream containing the new data for the content stream
                 @param contentType the mime-type of the new content stream
                 @param overwrite if set to false, don't overwrite the content stream if one is already set.
 
@@ -101,7 +102,7 @@ namespace libcmis
                                 no rights to set the stream, server doesn't have the ContentStreamUpdatability
                                 capability.
               */
-            virtual void setContentStream( std::istream& is, std::string contentType,
+            virtual void setContentStream( std::ostream& os, std::string contentType,
                                            bool overwrite = true ) throw ( Exception ) = 0;
 
             /** Get the content mime type.

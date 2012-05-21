@@ -225,7 +225,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     return stream;
 }
 
-void AtomDocument::setContentStream( istream& is, string contentType, bool overwrite ) throw ( libcmis::Exception )
+void AtomDocument::setContentStream( ostream& os, string contentType, bool overwrite ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
         throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
@@ -247,6 +247,7 @@ void AtomDocument::setContentStream( istream& is, string contentType, bool overw
 
     try
     {
+        istream is( os.rdbuf( ) );
         getSession()->httpPutRequest( putUrl, is, contentType );
         refresh( );
     }
