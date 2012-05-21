@@ -58,7 +58,7 @@ namespace libcmis
 
             /** Get the Root folder of the repository
               */
-            virtual FolderPtr getRootFolder() = 0;
+            virtual FolderPtr getRootFolder() throw ( Exception )= 0;
             
             /** Get a CMIS object from its ID.
               */

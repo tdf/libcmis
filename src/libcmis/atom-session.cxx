@@ -140,7 +140,7 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
-void AtomPubSession::initialize( )
+void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 {
     if ( m_repositoriesIds.empty() )
     {
@@ -210,13 +210,13 @@ list< string > AtomPubSession::getRepositories( string url, string username, str
     return session.m_repositoriesIds;
 }
 
-atom::Workspace& AtomPubSession::getWorkspace( )
+atom::Workspace& AtomPubSession::getWorkspace( ) throw ( libcmis::Exception )
 {
     initialize( );
     return m_workspace;
 }
 
-libcmis::FolderPtr AtomPubSession::getRootFolder()
+libcmis::FolderPtr AtomPubSession::getRootFolder() throw ( libcmis::Exception )
 {
     return getFolder( getWorkspace().getRootId() );
 }

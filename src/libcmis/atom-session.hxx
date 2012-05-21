@@ -107,13 +107,13 @@ class AtomPubSession : public libcmis::Session
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        std::string getRootId( ) { return getWorkspace().getRootId( ); }
+        std::string getRootId( ) throw ( libcmis::Exception ) { return getWorkspace().getRootId( ); }
 
         std::string getUsername( ) { return m_username; }
 
         std::string getPassword( ) { return m_password; }
 
-        atom::Workspace& getWorkspace( );
+        atom::Workspace& getWorkspace( ) throw ( libcmis::Exception );
 
         // Utility methods
 
@@ -127,7 +127,7 @@ class AtomPubSession : public libcmis::Session
 
         // Override session methods
 
-        virtual libcmis::FolderPtr getRootFolder();
+        virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
         
@@ -141,7 +141,7 @@ class AtomPubSession : public libcmis::Session
 
     private:
 
-        void initialize( );
+        void initialize( ) throw ( libcmis::Exception );
 };
 
 #endif
