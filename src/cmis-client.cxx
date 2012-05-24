@@ -303,7 +303,7 @@ void CmisClient::execute( ) throw ( exception )
                     string type = m_vm["input-type"].as<string>();
                     string filename = m_vm["input-file"].as<string>();
                     ifstream is( filename.c_str(), ifstream::in );
-                    ostream os( is.rdbuf( ) );
+                    boost::shared_ptr< ostream > os ( new ostream ( is.rdbuf( ) ) );
                     if ( is.fail( ) )
                         throw CommandException( string( "Unable to open file " ) + filename );
 
@@ -372,6 +372,93 @@ void CmisClient::execute( ) throw ( exception )
                 }
 
                 libcmis::FolderPtr created = parent->createFolder( properties );
+
+                cout << "------------------------------------------------" << endl;
+                cout << created->toString() << endl;
+
+                delete session;
+            }
+            else if ( "create-document" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                vector< string > args = m_vm["args"].as< vector< string > >( );
+                if ( args.size() < 2 )
+                    throw CommandException( "Please provide a parent Id and document name" );
+
+                libcmis::FolderPtr parent = session->getFolder( args[0] );
+
+                // Get the document type to create
+                string documentType( "cmis:document" );
+                if ( m_vm.count( "object-type" ) != 0 )
+                    documentType = m_vm["object-type"].as<string>( );
+
+                libcmis::ObjectTypePtr type = session->getType( documentType );
+                if ( "cmis:document" != type->getBaseType( )->getId( ) )
+                    throw CommandException( string( "Not a document type: " ) + documentType );
+
+                map< string, libcmis::PropertyPtr > properties;
+                map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
+
+                // Set the name
+                map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
+                if ( typeIt == propertiesTypes.end( ) )
+                    throw CommandException( string( "No cmis:name on the object type... weird" ) );
+                vector< string > nameValues;
+                nameValues.push_back( args[1] );
+                libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+                
+                // Set the objectTypeId
+                typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
+                if ( typeIt == propertiesTypes.end( ) )
+                    throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
+                vector< string > typeIdValues;
+                typeIdValues.push_back( documentType );
+                libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
+                
+                // Checks for the properties to set if any
+                map< string, string > propsToSet = getObjectProperties( );
+                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
+                {
+                    // Create the CMIS property if it exists
+                    typeIt = propertiesTypes.find( it->first );
+                    if ( typeIt != propertiesTypes.end( ) )
+                    {
+                        vector< string > values;
+                        values.push_back( it->second );
+                        libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                        properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
+                    }
+                }
+
+                // Get the content type and stream
+                boost::shared_ptr< ostream > contentStream;
+                string contentType;
+                
+                bool hasInputFile = m_vm.count( "input-file" ) != 0;
+                bool hasInputType = m_vm.count( "input-type" ) != 0;
+
+                if ( hasInputType && !hasInputFile )
+                    throw CommandException( "Missing --input-file" );
+                if ( hasInputFile && !hasInputType )
+                    throw CommandException( "Missing --input-type" );
+
+                if ( hasInputFile && hasInputType )
+                {
+                    contentType = m_vm["input-type"].as<string>();
+                    string filename = m_vm["input-file"].as<string>();
+                    fstream is( filename.c_str() );
+                    if ( is.fail( ) )
+                        throw CommandException( string( "Unable to open file " ) + filename );
+                    contentStream.reset( new ostringstream( ios_base::out | ios_base::in ) );
+
+                    *contentStream << is.rdbuf();
+                }
+
+                // Actually create the document
+                libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType );
 
                 cout << "------------------------------------------------" << endl;
                 cout << created->toString() << endl;
@@ -483,6 +570,11 @@ void CmisClient::printHelp( )
             "           file selected with --input-file." << endl;
     cerr << "   create-folder <Parent Id> <Folder Name>\n"
             "           Creates a new folder inside the folder <Parent Id> named <Folder Name>." << endl;
+    cerr << "   create-document <Parent Id> <Document Name>\n"
+            "           Creates a new document inside the folder <Parent Id>\n"
+            "           named <Document Name>.\n"
+            "           Note that --input-file and --input-type may be requested if\n"
+            "           the server requires a content stream." << endl; 
     cerr << "   update-object <Object Id>\n"
             "           Update the object matching id <Object Id> with the properties\n"
             "           defined with --object-property." << endl;

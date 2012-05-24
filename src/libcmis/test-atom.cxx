@@ -119,6 +119,8 @@ class AtomTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
+        void dumpDocumentToXmlTest( );
+        void createDocumentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -143,6 +145,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -475,23 +478,22 @@ void AtomTest::setContentStreamTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    dynamic_cast< AtomObject* >( object.get() )->unsetRefreshTimestamp( );
     
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
 
     try
     {
-        stringstream is( TEST_SAMPLE_CONTENT );
-        document->setContentStream( is, TEST_DOCUMENT_TYPE );
+        boost::shared_ptr< ostream > os ( new stringstream ( TEST_SAMPLE_CONTENT ) );
+        document->setContentStream( os, TEST_DOCUMENT_TYPE );
         
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Get the new content to check is has been properly uploaded
         shared_ptr< istream > newIs = document->getContentStream( );
-        stringstream os;
-        os << newIs->rdbuf();
+        stringstream is;
+        is << newIs->rdbuf();
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
-                TEST_SAMPLE_CONTENT, os.str() );
+                TEST_SAMPLE_CONTENT, is.str() );
     
         // Testing other values like LastModifiedBy or LastModificationTime
         // is server dependent... don't do it. 
@@ -510,7 +512,6 @@ void AtomTest::updatePropertiesTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
     libcmis::ObjectPtr object = session.getObject( TEST_UPDATE_DOCUMENT_ID );
-    dynamic_cast< AtomObject* >( object.get() )->unsetRefreshTimestamp( );
 
     map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
     CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
@@ -520,8 +521,6 @@ void AtomTest::updatePropertiesTest( )
     it->second->setValues( values );
 
     object->updateProperties( );
-
-    CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during update", object->getRefreshTimestamp( ) > 0 );
 
     it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
     CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != object->getProperties( ).end( ) );
@@ -599,6 +598,49 @@ void AtomTest::createFolderBadTypeTest( )
         CPPUNIT_ASSERT_MESSAGE( "Bad exception message",
                 string( e.what( ) ).find( "Created object is not a folder: " ) != string::npos );
     }
+}
+
+void AtomTest::createDocumentTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    map< string, libcmis::PropertyPtr > props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
+    vector< string > nameValues;
+    nameValues.push_back( "NEW_NAME_3" );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+   
+    // set the object type 
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:document" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Actually send the document creation request
+    string contentStr = "Some content";
+    boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
+    string contentType = "text/plain";
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, false );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+
+    // Check that the content is properly set
+    shared_ptr< istream >  is = created->getContentStream( );
+    stringstream buf;
+    buf << is->rdbuf();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content set", contentStr, buf.str( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

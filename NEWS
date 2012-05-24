@@ -12,6 +12,7 @@
   * Generic
     * Support for authentication in the API
     * Callback for providing interactive authentication
+    * Added API to create documents and folders
   * AtomPub binding
     * Handle all the authentication methods that can be handled by
       libcurl like Basic, NTLM...
@@ -21,4 +22,4 @@
     * Get the allowable actions for a node
     * Object properties can be updated
     * Query object types
-    * Creation of folders
+    * Creation of folders and documents

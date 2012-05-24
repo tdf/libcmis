@@ -25,39 +25,19 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _FOLDER_HXX_
-#define _FOLDER_HXX_
 
-#include <map>
 #include <string>
-#include <vector>
 
-#include "exception.hxx"
-#include "object.hxx"
+#include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
-namespace libcmis
+#include "xmlserializable.hxx"
+
+
+namespace test
 {
-    class Document;
-
-    /** Class representing a CMIS folder.
-      */
-    class Folder : public virtual Object
-    {
-        public:
-            virtual ~Folder() { }
-
-            virtual ::boost::shared_ptr< Folder > getFolderParent( ) throw ( Exception ) = 0;
-            virtual std::vector< ObjectPtr > getChildren( ) throw ( Exception ) = 0;
-            virtual std::string getPath( ) = 0;
-
-            virtual bool isRootFolder( ) = 0;
-
-            virtual ::boost::shared_ptr< Folder > createFolder( std::map< std::string, PropertyPtr >& properties ) = 0;
-            virtual ::boost::shared_ptr< Document > createDocument( std::map< std::string, PropertyPtr >& properties,
-                                    boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( Exception ) = 0;
-    };
-    typedef ::boost::shared_ptr< Folder > FolderPtr;
-
+    // Test helper functions for parser and writer tests
+    xmlNodePtr getXmlNode( std::string str );
+    const char* getXmlns( );
+    std::string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
 }
-
-#endif

@@ -28,6 +28,9 @@
 #ifndef _ATOM_DOCUMENT_HXX_
 #define _ATOM_DOCUMENT_HXX_
 
+#include <boost/shared_ptr.hpp>
+
+#include <ostream>
 #include <string>
 
 #include "document.hxx"
@@ -43,7 +46,10 @@ class AtomDocument : public libcmis::Document, public AtomObject
         std::string m_contentFilename;
         long m_contentLength;
 
+        boost::shared_ptr< std::ostream > m_contentStream;
+
     public:
+        AtomDocument( AtomPubSession* session );
         AtomDocument( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomDocument( );
 
@@ -52,7 +58,13 @@ class AtomDocument : public libcmis::Document, public AtomObject
         // Override content methods
         virtual FILE* getContent( const char* path = NULL );
         virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
-        virtual void setContentStream( std::ostream& os, std::string contentType,
+
+        /** Set the content stream of the node by either:
+            \li sending the update request directly to the server
+            \li locally storing the stream and content type if the document
+                has never been refreshed from the server.
+          */
+        virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
                                        bool overwrite = true ) throw ( libcmis::Exception );
         virtual std::string getContentType( ) { return m_contentType; }
         virtual std::string getContentFilename( ) { return m_contentFilename; }
@@ -62,6 +74,8 @@ class AtomDocument : public libcmis::Document, public AtomObject
     
     protected:
         virtual void extractInfos( xmlDocPtr doc );
+
+        virtual void contentToXml( xmlTextWriterPtr writer ); 
 };
 
 #endif

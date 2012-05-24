@@ -55,7 +55,9 @@ check_PROGRAMS = test-atom
 test_atom_SOURCES =	\
 	test-atom.cxx \
 	test-decoder.cxx \
-	test-xmlutils.cxx
+	test-xmlutils.cxx \
+	test-helpers.hxx \
+	test-helpers.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \

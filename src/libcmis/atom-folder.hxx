@@ -30,6 +30,7 @@
 
 #include <string>
 
+#include "document.hxx"
 #include "folder.hxx"
 #include "atom-object.hxx"
 
@@ -52,6 +53,8 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         virtual bool isRootFolder( );
 
         virtual libcmis::FolderPtr createFolder( std::map< std::string, libcmis::PropertyPtr >& properties );
+        virtual libcmis::DocumentPtr createDocument( std::map< std::string, libcmis::PropertyPtr >& properties,
+                                boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
         
         virtual std::string toString( );
 

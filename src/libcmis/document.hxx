@@ -102,7 +102,7 @@ namespace libcmis
                                 no rights to set the stream, server doesn't have the ContentStreamUpdatability
                                 capability.
               */
-            virtual void setContentStream( std::ostream& os, std::string contentType,
+            virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
                                            bool overwrite = true ) throw ( Exception ) = 0;
 
             /** Get the content mime type.
@@ -117,6 +117,7 @@ namespace libcmis
               */
             virtual long getContentLength( ) = 0;
     };
+    typedef ::boost::shared_ptr< Document > DocumentPtr;
 }
 
 #endif

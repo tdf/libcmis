@@ -25,39 +25,46 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _FOLDER_HXX_
-#define _FOLDER_HXX_
 
-#include <map>
-#include <string>
-#include <vector>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
-#include "exception.hxx"
-#include "object.hxx"
+#include "test-helpers.hxx"
 
-namespace libcmis
+using namespace std;
+
+namespace test
 {
-    class Document;
 
-    /** Class representing a CMIS folder.
-      */
-    class Folder : public virtual Object
+    xmlNodePtr getXmlNode( string str )
     {
-        public:
-            virtual ~Folder() { }
+        xmlNodePtr node = NULL;
+        xmlDocPtr doc = xmlReadMemory( str.c_str( ), str.size( ), "tester", NULL, 0 );
+        if ( NULL != doc )
+            node = xmlDocGetRootElement( doc );
 
-            virtual ::boost::shared_ptr< Folder > getFolderParent( ) throw ( Exception ) = 0;
-            virtual std::vector< ObjectPtr > getChildren( ) throw ( Exception ) = 0;
-            virtual std::string getPath( ) = 0;
+        return node;
+    }
 
-            virtual bool isRootFolder( ) = 0;
+    const char* getXmlns( )
+    {
+        return "xmlns:cmis=\"http://docs.oasis-open.org/ns/cmis/core/200908/\" xmlns:cmisra=\"http://docs.oasis-open.org/ns/cmis/restatom/200908/\" ";
+    }
 
-            virtual ::boost::shared_ptr< Folder > createFolder( std::map< std::string, PropertyPtr >& properties ) = 0;
-            virtual ::boost::shared_ptr< Document > createDocument( std::map< std::string, PropertyPtr >& properties,
-                                    boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( Exception ) = 0;
-    };
-    typedef ::boost::shared_ptr< Folder > FolderPtr;
+    string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable )
+    {
+        xmlBufferPtr buf = xmlBufferCreate( );
+        xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
+        xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+        serializable->toXml( writer );
+        xmlTextWriterEndDocument( writer );
+
+        string str( ( const char * )xmlBufferContent( buf ) );
+
+        xmlFreeTextWriter( writer );
+        xmlBufferFree( buf );
+
+        return str;
+    }
 }
-
-#endif

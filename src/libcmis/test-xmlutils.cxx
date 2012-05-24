@@ -33,25 +33,20 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
-#include <libxml/parser.h>
 #include <libxml/tree.h>
 
 #include "object-type.hxx"
 #include "property.hxx"
 #include "property-type.hxx"
 #include "xml-utils.hxx"
+#include "test-helpers.hxx"
 
 using namespace boost;
 using namespace std;
+using namespace test;
 
 class XmlTest : public CppUnit::TestFixture
 {
-    private:
-        // Test helper functions for parser and writer tests
-        xmlNodePtr getXmlNode( string str );
-        const char* getXmlns( );
-        string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
-
     public:
 
         // Parser tests
@@ -373,7 +368,7 @@ void XmlTest::parsePropertyStringTest( )
         <<      "<cmis:value>VALUE 2</cmis:value>"
         << "</cmis:propertyString>";
     libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
-    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( test::getXmlNode( buf.str( ) ), dummy );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType( )->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getStrings( ).size( ) );
@@ -467,38 +462,6 @@ void XmlTest::propertyIntegerAsXmlTest( )
              << "</cmis:propertyInteger>\n";
 
     CPPUNIT_ASSERT_EQUAL( expected.str( ), actual );
-}
-
-const char* XmlTest::getXmlns( )
-{
-    return "xmlns:cmis=\"http://docs.oasis-open.org/ns/cmis/core/200908/\" xmlns:cmisra=\"http://docs.oasis-open.org/ns/cmis/restatom/200908/\" ";
-}
-
-xmlNodePtr XmlTest::getXmlNode( string str )
-{
-    xmlNodePtr node = NULL;
-    xmlDocPtr doc = xmlReadMemory( str.c_str( ), str.size( ), "tester", NULL, 0 );
-    if ( NULL != doc )
-        node = xmlDocGetRootElement( doc );
-
-    return node;
-}
-
-string XmlTest::writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable )
-{
-    xmlBufferPtr buf = xmlBufferCreate( );
-    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
-
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
-    serializable->toXml( writer );
-    xmlTextWriterEndDocument( writer );
-
-    string str( ( const char * )xmlBufferContent( buf ) );
-
-    xmlFreeTextWriter( writer );
-    xmlBufferFree( buf );
-
-    return str;
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );

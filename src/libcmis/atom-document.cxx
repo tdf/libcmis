@@ -69,6 +69,17 @@ namespace
     }
 }
 
+AtomDocument::AtomDocument( AtomPubSession* session ) :
+    AtomObject( session ),
+    m_parentsUrl( ),
+    m_contentUrl( ),
+    m_contentType( ),
+    m_contentFilename( ),
+    m_contentLength( 0 ),
+    m_contentStream( )
+{
+}
+
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomObject( session ),
@@ -76,7 +87,8 @@ AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
-    m_contentLength( 0 )
+    m_contentLength( 0 ),
+    m_contentStream( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
     refreshImpl( doc );
@@ -225,35 +237,46 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     return stream;
 }
 
-void AtomDocument::setContentStream( ostream& os, string contentType, bool overwrite ) throw ( libcmis::Exception )
+void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType, bool overwrite ) throw ( libcmis::Exception )
 {
-    if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
-        throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
 
-    string overwriteStr( "false" );
-    if ( overwrite )
-        overwriteStr = "true";
-
-    string putUrl( m_contentUrl );
-    if ( putUrl.find( '?' ) != string::npos )
-        putUrl += "&";
-    else
-        putUrl += "?";
-    putUrl += "overwriteFlag=" + overwriteStr;
-
-    // Use the changeToken if set on the object
-    if ( !getChangeToken().empty() )
-        putUrl += "&changeToken=" + getChangeToken();
-
-    try
+    if ( 0 == getRefreshTimestamp( ) )
     {
-        istream is( os.rdbuf( ) );
-        getSession()->httpPutRequest( putUrl, is, contentType );
-        refresh( );
+        m_contentStream = os;
+        m_contentType = contentType;
     }
-    catch ( const atom::CurlException& e )
+    else
     {
-        throw e.getCmisException( );
+        if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
+            throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
+
+        string overwriteStr( "false" );
+        if ( overwrite )
+            overwriteStr = "true";
+
+        string putUrl( m_contentUrl );
+        if ( putUrl.find( '?' ) != string::npos )
+            putUrl += "&";
+        else
+            putUrl += "?";
+        putUrl += "overwriteFlag=" + overwriteStr;
+
+        // Use the changeToken if set on the object
+        if ( !getChangeToken().empty() )
+            putUrl += "&changeToken=" + getChangeToken();
+
+        try
+        {
+            istream is( os->rdbuf( ) );
+            getSession()->httpPutRequest( putUrl, is, contentType );
+            refresh( );
+        }
+        catch ( const atom::CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
     }
 }
 
@@ -314,5 +337,32 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
             xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
+    }
+}
+
+void AtomDocument::contentToXml( xmlTextWriterPtr writer )
+{
+    if ( m_contentStream.get( ) )
+    {
+        xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:content" ) );
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( m_contentType.c_str() ) );
+
+        ostringstream encodedStream;
+        atom::EncodedData encoder( &encodedStream );
+        encoder.setEncoding( "base64" );
+        istream is( m_contentStream->rdbuf( ) );
+        int bufLength = 1000;
+        char* buf = new char[ bufLength ];
+        do
+        {
+            is.read( buf, bufLength );
+            int size = is.gcount( );
+            encoder.encode( buf, 1, size );
+        } while ( !is.eof( ) && !is.fail( ) );
+        delete[] buf;
+        encoder.finish( );
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:base64" ), BAD_CAST( encodedStream.str().c_str() ) );
+
+        xmlTextWriterEndElement( writer );
     }
 }

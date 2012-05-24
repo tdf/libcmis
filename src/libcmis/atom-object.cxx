@@ -329,6 +329,8 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
     boost::posix_time::ptime now( boost::posix_time::second_clock::universal_time( ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "atom:updated" ), BAD_CAST( libcmis::writeDateTime( now ).c_str( ) ) );
 
+    contentToXml( writer );
+
     xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
 
     // Output the properties

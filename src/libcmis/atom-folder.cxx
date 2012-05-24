@@ -27,6 +27,7 @@
  */
 #include <sstream>
 
+#include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
 #include "atom-utils.hxx"
@@ -173,6 +174,56 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
         throw libcmis::Exception( string( "Created object is not a folder: " ) + created->getId( ) );
 
     return newFolder;
+}
+
+libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyPtr >& properties,
+        boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
+{
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) )
+        throw libcmis::Exception( string( "CreateDocument not allowed on folder " ) + getId() );
+
+    // Actually create the document
+    AtomDocument document( getSession() );
+    document.getProperties( ).swap( properties );
+    document.setContentStream( os, contentType );
+   
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    // Copy and remove the readonly properties before serializing
+    document.toXml( writer );
+
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    string respBuf;
+    try
+    {
+        respBuf = getSession( )->httpPostRequest( m_childrenUrl, is, "application/atom+xml;type=entry" );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    xmlFreeDoc( doc );
+
+    libcmis::DocumentPtr newDocument = boost::dynamic_pointer_cast< libcmis::Document >( created );
+    if ( !newDocument.get( ) )
+        throw libcmis::Exception( string( "Created object is not a document: " ) + created->getId( ) );
+
+    return newDocument;
 }
 
 string AtomFolder::toString( )
