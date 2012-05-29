@@ -262,6 +262,18 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         xmlFreeDoc( doc );
 }
 
+void AtomObject::remove( ) throw ( libcmis::Exception )
+{
+    try
+    {
+        m_session->httpDeleteRequest( getInfosUrl( ) );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+}
+
 string AtomObject::toString( )
 {
     stringstream buf;

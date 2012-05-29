@@ -499,6 +499,55 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "delete" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                // Get the ids of the objects to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node ids to delete as command args" );
+
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+                vector< string > errors;
+                for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
+                {
+                    libcmis::ObjectPtr cmisObj = session->getObject( *it );
+                    if ( cmisObj.get() )
+                    {
+                        try
+                        {
+                            cmisObj->remove( );
+                        }
+                        catch ( const libcmis::Exception& e )
+                        {
+                            string msg = *it + ": " + e.what( );
+                            errors.push_back( msg );
+                        }
+                    }
+                    else
+                    {
+                        string msg = "No such node: " + *it;
+                        errors.push_back( msg );
+                    }
+                }
+
+                // Show the errors
+                if ( !errors.empty( ) )
+                {
+                    cout << "Errors:" << endl;
+                    for ( vector< string >::iterator it = errors.begin( ); it != errors.end( ); ++it )
+                    {
+                        cout << "\t" << *it << endl;
+                    }
+                }
+                else
+                {
+                    cout << "All nodes have been removed" << endl;
+                }
+
+                delete session;
+            }
             else if ( "help" == command )
             {
                 printHelp();
@@ -578,6 +627,8 @@ void CmisClient::printHelp( )
     cerr << "   update-object <Object Id>\n"
             "           Update the object matching id <Object Id> with the properties\n"
             "           defined with --object-property." << endl;
+    cerr << "   delete <Object Id 1> [... <Object Id N>]\n"
+            "           Delete the objects corresponding to the ids." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 

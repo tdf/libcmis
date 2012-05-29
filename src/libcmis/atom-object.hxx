@@ -81,6 +81,8 @@ class AtomObject : public virtual libcmis::Object
         virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
         virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
 
+        virtual void remove( ) throw ( libcmis::Exception );
+
         virtual std::string toString( );
 
         virtual void toXml( xmlTextWriterPtr writer );

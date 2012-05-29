@@ -105,6 +105,7 @@
         <arg>type-by-id</arg>
         <arg>show-by-id</arg>
         <arg>show-by-path</arg>
+        <arg>delete</arg>
       </group>
       <arg rep="repeat" choice="plain">
         <replaceable>arg</replaceable>
@@ -319,6 +320,14 @@
           <para>
 						Displays the infos and children (if any) of all the CMIS objects corresponding
 						to the listed paths.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>delete <replaceable class="parameter">arg...</replaceable></term>
+        <listitem>
+          <para>
+						Deletes the CMIS objects corresponding to the listed ids.
 					</para>
         </listitem>
       </varlistentry>

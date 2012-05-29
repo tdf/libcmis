@@ -120,6 +120,7 @@ class AtomTest : public CppUnit::TestFixture
         void createFolderBadTypeTest( );
         void dumpDocumentToXmlTest( );
         void createDocumentTest( );
+        void deleteDocumentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -144,6 +145,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -628,6 +630,29 @@ void AtomTest::createDocumentTest( )
     buf << is->rdbuf();
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content set", contentStr, buf.str( ) );
 }
+
+void AtomTest::deleteDocumentTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    string id( "130" );
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    CPPUNIT_ASSERT_MESSAGE( "Document to remove is missing", document != NULL );
+
+    document->remove( );
+
+    try
+    {
+        libcmis::ObjectPtr newObject = session.getObject( id );
+        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 130" ) , string( e.what() ) );
+    }
+}
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
 

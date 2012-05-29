@@ -493,6 +493,13 @@ string AtomPubSession::httpPostRequest( string url, istringstream& is, string co
     return stream->str( );
 }
 
+void AtomPubSession::httpDeleteRequest( string url ) throw ( atom::CurlException )
+{
+    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
+
+    httpRunRequest( url );
+}
+
 void AtomPubSession::httpRunRequest( string url ) throw ( atom::CurlException )
 {
     // Grab something from the web
