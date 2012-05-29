@@ -630,7 +630,7 @@ void AtomTest::createDocumentTest( )
     string contentStr = "Some content";
     boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
     string contentType = "text/plain";
-    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, false );
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType );
 
     // Check that something came back
     CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
