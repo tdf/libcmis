@@ -166,7 +166,7 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis:
     string buf;
     try
     {
-        buf = m_session->httpGetRequest( m_childrenUrl );
+        buf = m_session->httpGetRequest( m_childrenUrl )->str();
     }
     catch ( const atom::CurlException& e )
     {
@@ -258,12 +258,12 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         string pattern = m_session->getWorkspace().getUriTemplate( atom::UriTemplate::TypeById );
         map< string, string > vars;
         vars[URI_TEMPLATE_VAR_ID] = getId( );
-        string url = atom::UriTemplate::createUrl( pattern, vars );
+        string url = m_session->createUrl( pattern, vars );
 
         string buf;
         try
         {
-            buf  = m_session->httpGetRequest( url );
+            buf  = m_session->httpGetRequest( url )->str();
         }
         catch ( const atom::CurlException& e )
         {

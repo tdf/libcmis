@@ -72,7 +72,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
     string buf;
     try
     {
-        buf = getSession()->httpGetRequest( m_childrenUrl );
+        buf = getSession()->httpGetRequest( m_childrenUrl )->str( );
     }
     catch ( const atom::CurlException& e )
     {

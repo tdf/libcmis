@@ -29,6 +29,7 @@
 #define _ATOM_SESSION_HXX_
 
 #include <istream>
+#include <sstream>
 #include <list>
 #include <map>
 #include <string>
@@ -97,11 +98,16 @@ class AtomPubSession : public libcmis::Session
         bool m_verbose;
         libcmis::AuthProviderPtr m_authProvider;
 
+        CURL* m_curlHandle;
+
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
                         std::string username, std::string password,
                         bool verbose ) throw ( libcmis::Exception );
+        AtomPubSession( const AtomPubSession& copy );
         ~AtomPubSession( );
+
+        AtomPubSession& operator=( const AtomPubSession& copy );
 
         static std::list< std::string > getRepositories( std::string url,
                         std::string username, std::string password,
@@ -119,11 +125,13 @@ class AtomPubSession : public libcmis::Session
 
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
-        std::string httpGetRequest( std::string url ) throw ( atom::CurlException );
+        std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
+
+        boost::shared_ptr< std::stringstream > httpGetRequest( std::string url ) throw ( atom::CurlException );
         std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
         std::string httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( atom::CurlException );
 
-        void httpRunRequest( CURL* handle, std::string url ) throw ( atom::CurlException );
+        void httpRunRequest( std::string url ) throw ( atom::CurlException );
 
         // Override session methods
 

@@ -28,8 +28,7 @@
 #ifndef _DOCUMENT_HXX_
 #define _DOCUMENT_HXX_
 
-#include <istream>
-#include <ostream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -58,24 +57,6 @@ namespace libcmis
               */
             virtual std::vector< boost::shared_ptr< Folder > > getParents( ) throw ( Exception ) = 0;
             
-            /** Get the content stream or NULL if there is none.
-
-                @param path
-                    Save the stream to the given path. If the path
-                    is NULL, then use a temporary file.
-
-                @return
-                    An opened stream to the content, or NULL if
-                    something wrong happened during the download.
-
-                @deprecated
-                    This method is kept only for compatibility with
-                    previous versions and is likely to be removed soon.
-
-                @see Document::getContentStream()
-              */
-            virtual FILE* getContent( const char* path = NULL ) = 0;
-
             /** Get the content stream without using a temporary file.
 
                 <p>The stream may not contain anything if there is

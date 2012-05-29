@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 
+#include <curl/curl.h>
 #include <libxml/xpath.h>
 
 #include "exception.hxx"
@@ -59,8 +60,6 @@ namespace atom
             TypeById,
             Query
         };
-
-        static std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
     };
 
     class Workspace

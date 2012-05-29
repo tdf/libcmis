@@ -95,7 +95,7 @@ class AtomObject : public virtual libcmis::Object
 
         /** Documents will override this method to output the content stream
           */
-        virtual void contentToXml( xmlTextWriterPtr writer ) { }
+        virtual void contentToXml( xmlTextWriterPtr writer );
 };
 
 #endif

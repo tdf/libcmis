@@ -56,7 +56,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
         virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
 
         // Override content methods
-        virtual FILE* getContent( const char* path = NULL );
         virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
 
         /** Set the content stream of the node by either:

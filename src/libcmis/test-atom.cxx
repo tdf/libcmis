@@ -113,7 +113,6 @@ class AtomTest : public CppUnit::TestFixture
         void getAllowableActionsTest( );
         void getChildrenTest( );
         void getObjectParentsTest( );
-        void getContentTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
         void updatePropertiesTest( );
@@ -139,7 +138,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getObjectParentsTest );
-        CPPUNIT_TEST( getContentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
@@ -437,18 +435,6 @@ void AtomTest::getObjectParentsTest( )
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent ID",
             TEST_DOCUMENT_PARENT, actual.front( )->getId( ) );
-}
-
-void AtomTest::getContentTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
-    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-
-    FILE* fd = document->getContent( );
-    CPPUNIT_ASSERT_MESSAGE( "Temporary file with content should be returned", NULL != fd );
 }
 
 void AtomTest::getContentStreamTest( )

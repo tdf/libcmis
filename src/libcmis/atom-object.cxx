@@ -241,7 +241,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf  = getSession()->httpGetRequest( getInfosUrl() );
+            buf  = getSession()->httpGetRequest( getInfosUrl() )->str( );
         }
         catch ( const atom::CurlException& e )
         {
@@ -393,3 +393,6 @@ void AtomObject::extractInfos( xmlDocPtr doc )
     xmlXPathFreeContext( xpathCtx );
 }
 
+void AtomObject::contentToXml( xmlTextWriterPtr )
+{
+}
