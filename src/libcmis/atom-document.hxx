@@ -40,7 +40,6 @@
 class AtomDocument : public libcmis::Document, public AtomObject
 {
     private:
-        std::string m_parentsUrl;
         std::string m_contentUrl;
         std::string m_contentType;
         std::string m_contentFilename;

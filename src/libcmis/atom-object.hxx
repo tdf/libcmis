@@ -121,6 +121,9 @@ class AtomObject : public virtual libcmis::Object
 
         /** Get the atom link corresponding to the given relation and type or NULL
             if no link matched those criteria.
+
+            \param rel the relation to match
+            \param type the type to match or the empty string to match all types.
           */
         AtomLink* getLink( std::string rel, std::string type );
 };

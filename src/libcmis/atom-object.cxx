@@ -51,7 +51,9 @@ namespace
             MatchLink( string rel, string type ) : m_rel( rel ), m_type( type ) { }
             bool operator() ( AtomLink link )
             {
-                return ( link.getRel( ) == m_rel ) && ( link.getType( ) == m_type );
+                bool matchesRel = link.getRel( ) == m_rel;
+                bool matchesType = m_type.empty( ) || ( link.getType( ) == m_type );
+                return matchesRel && matchesType;
             }
     };
 }

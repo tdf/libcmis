@@ -40,7 +40,6 @@ using namespace std;
 
 AtomDocument::AtomDocument( AtomPubSession* session ) :
     AtomObject( session ),
-    m_parentsUrl( ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -52,7 +51,6 @@ AtomDocument::AtomDocument( AtomPubSession* session ) :
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomObject( session ),
-    m_parentsUrl( ),
     m_contentUrl( ),
     m_contentType( ),
     m_contentFilename( ),
@@ -70,23 +68,25 @@ AtomDocument::~AtomDocument( )
 
 vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Exception )
 {
-    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetObjectParents ) )
+    AtomLink* parentsLink = getLink( "up", "" );
+
+    if ( ( NULL == parentsLink ) ||
+            ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetObjectParents ) ) )
         throw libcmis::Exception( string( "GetObjectParents not allowed on node " ) + getId() );
 
     vector< libcmis::FolderPtr > parents;
-
-    // Execute the m_parentsUrl query
+    
     string buf;
     try
     {
-        buf = getSession()->httpGetRequest( m_parentsUrl )->str( );
+        buf = getSession()->httpGetRequest( parentsLink->getHref( ) )->str( );
     }
     catch ( const atom::CurlException& e )
     {
         throw e.getCmisException( );
     }
 
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_parentsUrl.c_str(), NULL, 0 );
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), parentsLink->getHref( ).c_str(), NULL, 0 );
     if ( NULL != doc )
     {
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
@@ -217,9 +217,6 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
 
         if ( NULL != xpathCtx )
         {
-            string upReq( "//atom:link[@rel='up']/attribute::href" );
-            m_parentsUrl = atom::getXPathValue( xpathCtx, upReq );
-
             xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//atom:content" ), xpathCtx );
             if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
             {
