@@ -513,7 +513,20 @@ void CmisClient::execute( ) throw ( exception )
                 for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
                 {
                     libcmis::ObjectPtr cmisObj = session->getObject( *it );
-                    if ( cmisObj.get() )
+                    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( cmisObj );
+                    if ( NULL != folder )
+                    {
+                        try
+                        {
+                            folder->removeTree( );
+                        }
+                        catch ( const libcmis::Exception& e )
+                        {
+                            string msg = *it + ": " + e.what( );
+                            errors.push_back( msg );
+                        }
+                    }
+                    else if ( cmisObj.get() )
                     {
                         try
                         {
@@ -628,7 +641,8 @@ void CmisClient::printHelp( )
             "           Update the object matching id <Object Id> with the properties\n"
             "           defined with --object-property." << endl;
     cerr << "   delete <Object Id 1> [... <Object Id N>]\n"
-            "           Delete the objects corresponding to the ids." << endl;
+            "           Delete the objects corresponding to the ids. If the node"
+            "           is a folder, its content will be removed as well." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 

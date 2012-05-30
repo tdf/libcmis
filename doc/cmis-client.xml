@@ -327,7 +327,8 @@
         <term>delete <replaceable class="parameter">arg...</replaceable></term>
         <listitem>
           <para>
-						Deletes the CMIS objects corresponding to the listed ids.
+            Deletes the CMIS objects corresponding to the listed ids. If the node
+            is a folder, its content will be removed as well.
 					</para>
         </listitem>
       </varlistentry>
