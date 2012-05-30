@@ -32,19 +32,6 @@
 
 using namespace std;
 
-namespace
-{
-    string lcl_getAttributeValue( xmlNodePtr node, const char* attributeName )
-    {
-        xmlChar* xmlStr = xmlGetProp( node, BAD_CAST( attributeName ) );
-        if ( xmlStr == NULL )
-            throw libcmis::Exception( "Missing attribute" );
-        string value( ( char * ) xmlStr );
-        xmlFree( xmlStr );
-        return value;
-    }
-}
-
 namespace libcmis
 {
     Property::Property( PropertyTypePtr propertyType, std::vector< std::string > strValues ) :
@@ -127,7 +114,7 @@ namespace libcmis
 
         try
         {
-            string id = lcl_getAttributeValue( node, "propertyDefinitionId" );
+            string id = getXmlNodeAttributeValue( node, "propertyDefinitionId" );
 
             // Find the value nodes
             vector< string > values;

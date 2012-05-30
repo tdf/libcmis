@@ -79,7 +79,7 @@ namespace libcmis
             virtual void refresh( ) throw ( Exception ) = 0;
             virtual time_t getRefreshTimestamp( ) = 0;
 
-            virtual void remove( ) throw ( Exception ) = 0;
+            virtual void remove( bool allVersions = true ) throw ( Exception ) = 0;
 
             /** Dump the object as a string for debugging or display purpose.
               */

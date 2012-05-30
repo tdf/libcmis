@@ -35,6 +35,16 @@ using namespace std;
 
 namespace libcmis
 {
+    string getXmlNodeAttributeValue( xmlNodePtr node, const char* attributeName ) throw ( Exception )
+    {
+        xmlChar* xmlStr = xmlGetProp( node, BAD_CAST( attributeName ) );
+        if ( xmlStr == NULL )
+            throw Exception( "Missing attribute" );
+        string value( ( char * ) xmlStr );
+        xmlFree( xmlStr );
+        return value;
+    }
+
     boost::posix_time::ptime parseDateTime( string dateTimeStr )
     {
         // Get the time zone offset

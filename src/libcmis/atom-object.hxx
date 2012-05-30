@@ -35,6 +35,24 @@
 
 class AtomPubSession;
 
+class AtomLink
+{
+    private:
+        std::string m_rel;
+        std::string m_type;
+        std::string m_id;
+        std::string m_href;
+
+    public:
+        AtomLink( xmlNodePtr node ) throw ( libcmis::Exception );
+
+        std::string getRel( ) { return m_rel; }
+        std::string getType( ) { return m_type; }
+        std::string getId( ) { return m_id; }
+        bool hasId( ) { return !m_id.empty( ); }
+        std::string getHref( ) { return m_href; }
+};
+
 class AtomObject : public virtual libcmis::Object
 {
     private:
@@ -47,6 +65,8 @@ class AtomObject : public virtual libcmis::Object
 
         std::map< std::string, libcmis::PropertyPtr > m_properties;
         boost::shared_ptr< AtomAllowableActions > m_allowableActions;
+
+        std::vector< AtomLink > m_links;
 
     public:
         AtomObject( AtomPubSession* session ) throw ( libcmis::Exception );
@@ -81,7 +101,7 @@ class AtomObject : public virtual libcmis::Object
         virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
         virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
 
-        virtual void remove( ) throw ( libcmis::Exception );
+        virtual void remove( bool allVersion = true ) throw ( libcmis::Exception );
 
         virtual std::string toString( );
 
@@ -98,6 +118,11 @@ class AtomObject : public virtual libcmis::Object
         /** Documents will override this method to output the content stream
           */
         virtual void contentToXml( xmlTextWriterPtr writer );
+
+        /** Get the atom link corresponding to the given relation and type or NULL
+            if no link matched those criteria.
+          */
+        AtomLink* getLink( std::string rel, std::string type );
 };
 
 #endif

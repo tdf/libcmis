@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include <algorithm>
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -38,6 +39,23 @@
 
 using namespace std;
 
+namespace
+{
+    class MatchLink
+    {
+        private:
+            string m_rel;
+            string m_type;
+
+        public:
+            MatchLink( string rel, string type ) : m_rel( rel ), m_type( type ) { }
+            bool operator() ( AtomLink link )
+            {
+                return ( link.getRel( ) == m_rel ) && ( link.getType( ) == m_type );
+            }
+    };
+}
+
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_session( session ),
     m_refreshTimestamp( 0 ),
@@ -45,7 +63,8 @@ AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_typeId( ),
     m_typeDescription( ),
     m_properties( ),
-    m_allowableActions( )
+    m_allowableActions( ),
+    m_links( )
 {
 }
 
@@ -56,7 +75,8 @@ AtomObject::AtomObject( const AtomObject& copy ) :
     m_typeId( copy.m_typeId ),
     m_typeDescription( copy.m_typeDescription ),
     m_properties( copy.m_properties ),
-    m_allowableActions( copy.m_allowableActions )
+    m_allowableActions( copy.m_allowableActions ),
+    m_links( copy.m_links )
 {
 }
 
@@ -69,6 +89,7 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     m_typeDescription = copy.m_typeDescription;
     m_properties = copy.m_properties;
     m_allowableActions = copy.m_allowableActions;
+    m_links = copy.m_links;
 
     return *this;
 }
@@ -262,11 +283,25 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         xmlFreeDoc( doc );
 }
 
-void AtomObject::remove( ) throw ( libcmis::Exception )
+void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
 {
+    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::DeleteObject ) )
+        throw libcmis::Exception( string( "DeleteObject not allowed on object " ) + getId() );
+
     try
     {
-        m_session->httpDeleteRequest( getInfosUrl( ) );
+        string deleteUrl = getInfosUrl( );
+        if ( deleteUrl.find( '?' ) != string::npos )
+            deleteUrl += "&";
+        else
+            deleteUrl += "?";
+        
+        string allVersionsStr = "TRUE";
+        if ( !allVersions )
+            allVersionsStr = "FALSE";
+        deleteUrl += "allVersions=" + allVersionsStr;
+
+        m_session->httpDeleteRequest( deleteUrl );
     }
     catch ( const atom::CurlException& e )
     {
@@ -366,17 +401,36 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 
     if ( NULL != xpathCtx )
     {
+        // Get all the atom links
+        string linksReq( "//atom:link" );
+        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( linksReq.c_str() ), xpathCtx );
+        if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+        {
+            int size = xpathObj->nodesetval->nodeNr;
+            for ( int i = 0; i < size; i++ )
+            {
+                xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                try
+                {
+                    AtomLink link( node );
+                    m_links.push_back( node );
+                }
+                catch ( const libcmis::Exception& )
+                {
+                    // Broken or incomplete link... don't add it
+                }
+            }
+        }
+        xmlXPathFreeObject( xpathObj );
+
         // Get the infos URL as we may not have it
-        string selfReq( "//atom:link[@rel='self']/@href" );
-        m_infosUrl = atom::getXPathValue( xpathCtx, selfReq ) ;
+        m_infosUrl = getLink( "self", "application/atom+xml;type=entry" )->getHref( );
 
         // Get the URL to the allowableActions
-        string allowableActionsReq( "//atom:link[@rel='http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions']/attribute::href" );
-        string allowableActionsUrl = atom::getXPathValue( xpathCtx, allowableActionsReq );
-        if ( !allowableActionsUrl.empty() )
+        AtomLink* allowableActionsLink = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions", "application/cmisallowableactions+xml" );
+        if ( NULL != allowableActionsLink )
         {
-            boost::shared_ptr< AtomAllowableActions > allowableActions( new AtomAllowableActions( m_session, allowableActionsUrl ) );
-            m_allowableActions.swap( allowableActions );
+            m_allowableActions.reset( new AtomAllowableActions( m_session, allowableActionsLink->getHref( ) ) );
         }
 
         // First get the type id as it will give us the property definitions
@@ -384,7 +438,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         m_typeId = atom::getXPathValue( xpathCtx, typeIdReq );
 
         string propertiesReq( "//cmis:properties/*" );
-        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
+        xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
         if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
         {
             int size = xpathObj->nodesetval->nodeNr;
@@ -407,4 +461,33 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 
 void AtomObject::contentToXml( xmlTextWriterPtr )
 {
+}
+
+AtomLink* AtomObject::getLink( std::string rel, std::string type )
+{
+    AtomLink* link = NULL;
+    vector< AtomLink >::iterator it = find_if( m_links.begin(), m_links.end(), MatchLink( rel, type ) );
+    if ( it != m_links.end() )
+        link = &( *it );
+    return link;
+}
+
+AtomLink::AtomLink( xmlNodePtr node ) throw ( libcmis::Exception ):
+    m_rel( ),
+    m_type( ),
+    m_id( ),
+    m_href( )
+{
+    m_rel = libcmis::getXmlNodeAttributeValue( node, "rel" );
+    m_type = libcmis::getXmlNodeAttributeValue( node, "type" );
+    m_href = libcmis::getXmlNodeAttributeValue( node, "href" );
+    
+    try
+    {
+        m_id = libcmis::getXmlNodeAttributeValue( node, "id" );
+    }
+    catch ( const libcmis::Exception & )
+    {
+        // id attribute can be missing
+    }
 }

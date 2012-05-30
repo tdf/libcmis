@@ -31,6 +31,7 @@
 #include <string>
 
 #include <boost/date_time.hpp>
+#include <libxml/tree.h>
 
 #include "exception.hxx"
 
@@ -41,6 +42,11 @@
 
 namespace libcmis
 {
+    /** Utility extracting an attribute value from an Xml Node,
+        based on the attribute name.
+      */
+    std::string getXmlNodeAttributeValue( xmlNodePtr node, const char* attributeName ) throw ( Exception );
+
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */ 
     boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
