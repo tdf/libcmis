@@ -454,8 +454,19 @@ string AtomPubSession::httpPutRequest( string url, istream& is, string contentTy
     headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
-    httpRunRequest( url );
+    try
+    {
+        httpRunRequest( url );
+        data->finish();
+    }
+    catch ( const atom::CurlException& e )
+    {
+        delete data;
+        curl_slist_free_all( headers_slist );
+        throw e;
+    }
 
+    delete data;
     curl_slist_free_all( headers_slist );
 
     return stream->str( );
@@ -486,8 +497,19 @@ string AtomPubSession::httpPostRequest( string url, istringstream& is, string co
     headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
-    httpRunRequest( url );
+    try
+    {
+        httpRunRequest( url );
+        data->finish();
+    }
+    catch ( const atom::CurlException& e )
+    {
+        delete data;
+        curl_slist_free_all( headers_slist );
+        throw e;
+    }
 
+    delete data;
     curl_slist_free_all( headers_slist );
 
     return stream->str( );
@@ -496,7 +518,6 @@ string AtomPubSession::httpPostRequest( string url, istringstream& is, string co
 void AtomPubSession::httpDeleteRequest( string url ) throw ( atom::CurlException )
 {
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
-
     httpRunRequest( url );
 }
 
