@@ -267,16 +267,22 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 
             if ( NULL != xpathObj && NULL != xpathObj->nodesetval && ( 0 < xpathObj->nodesetval->nodeNr ) )
             {
+                // Get the entry's base type
+                string baseTypeReq = "//atom:entry[1]//cmis:propertyId[@propertyDefinitionId='cmis:baseTypeId']/cmis:value/text()";
+                string baseType = atom::getXPathValue( xpathCtx, baseTypeReq );
+
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
-                if ( !AtomFolder::getChildrenUrl( doc ).empty() )
+                if ( baseType == "cmis:folder" )
                 {
-                    libcmis::ObjectPtr folder( new AtomFolder( this, node ) );
-                    cmisObject.swap( folder );
+                    cmisObject.reset( new AtomFolder( this, node ) );
+                }
+                else if ( baseType == "cmis:document" )
+                {
+                    cmisObject.reset( new AtomDocument( this, node ) );
                 }
                 else
                 {
-                    libcmis::ObjectPtr content( new AtomDocument( this, node ) );
-                    cmisObject.swap( content );
+                    // Not a valid CMIS atom entry... weird
                 }
             }
             xmlXPathFreeObject( xpathObj );

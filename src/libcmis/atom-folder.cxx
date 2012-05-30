@@ -41,7 +41,6 @@ namespace
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     AtomObject( session ),
     m_path( ),
-    m_childrenUrl( ),
     m_parentId( )
 {
     xmlDocPtr doc = atom::wrapInDoc( entryNd );
@@ -64,22 +63,25 @@ libcmis::FolderPtr AtomFolder::getFolderParent( ) throw ( libcmis::Exception )
 
 vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
 {
-    vector< libcmis::ObjectPtr > children;
+    AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
-    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetChildren ) )
+    if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetChildren ) ) )
         throw libcmis::Exception( string( "GetChildren not allowed on node " ) + getId() );
+
+    vector< libcmis::ObjectPtr > children;
 
     string buf;
     try
     {
-        buf = getSession()->httpGetRequest( m_childrenUrl )->str( );
+        buf = getSession()->httpGetRequest( childrenLink->getHref( ) )->str( );
     }
     catch ( const atom::CurlException& e )
     {
         throw e.getCmisException( );
     }
 
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_childrenUrl.c_str(), NULL, 0 );
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), childrenLink->getHref( ).c_str(), NULL, 0 );
     if ( NULL != doc )
     {
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
@@ -130,7 +132,10 @@ bool AtomFolder::isRootFolder( )
 
 libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >& properties )
 {
-    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateFolder ) )
+    AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
+
+    if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateFolder ) ) )
         throw libcmis::Exception( string( "CreateFolder not allowed on folder " ) + getId() );
 
     // Actually create the folder
@@ -155,7 +160,7 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
     string respBuf;
     try
     {
-        respBuf = getSession( )->httpPostRequest( m_childrenUrl, is, "application/atom+xml;type=entry" );
+        respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const atom::CurlException& e )
     {
@@ -179,7 +184,10 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
 libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyPtr >& properties,
         boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
 {
-    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) )
+    AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
+
+    if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) ) )
         throw libcmis::Exception( string( "CreateDocument not allowed on folder " ) + getId() );
 
     // Actually create the document
@@ -205,7 +213,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
     string respBuf;
     try
     {
-        respBuf = getSession( )->httpPostRequest( m_childrenUrl, is, "application/atom+xml;type=entry" );
+        respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const atom::CurlException& e )
     {
@@ -224,6 +232,63 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
         throw libcmis::Exception( string( "Created object is not a document: " ) + created->getId( ) );
 
     return newDocument;
+}
+
+void AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfile,
+        bool continueOnError ) throw ( libcmis::Exception )
+{
+    AtomLink* treeLink = getLink( "down", "application/cmistree+xml" );
+    if ( NULL == treeLink )
+        treeLink = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/foldertree", "application/cmistree+xml" );
+
+    if ( ( NULL == treeLink ) || ( getAllowableActions( ).get() &&
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::DeleteTree ) ) )
+        throw libcmis::Exception( string( "DeleteTree not allowed on folder " ) + getId() );
+
+    try
+    {
+        string deleteUrl = treeLink->getHref( );
+        if ( deleteUrl.find( '?' ) != string::npos )
+            deleteUrl += "&";
+        else
+            deleteUrl += "?";
+       
+        // Add the all versions parameter 
+        string allVersionsStr = "TRUE";
+        if ( !allVersions )
+            allVersionsStr = "FALSE";
+        deleteUrl += "allVersions=" + allVersionsStr;
+
+        // Add the unfileObjects parameter
+        string unfileStr;
+        switch ( unfile )
+        {
+            case libcmis::UnfileObjects::Delete:
+                unfileStr = "delete";
+                break;
+            case libcmis::UnfileObjects::DeleteSingleFiled:
+                unfileStr = "deletesinglefiled";
+                break;
+            case libcmis::UnfileObjects::Unfile:
+                unfileStr = "unfile";
+                break;
+            default:
+                break;
+        }
+        deleteUrl += "&unfileObjects=" + unfileStr;
+
+        // Add the continueOnFailure parameter
+        string continueOnErrorStr = "TRUE";
+        if ( !continueOnError )
+            continueOnErrorStr = "FALSE";
+        deleteUrl += "&continueOnFailure=" + continueOnErrorStr;
+
+        getSession( )->httpDeleteRequest( deleteUrl );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 }
 
 string AtomFolder::toString( )
@@ -250,7 +315,6 @@ string AtomFolder::toString( )
 void AtomFolder::extractInfos( xmlDocPtr doc )
 {
     AtomObject::extractInfos( doc );
-    m_childrenUrl = AtomFolder::getChildrenUrl( doc );
 
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
@@ -268,22 +332,4 @@ void AtomFolder::extractInfos( xmlDocPtr doc )
         m_parentId = atom::getXPathValue( xpathCtx, parentIdReq );
     }
     xmlXPathFreeContext( xpathCtx );
-}
-
-string AtomFolder::getChildrenUrl( xmlDocPtr doc )
-{
-    string childrenUrl;
-
-    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-    atom::registerNamespaces( xpathCtx );
-
-    if ( NULL != xpathCtx )
-    {
-        // Get the children collection url
-        string downReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']/attribute::href" );
-        childrenUrl = atom::getXPathValue( xpathCtx, downReq );
-    }
-    xmlXPathFreeContext( xpathCtx );
-
-    return childrenUrl;
 }

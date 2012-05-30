@@ -38,6 +38,15 @@
 namespace libcmis
 {
     class Document;
+    
+    struct UnfileObjects {
+        enum Type
+        {
+            Unfile,
+            DeleteSingleFiled,
+            Delete
+        };
+    };
 
     /** Class representing a CMIS folder.
       */
@@ -55,6 +64,9 @@ namespace libcmis
             virtual ::boost::shared_ptr< Folder > createFolder( std::map< std::string, PropertyPtr >& properties ) = 0;
             virtual ::boost::shared_ptr< Document > createDocument( std::map< std::string, PropertyPtr >& properties,
                                     boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( Exception ) = 0;
+
+            virtual void removeTree( bool allVersion = true, UnfileObjects::Type unfile = UnfileObjects::Delete,
+                                    bool continueOnError = false ) throw ( Exception ) = 0;
     };
     typedef ::boost::shared_ptr< Folder > FolderPtr;
 

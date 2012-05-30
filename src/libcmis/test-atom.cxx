@@ -121,6 +121,7 @@ class AtomTest : public CppUnit::TestFixture
         void dumpDocumentToXmlTest( );
         void createDocumentTest( );
         void deleteDocumentTest( );
+        void deleteTreeTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -146,6 +147,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteDocumentTest );
+        CPPUNIT_TEST( deleteTreeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -320,10 +322,9 @@ void AtomTest::getFolderCreationFromUrlTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", TEST_FOLDER_ID, folder->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", TEST_FOLDER_NAME, folder->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", TEST_FOLDER_PATH, folder->getPath( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Children URL is missing", !atomFolder->getChildrenUrl( ).empty( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), atomFolder->getBaseType( ) );
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", atomFolder->getFolderParent( ).get( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Not a root folder",
-            !atomFolder->isRootFolder() );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !atomFolder->isRootFolder() );
 
     CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomFolder->getCreatedBy( ).empty( ) );
     CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomFolder->getCreationDate( ).is_not_a_date_time() );
@@ -343,6 +344,7 @@ void AtomTest::getDocumentCreationFromUrlTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", TEST_DOCUMENT_ID, atomDocument->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", TEST_DOCUMENT_NAME, atomDocument->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", TEST_DOCUMENT_TYPE, atomDocument->getContentType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), atomDocument->getBaseType( ) );
 
     CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomDocument->getCreatedBy( ).empty( ) );
     CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomDocument->getCreationDate( ).is_not_a_date_time() );
@@ -649,10 +651,31 @@ void AtomTest::deleteDocumentTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 130" ) , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
 }
 
+void AtomTest::deleteTreeTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    string id( "117" );
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( object.get() );
+    CPPUNIT_ASSERT_MESSAGE( "Document to remove is missing", folder != NULL );
+
+    folder->removeTree( );
+
+    try
+    {
+        libcmis::ObjectPtr newObject = session.getObject( id );
+        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
+    }
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
 

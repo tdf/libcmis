@@ -38,7 +38,6 @@ class AtomFolder : public libcmis::Folder, public AtomObject
 {
     private:
         std::string m_path;
-        std::string m_childrenUrl;
         std::string m_parentId;
 
     public:
@@ -55,15 +54,12 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         virtual libcmis::FolderPtr createFolder( std::map< std::string, libcmis::PropertyPtr >& properties );
         virtual libcmis::DocumentPtr createDocument( std::map< std::string, libcmis::PropertyPtr >& properties,
                                 boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
+
+        virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
+                                bool continueOnError = false ) throw ( libcmis::Exception );
         
         virtual std::string toString( );
-
-        // Methods provided for testing purpose
-        std::string getChildrenUrl( ) { return m_childrenUrl; }
         
-        // Utility methods
-        static std::string getChildrenUrl( xmlDocPtr doc );
-
     protected:
         virtual void extractInfos( xmlDocPtr doc );
 };
