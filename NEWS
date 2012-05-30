@@ -13,6 +13,7 @@
     * Support for authentication in the API
     * Callback for providing interactive authentication
     * Added API to create documents and folders
+    * Added API to delete documents and folders
   * AtomPub binding
     * Handle all the authentication methods that can be handled by
       libcurl like Basic, NTLM...
@@ -23,3 +24,4 @@
     * Object properties can be updated
     * Query object types
     * Creation of folders and documents
+    * Deletion of folders and documents
