@@ -44,6 +44,9 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         AtomFolder( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomFolder( );
 
+        // virtual methods form AtomObject
+        virtual std::vector< std::string > getPaths( );
+
         // virtual pure methods from Folder
         virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );

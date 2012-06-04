@@ -53,6 +53,13 @@ AtomFolder::~AtomFolder( )
 {
 }
 
+vector< string > AtomFolder::getPaths( )
+{
+    vector< string > paths;
+    paths.push_back( getPath( ) );
+    return paths;
+}
+
 libcmis::FolderPtr AtomFolder::getFolderParent( ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetFolderParent ) )

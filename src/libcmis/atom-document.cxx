@@ -126,6 +126,22 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     return parents;
 }
 
+vector< string > AtomDocument::getPaths( )
+{
+    vector< string > paths;
+    vector< libcmis::FolderPtr > parents = getParents( );
+    for ( vector< libcmis::FolderPtr >::iterator it = parents.begin( );
+         it != parents.end(); ++it )
+    {
+        string path = ( *it )->getPath( );
+        if ( path[path.size() - 1] != '/' )
+            path += "/";
+        path += getName( );
+        paths.push_back( path );
+    }
+    return paths;
+}
+
 boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )

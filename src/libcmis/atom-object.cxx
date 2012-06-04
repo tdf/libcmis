@@ -118,6 +118,11 @@ string AtomObject::getName( )
     return name;
 }
 
+vector< string > AtomObject::getPaths( )
+{
+    return vector< string > ( );
+}
+
 string AtomObject::getBaseType( )
 {
     string value;

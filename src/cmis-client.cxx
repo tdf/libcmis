@@ -513,7 +513,7 @@ void CmisClient::execute( ) throw ( exception )
                 for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
                 {
                     libcmis::ObjectPtr cmisObj = session->getObject( *it );
-                    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( cmisObj );
+                    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( cmisObj.get() );
                     if ( NULL != folder )
                     {
                         try

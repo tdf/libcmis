@@ -78,6 +78,7 @@ class AtomObject : public virtual libcmis::Object
         // Overridden methods from libcmis::Object
         virtual std::string getId( ); 
         virtual std::string getName( );
+        virtual std::vector< std::string > getPaths( );
         
         virtual std::string getBaseType( );
         virtual std::string getType( );

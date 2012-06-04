@@ -57,6 +57,14 @@ namespace libcmis
             virtual std::string getId( ) = 0;
             virtual std::string getName( ) = 0;
 
+            /** Computes the paths for the objects.
+
+                Note that folders will have only path, documents may have
+                several ones and there may be cases where there is no path
+                at all (unfiled objects);
+              */
+            virtual std::vector< std::string > getPaths( ) = 0;
+
             virtual std::string getBaseType( ) = 0;
             virtual std::string getType( ) = 0;
 
