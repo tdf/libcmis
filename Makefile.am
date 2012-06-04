@@ -14,7 +14,8 @@ EXTRA_DIST = \
     COPYING.MPL \
     COPYING.GPL \
     COPYING.LGPL \
-	src/libcmis/makefile.mk
+	src/libcmis/makefile.mk \
+	doc/cmis-client.xml
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \
