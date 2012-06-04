@@ -36,6 +36,10 @@
 #define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
 #define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
 
+#define LIBCURL_VERSION_VALUE ( \
+        ( LIBCURL_VERSION_MAJOR << 16 ) | ( LIBCURL_VERSION_MINOR << 8 ) | ( LIBCURL_VERSION_PATCH ) \
+)
+
 namespace atom
 {
     /** Class used to decode a stream.

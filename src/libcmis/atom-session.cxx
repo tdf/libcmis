@@ -382,7 +382,11 @@ string AtomPubSession::createUrl( const string& pattern, map< string, string > v
         if ( pos != string::npos )
         {
             // Escape the URL by chunks
+#if LIBCURL_VERSION_VALUE >= 71504
             char* escaped = curl_easy_escape( m_curlHandle, value.c_str(), value.length() );
+#else
+            char* escaped = curl_escape( value.c_str(), value.length() );
+#endif
             url.replace( pos, name.size(), escaped );
             curl_free( escaped );
         }
@@ -545,8 +549,14 @@ void AtomPubSession::httpRunRequest( string url ) throw ( atom::CurlException )
     if ( !m_username.empty() && !m_password.empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+
+#if LIBCURL_VERSION_VALUE >= 71901
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, m_username.c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, m_password.c_str() );
+#else
+        string userpwd = m_username + ":" + m_password;
+        curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
+#endif
     }
 
     // Get some feedback when something wrong happens
