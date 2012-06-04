@@ -25,3 +25,7 @@
     * Query object types
     * Creation of folders and documents
     * Deletion of folders and documents
+
+0.2.1
+
+  * Fixed documentation distribution
