@@ -229,7 +229,8 @@ namespace atom
         size_t i = 0;
         while ( i < len )
         {
-            blockValue += buf[i] << ( 2 - byteRank ) * 8;
+            // Cast the char to an unsigned char or we'll shift negative values
+            blockValue += static_cast< unsigned char >( buf[i] ) << ( 2 - byteRank ) * 8;
             ++byteRank;
 
             // Reached the end of a block, encode it
