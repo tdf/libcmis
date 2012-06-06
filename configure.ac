@@ -45,10 +45,26 @@ AC_PROG_LIBTOOL
 AC_LIBTOOL_WIN32_DLL
 
 # TODO Check for docbook-to-man
-AC_CHECK_PROG(DOCBOOK2X,[docbook-to-man],[docbook2X])
-if test "x$DOCBOOK2X" = "x"; then
-    AC_MSG_ERROR([docbook-to-man is missing. Install docbook2X package.])
-fi
+# =============
+# Documentation
+# =============
+AC_ARG_WITH(man,
+	[AS_HELP_STRING([--without-man], [Do not build manpage])],
+	[with_man="$withval"],
+	[with_man=yes]
+)
+AS_IF([test "x$with_man" != "xno"], [
+	build_man=yes
+	AC_PATH_PROG(DOCBOOK2X,[docbook-to-man])
+	AS_IF([test -z "$DOCBOOK2X"], [
+		AC_PATH_PROG(DOCBOOK2X,[docbook2man.pl])
+		AS_IF([test -z "$DOCBOOK2X"], [
+			AC_MSG_ERROR([docbook-to-man is missing. Install docbook2X package.])
+		])
+	])
+], [build_man=no])
+AC_SUBST(DOCBOOK2X)
+AM_CONDITIONAL([WITH_LIBCMIS_MAN], [test "x$build_man" != "xno"])
 
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
@@ -108,11 +124,12 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([
+	Makefile
 	libcmis.pc
 	src/Makefile
 	src/libcmis/Makefile
-	doc/Makefile])
+])
 AC_OUTPUT
 
 AC_MSG_NOTICE([
@@ -123,4 +140,5 @@ libcmis $VERSION:
               client: ${enable_client}
               werror: ${enable_werror}
                tests: ${enable_tests}
+                mans: ${build_man}
 ])
