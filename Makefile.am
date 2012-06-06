@@ -1,4 +1,4 @@
-SUBDIRS = src doc
+SUBDIRS = src
 ACLOCAL_AMFLAGS = -I m4
 
 pcfiles = libcmis-@LIBCMIS_API_VERSION@.pc
@@ -8,12 +8,26 @@ libcmis-@LIBCMIS_API_VERSION@.pc: libcmis.pc
 pkgconfig_DATA = $(pcfiles)
 pkgconfigdir = $(libdir)/pkgconfig
 
+if WITH_LIBCMIS_MAN
+cmis-client.1: doc/cmis-client.xml
+	$(DOCBOOK2X) $<
+
+install-data-am: cmis-client.1
+	mkdir -p $(DESTDIR)$(mandir)/man1/
+	$(INSTALL_DATA) cmis-client.1 $(DESTDIR)$(mandir)/man1/
+
+uninstall-am:
+	-rm -rf $(DESTDIR)$(mandir)/man1/
+endif
+
+dist_man_MANS = doc/cmis-client.xml
+
 EXTRA_DIST = \
 	libcmis.pc.in \
 	run-test.sh \
-    COPYING.MPL \
-    COPYING.GPL \
-    COPYING.LGPL \
+	COPYING.MPL \
+	COPYING.GPL \
+	COPYING.LGPL \
 	src/libcmis/makefile.mk \
 	doc/cmis-client.xml
 
