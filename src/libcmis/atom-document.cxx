@@ -179,16 +179,24 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
         if ( overwrite )
             overwriteStr = "true";
 
-        string putUrl( m_contentUrl );
-        if ( putUrl.find( '?' ) != string::npos )
-            putUrl += "&";
+        string urlPattern( m_contentUrl );
+        if ( urlPattern.find( '?' ) != string::npos )
+            urlPattern += "&";
         else
-            putUrl += "?";
-        putUrl += "overwriteFlag=" + overwriteStr;
+            urlPattern += "?";
+        urlPattern += "overwriteFlag={overwriteFlag}";
+
+        map< string, string > params;
+        params["overwriteFlag"] = overwriteStr;
 
         // Use the changeToken if set on the object
         if ( !getChangeToken().empty() )
-            putUrl += "&changeToken=" + getChangeToken();
+        {
+            urlPattern += "&changeToken={changeToken}";
+            params["changeToken"] = getChangeToken();
+        }
+
+        string putUrl = getSession()->createUrl( urlPattern, params );       
 
         try
         {
