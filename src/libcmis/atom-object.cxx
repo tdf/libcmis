@@ -52,7 +52,9 @@ namespace
             bool operator() ( AtomLink link )
             {
                 bool matchesRel = link.getRel( ) == m_rel;
-                bool matchesType = m_type.empty( ) || ( link.getType( ) == m_type );
+
+                // Some implementation (SharePoint) are omitting the type attribute
+                bool matchesType = m_type.empty( ) || link.getType().empty() || ( link.getType( ) == m_type );
                 return matchesRel && matchesType;
             }
     };
@@ -486,15 +488,16 @@ AtomLink::AtomLink( xmlNodePtr node ) throw ( libcmis::Exception ):
     m_href( )
 {
     m_rel = libcmis::getXmlNodeAttributeValue( node, "rel" );
-    m_type = libcmis::getXmlNodeAttributeValue( node, "type" );
     m_href = libcmis::getXmlNodeAttributeValue( node, "href" );
     
     try
     {
+        m_type = libcmis::getXmlNodeAttributeValue( node, "type" );
         m_id = libcmis::getXmlNodeAttributeValue( node, "id" );
     }
     catch ( const libcmis::Exception & )
     {
         // id attribute can be missing
+        // type attribute is missing in some implementations (SharePoint)
     }
 }
