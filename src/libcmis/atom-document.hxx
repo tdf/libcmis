@@ -71,6 +71,8 @@ class AtomDocument : public libcmis::Document, public AtomObject
         virtual std::string getContentFilename( ) { return m_contentFilename; }
         virtual long getContentLength( ){ return m_contentLength; }
         
+        virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
+        
         virtual std::string toString( );
     
     protected:

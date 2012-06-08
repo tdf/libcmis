@@ -111,6 +111,20 @@
         <replaceable>arg</replaceable>
       </arg>
     </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <group choice="plain">
+        <arg>checkout</arg>
+      </group>
+      <arg choice="plain">
+        <replaceable>arg</replaceable>
+      </arg>
+    </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
     <refsect1info>
@@ -329,6 +343,15 @@
           <para>
             Deletes the CMIS objects corresponding to the listed ids. If the node
             is a folder, its content will be removed as well.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>checkout <replaceable class="parameter">arg</replaceable></term>
+        <listitem>
+          <para>
+            Checkout the document corresponding to the provided id and display
+            the infos of the created private working copy.
 					</para>
         </listitem>
       </varlistentry>

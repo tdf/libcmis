@@ -122,6 +122,7 @@ class AtomTest : public CppUnit::TestFixture
         void createDocumentTest( );
         void deleteDocumentTest( );
         void deleteTreeTest( );
+        void checkOutTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -148,6 +149,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteTreeTest );
+        CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -675,6 +677,53 @@ void AtomTest::deleteTreeTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
+}
+
+void AtomTest::checkOutTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    // First create a document of type VersionableType
+    libcmis::DocumentPtr doc;
+    {
+        libcmis::FolderPtr parent = session.getRootFolder( );
+
+        // Prepare the properties for the new object, object type is cmis:folder
+        map< string, libcmis::PropertyPtr > props;
+        libcmis::ObjectTypePtr type = session.getType( "VersionableType" );
+        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+        // Set the object name
+        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+        vector< string > nameValues;
+        nameValues.push_back( "NEW_NAME_4" );
+        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+       
+        // set the object type 
+        it = propTypes.find( string( "cmis:objectTypeId" ) );
+        vector< string > typeValues;
+        typeValues.push_back( "VersionableType" );
+        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+        // Actually send the document creation request
+        string contentStr = "Some content";
+        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
+        string contentType = "text/plain";
+            doc = parent->createDocument( props, os, contentType );
+    }
+
+    CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
+
+    libcmis::DocumentPtr pwc = doc->checkOut( );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
+
+    map< string, libcmis::PropertyPtr >::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut property is missing", it != pwc->getProperties( ).end( ) );
+    vector< bool > values = it->second->getBools( );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

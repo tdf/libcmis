@@ -97,6 +97,13 @@ namespace libcmis
             /** Get the content length in bytes.
               */
             virtual long getContentLength( ) = 0;
+
+            /** Checks out the document and returns the object corresponding to the 
+                created Private Working Copy.
+
+                \return the Private Working Copy document
+              */
+            virtual boost::shared_ptr< Document > checkOut( ) throw ( Exception ) = 0;
     };
     typedef ::boost::shared_ptr< Document > DocumentPtr;
 }

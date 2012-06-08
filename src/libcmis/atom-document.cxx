@@ -250,6 +250,51 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
     }
 }
 
+libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
+{
+    if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckOut ) ) )
+        throw libcmis::Exception( string( "CanCheckout not allowed on document " ) + getId() );
+    
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    // Copy and remove the readonly properties before serializing
+    toXml( writer );
+
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    string respBuf;
+    string checkedOutUrl = getSession()->getWorkspace( ).getCollectionUrl( atom::Collection::CheckedOut );
+    try
+    {
+        respBuf = getSession( )->httpPostRequest( checkedOutUrl, is, "application/atom+xml;type=entry" );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkedOutUrl.c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    xmlFreeDoc( doc );
+
+    libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( created );
+    if ( !pwc.get( ) )
+        throw libcmis::Exception( string( "Created object is not a document: " ) + created->getId( ) );
+
+    return pwc;
+}
+
 string AtomDocument::toString( )
 {
     stringstream buf;

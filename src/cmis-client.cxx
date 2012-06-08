@@ -561,6 +561,32 @@ void CmisClient::execute( ) throw ( exception )
 
                 delete session;
             }
+            else if ( "checkout" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                // Get the ids of the objects to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node id to checkout as command args" );
+
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+                cout << "------------------------------------------------" << endl;
+                if ( cmisObj.get() )
+                {
+                    libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+                    libcmis::DocumentPtr pwc = doc->checkOut( );
+                    if ( pwc.get( ) )
+                        cout << pwc->toString() << endl;
+                    else
+                        cout << "No Private Working Copy returned?" << endl;
+                }
+                else
+                    cout << "No such node: " << objIds.front() << endl;
+
+                delete session;
+            }
             else if ( "help" == command )
             {
                 printHelp();
@@ -643,6 +669,9 @@ void CmisClient::printHelp( )
     cerr << "   delete <Object Id 1> [... <Object Id N>]\n"
             "           Delete the objects corresponding to the ids. If the node"
             "           is a folder, its content will be removed as well." << endl;
+    cerr << "   checkout <Object Id>\n"
+            "           Check out the document corresponding to the id and shows the\n"
+            "           Private Working Copy document infos." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 

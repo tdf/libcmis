@@ -29,3 +29,20 @@
 0.2.1
 
   * Fixed documentation distribution
+
+0.2.2
+
+  * Fixed soname for the library
+  * Allow building against libcurl 7.13.1
+
+0.2.3
+
+  * Fixed SharePoint support
+  * Conditional build of man page
+
+0.3.0
+
+  * Generic
+    * Added Document::checkOut()
+  * AtomPub binding
+    * Implemented checkOut
