@@ -3,7 +3,7 @@
 
 m4_define([libcmis_major_version], [0])
 m4_define([libcmis_minor_version], [2])
-m4_define([libcmis_micro_version], [2])
+m4_define([libcmis_micro_version], [3])
 m4_define([libcmis_api_version], [libcmis_major_version.libcmis_minor_version])
 m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])
 
@@ -83,7 +83,7 @@ AS_IF([test x"$GCC" = xyes], [
 
 # Check for curl
 PKG_CHECK_MODULES(CURL,[
-	libcurl
+	[ libcurl >= 7.12.3 ]
 ])
 AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
