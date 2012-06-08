@@ -50,15 +50,17 @@ namespace atom
             std::string m_message;
             CURLcode    m_code;
             std::string m_url;
+            long        m_httpStatus;
 
             bool        m_cancelled;
 
         public:
-            CurlException( std::string message, CURLcode code, std::string url ) :
+            CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
                 exception( ),
                 m_message( message ),
                 m_code( code ),
                 m_url( url ),
+                m_httpStatus( httpStatus ),
                 m_cancelled( false )
             {
             }
@@ -68,6 +70,7 @@ namespace atom
                 m_message( message ),
                 m_code( CURLE_OK ),
                 m_url( ),
+                m_httpStatus( 0 ),
                 m_cancelled( true )
             {
             }
@@ -78,6 +81,7 @@ namespace atom
             CURLcode getErrorCode( ) const { return m_code; }
             std::string getErrorMessage( ) const { return m_message; }
             bool isCancelled( ) const { return m_cancelled; }
+            long getHttpStatus( ) const { return m_httpStatus; }
 
             libcmis::Exception getCmisException ( ) const;
     };
@@ -133,6 +137,8 @@ class AtomPubSession : public libcmis::Session
         void httpDeleteRequest( std::string url ) throw ( atom::CurlException );
 
         void httpRunRequest( std::string url ) throw ( atom::CurlException );
+
+        long getHttpStatus( );
 
         // Override session methods
 

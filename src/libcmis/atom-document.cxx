@@ -198,16 +198,55 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
 
         string putUrl = getSession()->createUrl( urlPattern, params );       
 
-        try
+        bool tryBase64 = false;
+        do
         {
-            istream is( os->rdbuf( ) );
-            getSession()->httpPutRequest( putUrl, is, contentType );
-            refresh( );
+            try
+            {
+                boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+                if ( tryBase64 )
+                {
+                    tryBase64 = false;
+
+                    // Encode the content
+                    stringstream* encodedIn = new stringstream( );
+                    atom::EncodedData encoder( encodedIn );
+                    encoder.setEncoding( "base64" );
+
+                    int bufLength = 1000;
+                    char* buf = new char[ bufLength ];
+                    do
+                    {
+                        is->read( buf, bufLength );
+                        int size = is->gcount( );
+                        encoder.encode( buf, 1, size );
+                    } while ( !is->eof( ) && !is->fail( ) );
+                    delete[] buf;
+                    encoder.finish( );
+
+                    encodedIn->seekg( 0, ios_base::beg );
+                    encodedIn->clear( );
+
+                    is.reset( encodedIn );
+                }
+                getSession()->httpPutRequest( putUrl, *is, contentType );
+
+                long httpStatus = getSession( )->getHttpStatus( );
+                if ( httpStatus < 200 || httpStatus >= 300 )
+                    throw libcmis::Exception( "Document content wasn't set for some reason" );
+                refresh( );
+            }
+            catch ( const atom::CurlException& e )
+            {
+                // SharePoint wants base64 encoded content... let's try to figure out
+                // if we falled in that case.
+                if ( !tryBase64 && e.getHttpStatus() == 400 )
+                    tryBase64 = true;
+                else
+                    throw e.getCmisException( );
+            }
         }
-        catch ( const atom::CurlException& e )
-        {
-            throw e.getCmisException( );
-        }
+        while ( tryBase64 );
     }
 }
 

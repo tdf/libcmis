@@ -482,7 +482,7 @@ string AtomPubSession::httpPutRequest( string url, istream& is, string contentTy
         httpRunRequest( url );
         data->finish();
     }
-    catch ( const atom::CurlException& e )
+    catch ( atom::CurlException& e )
     {
         delete data;
         curl_slist_free_all( headers_slist );
@@ -587,7 +587,19 @@ void AtomPubSession::httpRunRequest( string url ) throw ( atom::CurlException )
     curl_easy_reset( m_curlHandle );
 
     if ( CURLE_OK != errCode )
-        throw atom::CurlException( string( errBuff ), errCode, url );
+    {
+        long httpError = 0;
+        curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
+        throw atom::CurlException( string( errBuff ), errCode, url, httpError );
+    }
+}
+
+long AtomPubSession::getHttpStatus( )
+{
+    long status = 0;
+    curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &status );
+
+    return status;
 }
 
 namespace atom
@@ -606,26 +618,22 @@ namespace atom
     {
         string msg;
 
-        if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) &&
-             ( string::npos != m_message.find( "403" ) ) )
+        switch ( m_httpStatus )
         {
-            msg = "Invalid credentials";
-        }
-        else if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) &&
-             ( string::npos != m_message.find( "404" ) ) )
-        {
-            msg = "Invalid URL: " + m_url;
-        }
-        else if ( ( CURLE_HTTP_RETURNED_ERROR == m_code ) && 
-             ( string::npos != m_message.find( "409" ) ) )
-        {
-            msg = "Editing conflict error";
-        }
-        else
-        {
-            msg = what();
-            if ( !isCancelled( ) )
-                msg += ": " + m_url;
+            case 403:
+                msg = "Invalid credentials";
+                break;
+            case 404:
+                msg = "Invalid URL: " + m_url;
+                break;
+            case 409:
+                msg = "Editing conflict error";
+                break;
+            default:
+                msg = what();
+                if ( !isCancelled( ) )
+                    msg += ": " + m_url;
+                break;
         }
 
         return libcmis::Exception( msg );
