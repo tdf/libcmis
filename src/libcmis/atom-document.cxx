@@ -260,8 +260,16 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    // Copy and remove the readonly properties before serializing
-    toXml( writer );
+    // Create a document with only the needed properties
+    AtomDocument tmp( getSession( ) );
+    map< string, libcmis::PropertyPtr > props = getProperties( ); 
+    map< string, libcmis::PropertyPtr >::iterator it = props.find( string( "cmis:objectId" ) );
+    if ( it != props.end( ) )
+    {
+        tmp.getProperties( ).insert( *it );
+    }
+
+    tmp.toXml( writer );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
@@ -271,7 +279,17 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     xmlBufferFree( buf );
 
     string respBuf;
-    string checkedOutUrl = getSession()->getWorkspace( ).getCollectionUrl( atom::Collection::CheckedOut );
+    string urlPattern = getSession()->getWorkspace( ).getCollectionUrl( atom::Collection::CheckedOut );
+    if ( urlPattern.find( "?" ) != string::npos )
+        urlPattern += "&";
+    else
+        urlPattern += "?";
+    urlPattern += "objectId={objectId}";
+
+    map< string, string > params;
+    params[ "objectId" ] = getId( );
+    string checkedOutUrl = getSession( )->createUrl( urlPattern, params );
+
     try
     {
         respBuf = getSession( )->httpPostRequest( checkedOutUrl, is, "application/atom+xml;type=entry" );

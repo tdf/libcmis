@@ -207,7 +207,6 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    // Copy and remove the readonly properties before serializing
     document.toXml( writer );
 
     xmlTextWriterEndDocument( writer );
