@@ -59,7 +59,6 @@ class AtomObject : public virtual libcmis::Object
         AtomPubSession* m_session;
         time_t m_refreshTimestamp;
 
-        std::string m_infosUrl;
         std::string m_typeId;
         libcmis::ObjectTypePtr m_typeDescription;
 
@@ -110,7 +109,7 @@ class AtomObject : public virtual libcmis::Object
 
     protected:
 
-        std::string& getInfosUrl( ) { return m_infosUrl; }
+        std::string getInfosUrl( );
         virtual void refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception );
         virtual void extractInfos( xmlDocPtr doc );
 

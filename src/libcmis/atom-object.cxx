@@ -63,7 +63,6 @@ namespace
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
     m_session( session ),
     m_refreshTimestamp( 0 ),
-    m_infosUrl( ),
     m_typeId( ),
     m_typeDescription( ),
     m_properties( ),
@@ -75,7 +74,6 @@ AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
 AtomObject::AtomObject( const AtomObject& copy ) :
     m_session( copy.m_session ),
     m_refreshTimestamp( copy.m_refreshTimestamp ),
-    m_infosUrl( copy.m_infosUrl ),
     m_typeId( copy.m_typeId ),
     m_typeDescription( copy.m_typeDescription ),
     m_properties( copy.m_properties ),
@@ -88,7 +86,6 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
 {
     m_session = copy.m_session;
     m_refreshTimestamp = copy.m_refreshTimestamp;
-    m_infosUrl = copy.m_infosUrl;
     m_typeId = copy.m_typeId;
     m_typeDescription = copy.m_typeDescription;
     m_properties = copy.m_properties;
@@ -402,6 +399,11 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer ); // atom:entry
 }
 
+string AtomObject::getInfosUrl( )
+{
+    return getLink( "self", "application/atom+xml;type=entry" )->getHref( );
+}
+
 void AtomObject::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
@@ -431,9 +433,6 @@ void AtomObject::extractInfos( xmlDocPtr doc )
             }
         }
         xmlXPathFreeObject( xpathObj );
-
-        // Get the infos URL as we may not have it
-        m_infosUrl = getLink( "self", "application/atom+xml;type=entry" )->getHref( );
 
         // Get the URL to the allowableActions
         AtomLink* allowableActionsLink = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions", "application/cmisallowableactions+xml" );

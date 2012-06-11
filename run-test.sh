@@ -13,7 +13,7 @@ SOAP_URL=${TEST_SERVER_URL}/RepositoryService
 JETTY_VERSION=8.0.1
 JETTY_NAME=jetty-hightide-${JETTY_VERSION}.v20110908
 
-CHEMISTRY_VERSION=0.4.0
+CHEMISTRY_VERSION=0.7.0
 CHEMISTRY_WEBAPPS=chemistry-opencmis-dist-${CHEMISTRY_VERSION}-server-webapps.tar.gz
 INMEMORY_WAR=chemistry-opencmis-server-inmemory-${CHEMISTRY_VERSION}.war
 

@@ -104,6 +104,14 @@ namespace libcmis
                 \return the Private Working Copy document
               */
             virtual boost::shared_ptr< Document > checkOut( ) throw ( Exception ) = 0;
+
+            /** Cancels the checkout if the document is a private working copy, or
+                throws an exception.
+              */
+            virtual void cancelCheckout( ) throw ( Exception ) = 0;
+
+            /** Tells whether we have a private working copy of another document
+              */
     };
     typedef ::boost::shared_ptr< Document > DocumentPtr;
 }

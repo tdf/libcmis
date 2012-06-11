@@ -53,7 +53,7 @@
 #define BASE_TYPE_ID string( "cmis:document" )
 
 #define CHILDREN_TEST_TYPE_ID string( "cmis:document" )
-#define CHILDREN_TEST_COUNT 5
+#define CHILDREN_TEST_COUNT 10
 
 #define TEST_UNEXISTANT_NODE_ID string( "99" )
 #define INVALID_ID_EXCEPTION_MSG string( "No such node: 99" )
@@ -123,6 +123,7 @@ class AtomTest : public CppUnit::TestFixture
         void deleteDocumentTest( );
         void deleteTreeTest( );
         void checkOutTest( );
+        void cancelCheckOutTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -150,6 +151,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteTreeTest );
         CPPUNIT_TEST( checkOutTest );
+        CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -533,7 +535,7 @@ void AtomTest::createFolderTest( )
     map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
     vector< string > nameValues;
-    nameValues.push_back( "NEW_NAME_1" );
+    nameValues.push_back( "createFolderTest" );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
    
@@ -567,7 +569,7 @@ void AtomTest::createFolderBadTypeTest( )
     map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
     vector< string > nameValues;
-    nameValues.push_back( "NEW_NAME_2" );
+    nameValues.push_back( "createFolderBadTypeTest" );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
 
@@ -606,7 +608,7 @@ void AtomTest::createDocumentTest( )
     map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
     vector< string > nameValues;
-    nameValues.push_back( "NEW_NAME_3" );
+    nameValues.push_back( "createDocumentTest" );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
    
@@ -696,7 +698,7 @@ void AtomTest::checkOutTest( )
         // Set the object name
         map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
         vector< string > nameValues;
-        nameValues.push_back( "NEW_NAME_4" );
+        nameValues.push_back( "checkOutTest" );
         libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
         props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
        
@@ -711,7 +713,7 @@ void AtomTest::checkOutTest( )
         string contentStr = "Some content";
         boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
         string contentType = "text/plain";
-            doc = parent->createDocument( props, os, contentType );
+        doc = parent->createDocument( props, os, contentType );
     }
 
     CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
@@ -724,6 +726,60 @@ void AtomTest::checkOutTest( )
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut property is missing", it != pwc->getProperties( ).end( ) );
     vector< bool > values = it->second->getBools( );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
+}
+
+void AtomTest::cancelCheckOutTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    // First create a versionable document and check it out
+    libcmis::DocumentPtr pwc;
+    {
+        libcmis::FolderPtr parent = session.getRootFolder( );
+
+        // Prepare the properties for the new object, object type is cmis:folder
+        map< string, libcmis::PropertyPtr > props;
+        libcmis::ObjectTypePtr type = session.getType( "VersionableType" );
+        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+        // Set the object name
+        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+        vector< string > nameValues;
+        nameValues.push_back( "cancelCheckOutTest" );
+        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+       
+        // set the object type 
+        it = propTypes.find( string( "cmis:objectTypeId" ) );
+        vector< string > typeValues;
+        typeValues.push_back( "VersionableType" );
+        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+        // Actually send the document creation request
+        string contentStr = "Some content";
+        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
+        string contentType = "text/plain";
+        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType );
+    
+        pwc = doc->checkOut( );
+    }
+
+    CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
+
+    string id = pwc->getId( );
+    pwc->cancelCheckout( );
+
+    // Check that the PWC doesn't exist any more
+    try
+    {
+        session.getObject( id );
+        CPPUNIT_FAIL( "Private Working Copy object should no longer exist" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

@@ -313,6 +313,22 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     return pwc;
 }
 
+void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
+{
+    if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CancelCheckOut ) ) )
+        throw libcmis::Exception( string( "CanCancelCheckout not allowed on document " ) + getId() );
+
+    string url = getInfosUrl( );
+
+    // Use working-copy link if provided as a workaround
+    // for some non-compliant repositories
+    AtomLink* link = getLink( "working-copy", "application/atom+xml;type=entry" );
+    if ( link )
+        url = link->getHref( );
+
+    getSession( )->httpDeleteRequest( url );
+}
+
 string AtomDocument::toString( )
 {
     stringstream buf;

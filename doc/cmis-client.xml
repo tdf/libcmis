@@ -120,6 +120,7 @@
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <group choice="plain">
         <arg>checkout</arg>
+        <arg>cancel-checkout</arg>
       </group>
       <arg choice="plain">
         <replaceable>arg</replaceable>
@@ -352,6 +353,14 @@
           <para>
             Checkout the document corresponding to the provided id and display
             the infos of the created private working copy.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cancel-checkout <replaceable class="parameter">arg</replaceable></term>
+        <listitem>
+          <para>
+            Cancel the Private Working Copy corresponding to the node id.
 					</para>
         </listitem>
       </varlistentry>
