@@ -110,8 +110,23 @@ namespace libcmis
               */
             virtual void cancelCheckout( ) throw ( Exception ) = 0;
 
-            /** Tells whether we have a private working copy of another document
+            /** Check in the private working copy and create a new version or throw
+                an exception.
+
+                The current object will be updated to reflect the changes performed
+                on the server side.
+
+                \param isMajor defines it the version to create is a major or minor one
+                \param comment contains the checkin comment
+                \param properties the properties to set the new version
+                \param stream the content stream to set for the new version
+                \param contentType the mime type of the stream to set
               */
+            virtual void checkIn( bool isMajor, std::string comment,
+                                  std::map< std::string, PropertyPtr >& properties,
+                                  boost::shared_ptr< std::ostream > stream,
+                                  std::string contentType ) throw ( Exception ) = 0;
+
     };
     typedef ::boost::shared_ptr< Document > DocumentPtr;
 }

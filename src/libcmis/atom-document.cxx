@@ -329,6 +329,76 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
     getSession( )->httpDeleteRequest( url );
 }
 
+void AtomDocument::checkIn( bool isMajor, string comment,
+                            map< string, libcmis::PropertyPtr >& properties,
+                            boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
+{
+    if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckIn ) ) )
+        throw libcmis::Exception( string( "CanCheckIn not allowed on document " ) + getId() );
+
+    string urlPattern = getInfosUrl( );
+
+    // Use working-copy link if provided as a workaround
+    // for some non-compliant repositories
+    AtomLink* link = getLink( "working-copy", "application/atom+xml;type=entry" );
+    if ( link )
+        urlPattern = link->getHref( );
+
+    if ( urlPattern.find( "?" ) != string::npos )
+        urlPattern += "&";
+    else
+        urlPattern += "?";
+    urlPattern += "checkin=true&major={major}&checkinComment={checkinComment}";
+
+    map< string, string > params;
+
+    string majorStr = "false";
+    if ( isMajor )
+        majorStr = "true";
+    params[ "major" ] = majorStr;
+    params[ "checkinComment" ] = comment;
+    string checkInUrl = getSession( )->createUrl( urlPattern, params );
+
+    // Create the content to put
+    AtomDocument document( getSession() );
+    document.getProperties( ).swap( properties );
+    if ( stream.get( ) )
+        document.setContentStream( stream, contentType );
+   
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    document.toXml( writer );
+
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+    
+    // Run the request
+    string respBuf;
+    try
+    {
+        respBuf = getSession( )->httpPutRequest( checkInUrl, is, "application/atom+xml;type=entry" );
+    }
+    catch ( const atom::CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    
+    // Get the returned entry and update using it
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkInUrl.c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+
+    refreshImpl( doc );
+    xmlFreeDoc( doc );
+}
+
 string AtomDocument::toString( )
 {
     stringstream buf;

@@ -282,6 +282,13 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 
     }
 
+    // Cleanup the structures before setting them again
+    m_typeDescription.reset( );
+    m_properties.clear( );
+    m_allowableActions.reset( );
+    m_links.clear( );
+
+
     extractInfos( doc );
     m_refreshTimestamp = time( NULL );
 

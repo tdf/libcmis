@@ -126,6 +126,20 @@
         <replaceable>arg</replaceable>
       </arg>
     </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <arg choice="opt">--input-file <replaceable>path/to/file</replaceable></arg>
+      <arg choice="opt">--input-type <replaceable>mime/type</replaceable></arg>
+      <arg choice="opt" rep="repeat">--object-property <replaceable>prop-id=prop-value</replaceable></arg>
+      <arg choice="opt">--major</arg>
+      <arg choice="opt">--message</arg>
+      <arg choice="plain">checkin <replaceable>pwc id</replaceable></arg>
+    </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
     <refsect1info>
@@ -229,6 +243,22 @@
             <para>
               Set a property to be updated or added to the CMIS object. <replaceable class="parameter">prop-id</replaceable> is
               the property definition id and <replaceable class="parameter">prop-value</replaceable> is the value to set on it.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--major</term>
+          <listitem>
+            <para>
+              Create a major version when performing a checkin.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>-m, --message <replaceable class="parameter">message</replaceable></term>
+          <listitem>
+            <para>
+              Set the checking message.
 						</para>
           </listitem>
         </varlistentry>
@@ -361,6 +391,19 @@
         <listitem>
           <para>
             Cancel the Private Working Copy corresponding to the node id.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>checkin <replaceable class="parameter">arg</replaceable></term>
+        <listitem>
+          <para>
+            Check in the private working copy corresponding to the provided id and display
+            the infos of the resulting document. Use the --major and --message options to
+            define the version to create and the commit to associate to it.
+
+            Note that repositories without the ability to update the private working copies
+            will need the --input-file, --input-type and --object-property options.
 					</para>
         </listitem>
       </varlistentry>

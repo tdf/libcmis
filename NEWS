@@ -42,7 +42,4 @@
 
 0.3.0
 
-  * Generic
-    * Added Document::checkOut()
-  * AtomPub binding
-    * Implemented checkOut
+  * Added Document::checkOut(), Document::cancelCheckout() and Document::checkIn()

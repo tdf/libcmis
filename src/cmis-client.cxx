@@ -572,13 +572,15 @@ void CmisClient::execute( ) throw ( exception )
                 vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
                 libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-                cout << "------------------------------------------------" << endl;
                 if ( cmisObj.get() )
                 {
                     libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
                     libcmis::DocumentPtr pwc = doc->checkOut( );
                     if ( pwc.get( ) )
+                    {
+                        cout << "------------------------------------------------" << endl;
                         cout << pwc->toString() << endl;
+                    }
                     else
                         cout << "No Private Working Copy returned?" << endl;
                 }
@@ -604,6 +606,73 @@ void CmisClient::execute( ) throw ( exception )
                     libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
                     doc->cancelCheckout( );
                     cout << "Checkout cancelled" << endl;
+                }
+                else
+                    cout << "No such node: " << objIds.front() << endl;
+
+                delete session;
+            }
+            else if ( "checkin" == command )
+            {
+                libcmis::Session* session = getSession( );
+
+                // Get the ids of the objects to fetch
+                if ( m_vm.count( "args" ) == 0 )
+                    throw CommandException( "Please provide the node id to checkin as command args" );
+
+                vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+                libcmis::ObjectPtr object = session->getObject( objIds.front() );
+                if ( object.get() )
+                {
+                    // Create the properties map
+                    map< string, libcmis::PropertyPtr > properties;
+                    map< string, string > propsToSet = getObjectProperties( );
+                    libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
+                    map< string, libcmis::PropertyTypePtr > propertyTypes = type->getPropertiesTypes( );
+                    for ( map< string, string >::iterator propIt = propsToSet.begin();
+                          propIt != propsToSet.end(); ++propIt )
+                    {
+                        string name = propIt->first;
+                        map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertyTypes.find( name );
+                        if ( typeIt != propertyTypes.end( ) )
+                        {
+                            vector< string > values;
+                            values.push_back( propIt->second );
+                            libcmis::PropertyPtr prop( new libcmis::Property( typeIt->second, values ) );
+                            properties.insert( pair< string, libcmis::PropertyPtr >( name, prop ) );
+                        }
+                    }
+
+                    // Get the content stream if any
+                    string contentType;
+                    boost::shared_ptr< ostream > stream;
+                    if ( m_vm.count( "input-file" ) > 0 )
+                    {
+                        string filename = m_vm["input-file"].as<string>();
+                        ifstream is( filename.c_str(), ifstream::in );
+                        stream.reset ( new ostream ( is.rdbuf( ) ) );
+                        if ( is.fail( ) )
+                            throw CommandException( string( "Unable to open file " ) + filename );
+                        
+                        if ( m_vm.count( "input-type" ) > 0 )
+                        {
+                            contentType = m_vm["input-type"].as<string>();
+                        }
+                    }
+
+                    bool major = false;
+                    if ( m_vm.count( "major" ) > 0 )
+                        major = "yes";
+
+                    string comment;
+                    if ( m_vm.count( "message" ) > 0 )
+                        comment = m_vm["message"].as< string >( );
+
+                    libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
+                    doc->checkIn( major, comment, properties, stream, contentType );
+                    cout << "------------------------------------------------" << endl;
+                    cout << doc->toString() << endl;
                 }
                 else
                     cout << "No such node: " << objIds.front() << endl;
@@ -652,6 +721,8 @@ options_description CmisClient::getOptionsDescription( )
         ( "object-type", value< string >(), "CMIS type of the object to create" )
         ( "object-property", value< vector< string > >(), "under the form prop-id=prop-value, defines a property"
                                                 "to be set on the object" )
+        ( "message,m", value< string >(), "Check in message" )
+        ( "major", "The version to create during the check in will be a major version." )
     ;
 
     desc.add( setcontentOpts );
@@ -697,6 +768,13 @@ void CmisClient::printHelp( )
             "           Private Working Copy document infos." << endl;
     cerr << "   cancel-checkout <Object Id>\n"
             "           Cancel the Private Working Copy corresponding to the id" << endl;
+    cerr << "   checkin <Object Id>\n"
+            "           Check in the Private Working copy corresponding to the id.\n"
+            "           Use the --message and --major parameters to give more\n"
+            "           details about the new version.\n"
+            "           The modification options may be needed to set the new\n"
+            "           version properties and content stream if the repository\n"
+            "           doesn't allow to change the private working copies." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 
