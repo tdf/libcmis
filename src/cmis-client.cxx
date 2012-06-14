@@ -157,548 +157,539 @@ void CmisClient::execute( ) throw ( exception )
 
     if ( m_vm.count( "command" ) == 1 )
     {
-        try
+        string command = m_vm["command"].as<string>();
+        if ( "list-repos" == command )
         {
-            string command = m_vm["command"].as<string>();
-            if ( "list-repos" == command )
+            map< int, string > params = getSessionParams( );
+            list< string > ids = libcmis::SessionFactory::getRepositories( params );
+        
+            cout << "Repositories: ";
+            for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
             {
-                map< int, string > params = getSessionParams( );
-                list< string > ids = libcmis::SessionFactory::getRepositories( params );
+                if ( it != ids.begin() )
+                    cout << ", ";
+                cout << *it;
+            }
+            cout << endl;
+        }
+        else if ( "show-root" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            libcmis::FolderPtr root = session->getRootFolder();
+            if ( root.get() )
+            {
+                cout << "------------------------------------------------" << endl;
+                cout << root->toString() << endl;
+            }
+
+            delete session;
+        }
+        else if ( "type-by-id" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the types to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node ids to show as command args" );
+
+            vector< string > ids = m_vm["args"].as< vector< string > >( );
+
+
+            for ( vector< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+            {
+                cout << "------------------------------------------------" << endl;
+                try
+                {
+                    libcmis::ObjectTypePtr type = session->getType( *it );
+                    cout << type->toString() << endl;
+                }
+                catch ( const libcmis::Exception& e )
+                {
+                    cout << e.what() << endl;
+                }
+            }
+
+            delete session;
+        }
+        else if ( "show-by-id" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node ids to show as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+
+            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
+            {
+                libcmis::ObjectPtr cmisObj = session->getObject( *it );
+                cout << "------------------------------------------------" << endl;
+                if ( cmisObj.get() )
+                    cout << cmisObj->toString() << endl;
+                else
+                    cout << "No such node: " << *it << endl;
+            }
+
+            delete session;
+        }
+        else if ( "show-by-path" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the paths of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node paths to show as command args" );
+
+            vector< string > objPaths = m_vm["args"].as< vector< string > >( );
+
+
+            for ( vector< string >::iterator it = objPaths.begin(); it != objPaths.end(); it++ )
+            {
+                libcmis::ObjectPtr cmisObj = session->getObjectByPath( *it );
+                cout << "------------------------------------------------" << endl;
+                if ( cmisObj.get() )
+                    cout << cmisObj->toString() << endl;
+                else
+                    cout << "No such node: " << *it << endl;
+            }
+
+            delete session;
+        }
+        else if ( "get-content" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+            if ( objIds.size() == 0 )
+                throw CommandException( "Please provide a content object Id" );
+
+            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+            libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+            if ( NULL != document )
+            {
+                // TODO Handle name clashes
+                boost::shared_ptr< istream > in = document->getContentStream( );
+                ofstream out( document->getContentFilename().c_str() );
+                out << in->rdbuf();
+                out.close();
+            }
+            else
+                throw CommandException( string( "Not a document object id: " ) + objIds.front() );
+
+            delete session;
+        }
+        else if ( "set-content" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+            if ( objIds.size() ==0 )
+                throw CommandException( "Please provide a content object Id" );
+
+            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+            libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+            if ( NULL != document )
+            {
+                if ( m_vm.count( "input-file" ) == 0 )
+                    throw CommandException( "Missing --input-file" );
+                if ( m_vm.count( "input-type" ) == 0 )
+                    throw CommandException( "Missing --input-type" );
+
+                string type = m_vm["input-type"].as<string>();
+                string filename = m_vm["input-file"].as<string>();
+                ifstream is( filename.c_str(), ifstream::in );
+                boost::shared_ptr< ostream > os ( new ostream ( is.rdbuf( ) ) );
+                if ( is.fail( ) )
+                    throw CommandException( string( "Unable to open file " ) + filename );
+
+                document->setContentStream( os, type );
+
+                is.close( );
+            }
+            else
+                throw CommandException( string( "Not a document object id: " ) + objIds.front() );
+
+            delete session;
+        }
+        else if ( "create-folder" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > args = m_vm["args"].as< vector< string > >( );
+            if ( args.size() < 2 )
+                throw CommandException( "Please provide a parent Id and folder name" );
+
+            libcmis::FolderPtr parent = session->getFolder( args[0] );
+
+            // Get the folder type to create
+            string folderType( "cmis:folder" );
+            if ( m_vm.count( "object-type" ) != 0 )
+                folderType = m_vm["object-type"].as<string>( );
+
+            libcmis::ObjectTypePtr type = session->getType( folderType );
+            if ( "cmis:folder" != type->getBaseType( )->getId( ) )
+                throw CommandException( string( "Not a folder type: " ) + folderType );
+
+            map< string, libcmis::PropertyPtr > properties;
+            map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
+
+            // Set the name
+            map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
+            if ( typeIt == propertiesTypes.end( ) )
+                throw CommandException( string( "No cmis:name on the object type... weird" ) );
+            vector< string > nameValues;
+            nameValues.push_back( args[1] );
+            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+            properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
             
-                cout << "Repositories: ";
-                for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
-                {
-                    if ( it != ids.begin() )
-                        cout << ", ";
-                    cout << *it;
-                }
-                cout << endl;
-            }
-            else if ( "show-root" == command )
+            // Set the objectTypeId
+            typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
+            if ( typeIt == propertiesTypes.end( ) )
+                throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
+            vector< string > typeIdValues;
+            typeIdValues.push_back( folderType );
+            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+            properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
+            
+            // Checks for the properties to set if any
+            map< string, string > propsToSet = getObjectProperties( );
+            for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
             {
-                libcmis::Session* session = getSession( );
-
-                libcmis::FolderPtr root = session->getRootFolder();
-                if ( root.get() )
+                // Create the CMIS property if it exists
+                typeIt = propertiesTypes.find( it->first );
+                if ( typeIt != propertiesTypes.end( ) )
                 {
-                    cout << "------------------------------------------------" << endl;
-                    cout << root->toString() << endl;
+                    vector< string > values;
+                    values.push_back( it->second );
+                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                    properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
                 }
-
-                delete session;
             }
-            else if ( "type-by-id" == command )
+
+            libcmis::FolderPtr created = parent->createFolder( properties );
+
+            cout << "------------------------------------------------" << endl;
+            cout << created->toString() << endl;
+
+            delete session;
+        }
+        else if ( "create-document" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > args = m_vm["args"].as< vector< string > >( );
+            if ( args.size() < 2 )
+                throw CommandException( "Please provide a parent Id and document name" );
+
+            libcmis::FolderPtr parent = session->getFolder( args[0] );
+
+            // Get the document type to create
+            string documentType( "cmis:document" );
+            if ( m_vm.count( "object-type" ) != 0 )
+                documentType = m_vm["object-type"].as<string>( );
+
+            libcmis::ObjectTypePtr type = session->getType( documentType );
+            if ( "cmis:document" != type->getBaseType( )->getId( ) )
+                throw CommandException( string( "Not a document type: " ) + documentType );
+
+            map< string, libcmis::PropertyPtr > properties;
+            map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
+
+            // Set the name
+            map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
+            if ( typeIt == propertiesTypes.end( ) )
+                throw CommandException( string( "No cmis:name on the object type... weird" ) );
+            vector< string > nameValues;
+            nameValues.push_back( args[1] );
+            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+            properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+            
+            // Set the objectTypeId
+            typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
+            if ( typeIt == propertiesTypes.end( ) )
+                throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
+            vector< string > typeIdValues;
+            typeIdValues.push_back( documentType );
+            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+            properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
+            
+            // Checks for the properties to set if any
+            map< string, string > propsToSet = getObjectProperties( );
+            for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
             {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the types to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node ids to show as command args" );
-
-                vector< string > ids = m_vm["args"].as< vector< string > >( );
-
-
-                for ( vector< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+                // Create the CMIS property if it exists
+                typeIt = propertiesTypes.find( it->first );
+                if ( typeIt != propertiesTypes.end( ) )
                 {
-                    cout << "------------------------------------------------" << endl;
+                    vector< string > values;
+                    values.push_back( it->second );
+                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                    properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
+                }
+            }
+
+            // Get the content type and stream
+            boost::shared_ptr< ostream > contentStream;
+            string contentType;
+            
+            bool hasInputFile = m_vm.count( "input-file" ) != 0;
+            bool hasInputType = m_vm.count( "input-type" ) != 0;
+
+            if ( hasInputType && !hasInputFile )
+                throw CommandException( "Missing --input-file" );
+            if ( hasInputFile && !hasInputType )
+                throw CommandException( "Missing --input-type" );
+
+            if ( hasInputFile && hasInputType )
+            {
+                contentType = m_vm["input-type"].as<string>();
+                string filename = m_vm["input-file"].as<string>();
+                fstream is( filename.c_str() );
+                if ( is.fail( ) )
+                    throw CommandException( string( "Unable to open file " ) + filename );
+                contentStream.reset( new ostringstream( ios_base::out | ios_base::in ) );
+
+                *contentStream << is.rdbuf();
+            }
+
+            // Actually create the document
+            libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType );
+
+            cout << "------------------------------------------------" << endl;
+            cout << created->toString() << endl;
+
+            delete session;
+        }
+        else if ( "update-object" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > args = m_vm["args"].as< vector< string > >( );
+            if ( args.size() != 1 )
+                throw CommandException( "Please provide an object id" );
+
+            libcmis::ObjectPtr object = session->getObject( args[0] );
+            libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
+
+            map< string, libcmis::PropertyPtr >& properties = object->getProperties( );
+
+            // Checks for the properties to set if any
+            map< string, string > propsToSet = getObjectProperties( );
+            for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
+            {
+                // Create the CMIS property if it exists
+                map< string, libcmis::PropertyPtr >::iterator propIt = properties.find( it->first );
+                if ( propIt != properties.end( ) && propIt->second->getPropertyType( )->isUpdatable( ) )
+                {
+                    vector< string > values;
+                    values.push_back( it->second );
+                    propIt->second->setValues( values );
+                }
+            }
+
+            object->updateProperties( );
+
+            cout << "------------------------------------------------" << endl;
+            cout << object->toString() << endl;
+
+            delete session;
+        }
+        else if ( "delete" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node ids to delete as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+            vector< string > errors;
+            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
+            {
+                libcmis::ObjectPtr cmisObj = session->getObject( *it );
+                libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( cmisObj.get() );
+                if ( NULL != folder )
+                {
                     try
                     {
-                        libcmis::ObjectTypePtr type = session->getType( *it );
-                        cout << type->toString() << endl;
+                        folder->removeTree( );
                     }
                     catch ( const libcmis::Exception& e )
                     {
-                        cout << e.what() << endl;
-                    }
-                }
-
-                delete session;
-            }
-            else if ( "show-by-id" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node ids to show as command args" );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-
-                for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
-                {
-                    libcmis::ObjectPtr cmisObj = session->getObject( *it );
-                    cout << "------------------------------------------------" << endl;
-                    if ( cmisObj.get() )
-                        cout << cmisObj->toString() << endl;
-                    else
-                        cout << "No such node: " << *it << endl;
-                }
-
-                delete session;
-            }
-            else if ( "show-by-path" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                // Get the paths of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node paths to show as command args" );
-
-                vector< string > objPaths = m_vm["args"].as< vector< string > >( );
-
-
-                for ( vector< string >::iterator it = objPaths.begin(); it != objPaths.end(); it++ )
-                {
-                    libcmis::ObjectPtr cmisObj = session->getObjectByPath( *it );
-                    cout << "------------------------------------------------" << endl;
-                    if ( cmisObj.get() )
-                        cout << cmisObj->toString() << endl;
-                    else
-                        cout << "No such node: " << *it << endl;
-                }
-
-                delete session;
-            }
-            else if ( "get-content" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-                if ( objIds.size() == 0 )
-                    throw CommandException( "Please provide a content object Id" );
-
-                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-                libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                if ( NULL != document )
-                {
-                    // TODO Handle name clashes
-                    boost::shared_ptr< istream > in = document->getContentStream( );
-                    ofstream out( document->getContentFilename().c_str() );
-                    out << in->rdbuf();
-                    out.close();
-                }
-                else
-                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
-
-                delete session;
-            }
-            else if ( "set-content" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-                if ( objIds.size() ==0 )
-                    throw CommandException( "Please provide a content object Id" );
-
-                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-                libcmis::Document* document = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                if ( NULL != document )
-                {
-                    if ( m_vm.count( "input-file" ) == 0 )
-                        throw CommandException( "Missing --input-file" );
-                    if ( m_vm.count( "input-type" ) == 0 )
-                        throw CommandException( "Missing --input-type" );
-
-                    string type = m_vm["input-type"].as<string>();
-                    string filename = m_vm["input-file"].as<string>();
-                    ifstream is( filename.c_str(), ifstream::in );
-                    boost::shared_ptr< ostream > os ( new ostream ( is.rdbuf( ) ) );
-                    if ( is.fail( ) )
-                        throw CommandException( string( "Unable to open file " ) + filename );
-
-                    document->setContentStream( os, type );
-
-                    is.close( );
-                }
-                else
-                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
-
-                delete session;
-            }
-            else if ( "create-folder" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                vector< string > args = m_vm["args"].as< vector< string > >( );
-                if ( args.size() < 2 )
-                    throw CommandException( "Please provide a parent Id and folder name" );
-
-                libcmis::FolderPtr parent = session->getFolder( args[0] );
-
-                // Get the folder type to create
-                string folderType( "cmis:folder" );
-                if ( m_vm.count( "object-type" ) != 0 )
-                    folderType = m_vm["object-type"].as<string>( );
-
-                libcmis::ObjectTypePtr type = session->getType( folderType );
-                if ( "cmis:folder" != type->getBaseType( )->getId( ) )
-                    throw CommandException( string( "Not a folder type: " ) + folderType );
-
-                map< string, libcmis::PropertyPtr > properties;
-                map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
-
-                // Set the name
-                map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
-                if ( typeIt == propertiesTypes.end( ) )
-                    throw CommandException( string( "No cmis:name on the object type... weird" ) );
-                vector< string > nameValues;
-                nameValues.push_back( args[1] );
-                libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
-                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-                
-                // Set the objectTypeId
-                typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
-                if ( typeIt == propertiesTypes.end( ) )
-                    throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
-                vector< string > typeIdValues;
-                typeIdValues.push_back( folderType );
-                libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
-                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
-                
-                // Checks for the properties to set if any
-                map< string, string > propsToSet = getObjectProperties( );
-                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
-                {
-                    // Create the CMIS property if it exists
-                    typeIt = propertiesTypes.find( it->first );
-                    if ( typeIt != propertiesTypes.end( ) )
-                    {
-                        vector< string > values;
-                        values.push_back( it->second );
-                        libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
-                        properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
-                    }
-                }
-
-                libcmis::FolderPtr created = parent->createFolder( properties );
-
-                cout << "------------------------------------------------" << endl;
-                cout << created->toString() << endl;
-
-                delete session;
-            }
-            else if ( "create-document" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                vector< string > args = m_vm["args"].as< vector< string > >( );
-                if ( args.size() < 2 )
-                    throw CommandException( "Please provide a parent Id and document name" );
-
-                libcmis::FolderPtr parent = session->getFolder( args[0] );
-
-                // Get the document type to create
-                string documentType( "cmis:document" );
-                if ( m_vm.count( "object-type" ) != 0 )
-                    documentType = m_vm["object-type"].as<string>( );
-
-                libcmis::ObjectTypePtr type = session->getType( documentType );
-                if ( "cmis:document" != type->getBaseType( )->getId( ) )
-                    throw CommandException( string( "Not a document type: " ) + documentType );
-
-                map< string, libcmis::PropertyPtr > properties;
-                map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
-
-                // Set the name
-                map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( string( "cmis:name" ) );
-                if ( typeIt == propertiesTypes.end( ) )
-                    throw CommandException( string( "No cmis:name on the object type... weird" ) );
-                vector< string > nameValues;
-                nameValues.push_back( args[1] );
-                libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
-                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-                
-                // Set the objectTypeId
-                typeIt = propertiesTypes.find( string( "cmis:objectTypeId" ) );
-                if ( typeIt == propertiesTypes.end( ) )
-                    throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
-                vector< string > typeIdValues;
-                typeIdValues.push_back( documentType );
-                libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
-                properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
-                
-                // Checks for the properties to set if any
-                map< string, string > propsToSet = getObjectProperties( );
-                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
-                {
-                    // Create the CMIS property if it exists
-                    typeIt = propertiesTypes.find( it->first );
-                    if ( typeIt != propertiesTypes.end( ) )
-                    {
-                        vector< string > values;
-                        values.push_back( it->second );
-                        libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
-                        properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
-                    }
-                }
-
-                // Get the content type and stream
-                boost::shared_ptr< ostream > contentStream;
-                string contentType;
-                
-                bool hasInputFile = m_vm.count( "input-file" ) != 0;
-                bool hasInputType = m_vm.count( "input-type" ) != 0;
-
-                if ( hasInputType && !hasInputFile )
-                    throw CommandException( "Missing --input-file" );
-                if ( hasInputFile && !hasInputType )
-                    throw CommandException( "Missing --input-type" );
-
-                if ( hasInputFile && hasInputType )
-                {
-                    contentType = m_vm["input-type"].as<string>();
-                    string filename = m_vm["input-file"].as<string>();
-                    fstream is( filename.c_str() );
-                    if ( is.fail( ) )
-                        throw CommandException( string( "Unable to open file " ) + filename );
-                    contentStream.reset( new ostringstream( ios_base::out | ios_base::in ) );
-
-                    *contentStream << is.rdbuf();
-                }
-
-                // Actually create the document
-                libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType );
-
-                cout << "------------------------------------------------" << endl;
-                cout << created->toString() << endl;
-
-                delete session;
-            }
-            else if ( "update-object" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                vector< string > args = m_vm["args"].as< vector< string > >( );
-                if ( args.size() != 1 )
-                    throw CommandException( "Please provide an object id" );
-
-                libcmis::ObjectPtr object = session->getObject( args[0] );
-                libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
-
-                map< string, libcmis::PropertyPtr >& properties = object->getProperties( );
-
-                // Checks for the properties to set if any
-                map< string, string > propsToSet = getObjectProperties( );
-                for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
-                {
-                    // Create the CMIS property if it exists
-                    map< string, libcmis::PropertyPtr >::iterator propIt = properties.find( it->first );
-                    if ( propIt != properties.end( ) && propIt->second->getPropertyType( )->isUpdatable( ) )
-                    {
-                        vector< string > values;
-                        values.push_back( it->second );
-                        propIt->second->setValues( values );
-                    }
-                }
-
-                object->updateProperties( );
-
-                cout << "------------------------------------------------" << endl;
-                cout << object->toString() << endl;
-
-                delete session;
-            }
-            else if ( "delete" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node ids to delete as command args" );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-                vector< string > errors;
-                for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
-                {
-                    libcmis::ObjectPtr cmisObj = session->getObject( *it );
-                    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( cmisObj.get() );
-                    if ( NULL != folder )
-                    {
-                        try
-                        {
-                            folder->removeTree( );
-                        }
-                        catch ( const libcmis::Exception& e )
-                        {
-                            string msg = *it + ": " + e.what( );
-                            errors.push_back( msg );
-                        }
-                    }
-                    else if ( cmisObj.get() )
-                    {
-                        try
-                        {
-                            cmisObj->remove( );
-                        }
-                        catch ( const libcmis::Exception& e )
-                        {
-                            string msg = *it + ": " + e.what( );
-                            errors.push_back( msg );
-                        }
-                    }
-                    else
-                    {
-                        string msg = "No such node: " + *it;
+                        string msg = *it + ": " + e.what( );
                         errors.push_back( msg );
                     }
                 }
-
-                // Show the errors
-                if ( !errors.empty( ) )
+                else if ( cmisObj.get() )
                 {
-                    cout << "Errors:" << endl;
-                    for ( vector< string >::iterator it = errors.begin( ); it != errors.end( ); ++it )
+                    try
                     {
-                        cout << "\t" << *it << endl;
+                        cmisObj->remove( );
+                    }
+                    catch ( const libcmis::Exception& e )
+                    {
+                        string msg = *it + ": " + e.what( );
+                        errors.push_back( msg );
                     }
                 }
                 else
                 {
-                    cout << "All nodes have been removed" << endl;
+                    string msg = "No such node: " + *it;
+                    errors.push_back( msg );
                 }
-
-                delete session;
             }
-            else if ( "checkout" == command )
+
+            // Show the errors
+            if ( !errors.empty( ) )
             {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node id to checkout as command args" );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-                if ( cmisObj.get() )
+                cout << "Errors:" << endl;
+                for ( vector< string >::iterator it = errors.begin( ); it != errors.end( ); ++it )
                 {
-                    libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                    libcmis::DocumentPtr pwc = doc->checkOut( );
-                    if ( pwc.get( ) )
-                    {
-                        cout << "------------------------------------------------" << endl;
-                        cout << pwc->toString() << endl;
-                    }
-                    else
-                        cout << "No Private Working Copy returned?" << endl;
+                    cout << "\t" << *it << endl;
                 }
-                else
-                    cout << "No such node: " << objIds.front() << endl;
-
-                delete session;
-            }
-            else if ( "cancel-checkout" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the private working copy object id to cancel as command args" );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-                libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
-                cout << "------------------------------------------------" << endl;
-                if ( cmisObj.get() )
-                {
-                    libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                    doc->cancelCheckout( );
-                    cout << "Checkout cancelled" << endl;
-                }
-                else
-                    cout << "No such node: " << objIds.front() << endl;
-
-                delete session;
-            }
-            else if ( "checkin" == command )
-            {
-                libcmis::Session* session = getSession( );
-
-                // Get the ids of the objects to fetch
-                if ( m_vm.count( "args" ) == 0 )
-                    throw CommandException( "Please provide the node id to checkin as command args" );
-
-                vector< string > objIds = m_vm["args"].as< vector< string > >( );
-
-                libcmis::ObjectPtr object = session->getObject( objIds.front() );
-                if ( object.get() )
-                {
-                    // Create the properties map
-                    map< string, libcmis::PropertyPtr > properties;
-                    map< string, string > propsToSet = getObjectProperties( );
-                    libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
-                    map< string, libcmis::PropertyTypePtr > propertyTypes = type->getPropertiesTypes( );
-                    for ( map< string, string >::iterator propIt = propsToSet.begin();
-                          propIt != propsToSet.end(); ++propIt )
-                    {
-                        string name = propIt->first;
-                        map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertyTypes.find( name );
-                        if ( typeIt != propertyTypes.end( ) )
-                        {
-                            vector< string > values;
-                            values.push_back( propIt->second );
-                            libcmis::PropertyPtr prop( new libcmis::Property( typeIt->second, values ) );
-                            properties.insert( pair< string, libcmis::PropertyPtr >( name, prop ) );
-                        }
-                    }
-
-                    // Get the content stream if any
-                    string contentType;
-                    boost::shared_ptr< ostream > stream;
-                    if ( m_vm.count( "input-file" ) > 0 )
-                    {
-                        string filename = m_vm["input-file"].as<string>();
-                        ifstream is( filename.c_str(), ifstream::in );
-                        stream.reset ( new ostream ( is.rdbuf( ) ) );
-                        if ( is.fail( ) )
-                            throw CommandException( string( "Unable to open file " ) + filename );
-                        
-                        if ( m_vm.count( "input-type" ) > 0 )
-                        {
-                            contentType = m_vm["input-type"].as<string>();
-                        }
-                    }
-
-                    bool major = false;
-                    if ( m_vm.count( "major" ) > 0 )
-                        major = "yes";
-
-                    string comment;
-                    if ( m_vm.count( "message" ) > 0 )
-                        comment = m_vm["message"].as< string >( );
-
-                    libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
-                    doc->checkIn( major, comment, properties, stream, contentType );
-                    cout << "------------------------------------------------" << endl;
-                    cout << doc->toString() << endl;
-                }
-                else
-                    cout << "No such node: " << objIds.front() << endl;
-
-                delete session;
-            }
-            else if ( "help" == command )
-            {
-                printHelp();
             }
             else
             {
-                cerr << "------------------------------------------------" << endl;
-                cerr << "ERROR: Unknown command: " << command << endl;
-                cerr << "------------------------------------------------" << endl;
-                printHelp( );
+                cout << "All nodes have been removed" << endl;
             }
 
-            // TODO Add some more useful commands here
+            delete session;
         }
-        catch ( const libcmis::Exception& e )
+        else if ( "checkout" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node id to checkout as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+            if ( cmisObj.get() )
+            {
+                libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+                libcmis::DocumentPtr pwc = doc->checkOut( );
+                if ( pwc.get( ) )
+                {
+                    cout << "------------------------------------------------" << endl;
+                    cout << pwc->toString() << endl;
+                }
+                else
+                    cout << "No Private Working Copy returned?" << endl;
+            }
+            else
+                cout << "No such node: " << objIds.front() << endl;
+
+            delete session;
+        }
+        else if ( "cancel-checkout" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the private working copy object id to cancel as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+            libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
+            cout << "------------------------------------------------" << endl;
+            if ( cmisObj.get() )
+            {
+                libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
+                doc->cancelCheckout( );
+                cout << "Checkout cancelled" << endl;
+            }
+            else
+                cout << "No such node: " << objIds.front() << endl;
+
+            delete session;
+        }
+        else if ( "checkin" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node id to checkin as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+            libcmis::ObjectPtr object = session->getObject( objIds.front() );
+            if ( object.get() )
+            {
+                // Create the properties map
+                map< string, libcmis::PropertyPtr > properties;
+                map< string, string > propsToSet = getObjectProperties( );
+                libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
+                map< string, libcmis::PropertyTypePtr > propertyTypes = type->getPropertiesTypes( );
+                for ( map< string, string >::iterator propIt = propsToSet.begin();
+                      propIt != propsToSet.end(); ++propIt )
+                {
+                    string name = propIt->first;
+                    map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertyTypes.find( name );
+                    if ( typeIt != propertyTypes.end( ) )
+                    {
+                        vector< string > values;
+                        values.push_back( propIt->second );
+                        libcmis::PropertyPtr prop( new libcmis::Property( typeIt->second, values ) );
+                        properties.insert( pair< string, libcmis::PropertyPtr >( name, prop ) );
+                    }
+                }
+
+                // Get the content stream if any
+                string contentType;
+                boost::shared_ptr< ostream > stream;
+                if ( m_vm.count( "input-file" ) > 0 )
+                {
+                    string filename = m_vm["input-file"].as<string>();
+                    ifstream is( filename.c_str(), ifstream::in );
+                    stream.reset ( new ostream ( is.rdbuf( ) ) );
+                    if ( is.fail( ) )
+                        throw CommandException( string( "Unable to open file " ) + filename );
+                    
+                    if ( m_vm.count( "input-type" ) > 0 )
+                    {
+                        contentType = m_vm["input-type"].as<string>();
+                    }
+                }
+
+                bool major = false;
+                if ( m_vm.count( "major" ) > 0 )
+                    major = "yes";
+
+                string comment;
+                if ( m_vm.count( "message" ) > 0 )
+                    comment = m_vm["message"].as< string >( );
+
+                libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
+                doc->checkIn( major, comment, properties, stream, contentType );
+                cout << "------------------------------------------------" << endl;
+                cout << doc->toString() << endl;
+            }
+            else
+                cout << "No such node: " << objIds.front() << endl;
+
+            delete session;
+        }
+        else if ( "help" == command )
+        {
+            printHelp();
+        }
+        else
         {
             cerr << "------------------------------------------------" << endl;
-            cerr << "ERROR: " << e.what() << endl;
+            cerr << "ERROR: Unknown command: " << command << endl;
             cerr << "------------------------------------------------" << endl;
+            printHelp( );
         }
+
+        // TODO Add some more useful commands here
     }
 }
 
@@ -811,6 +802,14 @@ int main ( int argc, char* argv[] )
         cerr << "ERROR: " << e.what() << endl;
         cerr << "------------------------------------------------" << endl;
         client.printHelp();
+        return 1;
+    }
+    catch ( const exception& e )
+    {
+        cerr << "------------------------------------------------" << endl;
+        cerr << "ERROR: " << e.what() << endl;
+        cerr << "------------------------------------------------" << endl;
+        return 1;
     }
 
     return 0;
