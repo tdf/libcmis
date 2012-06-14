@@ -28,12 +28,12 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-folder.cxx \
 	atom-object.cxx \
 	atom-session.cxx \
-	atom-utils.hxx \
-	atom-utils.cxx \
 	atom-workspace.hxx \
 	atom-workspace.cxx \
 	atom-allowable-actions.hxx \
 	atom-allowable-actions.cxx \
+	base-session.hxx \
+	base-session.cxx \
 	allowable-actions.cxx \
 	property.cxx \
 	property-type.cxx \

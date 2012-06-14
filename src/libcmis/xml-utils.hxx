@@ -28,10 +28,12 @@
 #ifndef _XML_UTILS_HXX_
 #define _XML_UTILS_HXX_
 
+#include <ostream>
 #include <string>
 
 #include <boost/date_time.hpp>
 #include <libxml/tree.h>
+#include <libxml/xpathInternals.h>
 
 #include "exception.hxx"
 
@@ -39,9 +41,55 @@
 #define NS_CMIS_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
 #define NS_CMISRA_PREFIX BAD_CAST( "cmisra" )
 #define NS_CMISRA_URL BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
+#define NS_APP_URL BAD_CAST( "http://www.w3.org/2007/app" )
+#define NS_ATOM_URL BAD_CAST( "http://www.w3.org/2005/Atom" )
+
+#define LIBCURL_VERSION_VALUE ( \
+        ( LIBCURL_VERSION_MAJOR << 16 ) | ( LIBCURL_VERSION_MINOR << 8 ) | ( LIBCURL_VERSION_PATCH ) \
+)
 
 namespace libcmis
 {
+    /** Class used to decode a stream.
+
+        An instance of this class can hold remaining un-decoded data to use
+        for a future decode call.
+      */
+    class EncodedData
+    {
+        private:
+            FILE* m_stream;
+            std::ostream* m_outStream;
+
+            std::string m_encoding;
+            bool m_decode;
+            unsigned long m_pendingValue;
+            int m_pendingRank;
+            size_t m_missingBytes;
+
+        public:
+            EncodedData( FILE* stream );
+            EncodedData( std::ostream* stream );
+            EncodedData( const EncodedData& rCopy );
+
+            const EncodedData& operator=( const EncodedData& rCopy );
+
+            void setEncoding( std::string encoding ) { m_encoding = encoding; }
+            void decode( void* buf, size_t size, size_t nmemb );
+            void encode( void* buf, size_t size, size_t nmemb );
+            void finish( );
+
+        private:
+            void write( void* buf, size_t size, size_t nmemb );
+            void decodeBase64( const char* buf, size_t len );
+            void encodeBase64( const char* buf, size_t len );
+    };
+    
+    void registerNamespaces( xmlXPathContextPtr xpathCtx );
+
+    std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req ); 
+
+    xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
     /** Utility extracting an attribute value from an Xml Node,
         based on the attribute name.
       */

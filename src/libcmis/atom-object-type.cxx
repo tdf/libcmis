@@ -29,7 +29,6 @@
 #include <sstream>
 
 #include "atom-object-type.hxx"
-#include "atom-utils.hxx"
 #include "xml-utils.hxx"
 
 using namespace std;
@@ -87,7 +86,7 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, xmlNodePtr entryNd ) th
     m_contentStreamAllowed( libcmis::ObjectType::Allowed ),
     m_propertiesTypes( )
 {
-    xmlDocPtr doc = atom::wrapInDoc( entryNd );
+    xmlDocPtr doc = libcmis::wrapInDoc( entryNd );
     refreshImpl( doc );
     xmlFreeDoc( doc );
 }
@@ -168,7 +167,7 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis:
     {
         buf = m_session->httpGetRequest( m_childrenUrl )->str();
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -177,7 +176,7 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis:
     if ( NULL != doc )
     {
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-        atom::registerNamespaces( xpathCtx );
+        libcmis::registerNamespaces( xpathCtx );
         if ( NULL != xpathCtx )
         {
             const string& entriesReq( "//atom:entry" );
@@ -265,7 +264,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         {
             buf  = m_session->httpGetRequest( url )->str();
         }
-        catch ( const atom::CurlException& e )
+        catch ( const CurlException& e )
         {
             if ( ( e.getErrorCode( ) == CURLE_HTTP_RETURNED_ERROR ) &&
                  ( string::npos != e.getErrorMessage( ).find( "404" ) ) )
@@ -295,17 +294,17 @@ void AtomObjectType::extractInfos( xmlDocPtr doc ) throw ( libcmis::Exception )
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
     // Register the Service Document namespaces
-    atom::registerNamespaces( xpathCtx );
+    libcmis::registerNamespaces( xpathCtx );
 
     if ( NULL != xpathCtx )
     {
         // Get the self URL
         string selfUrlReq( "//atom:link[@rel='self']/attribute::href" );
-        m_selfUrl = atom::getXPathValue( xpathCtx, selfUrlReq );
+        m_selfUrl = libcmis::getXPathValue( xpathCtx, selfUrlReq );
         
         // Get the children URL
         string childrenUrlReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']/attribute::href" );
-        m_childrenUrl = atom::getXPathValue( xpathCtx, childrenUrlReq );
+        m_childrenUrl = libcmis::getXPathValue( xpathCtx, childrenUrlReq );
         
         // Get the cmisra:type node
         xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:type" ), xpathCtx );

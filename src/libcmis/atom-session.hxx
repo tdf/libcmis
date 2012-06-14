@@ -28,81 +28,13 @@
 #ifndef _ATOM_SESSION_HXX_
 #define _ATOM_SESSION_HXX_
 
-#include <istream>
-#include <sstream>
-#include <list>
-#include <map>
-#include <string>
-
-#include <curl/curl.h>
-#include <libxml/xmlstring.h>
-#include <libxml/xpath.h>
-
-#include "exception.hxx"
-#include "session.hxx"
+#include "base-session.hxx"
 #include "atom-workspace.hxx"
 
-namespace atom
-{
-    class CurlException : public std::exception
-    {
-        private:
-            std::string m_message;
-            CURLcode    m_code;
-            std::string m_url;
-            long        m_httpStatus;
-
-            bool        m_cancelled;
-
-        public:
-            CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
-                exception( ),
-                m_message( message ),
-                m_code( code ),
-                m_url( url ),
-                m_httpStatus( httpStatus ),
-                m_cancelled( false )
-            {
-            }
-            
-            CurlException( std::string message ) :
-                exception( ),
-                m_message( message ),
-                m_code( CURLE_OK ),
-                m_url( ),
-                m_httpStatus( 0 ),
-                m_cancelled( true )
-            {
-            }
-
-            ~CurlException( ) throw () { }
-            virtual const char* what( ) const throw ();
-
-            CURLcode getErrorCode( ) const { return m_code; }
-            std::string getErrorMessage( ) const { return m_message; }
-            bool isCancelled( ) const { return m_cancelled; }
-            long getHttpStatus( ) const { return m_httpStatus; }
-
-            libcmis::Exception getCmisException ( ) const;
-    };
-}
-
-class AtomPubSession : public libcmis::Session
+class AtomPubSession : public BaseSession
 {
     private:
-        std::string m_sAtomPubUrl;
-        std::string m_sRepository;
-        std::string m_username;
-        std::string m_password;
-        bool m_authProvided;
         atom::Workspace m_workspace;
-
-        std::list< std::string > m_repositoriesIds;
-
-        bool m_verbose;
-        libcmis::AuthProviderPtr m_authProvider;
-
-        CURL* m_curlHandle;
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repository,
@@ -117,28 +49,13 @@ class AtomPubSession : public libcmis::Session
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        std::string getRootId( ) throw ( libcmis::Exception ) { return getWorkspace().getRootId( ); }
-
-        std::string getUsername( ) { return m_username; }
-
-        std::string getPassword( ) { return m_password; }
-
         atom::Workspace& getWorkspace( ) throw ( libcmis::Exception );
 
         // Utility methods
+        
+        std::string getRootId( ) throw ( libcmis::Exception ) { return getWorkspace().getRootId( ); }
 
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
-
-        std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
-
-        boost::shared_ptr< std::stringstream > httpGetRequest( std::string url ) throw ( atom::CurlException );
-        std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( atom::CurlException );
-        std::string httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( atom::CurlException );
-        void httpDeleteRequest( std::string url ) throw ( atom::CurlException );
-
-        void httpRunRequest( std::string url ) throw ( atom::CurlException );
-
-        long getHttpStatus( );
 
         // Override session methods
 
@@ -151,8 +68,6 @@ class AtomPubSession : public libcmis::Session
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
-
-        virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
 
     private:
 

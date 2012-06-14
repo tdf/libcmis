@@ -33,7 +33,7 @@
 
 #include "atom-document.hxx"
 #include "atom-session.hxx"
-#include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -57,7 +57,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     m_contentLength( 0 ),
     m_contentStream( )
 {
-    xmlDocPtr doc = atom::wrapInDoc( entryNd );
+    xmlDocPtr doc = libcmis::wrapInDoc( entryNd );
     refreshImpl( doc );
     xmlFreeDoc( doc );
 }
@@ -81,7 +81,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     {
         buf = getSession()->httpGetRequest( parentsLink->getHref( ) )->str( );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -90,7 +90,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     if ( NULL != doc )
     {
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-        atom::registerNamespaces( xpathCtx );
+        libcmis::registerNamespaces( xpathCtx );
         if ( NULL != xpathCtx )
         {
             const string& entriesReq( "//atom:entry" );
@@ -102,7 +102,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
                 for ( int i = 0; i < size; i++ )
                 {
                     xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                    xmlDocPtr entryDoc = atom::wrapInDoc( node );
+                    xmlDocPtr entryDoc = libcmis::wrapInDoc( node );
                     libcmis::ObjectPtr object = getSession()->createObjectFromEntryDoc( entryDoc );
                     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
 
@@ -152,7 +152,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     {
         stream = getSession()->httpGetRequest( m_contentUrl );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -210,7 +210,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
 
                     // Encode the content
                     stringstream* encodedIn = new stringstream( );
-                    atom::EncodedData encoder( encodedIn );
+                    libcmis::EncodedData encoder( encodedIn );
                     encoder.setEncoding( "base64" );
 
                     int bufLength = 1000;
@@ -236,7 +236,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
                     throw libcmis::Exception( "Document content wasn't set for some reason" );
                 refresh( );
             }
-            catch ( const atom::CurlException& e )
+            catch ( const CurlException& e )
             {
                 // SharePoint wants base64 encoded content... let's try to figure out
                 // if we falled in that case.
@@ -294,7 +294,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     {
         respBuf = getSession( )->httpPostRequest( checkedOutUrl, is, "application/atom+xml;type=entry" );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -385,7 +385,7 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     {
         respBuf = getSession( )->httpPutRequest( checkInUrl, is, "application/atom+xml;type=entry" );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -425,7 +425,7 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
     if ( NULL != doc )
     {
-        atom::registerNamespaces( xpathCtx );
+        libcmis::registerNamespaces( xpathCtx );
 
         if ( NULL != xpathCtx )
         {
@@ -443,11 +443,11 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
 
                 // Get the content filename
                 string filenameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:contentStreamFileName']/cmis:value/text()" );
-                m_contentFilename = atom::getXPathValue( xpathCtx, filenameReq );
+                m_contentFilename = libcmis::getXPathValue( xpathCtx, filenameReq );
 
                 // Get the content length
                 string lengthReq( "//cmis:propertyInteger[@propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
-                string bytes = atom::getXPathValue( xpathCtx, lengthReq );
+                string bytes = libcmis::getXPathValue( xpathCtx, lengthReq );
                 m_contentLength = atol( bytes.c_str() );
             }
             xmlXPathFreeObject( xpathObj );
@@ -464,7 +464,7 @@ void AtomDocument::contentToXml( xmlTextWriterPtr writer )
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( m_contentType.c_str() ) );
 
         ostringstream encodedStream;
-        atom::EncodedData encoder( &encodedStream );
+        libcmis::EncodedData encoder( &encodedStream );
         encoder.setEncoding( "base64" );
         istream is( m_contentStream->rdbuf( ) );
         int bufLength = 1000;

@@ -30,7 +30,7 @@
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
-#include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -43,7 +43,7 @@ AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     m_path( ),
     m_parentId( )
 {
-    xmlDocPtr doc = atom::wrapInDoc( entryNd );
+    xmlDocPtr doc = libcmis::wrapInDoc( entryNd );
     refreshImpl( doc );
     xmlFreeDoc( doc );
 }
@@ -88,7 +88,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
         {
             buf = getSession()->httpGetRequest( pageUrl )->str( );
         }
-        catch ( const atom::CurlException& e )
+        catch ( const CurlException& e )
         {
             throw e.getCmisException( );
         }
@@ -97,12 +97,12 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
         if ( NULL != doc )
         {
             xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-            atom::registerNamespaces( xpathCtx );
+            libcmis::registerNamespaces( xpathCtx );
             if ( NULL != xpathCtx )
             {
                 // Check if there is a next link to handled paged results
                 const string& nextReq( "/atom:feed/atom:link[@rel='next']/attribute::href" );
-                string nextHref = atom::getXPathValue( xpathCtx, nextReq );
+                string nextHref = libcmis::getXPathValue( xpathCtx, nextReq );
                 hasNext = !nextHref.empty( );
                 if ( hasNext )
                     pageUrl = nextHref;
@@ -117,7 +117,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
                     for ( int i = 0; i < size; i++ )
                     {
                         xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                        xmlDocPtr entryDoc = atom::wrapInDoc( node );
+                        xmlDocPtr entryDoc = libcmis::wrapInDoc( node );
                         libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
 
                         if ( cmisObject.get() )
@@ -183,7 +183,7 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
     {
         respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -235,7 +235,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
     {
         respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -305,7 +305,7 @@ void AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfi
 
         getSession( )->httpDeleteRequest( deleteUrl );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -339,17 +339,17 @@ void AtomFolder::extractInfos( xmlDocPtr doc )
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
     // Register the Service Document namespaces
-    atom::registerNamespaces( xpathCtx );
+    libcmis::registerNamespaces( xpathCtx );
 
     if ( NULL != xpathCtx )
     {
         // Get the path
         string pathReq( "//cmis:propertyString[@propertyDefinitionId='cmis:path']/cmis:value/text()" );
-        m_path = atom::getXPathValue( xpathCtx, pathReq );
+        m_path = libcmis::getXPathValue( xpathCtx, pathReq );
         
         // Get the parent id
         string parentIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:parentId']/cmis:value/text()" );
-        m_parentId = atom::getXPathValue( xpathCtx, parentIdReq );
+        m_parentId = libcmis::getXPathValue( xpathCtx, parentIdReq );
     }
     xmlXPathFreeContext( xpathCtx );
 }

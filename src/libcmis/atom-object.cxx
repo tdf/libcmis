@@ -34,7 +34,6 @@
 #include "atom-object.hxx"
 #include "atom-object-type.hxx"
 #include "atom-session.hxx"
-#include "atom-utils.hxx"
 #include "xml-utils.hxx"
 
 using namespace std;
@@ -233,7 +232,7 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     {
         respBuf = getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -270,7 +269,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         {
             buf  = getSession()->httpGetRequest( getInfosUrl() )->str( );
         }
-        catch ( const atom::CurlException& e )
+        catch ( const CurlException& e )
         {
             throw e.getCmisException( );
         }
@@ -316,7 +315,7 @@ void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
 
         m_session->httpDeleteRequest( deleteUrl );
     }
-    catch ( const atom::CurlException& e )
+    catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
@@ -415,7 +414,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
-    atom::registerNamespaces( xpathCtx );
+    libcmis::registerNamespaces( xpathCtx );
 
     if ( NULL != xpathCtx )
     {
@@ -450,7 +449,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 
         // First get the type id as it will give us the property definitions
         string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
-        m_typeId = atom::getXPathValue( xpathCtx, typeIdReq );
+        m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
 
         string propertiesReq( "//cmis:properties/*" );
         xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );

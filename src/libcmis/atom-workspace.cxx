@@ -26,8 +26,8 @@
  * instead of those above.
  */
 
-#include "atom-utils.hxx"
 #include "atom-workspace.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -41,9 +41,9 @@ namespace atom
     {
         if ( wsNode != NULL )
         {
-            xmlDocPtr doc = wrapInDoc( wsNode );
+            xmlDocPtr doc = libcmis::wrapInDoc( wsNode );
             xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-            atom::registerNamespaces( xpathCtx );
+            libcmis::registerNamespaces( xpathCtx );
 
             if ( NULL != xpathCtx )
             {
@@ -61,11 +61,11 @@ namespace atom
                 
                 // Get the root node id
                 string rootIdXPath( "//cmisra:repositoryInfo/cmis:rootFolderId/text()" );
-                m_rootId = atom::getXPathValue( xpathCtx, rootIdXPath );
+                m_rootId = libcmis::getXPathValue( xpathCtx, rootIdXPath );
                 
                 // Get the repository id
                 string repoIdXPath( "//cmisra:repositoryInfo/cmis:repositoryId/text()" );
-                m_id = atom::getXPathValue( xpathCtx, repoIdXPath );
+                m_id = libcmis::getXPathValue( xpathCtx, repoIdXPath );
 
                 // TODO Extract other useful stuffs
             }

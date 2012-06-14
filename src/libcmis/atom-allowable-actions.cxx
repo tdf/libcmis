@@ -29,7 +29,6 @@
 #include <libxml/xpathInternals.h>
 
 #include "atom-allowable-actions.hxx"
-#include "atom-utils.hxx"
 #include "xml-utils.hxx"
 
 using namespace std;
@@ -194,7 +193,7 @@ void AtomAllowableActions::refresh( ) throw ( libcmis::Exception )
         {
             buf  = m_session->httpGetRequest( m_url )->str( );
         }
-        catch ( const atom::CurlException& e )
+        catch ( const CurlException& e )
         {
             throw e.getCmisException( );
         }
@@ -206,7 +205,7 @@ void AtomAllowableActions::refresh( ) throw ( libcmis::Exception )
         // Populate the m_states map
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
-        atom::registerNamespaces( xpathCtx );
+        libcmis::registerNamespaces( xpathCtx );
 
         if ( NULL != xpathCtx )
         {
