@@ -78,51 +78,65 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
 
     vector< libcmis::ObjectPtr > children;
 
-    string buf;
-    try
-    {
-        buf = getSession()->httpGetRequest( childrenLink->getHref( ) )->str( );
-    }
-    catch ( const atom::CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
+    string pageUrl = childrenLink->getHref( );
 
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), childrenLink->getHref( ).c_str(), NULL, 0 );
-    if ( NULL != doc )
+    bool hasNext = true;
+    while ( hasNext )
     {
-        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-        atom::registerNamespaces( xpathCtx );
-        if ( NULL != xpathCtx )
+        string buf;
+        try
         {
-            const string& entriesReq( "//atom:entry" );
-            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
-
-            if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
-            {
-                int size = xpathObj->nodesetval->nodeNr;
-                for ( int i = 0; i < size; i++ )
-                {
-                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                    xmlDocPtr entryDoc = atom::wrapInDoc( node );
-                    libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
-
-                    if ( cmisObject.get() )
-                        children.push_back( cmisObject );
-                    xmlFreeDoc( entryDoc );
-                }
-            }
-
-            xmlXPathFreeObject( xpathObj );
+            buf = getSession()->httpGetRequest( pageUrl )->str( );
+        }
+        catch ( const atom::CurlException& e )
+        {
+            throw e.getCmisException( );
         }
 
-        xmlXPathFreeContext( xpathCtx );
+        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), pageUrl.c_str(), NULL, 0 );
+        if ( NULL != doc )
+        {
+            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+            atom::registerNamespaces( xpathCtx );
+            if ( NULL != xpathCtx )
+            {
+                // Check if there is a next link to handled paged results
+                const string& nextReq( "/atom:feed/atom:link[@rel='next']/attribute::href" );
+                string nextHref = atom::getXPathValue( xpathCtx, nextReq );
+                hasNext = !nextHref.empty( );
+                if ( hasNext )
+                    pageUrl = nextHref;
+
+                // Get the page entries
+                const string& entriesReq( "//atom:entry" );
+                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
+
+                if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+                {
+                    int size = xpathObj->nodesetval->nodeNr;
+                    for ( int i = 0; i < size; i++ )
+                    {
+                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                        xmlDocPtr entryDoc = atom::wrapInDoc( node );
+                        libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
+
+                        if ( cmisObject.get() )
+                            children.push_back( cmisObject );
+                        xmlFreeDoc( entryDoc );
+                    }
+                }
+
+                xmlXPathFreeObject( xpathObj );
+            }
+
+            xmlXPathFreeContext( xpathCtx );
+        }
+        else
+        {
+            throw new libcmis::Exception( "Failed to parse folder infos" );
+        }
+        xmlFreeDoc( doc );
     }
-    else
-    {
-        throw new libcmis::Exception( "Failed to parse folder infos" );
-    }
-    xmlFreeDoc( doc );
 
     return children;
 }
