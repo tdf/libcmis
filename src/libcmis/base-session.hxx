@@ -92,7 +92,7 @@ class BaseSession : public libcmis::Session
 
     protected:
         std::string m_bindingUrl;
-        std::string m_repository;
+        std::string m_repositoryId;
         std::string m_username;
         std::string m_password;
         bool m_authProvided;
@@ -114,7 +114,9 @@ class BaseSession : public libcmis::Session
 
         std::string getPassword( ) { return m_password; }
 
-        // Http Utility methods
+        // Utility methods
+        
+        std::string getRootId( ) throw ( libcmis::Exception ) { return getRepository()->getRootId( ); }
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 
@@ -128,6 +130,8 @@ class BaseSession : public libcmis::Session
         long getHttpStatus( );
 
         // Session methods
+
+        virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
 
         virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
 };

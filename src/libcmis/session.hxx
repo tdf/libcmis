@@ -34,6 +34,7 @@
 #include "object-type.hxx"
 #include "object.hxx"
 #include "folder.hxx"
+#include "repository.hxx"
 
 namespace libcmis
 {
@@ -55,6 +56,10 @@ namespace libcmis
         public:
 
             virtual ~Session() { };
+
+            /** Get the current repository.
+              */
+            virtual RepositoryPtr getRepository( ) throw ( Exception ) = 0;
 
             /** Get the Root folder of the repository
               */

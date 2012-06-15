@@ -118,16 +118,16 @@ namespace
     }
 }
 
-AtomPubSession::AtomPubSession( string atomPubUrl, string repository, 
+AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId, 
         string username, string password, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( atomPubUrl, repository, username, password, verbose ),
-    m_workspace( )
+    BaseSession( atomPubUrl, repositoryId, username, password, verbose ),
+    m_repository( )
 {
 }
 
 AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
     BaseSession( copy ),
-    m_workspace( copy.m_workspace )
+    m_repository( copy.m_repository )
 {
 }
 
@@ -135,7 +135,7 @@ AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
 AtomPubSession& AtomPubSession::operator=( const AtomPubSession& copy )
 {
     BaseSession::operator=( copy );
-    m_workspace = copy.m_workspace;
+    m_repository = copy.m_repository;
     
     return *this;
 }
@@ -184,13 +184,13 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
                     {
                         try
                         {
-                            atom::Workspace ws( xpathObj->nodesetval->nodeTab[i] );
+                            AtomRepositoryPtr ws( new AtomRepository( xpathObj->nodesetval->nodeTab[i] ) );
 
                             // SharePoint is case insensitive for the id...
-                            if ( lcl_tolower( ws.getId( ) ) == lcl_tolower( m_repository ) )
-                                m_workspace = ws;
+                            if ( lcl_tolower( ws->getId( ) ) == lcl_tolower( m_repositoryId ) )
+                                m_repository = ws;
 
-                            m_repositoriesIds.push_back( ws.getId() );
+                            m_repositoriesIds.push_back( ws->getId() );
                         }
                         catch ( const libcmis::Exception& e )
                         {
@@ -216,15 +216,15 @@ list< string > AtomPubSession::getRepositories( string url, string username, str
     return session.m_repositoriesIds;
 }
 
-atom::Workspace& AtomPubSession::getWorkspace( ) throw ( libcmis::Exception )
+AtomRepositoryPtr AtomPubSession::getAtomRepository( ) throw ( libcmis::Exception )
 {
     initialize( );
-    return m_workspace;
+    return m_repository;
 }
 
-libcmis::FolderPtr AtomPubSession::getRootFolder() throw ( libcmis::Exception )
+libcmis::RepositoryPtr AtomPubSession::getRepository( ) throw ( libcmis::Exception )
 {
-    return getFolder( getWorkspace().getRootId() );
+    return getAtomRepository( );
 }
 
 libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
@@ -271,7 +271,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 
 libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Exception )
 {
-    string pattern = getWorkspace().getUriTemplate( atom::UriTemplate::ObjectById );
+    string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
     string url = createUrl( pattern, vars );
@@ -300,7 +300,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
 
 libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmis::Exception )
 {
-    string pattern = getWorkspace().getUriTemplate( atom::UriTemplate::ObjectByPath );
+    string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_PATH] = path;
     string url = createUrl( pattern, vars );

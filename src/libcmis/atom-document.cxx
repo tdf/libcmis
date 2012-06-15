@@ -279,7 +279,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     xmlBufferFree( buf );
 
     string respBuf;
-    string urlPattern = getSession()->getWorkspace( ).getCollectionUrl( atom::Collection::CheckedOut );
+    string urlPattern = getSession()->getAtomRepository( )->getCollectionUrl( Collection::CheckedOut );
     if ( urlPattern.find( "?" ) != string::npos )
         urlPattern += "&";
     else

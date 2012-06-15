@@ -34,7 +34,6 @@
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
-#include "atom-utils.hxx"
 
 // InMemory local test server data
 #define SERVER_ATOM_URL string( "http://localhost:8080/inmemory/atom" )
@@ -81,7 +80,7 @@
 #define TEST_UPDATED_PROPERTY_NAME string( "cmis:name" )
 #define TEST_UPDATED_PROPERTY_VALUE string( "New name" )
 
-using namespace boost;
+using boost::shared_ptr;
 using namespace std;
 
 class AtomTest : public CppUnit::TestFixture
@@ -170,29 +169,29 @@ void AtomTest::sessionCreationTest( )
 
     // Check for the mandatory collection URLs
     CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
-            !session.getWorkspace().getCollectionUrl( atom::Collection::Root ).empty() );
+            !session.getAtomRepository()->getCollectionUrl( Collection::Root ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "types collection URL missing",
-            !session.getWorkspace().getCollectionUrl( atom::Collection::Types ).empty() );
+            !session.getAtomRepository()->getCollectionUrl( Collection::Types ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "query collection URL missing",
-            !session.getWorkspace().getCollectionUrl( atom::Collection::Query ).empty() );
+            !session.getAtomRepository()->getCollectionUrl( Collection::Query ).empty() );
 
     // The optional collection URLs are present on InMemory, so check them
     CPPUNIT_ASSERT_MESSAGE( "checkedout collection URL missing",
-            !session.getWorkspace().getCollectionUrl( atom::Collection::CheckedOut ).empty() );
+            !session.getAtomRepository()->getCollectionUrl( Collection::CheckedOut ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "unfiled collection URL missing",
-            !session.getWorkspace().getCollectionUrl( atom::Collection::Unfiled ).empty() );
+            !session.getAtomRepository()->getCollectionUrl( Collection::Unfiled ).empty() );
 
     // Check for the mandatory URI template URLs
     CPPUNIT_ASSERT_MESSAGE( "objectbyid URI template URL missing",
-            !session.getWorkspace().getUriTemplate( atom::UriTemplate::ObjectById ).empty() );
+            !session.getAtomRepository()->getUriTemplate( UriTemplate::ObjectById ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "objectbypath URI template URL missing",
-            !session.getWorkspace().getUriTemplate( atom::UriTemplate::ObjectByPath ).empty() );
+            !session.getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "typebyid URI template URL missing",
-            !session.getWorkspace().getUriTemplate( atom::UriTemplate::TypeById ).empty() );
+            !session.getAtomRepository()->getUriTemplate( UriTemplate::TypeById ).empty() );
     
     // The optional URI template URL is present on InMemory, so check it
     CPPUNIT_ASSERT_MESSAGE( "query URI template URL missing",
-            !session.getWorkspace().getUriTemplate( atom::UriTemplate::Query ).empty() );
+            !session.getAtomRepository()->getUriTemplate( UriTemplate::Query ).empty() );
 
     // Check that the root id is defined
     CPPUNIT_ASSERT_MESSAGE( "Root node ID is missing",

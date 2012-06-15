@@ -9,6 +9,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	object.hxx \
 	property-type.hxx \
 	property.hxx \
+	repository.hxx \
 	session-factory.hxx \
 	session.hxx \
 	xml-utils.hxx \

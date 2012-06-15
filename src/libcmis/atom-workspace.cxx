@@ -31,204 +31,200 @@
 
 using namespace std;
 
-namespace atom
+AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception ):
+    m_id( ),
+    m_rootId( ),
+    m_collections( ),
+    m_uriTemplates( )
 {
-    Workspace::Workspace( xmlNodePtr wsNode ) throw ( libcmis::Exception ):
-        m_id( ),
-        m_rootId( ),
-        m_collections( ),
-        m_uriTemplates( )
+    if ( wsNode != NULL )
     {
-        if ( wsNode != NULL )
+        xmlDocPtr doc = libcmis::wrapInDoc( wsNode );
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        libcmis::registerNamespaces( xpathCtx );
+
+        if ( NULL != xpathCtx )
         {
-            xmlDocPtr doc = libcmis::wrapInDoc( wsNode );
-            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-            libcmis::registerNamespaces( xpathCtx );
+            // Get the collections
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), xpathCtx );
+            if ( NULL != xpathObj )
+                readCollections( xpathObj->nodesetval );
+            xmlXPathFreeObject( xpathObj );
 
-            if ( NULL != xpathCtx )
-            {
-                // Get the collections
-                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//app:collection" ), xpathCtx );
-                if ( NULL != xpathObj )
-                    readCollections( xpathObj->nodesetval );
-                xmlXPathFreeObject( xpathObj );
+            // Get the URI templates
+            xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), xpathCtx );
+            if ( NULL != xpathObj )
+                readUriTemplates( xpathObj->nodesetval );
+            xmlXPathFreeObject( xpathObj );
+            
+            // Get the root node id
+            string rootIdXPath( "//cmisra:repositoryInfo/cmis:rootFolderId/text()" );
+            m_rootId = libcmis::getXPathValue( xpathCtx, rootIdXPath );
+            
+            // Get the repository id
+            string repoIdXPath( "//cmisra:repositoryInfo/cmis:repositoryId/text()" );
+            m_id = libcmis::getXPathValue( xpathCtx, repoIdXPath );
 
-                // Get the URI templates
-                xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:uritemplate" ), xpathCtx );
-                if ( NULL != xpathObj )
-                    readUriTemplates( xpathObj->nodesetval );
-                xmlXPathFreeObject( xpathObj );
-                
-                // Get the root node id
-                string rootIdXPath( "//cmisra:repositoryInfo/cmis:rootFolderId/text()" );
-                m_rootId = libcmis::getXPathValue( xpathCtx, rootIdXPath );
-                
-                // Get the repository id
-                string repoIdXPath( "//cmisra:repositoryInfo/cmis:repositoryId/text()" );
-                m_id = libcmis::getXPathValue( xpathCtx, repoIdXPath );
-
-                // TODO Extract other useful stuffs
-            }
-            xmlXPathFreeContext( xpathCtx );
-            xmlFreeDoc( doc );
+            // TODO Extract other useful stuffs
         }
+        xmlXPathFreeContext( xpathCtx );
+        xmlFreeDoc( doc );
     }
+}
 
-    Workspace::Workspace( const Workspace& rCopy ) :
-        m_id ( rCopy.m_id ),
-        m_rootId( rCopy.m_rootId ),
-        m_collections( rCopy.m_collections ),
-        m_uriTemplates( rCopy.m_uriTemplates )
+AtomRepository::AtomRepository( const AtomRepository& rCopy ) :
+    m_id ( rCopy.m_id ),
+    m_rootId( rCopy.m_rootId ),
+    m_collections( rCopy.m_collections ),
+    m_uriTemplates( rCopy.m_uriTemplates )
+{
+}
+
+AtomRepository::~AtomRepository( )
+{
+    m_collections.clear( );
+    m_uriTemplates.clear( );
+}
+
+AtomRepository& AtomRepository::operator= ( const AtomRepository& rCopy )
+{
+    m_id = rCopy.m_id;
+    m_rootId = rCopy.m_rootId;
+    m_collections = rCopy.m_collections;
+    m_uriTemplates = rCopy.m_uriTemplates;
+
+    return *this;
+}
+
+string AtomRepository::getCollectionUrl( Collection::Type type )
+{
+    return m_collections[ type ];
+}
+
+string AtomRepository::getUriTemplate( UriTemplate::Type type )
+{
+    return m_uriTemplates[ type ];
+}
+
+void AtomRepository::readCollections( xmlNodeSetPtr nodeSet )
+{
+    int size = 0;
+    if ( nodeSet )
+        size = nodeSet->nodeNr;
+
+    for ( int i = 0; i < size; i++ )
     {
-    }
+        xmlNodePtr node = nodeSet->nodeTab[i];
 
-    Workspace::~Workspace( )
-    {
-        m_collections.clear( );
-        m_uriTemplates.clear( );
-    }
-
-    Workspace& Workspace::operator= ( const Workspace& rCopy )
-    {
-        m_id = rCopy.m_id;
-        m_rootId = rCopy.m_rootId;
-        m_collections = rCopy.m_collections;
-        m_uriTemplates = rCopy.m_uriTemplates;
-
-        return *this;
-    }
-
-    string Workspace::getCollectionUrl( Collection::Type type )
-    {
-        return m_collections[ type ];
-    }
-
-    string Workspace::getUriTemplate( UriTemplate::Type type )
-    {
-        return m_uriTemplates[ type ];
-    }
-
-    void Workspace::readCollections( xmlNodeSetPtr nodeSet )
-    {
-        int size = 0;
-        if ( nodeSet )
-            size = nodeSet->nodeNr;
-
-        for ( int i = 0; i < size; i++ )
+        // Look for the href property
+        xmlChar* href = xmlGetProp( node, BAD_CAST( "href" ) );
+        if ( href )
         {
-            xmlNodePtr node = nodeSet->nodeTab[i];
+            string collectionRef( ( char* )href );
+            xmlFree( href );
 
-            // Look for the href property
-            xmlChar* href = xmlGetProp( node, BAD_CAST( "href" ) );
-            if ( href )
-            {
-                string collectionRef( ( char* )href );
-                xmlFree( href );
-
-                // Look for the cmisra:collectionType child
-                for ( xmlNodePtr child = node->children; child; child = child->next )
-                {
-                    // SharePoint CMIS implementation doesn't follow the spec:
-                    // the cmisra namespace is omitted
-                    bool isCollectionType = xmlStrEqual( child->name, BAD_CAST( "collectionType" ) );
-                    if ( isCollectionType )
-                    {
-                        xmlChar* content = xmlNodeGetContent( child );
-                        Collection::Type type = Collection::Root;
-                        bool typeDefined = false;
-
-                        if ( xmlStrEqual( content, BAD_CAST( "root" ) ) )
-                        {
-                            type = Collection::Root;
-                            typeDefined = true;
-                        }
-                        else if ( xmlStrEqual( content, BAD_CAST( "types" ) ) )
-                        {
-                            type = Collection::Types;
-                            typeDefined = true;
-                        }
-                        else if ( xmlStrEqual( content, BAD_CAST( "query" ) ) )
-                        {
-                            type = Collection::Query;
-                            typeDefined = true;
-                        }
-                        else if ( xmlStrEqual( content, BAD_CAST( "checkedout" ) ) )
-                        {
-                            type = Collection::CheckedOut;
-                            typeDefined = true;
-                        }
-                        else if ( xmlStrEqual( content, BAD_CAST( "unfiled" ) ) )
-                        {
-                            type = Collection::Unfiled;
-                            typeDefined = true;
-                        }
-
-                        if ( typeDefined )
-                            m_collections[ type ] = collectionRef;
-
-                        xmlFree( content );
-                    }
-                }
-            }
-        }
-    }
-
-    void Workspace::readUriTemplates( xmlNodeSetPtr nodeSet )
-    {
-        int size = 0;
-        if ( nodeSet )
-            size = nodeSet->nodeNr;
-
-        for ( int i = 0; i < size; i++ )
-        {
-            xmlNodePtr node = nodeSet->nodeTab[i];
-
-            string templateUri;
-            UriTemplate::Type type = UriTemplate::ObjectById;
-            bool typeDefined = false;
-
-            // Look for the cmisra:template and cmisra:type children
+            // Look for the cmisra:collectionType child
             for ( xmlNodePtr child = node->children; child; child = child->next )
             {
-                bool isTemplate = xmlStrEqual( child->name, BAD_CAST( "template" ) );
-                bool isType = xmlStrEqual( child->name, BAD_CAST( "type" ) );
+                // SharePoint CMIS implementation doesn't follow the spec:
+                // the cmisra namespace is omitted
+                bool isCollectionType = xmlStrEqual( child->name, BAD_CAST( "collectionType" ) );
+                if ( isCollectionType )
+                {
+                    xmlChar* content = xmlNodeGetContent( child );
+                    Collection::Type type = Collection::Root;
+                    bool typeDefined = false;
 
-                if ( isTemplate )
-                {
-                    xmlChar* content = xmlNodeGetContent( child );
-                    templateUri = string( ( char * )content );
-                    xmlFree( content );
-                }
-                else if ( isType )
-                {
-                    xmlChar* content = xmlNodeGetContent( child );
-                    if ( xmlStrEqual( content, BAD_CAST( "objectbyid" ) ) )
+                    if ( xmlStrEqual( content, BAD_CAST( "root" ) ) )
                     {
-                        type = UriTemplate::ObjectById;
+                        type = Collection::Root;
                         typeDefined = true;
                     }
-                    else if ( xmlStrEqual( content, BAD_CAST( "objectbypath" ) ) )
+                    else if ( xmlStrEqual( content, BAD_CAST( "types" ) ) )
                     {
-                        type = UriTemplate::ObjectByPath;
+                        type = Collection::Types;
                         typeDefined = true;
                     }
                     else if ( xmlStrEqual( content, BAD_CAST( "query" ) ) )
                     {
-                        type = UriTemplate::Query;
+                        type = Collection::Query;
                         typeDefined = true;
                     }
-                    else if ( xmlStrEqual( content, BAD_CAST( "typebyid" ) ) )
+                    else if ( xmlStrEqual( content, BAD_CAST( "checkedout" ) ) )
                     {
-                        type = UriTemplate::TypeById;
+                        type = Collection::CheckedOut;
                         typeDefined = true;
                     }
+                    else if ( xmlStrEqual( content, BAD_CAST( "unfiled" ) ) )
+                    {
+                        type = Collection::Unfiled;
+                        typeDefined = true;
+                    }
+
+                    if ( typeDefined )
+                        m_collections[ type ] = collectionRef;
+
                     xmlFree( content );
                 }
             }
-
-            if ( !templateUri.empty() && typeDefined )
-                m_uriTemplates[ type ] = templateUri;
         }
     }
+}
 
+void AtomRepository::readUriTemplates( xmlNodeSetPtr nodeSet )
+{
+    int size = 0;
+    if ( nodeSet )
+        size = nodeSet->nodeNr;
+
+    for ( int i = 0; i < size; i++ )
+    {
+        xmlNodePtr node = nodeSet->nodeTab[i];
+
+        string templateUri;
+        UriTemplate::Type type = UriTemplate::ObjectById;
+        bool typeDefined = false;
+
+        // Look for the cmisra:template and cmisra:type children
+        for ( xmlNodePtr child = node->children; child; child = child->next )
+        {
+            bool isTemplate = xmlStrEqual( child->name, BAD_CAST( "template" ) );
+            bool isType = xmlStrEqual( child->name, BAD_CAST( "type" ) );
+
+            if ( isTemplate )
+            {
+                xmlChar* content = xmlNodeGetContent( child );
+                templateUri = string( ( char * )content );
+                xmlFree( content );
+            }
+            else if ( isType )
+            {
+                xmlChar* content = xmlNodeGetContent( child );
+                if ( xmlStrEqual( content, BAD_CAST( "objectbyid" ) ) )
+                {
+                    type = UriTemplate::ObjectById;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( content, BAD_CAST( "objectbypath" ) ) )
+                {
+                    type = UriTemplate::ObjectByPath;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( content, BAD_CAST( "query" ) ) )
+                {
+                    type = UriTemplate::Query;
+                    typeDefined = true;
+                }
+                else if ( xmlStrEqual( content, BAD_CAST( "typebyid" ) ) )
+                {
+                    type = UriTemplate::TypeById;
+                    typeDefined = true;
+                }
+                xmlFree( content );
+            }
+        }
+
+        if ( !templateUri.empty() && typeDefined )
+            m_uriTemplates[ type ] = templateUri;
+    }
 }

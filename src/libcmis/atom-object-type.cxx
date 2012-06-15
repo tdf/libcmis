@@ -254,7 +254,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
     {
-        string pattern = m_session->getWorkspace().getUriTemplate( atom::UriTemplate::TypeById );
+        string pattern = m_session->getAtomRepository()->getUriTemplate( UriTemplate::TypeById );
         map< string, string > vars;
         vars[URI_TEMPLATE_VAR_ID] = getId( );
         string url = m_session->createUrl( pattern, vars );

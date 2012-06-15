@@ -115,13 +115,13 @@ namespace
     }
 }
 
-BaseSession::BaseSession( string atomPubUrl, string repository, 
+BaseSession::BaseSession( string atomPubUrl, string repositoryId, 
         string username, string password, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_authProvider( ),
     m_curlHandle( NULL ),
     m_bindingUrl( atomPubUrl ),
-    m_repository( repository ),
+    m_repositoryId( repositoryId ),
     m_username( username ),
     m_password( password ),
     m_authProvided( false ),
@@ -137,7 +137,7 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_authProvider( copy.m_authProvider ),
     m_curlHandle( NULL ),
     m_bindingUrl( copy.m_bindingUrl ),
-    m_repository( copy.m_repository ),
+    m_repositoryId( copy.m_repositoryId ),
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
@@ -155,7 +155,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
     m_authProvider = copy.m_authProvider;
     m_curlHandle = NULL;
     m_bindingUrl = copy.m_bindingUrl;
-    m_repository = copy.m_repository;
+    m_repositoryId = copy.m_repositoryId;
     m_username = copy.m_username;
     m_password = copy.m_password;
     m_authProvided = copy.m_authProvided;
@@ -398,6 +398,11 @@ long BaseSession::getHttpStatus( )
     curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &status );
 
     return status;
+}
+
+libcmis::FolderPtr BaseSession::getRootFolder() throw ( libcmis::Exception )
+{
+    return getFolder( getRootId() );
 }
 
 const char* CurlException::what( ) const throw ()

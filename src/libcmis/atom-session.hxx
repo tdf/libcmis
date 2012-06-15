@@ -34,10 +34,10 @@
 class AtomPubSession : public BaseSession
 {
     private:
-        atom::Workspace m_workspace;
+        AtomRepositoryPtr m_repository;
 
     public:
-        AtomPubSession( std::string sAtomPubUrl, std::string repository,
+        AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         std::string username, std::string password,
                         bool verbose ) throw ( libcmis::Exception );
         AtomPubSession( const AtomPubSession& copy );
@@ -49,17 +49,15 @@ class AtomPubSession : public BaseSession
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        atom::Workspace& getWorkspace( ) throw ( libcmis::Exception );
+        AtomRepositoryPtr getAtomRepository( ) throw ( libcmis::Exception );
 
         // Utility methods
-        
-        std::string getRootId( ) throw ( libcmis::Exception ) { return getWorkspace().getRootId( ); }
 
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
         // Override session methods
 
-        virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
+        virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
         

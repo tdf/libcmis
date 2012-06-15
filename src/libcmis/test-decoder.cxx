@@ -31,7 +31,7 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-#include "atom-utils.hxx"
+#include "xml-utils.hxx"
 
 #define BASE64_ENCODING string( "base64" )
 
@@ -40,7 +40,7 @@ using namespace std;
 class DecoderTest : public CppUnit::TestFixture
 {
     private:
-        atom::EncodedData* data;
+        libcmis::EncodedData* data;
         FILE* stream;
 
         string getActual( );
@@ -102,7 +102,7 @@ const DecoderTest& DecoderTest::operator=( const DecoderTest& rCopy )
 void DecoderTest::setUp( )
 {
     stream = tmpfile(); 
-    data = new atom::EncodedData( stream );
+    data = new libcmis::EncodedData( stream );
 }
 
 void DecoderTest::tearDown( )

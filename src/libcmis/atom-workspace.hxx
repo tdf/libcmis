@@ -31,65 +31,69 @@
 #include <map>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
 #include <curl/curl.h>
 #include <libxml/xpath.h>
 
 #include "exception.hxx"
+#include "repository.hxx"
 
 #define URI_TEMPLATE_VAR_ID std::string( "id" )
 #define URI_TEMPLATE_VAR_PATH std::string( "path" )
 
-namespace atom
-{
-    struct Collection {
-        enum Type
-        {
-            Root,
-            Types,
-            Query,
-            CheckedOut,
-            Unfiled
-        };
-    };
-
-    struct UriTemplate {
-        enum Type
-        {
-            ObjectById,
-            ObjectByPath,
-            TypeById,
-            Query
-        };
-    };
-
-    class Workspace
+struct Collection {
+    enum Type
     {
-        private:
-            std::string m_id;
-            std::string m_rootId;
-
-            /// Collections URLs
-            std::map< Collection::Type, std::string > m_collections;
-
-            /// URI templates
-            std::map< UriTemplate::Type, std::string > m_uriTemplates;
-
-        public:
-            Workspace( xmlNodePtr wsNode = NULL ) throw ( libcmis::Exception );
-            Workspace( const Workspace& rCopy );
-            ~Workspace( );
-
-            Workspace& operator= ( const Workspace& rCopy );
-
-            std::string getCollectionUrl( atom::Collection::Type );
-            std::string getUriTemplate( atom::UriTemplate::Type );
-            std::string getRootId( ) { return m_rootId; }
-            std::string getId( ) { return m_id; }
-
-        private:
-            void readCollections( xmlNodeSetPtr pNodeSet );
-            void readUriTemplates( xmlNodeSetPtr pNodeSet );
+        Root,
+        Types,
+        Query,
+        CheckedOut,
+        Unfiled
     };
-}
+};
+
+struct UriTemplate {
+    enum Type
+    {
+        ObjectById,
+        ObjectByPath,
+        TypeById,
+        Query
+    };
+};
+
+class AtomRepository : public libcmis::Repository
+{
+    private:
+        std::string m_id;
+        std::string m_rootId;
+
+        /// Collections URLs
+        std::map< Collection::Type, std::string > m_collections;
+
+        /// URI templates
+        std::map< UriTemplate::Type, std::string > m_uriTemplates;
+
+    public:
+        AtomRepository( xmlNodePtr wsNode = NULL ) throw ( libcmis::Exception );
+        AtomRepository( const AtomRepository& rCopy );
+        ~AtomRepository( );
+
+        AtomRepository& operator= ( const AtomRepository& rCopy );
+
+        std::string getCollectionUrl( Collection::Type );
+        std::string getUriTemplate( UriTemplate::Type );
+
+        // Repository methods
+
+        virtual std::string getRootId( ) { return m_rootId; }
+        virtual std::string getId( ) { return m_id; }
+
+    private:
+        void readCollections( xmlNodeSetPtr pNodeSet );
+        void readUriTemplates( xmlNodeSetPtr pNodeSet );
+};
+
+typedef boost::shared_ptr< AtomRepository > AtomRepositoryPtr;
 
 #endif
