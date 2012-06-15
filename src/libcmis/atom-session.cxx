@@ -332,10 +332,3 @@ libcmis::ObjectTypePtr AtomPubSession::getType( string id ) throw ( libcmis::Exc
     libcmis::ObjectTypePtr type( new AtomObjectType( this, id ) );
     return type;
 }
-
-libcmis::FolderPtr AtomPubSession::getFolder( string id ) throw ( libcmis::Exception )
-{
-    libcmis::ObjectPtr object = getObject( id );
-    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
-    return folder;
-}

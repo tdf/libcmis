@@ -263,9 +263,29 @@ namespace libcmis
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "atom" ),  NS_ATOM_URL );
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), NS_CMISM_URL );
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "ns3" ), BAD_CAST( "http://docs.oasis-open.org/ns/cmis/messaging/200908/" ) );
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
+    }
+    
+    void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx )
+    {
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisw" ),  NS_CMISW_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ),  NS_CMIS_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ),  NS_CMISRA_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), NS_CMISM_URL );
+
+        registerSoapNamespaces( xpathCtx );
+    }
+    
+    void registerSoapNamespaces( xmlXPathContextPtr xpathCtx )
+    {
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap" ), NS_SOAP_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap-env" ), NS_SOAP_ENV_URL );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "wsdl" ), BAD_CAST ( "http://schemas.xmlsoap.org/wsdl/" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "ns" ), BAD_CAST ( "http://schemas.xmlsoap.org/soap/encoding/" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "jaxws" ), BAD_CAST( "http://java.sun.com/xml/ns/jaxws" ) );
+        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsd" ), BAD_CAST ( "http://www.w3.org/2001/XMLSchema" ) );
     }
     
     string getXPathValue( xmlXPathContextPtr xpathCtx, string req )

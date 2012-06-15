@@ -18,13 +18,19 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_headers_public) \
+	session-factory.cxx \
+	base-session.hxx \
+	base-session.cxx \
+	allowable-actions.cxx \
+	property.cxx \
+	property-type.cxx \
+	xml-utils.cxx \
 	atom-document.hxx \
 	atom-folder.hxx \
 	atom-object.hxx \
 	atom-object-type.hxx \
 	atom-object-type.cxx \
 	atom-session.hxx \
-	session-factory.cxx \
 	atom-document.cxx \
 	atom-folder.cxx \
 	atom-object.cxx \
@@ -33,12 +39,12 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-workspace.cxx \
 	atom-allowable-actions.hxx \
 	atom-allowable-actions.cxx \
-	base-session.hxx \
-	base-session.cxx \
-	allowable-actions.cxx \
-	property.cxx \
-	property-type.cxx \
-	xml-utils.cxx
+	ws-requests.hxx \
+	ws-requests.cxx \
+	ws-soap.hxx \
+	ws-soap.cxx \
+	ws-session.hxx \
+	ws-session.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 2:2:0
 
@@ -51,7 +57,9 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis
 
 if ENABLE_TESTS
-check_PROGRAMS = test-atom
+check_PROGRAMS = \
+	test-atom \
+	test-ws
 
 test_atom_SOURCES =	\
 	test-atom.cxx \
@@ -66,6 +74,18 @@ test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
+test_ws_SOURCES =	\
+	test-soap.cxx \
+	test-ws.cxx \
+	test-helpers.hxx \
+	test-helpers.cxx
+
+test_ws_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
+	$(XML2_LIBS) \
+	$(CURL_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
 TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
-TESTS = test-atom
+TESTS = test-atom test-ws
 endif

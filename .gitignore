@@ -21,7 +21,9 @@ tags
 ChangeLog
 libcmis-*.*.*.tar.gz
 test-atom
+test-ws
 cmis-client
 test-server
 *.tar.gz
 *.1
+*.swp

@@ -25,35 +25,42 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _ATOM_SESSION_HXX_
-#define _ATOM_SESSION_HXX_
+#ifndef _WS_SESSION_HXX_
+#define _WS_SESSION_HXX_
+
+#include <map>
+#include <string>
 
 #include "base-session.hxx"
-#include "atom-workspace.hxx"
 
-class AtomPubSession : public BaseSession
+class WSSession : public BaseSession
 {
     private:
-        AtomRepositoryPtr m_repository;
+        std::map< std::string, std::string > m_servicesUrls;
 
     public:
-        AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
-                        std::string username, std::string password,
-                        bool verbose ) throw ( libcmis::Exception );
-        AtomPubSession( const AtomPubSession& copy );
-        ~AtomPubSession( );
+        WSSession( std::string bindingUrl, std::string repositoryId,
+                   std::string username, std::string password,
+                   bool verbose ) throw ( libcmis::Exception );
+        WSSession( const WSSession& copy );
+        ~WSSession( );
 
-        AtomPubSession& operator=( const AtomPubSession& copy );
+        WSSession& operator=( const WSSession& copy );
 
         static std::list< std::string > getRepositories( std::string url,
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 
-        AtomRepositoryPtr getAtomRepository( ) throw ( libcmis::Exception );
-
         // Utility methods
 
-        libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+        /** Try hard to get a WSDL file at the given URL (tries to add ?wsdl if needed)
+          */        
+        std::string getWsdl( std::string url ) throw ( CurlException );
+
+
+        /** Get the service location URL given its name.
+          */
+        std::string getServiceUrl( std::string name ); 
 
         // Override session methods
 

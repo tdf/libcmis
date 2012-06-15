@@ -132,6 +132,8 @@ class BaseSession : public libcmis::Session
         // Session methods
 
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
+        
+        virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
         virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
 };

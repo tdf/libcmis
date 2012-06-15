@@ -405,6 +405,13 @@ libcmis::FolderPtr BaseSession::getRootFolder() throw ( libcmis::Exception )
     return getFolder( getRootId() );
 }
 
+libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exception )
+{
+    libcmis::ObjectPtr object = getObject( id );
+    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
+    return folder;
+}
+
 const char* CurlException::what( ) const throw ()
 {
     stringstream buf;

@@ -368,7 +368,7 @@ void XmlTest::parsePropertyStringTest( )
         <<      "<cmis:value>VALUE 2</cmis:value>"
         << "</cmis:propertyString>";
     libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
-    libcmis::PropertyPtr actual = libcmis::parseProperty( test::getXmlNode( buf.str( ) ), dummy );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType( )->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getStrings( ).size( ) );
