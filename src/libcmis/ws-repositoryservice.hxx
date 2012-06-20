@@ -25,41 +25,32 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _WS_REQUESTS_HXX_
-#define _WS_REQUESTS_HXX_
+#ifndef _WS_REPOSITORYSERVICE_HXX_
+#define _WS_REPOSITORYSERVICE_HXX_
 
 #include <map>
 #include <string>
 
+#include "base-session.hxx"
 #include "ws-soap.hxx"
 
-/** getRepositories request.
-  */
-class GetRepositories : public SoapRequest
-{
-    public:
-        GetRepositories( ) { };
-        ~GetRepositories( ) { };
+class WSSession;
 
-        void toXml( xmlTextWriterPtr writer );
-};
-
-class GetRepositoriesResponse : public SoapResponse
+class RepositoryService
 {
     private:
-        std::map< std::string, std::string > m_repositories;
-
-        GetRepositoriesResponse( ) : SoapResponse( ), m_repositories( ) { };
+        WSSession* m_session;
+        std::string m_url;
 
     public:
 
-        /** Parse cmisw:getRepositoriesResponse. This function
-            assumes that the node is the expected one: this is
-            normally ensures by the SoapResponseFactory.
-          */
-        static SoapResponsePtr create( xmlNodePtr node );
+        RepositoryService( WSSession* session );
+        RepositoryService( const RepositoryService& copy );
+        ~RepositoryService( );
 
-        std::map< std::string, std::string > getRepositories( ) { return m_repositories; }
+        RepositoryService& operator=( const RepositoryService& copy );
+
+        std::map< std::string, std::string > getRepositories( ) throw ( SoapFault, CurlException );
 };
 
 #endif

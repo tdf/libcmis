@@ -37,16 +37,17 @@
 
 #include "exception.hxx"
 
-#define NS_CMIS_PREFIX      BAD_CAST( "cmis" )
-#define NS_CMISRA_PREFIX    BAD_CAST( "cmisra" )
-#define NS_CMIS_URL         BAD_CAST( "http://docs.oasis-open.org/ns/cmis/core/200908/" )
-#define NS_CMISRA_URL       BAD_CAST( "http://docs.oasis-open.org/ns/cmis/restatom/200908/" )
-#define NS_CMISM_URL        BAD_CAST( "http://docs.oasis-open.org/ns/cmis/messaging/200908/" )
-#define NS_CMISW_URL        BAD_CAST( "http://docs.oasis-open.org/ns/cmis/ws/200908/" )
-#define NS_APP_URL          BAD_CAST( "http://www.w3.org/2007/app" )
-#define NS_ATOM_URL         BAD_CAST( "http://www.w3.org/2005/Atom" )
-#define NS_SOAP_URL         BAD_CAST( "http://schemas.xmlsoap.org/wsdl/soap/" )
-#define NS_SOAP_ENV_URL     BAD_CAST( "http://schemas.xmlsoap.org/soap/envelope/" )
+#define NS_CMIS_PREFIX      "cmis"
+#define NS_CMISRA_PREFIX    "cmisra"
+#define NS_SOAP_ENV_PREFIX  "soap-env"
+#define NS_CMIS_URL         "http://docs.oasis-open.org/ns/cmis/core/200908/"
+#define NS_CMISRA_URL       "http://docs.oasis-open.org/ns/cmis/restatom/200908/"
+#define NS_CMISM_URL        "http://docs.oasis-open.org/ns/cmis/messaging/200908/"
+#define NS_CMISW_URL        "http://docs.oasis-open.org/ns/cmis/ws/200908/"
+#define NS_APP_URL          "http://www.w3.org/2007/app"
+#define NS_ATOM_URL         "http://www.w3.org/2005/Atom"
+#define NS_SOAP_URL         "http://schemas.xmlsoap.org/wsdl/soap/"
+#define NS_SOAP_ENV_URL     "http://schemas.xmlsoap.org/soap/envelope/"
 
 #define LIBCURL_VERSION_VALUE ( \
         ( LIBCURL_VERSION_MAJOR << 16 ) | ( LIBCURL_VERSION_MINOR << 8 ) | ( LIBCURL_VERSION_PATCH ) \

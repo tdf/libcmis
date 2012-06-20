@@ -372,9 +372,9 @@ string AtomObject::toString( )
 void AtomObject::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:atom" ), NS_ATOM_URL );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), NS_CMIS_URL );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), NS_CMISRA_URL );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:atom" ), BAD_CAST( NS_ATOM_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
 
     if ( !getCreatedBy( ).empty( ) )
     {

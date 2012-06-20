@@ -39,6 +39,10 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-workspace.cxx \
 	atom-allowable-actions.hxx \
 	atom-allowable-actions.cxx \
+	ws-relatedmultipart.hxx \
+	ws-relatedmultipart.cxx \
+	ws-repositoryservice.hxx \
+	ws-repositoryservice.cxx \
 	ws-requests.hxx \
 	ws-requests.cxx \
 	ws-soap.hxx \

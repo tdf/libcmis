@@ -37,7 +37,6 @@
 
 #include "xmlserializable.hxx"
 
-
 /** Base class for all SOAP response objects.
 
     The factory will need to create the response objects using a static

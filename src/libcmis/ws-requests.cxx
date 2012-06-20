@@ -29,11 +29,51 @@
 #include "ws-requests.hxx"
 #include "xml-utils.hxx"
 
+using namespace std;
+
 void GetRepositories::toXml( xmlTextWriterPtr writer )
 {
     // Write the SOAP request here
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), NS_CMIS_URL );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), NS_CMISM_URL );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
     xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node )
+{
+    GetRepositoriesResponse* response = new GetRepositoriesResponse( );
+
+    // Look for the cmiss:repositories children
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "repositories" ) ) )
+        {
+            string id;
+            string name;
+
+            // Look for repositoryId and repositoryName
+            for ( xmlNodePtr repoChild = child->children; repoChild; repoChild = repoChild->next )
+            {
+                xmlChar* content = xmlNodeGetContent( repoChild );
+                string value( ( char* ) content );
+                xmlFree( content );
+
+                if ( xmlStrEqual( repoChild->name, BAD_CAST( "repositoryId" ) ) )
+                {
+                    id = value;
+                }
+                else if ( xmlStrEqual( repoChild->name, BAD_CAST( "repositoryName" ) ) )
+                {
+                    name = value;
+                }
+
+            }
+
+            if ( !id.empty( ) )
+                response->m_repositories[ id ] = name;
+        }
+    }
+
+    return SoapResponsePtr( response );
 }

@@ -108,7 +108,7 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string xml ) throw
                     xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
 
                     // Is it a fault?
-                    if ( xmlStrEqual( NS_SOAP_ENV_URL, node->ns->href ) &&
+                    if ( xmlStrEqual( BAD_CAST( NS_SOAP_ENV_URL ), node->ns->href ) &&
                          xmlStrEqual( BAD_CAST( "Fault" ), node->name ) )
                     {
                         throw SoapFault( node );
@@ -132,9 +132,9 @@ SoapResponsePtr SoapResponseFactory::createResponse( xmlNodePtr node )
     SoapResponsePtr response;
 
     // Implement me
-    string ns( ( const char* ) node->ns->href );
+    string ns( ( const char* ) node->ns->prefix );
     string name( ( const char* ) node->name );
-    string id = "{" + ns + "}" + name;
+    string id = ns + ":" + name;
     map< string, SoapResponseCreator >::iterator it = m_mapping.find( id );
 
     if ( it != m_mapping.end( ) )

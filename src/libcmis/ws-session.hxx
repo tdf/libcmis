@@ -32,11 +32,15 @@
 #include <string>
 
 #include "base-session.hxx"
+#include "ws-repositoryservice.hxx"
+#include "ws-soap.hxx"
 
 class WSSession : public BaseSession
 {
     private:
         std::map< std::string, std::string > m_servicesUrls;
+
+        SoapResponseFactory m_responseFactory;
 
     public:
         WSSession( std::string bindingUrl, std::string repositoryId,
@@ -53,14 +57,23 @@ class WSSession : public BaseSession
 
         // Utility methods
 
+        /** Get an instance of the SoapResponseFactory, setup with all the
+            CMIS namespaces and function pointers.
+          */
+        SoapResponseFactory& getResponseFactory( ) { return m_responseFactory; }
+
         /** Try hard to get a WSDL file at the given URL (tries to add ?wsdl if needed)
           */        
         std::string getWsdl( std::string url ) throw ( CurlException );
 
+        std::vector< SoapResponsePtr > soapRequest( std::string& url, SoapRequest& request )
+            throw ( SoapFault, CurlException );
 
         /** Get the service location URL given its name.
           */
-        std::string getServiceUrl( std::string name ); 
+        std::string getServiceUrl( std::string name );
+
+        RepositoryService getRepositoryService( );
 
         // Override session methods
 
@@ -75,6 +88,10 @@ class WSSession : public BaseSession
     private:
 
         void initialize( ) throw ( libcmis::Exception );
+
+        std::map< std::string, SoapResponseCreator > getResponseMapping( );
+
+        std::string createEnvelope( SoapRequest& request );
 };
 
 #endif

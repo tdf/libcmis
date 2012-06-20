@@ -776,6 +776,16 @@ BOOST_FIND_HEADER([boost/unordered_set.hpp])])
 AC_DEFUN([BOOST_UTILITY],
 [BOOST_FIND_HEADER([boost/utility.hpp])])
 
+# BOOST_UUID()
+# -----------------
+# Look for Boost.Uuid
+AC_DEFUN([BOOST_UUID],
+[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])
+BOOST_FIND_HEADER([boost/uuid/uuid_generators.hpp])
+BOOST_FIND_HEADER([boost/uuid/uuid_io.hpp])
+BOOST_FIND_HEADER([boost/uuid/uuid_serialize.hpp])
+])
+
 
 # BOOST_VARIANT()
 # ---------------
