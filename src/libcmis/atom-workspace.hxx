@@ -65,9 +65,6 @@ struct UriTemplate {
 class AtomRepository : public libcmis::Repository
 {
     private:
-        std::string m_id;
-        std::string m_rootId;
-
         /// Collections URLs
         std::map< Collection::Type, std::string > m_collections;
 
@@ -83,11 +80,6 @@ class AtomRepository : public libcmis::Repository
 
         std::string getCollectionUrl( Collection::Type );
         std::string getUriTemplate( UriTemplate::Type );
-
-        // Repository methods
-
-        virtual std::string getRootId( ) { return m_rootId; }
-        virtual std::string getId( ) { return m_id; }
 
     private:
         void readCollections( xmlNodeSetPtr pNodeSet );

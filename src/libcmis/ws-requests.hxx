@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 
+#include "repository.hxx"
 #include "ws-soap.hxx"
 
 /** getRepositories request.
@@ -53,13 +54,43 @@ class GetRepositoriesResponse : public SoapResponse
 
     public:
 
-        /** Parse cmisw:getRepositoriesResponse. This function
+        /** Parse cmism:getRepositoriesResponse. This function
             assumes that the node is the expected one: this is
             normally ensured by the SoapResponseFactory.
           */
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart );
 
         std::map< std::string, std::string > getRepositories( ) { return m_repositories; }
+};
+
+class GetRepositoryInfo : public SoapRequest
+{
+    private:
+        std::string m_id;
+
+    public:
+        GetRepositoryInfo( std::string id ) : m_id( id ) { };
+        ~GetRepositoryInfo( ) { };
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetRepositoryInfoResponse : public SoapResponse
+{
+    private:
+        libcmis::RepositoryPtr m_repository;
+
+        GetRepositoryInfoResponse( ) : SoapResponse( ), m_repository( ) { };
+
+    public:
+
+        /** Parse cmism:getRepositoriesResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart );
+
+        libcmis::RepositoryPtr getRepository( ) { return m_repository; }
 };
 
 #endif

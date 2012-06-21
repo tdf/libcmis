@@ -73,3 +73,20 @@ map< string, string > RepositoryService::getRepositories( ) throw ( SoapFault, C
     }
     return repositories;
 }
+
+libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw ( SoapFault, CurlException )
+{
+    libcmis::RepositoryPtr repository;
+
+    GetRepositoryInfo request( id );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetRepositoryInfoResponse* response = dynamic_cast< GetRepositoryInfoResponse* >( resp );
+        if ( response != NULL )
+            repository = response->getRepository( );
+    }
+
+    return repository;
+}

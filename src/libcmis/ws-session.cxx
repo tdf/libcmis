@@ -212,6 +212,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     map< string, SoapResponseCreator > mapping;
 
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoryInfoResponse" ] = &GetRepositoryInfoResponse::create;
 
     return mapping;
 }
@@ -241,10 +242,16 @@ list< string > WSSession::getRepositories( string url, string username, string p
 
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
 {
-    libcmis::RepositoryPtr empty;
-
-    // TODO Implement me
-    return empty;
+    libcmis::RepositoryPtr repo;
+    try
+    {
+        repo = getRepositoryService( ).getRepositoryInfo( m_repositoryId );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    return repo;
 }
 
 libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception )

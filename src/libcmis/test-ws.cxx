@@ -49,10 +49,12 @@ class WSTest : public CppUnit::TestFixture
 
         void getRepositoriesTest( );
         void sessionCreationTest( );
+        void getRepositoryTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
+        CPPUNIT_TEST( getRepositoryTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -66,6 +68,12 @@ void WSTest::sessionCreationTest( )
 {
     WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD, false );
     CPPUNIT_ASSERT_MESSAGE( "No RepositoryService URL", !session.getServiceUrl( "RepositoryService" ).empty( ) );
+}
+
+void WSTest::getRepositoryTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Repository info badly retrieved", string( "100" ), session.getRepository()->getRootId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );

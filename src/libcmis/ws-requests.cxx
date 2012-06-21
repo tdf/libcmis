@@ -33,7 +33,6 @@ using namespace std;
 
 void GetRepositories::toXml( xmlTextWriterPtr writer )
 {
-    // Write the SOAP request here
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
@@ -77,3 +76,31 @@ SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipa
 
     return SoapResponsePtr( response );
 }
+
+void GetRepositoryInfo::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositoryInfo" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_id.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMultipart& )
+{
+    GetRepositoryInfoResponse* response = new GetRepositoryInfoResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "repositoryInfo" ) ) )
+        {
+            libcmis::RepositoryPtr repository( new libcmis::Repository( child ) );
+            response->m_repository = repository;
+        }
+    }
+
+    return SoapResponsePtr( response );
+}
+

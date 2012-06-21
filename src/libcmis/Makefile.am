@@ -24,6 +24,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	allowable-actions.cxx \
 	property.cxx \
 	property-type.cxx \
+	repository.cxx \
 	xml-utils.cxx \
 	atom-document.hxx \
 	atom-folder.hxx \

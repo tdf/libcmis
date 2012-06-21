@@ -32,6 +32,7 @@
 #include <string>
 
 #include "base-session.hxx"
+#include "repository.hxx"
 #include "ws-soap.hxx"
 
 class WSSession;
@@ -51,6 +52,10 @@ class RepositoryService
         RepositoryService& operator=( const RepositoryService& copy );
 
         std::map< std::string, std::string > getRepositories( ) throw ( SoapFault, CurlException );
+
+        /** Get the repository information based on its identifier.
+          */
+        libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( SoapFault, CurlException );
 };
 
 #endif

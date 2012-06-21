@@ -31,6 +31,7 @@
 #include <string>
 
 #include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
 namespace libcmis
 {
@@ -40,11 +41,38 @@ namespace libcmis
       */
     class Repository
     {
+        private:
+            std::string m_id;
+            std::string m_name;
+            std::string m_description;
+            std::string m_vendorName;
+            std::string m_productName;
+            std::string m_productVersion;
+            std::string m_rootId;
+            std::string m_cmisVersionSupported;
+            boost::shared_ptr< std::string > m_thinClientUri;
+            boost::shared_ptr< std::string > m_principalAnonymous;
+            boost::shared_ptr< std::string > m_principalAnyone;
+
+        protected:
+            Repository( );
+            void initializeFromNode( xmlNodePtr node );
+
         public:
+            Repository( xmlNodePtr node );
             virtual ~Repository( ) { };
 
-            virtual std::string getRootId( ) = 0;
-            virtual std::string getId( ) = 0;
+            std::string getId( ) { return m_id; }
+            std::string getName( ) { return m_name; }
+            std::string getDescription( ) { return m_description; }
+            std::string getVendorName( ) { return m_vendorName; }
+            std::string getProductName( ) { return m_productName; }
+            std::string getProductVersion( ) { return m_productVersion; }
+            std::string getRootId( ) { return m_rootId; }
+            std::string getCmisVersionSupported( ) { return m_cmisVersionSupported; }
+            boost::shared_ptr< std::string > getThinClientUri( ) { return m_thinClientUri; }
+            boost::shared_ptr< std::string > getPrincipalAnonymous( ) { return m_principalAnonymous; }
+            boost::shared_ptr< std::string > getPrincipalAnyone( ) { return m_principalAnyone; }
     };
     
     typedef ::boost::shared_ptr< Repository > RepositoryPtr;

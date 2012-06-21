@@ -32,8 +32,7 @@
 using namespace std;
 
 AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception ):
-    m_id( ),
-    m_rootId( ),
+    Repository( ),
     m_collections( ),
     m_uriTemplates( )
 {
@@ -56,16 +55,13 @@ AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception )
             if ( NULL != xpathObj )
                 readUriTemplates( xpathObj->nodesetval );
             xmlXPathFreeObject( xpathObj );
-            
-            // Get the root node id
-            string rootIdXPath( "//cmisra:repositoryInfo/cmis:rootFolderId/text()" );
-            m_rootId = libcmis::getXPathValue( xpathCtx, rootIdXPath );
-            
-            // Get the repository id
-            string repoIdXPath( "//cmisra:repositoryInfo/cmis:repositoryId/text()" );
-            m_id = libcmis::getXPathValue( xpathCtx, repoIdXPath );
 
-            // TODO Extract other useful stuffs
+            // Get the repository infos 
+            xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:repositoryInfo" ), xpathCtx );
+            if ( NULL != xpathObj )
+                initializeFromNode( xpathObj->nodesetval->nodeTab[0] );
+            xmlXPathFreeObject( xpathObj );
+            
         }
         xmlXPathFreeContext( xpathCtx );
         xmlFreeDoc( doc );
@@ -73,8 +69,6 @@ AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception )
 }
 
 AtomRepository::AtomRepository( const AtomRepository& rCopy ) :
-    m_id ( rCopy.m_id ),
-    m_rootId( rCopy.m_rootId ),
     m_collections( rCopy.m_collections ),
     m_uriTemplates( rCopy.m_uriTemplates )
 {
@@ -88,8 +82,6 @@ AtomRepository::~AtomRepository( )
 
 AtomRepository& AtomRepository::operator= ( const AtomRepository& rCopy )
 {
-    m_id = rCopy.m_id;
-    m_rootId = rCopy.m_rootId;
     m_collections = rCopy.m_collections;
     m_uriTemplates = rCopy.m_uriTemplates;
 
