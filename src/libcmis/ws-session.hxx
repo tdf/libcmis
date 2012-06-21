@@ -90,8 +90,6 @@ class WSSession : public BaseSession
         void initialize( ) throw ( libcmis::Exception );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );
-
-        std::string createEnvelope( SoapRequest& request );
 };
 
 #endif

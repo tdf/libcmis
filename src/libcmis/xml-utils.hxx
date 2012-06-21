@@ -28,7 +28,9 @@
 #ifndef _XML_UTILS_HXX_
 #define _XML_UTILS_HXX_
 
+#include <map>
 #include <ostream>
+#include <sstream>
 #include <string>
 
 #include <boost/date_time.hpp>
@@ -90,6 +92,23 @@ namespace libcmis
             void encodeBase64( const char* buf, size_t len );
     };
     
+    class HttpResponse
+    {
+        private:
+            std::map< std::string, std::string > m_headers;
+            boost::shared_ptr< std::stringstream > m_stream;
+            boost::shared_ptr< EncodedData > m_data;
+
+        public:
+            HttpResponse( );
+            ~HttpResponse( ) { };
+
+            std::map< std::string, std::string >& getHeaders( ) { return m_headers; }
+            boost::shared_ptr< EncodedData > getData( ) { return m_data; }
+            boost::shared_ptr< std::stringstream > getStream( ) { return m_stream; }
+    };
+    typedef boost::shared_ptr< HttpResponse > HttpResponsePtr;
+
     void registerNamespaces( xmlXPathContextPtr xpathCtx );
     
     /** Register the CMIS and WSDL / SOAP namespaces
@@ -120,6 +139,10 @@ namespace libcmis
     long parseInteger( std::string str ) throw ( Exception );
 
     double parseDouble( std::string str ) throw ( Exception );
+   
+    /** Trim spaces on the left and right of a string.
+     */ 
+    std::string trim( const std::string& str );
 }
 
 #endif

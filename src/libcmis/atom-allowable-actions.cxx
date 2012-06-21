@@ -191,7 +191,7 @@ void AtomAllowableActions::refresh( ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf  = m_session->httpGetRequest( m_url )->str( );
+            buf  = m_session->httpGetRequest( m_url )->getStream( )->str( );
         }
         catch ( const CurlException& e )
         {

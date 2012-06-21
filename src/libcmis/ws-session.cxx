@@ -71,7 +71,7 @@ WSSession::~WSSession( )
 
 string WSSession::getWsdl( string url ) throw ( CurlException )
 {
-    string buf = httpGetRequest( url )->str( );
+    string buf = httpGetRequest( url )->getStream( )->str( );
 
     // Do we have a wsdl file?
     bool isWsdl = false;
@@ -102,7 +102,7 @@ string WSSession::getWsdl( string url ) throw ( CurlException )
             url += "&";
         url += "wsdl";
 
-        buf = httpGetRequest( url )->str( );
+        buf = httpGetRequest( url )->getStream( )->str( );
     }
 
     return buf;
@@ -110,25 +110,23 @@ string WSSession::getWsdl( string url ) throw ( CurlException )
 
 vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& request ) throw ( SoapFault, CurlException )
 {
-#if 0
+    vector< SoapResponsePtr > responses;
+
     // Place the request in an envelope
-    string xml = createEnvelope( request );
+    RelatedMultipart& multipart = request.getMultipart( getUsername( ), getPassword( ) );
+    libcmis::HttpResponsePtr response = httpPostRequest( url, *multipart.toStream( ).get( ), multipart.getContentType( ) );
+
+    string responseType;
+    map< string, string >::iterator it = response->getHeaders( ).find( "Content-Type" );
+    if ( it != response->getHeaders( ).end( ) )
+    {
+        responseType = it->second;
+        RelatedMultipart answer( response->getStream( )->str( ), responseType );
     
-    // TODO Embed the xml in a multipart/related body.
-    // Do it manually as libcurl doesn't implement it!
-    // See ObjectService.createDocument.request.xml for an example of request with
-    // several related parts. The parts ID, should contain a UUID (see boost::uuid).
-    // An idea of id to generate: rootpart*uuid@libcmis.sourceforge.net
+        responses = getResponseFactory( ).parseResponse( answer );
+    }
 
-    string response = httpPostRequest( url, multipart, contentType );
-
-    // TODO Extract the response from the multipart/related body of the response
-
-    // Get the responses
-   return getResponseFactory( ).parseResponse( response );
-#endif
-   // TODO Implement me
-   return vector< SoapResponsePtr >( );
+    return responses;
 }
 
 void WSSession::initialize( ) throw ( libcmis::Exception )
@@ -213,99 +211,9 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
 {
     map< string, SoapResponseCreator > mapping;
 
-    mapping[ "getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
 
     return mapping;
-}
-
-string WSSession::createEnvelope( SoapRequest& request )
-{
-    xmlBufferPtr buf = xmlBufferCreate( );
-    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
-
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
-
-    /**
-     <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
-        <S:Header>
-            <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                <Timestamp xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-                    <Created>2012-06-14T09:20:29Z</Created>
-                    <Expires>2012-06-15T09:20:29Z</Expires>
-                </Timestamp>
-                <UsernameToken>
-                    <Username>admin</Username>
-                    <Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">admin</Password>
-                    <Created xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">2012-06-14T09:20:29Z</Created>
-                </UsernameToken>
-            </Security>
-        </S:Header>
-        <S:Body>
-            <ns2:getRepositories xmlns="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:ns2="http://docs.oasis-open.org/ns/cmis/messaging/200908/"/>
-        </S:Body>
-     </S:Envelope>
-     */
-    xmlChar* wsseUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" );
-    xmlChar* wsuUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" );
-
-    // TODO Use a more secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
-    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText" );
-
-    // Created must be a UTC time with no more than 3 digits fractional seconds.
-    boost::posix_time::ptime created( boost::posix_time::second_clock::universal_time( ) );
-    boost::posix_time::ptime expires( created );
-    expires = expires + boost::gregorian::days( 1 );
-    xmlChar* createdStr = BAD_CAST( libcmis::writeDateTime( created ).c_str( ) );
-    xmlChar* expiresStr = BAD_CAST( libcmis::writeDateTime( expires ).c_str( ) );
-
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
-    
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Header" ) );
-
-    // Write out the Basic Security Profile 1.0 compliant headers
-    xmlTextWriterStartElement( writer, BAD_CAST( "Security" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsseUrl );
-
-    xmlTextWriterStartElement( writer, BAD_CAST( "Timestamp" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
-    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
-    xmlTextWriterWriteRaw( writer, createdStr );
-    xmlTextWriterEndElement( writer ); // End of Created
-    xmlTextWriterStartElement( writer, BAD_CAST( "Expires" ) );
-    xmlTextWriterWriteRaw( writer, expiresStr );
-    xmlTextWriterEndElement( writer ); // End of Expires
-    xmlTextWriterEndElement( writer ); // End of Timestamp
-
-    xmlTextWriterStartElement( writer, BAD_CAST( "UsernameToken" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "Username" ), BAD_CAST( getUsername( ).c_str( ) ) );
-    xmlTextWriterStartElement( writer, BAD_CAST( "Password" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( getPassword( ).c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Password
-    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
-    xmlTextWriterWriteRaw( writer, createdStr );
-    xmlTextWriterEndElement( writer ); // End of Created
-    xmlTextWriterEndElement( writer ); // End of UsernameToken
-
-    xmlTextWriterEndElement( writer ); // End of Security
-
-    xmlTextWriterEndElement( writer ); // End of S:Header
-
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Body" ) );
-    request.toXml( writer );
-    xmlTextWriterEndElement( writer ); // End of S:Body
-
-    xmlTextWriterEndElement( writer );  // End of S:Envelope
-    xmlTextWriterEndDocument( writer );
-
-    string str( ( const char * )xmlBufferContent( buf ) );
-
-    xmlFreeTextWriter( writer );
-    xmlBufferFree( buf );
-
-    return str;
 }
 
 string WSSession::getServiceUrl( string name )

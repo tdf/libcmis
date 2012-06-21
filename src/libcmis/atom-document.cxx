@@ -79,7 +79,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     string buf;
     try
     {
-        buf = getSession()->httpGetRequest( parentsLink->getHref( ) )->str( );
+        buf = getSession()->httpGetRequest( parentsLink->getHref( ) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -150,7 +150,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     boost::shared_ptr< istream > stream;
     try
     {
-        stream = getSession()->httpGetRequest( m_contentUrl );
+        stream = getSession()->httpGetRequest( m_contentUrl )->getStream( );
     }
     catch ( const CurlException& e )
     {
@@ -278,7 +278,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );
 
-    string respBuf;
+    libcmis::HttpResponsePtr resp;
     string urlPattern = getSession()->getAtomRepository( )->getCollectionUrl( Collection::CheckedOut );
     if ( urlPattern.find( "?" ) != string::npos )
         urlPattern += "&";
@@ -292,13 +292,14 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
 
     try
     {
-        respBuf = getSession( )->httpPostRequest( checkedOutUrl, is, "application/atom+xml;type=entry" );
+        resp = getSession( )->httpPostRequest( checkedOutUrl, is, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
 
+    string respBuf = resp->getStream( )->str();
     xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkedOutUrl.c_str(), NULL, 0 );
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
@@ -380,10 +381,10 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     xmlBufferFree( buf );
     
     // Run the request
-    string respBuf;
+    libcmis::HttpResponsePtr response;
     try
     {
-        respBuf = getSession( )->httpPutRequest( checkInUrl, is, "application/atom+xml;type=entry" );
+        response = getSession( )->httpPutRequest( checkInUrl, is, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {
@@ -391,6 +392,7 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     }
     
     // Get the returned entry and update using it
+    string respBuf = response->getStream( )->str( );
     xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkInUrl.c_str(), NULL, 0 );
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );

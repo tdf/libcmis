@@ -227,16 +227,17 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );
 
-    string respBuf;
+    libcmis::HttpResponsePtr response;
     try
     {
-        respBuf = getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
+        response = getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
 
+    string respBuf = response->getStream( )->str( );
     xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
@@ -267,7 +268,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf  = getSession()->httpGetRequest( getInfosUrl() )->str( );
+            buf  = getSession()->httpGetRequest( getInfosUrl() )->getStream( )->str( );
         }
         catch ( const CurlException& e )
         {

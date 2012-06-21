@@ -257,6 +257,15 @@ namespace libcmis
         m_pendingRank = byteRank;
     }
 
+    HttpResponse::HttpResponse( ) :
+        m_headers( ),
+        m_stream( ),
+        m_data( )
+    {
+        m_stream.reset( new stringstream( ) );
+        m_data.reset( new EncodedData( m_stream.get( ) ) );
+    }
+
     void registerNamespaces( xmlXPathContextPtr xpathCtx )
     {
         xmlXPathRegisterNs( xpathCtx, BAD_CAST( "app" ), BAD_CAST( NS_APP_URL ) );
@@ -423,5 +432,19 @@ namespace libcmis
         }
 
         return value;
+    }
+    
+    string trim( const string& str )
+    {
+        string spaces = " \t\r\n";
+
+        string result( str );
+        result = result.erase (0, str.find_first_not_of ( spaces ) );
+
+        string::size_type pos ( result.find_last_not_of ( spaces ) );
+        if ( pos == string::npos )
+            return "";
+        else
+            return result.erase( result.find_last_not_of( spaces ) + 1 );
     }
 }

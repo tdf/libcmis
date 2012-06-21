@@ -117,7 +117,7 @@ class RelatedMultipart
         /** Dump the multipart to an input stream: this can be provided as is as
             an HTTP post request body.
           */
-        boost::shared_ptr< std::istringstream > toString( );
+        boost::shared_ptr< std::istringstream > toStream( );
 
         /** Provide an access to the boundary token for the unit tests.
           */

@@ -40,7 +40,7 @@ void GetRepositories::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node )
+SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipart& )
 {
     GetRepositoriesResponse* response = new GetRepositoriesResponse( );
 

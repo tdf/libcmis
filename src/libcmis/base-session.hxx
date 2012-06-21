@@ -40,6 +40,7 @@
 
 #include "exception.hxx"
 #include "session.hxx"
+#include "xml-utils.hxx"
 
 class CurlException : public std::exception
 {
@@ -110,9 +111,9 @@ class BaseSession : public libcmis::Session
 
         BaseSession& operator=( const BaseSession& copy );
 
-        std::string getUsername( ) { return m_username; }
+        std::string& getUsername( ) { return m_username; }
 
-        std::string getPassword( ) { return m_password; }
+        std::string& getPassword( ) { return m_password; }
 
         // Utility methods
         
@@ -120,9 +121,9 @@ class BaseSession : public libcmis::Session
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 
-        boost::shared_ptr< std::stringstream > httpGetRequest( std::string url ) throw ( CurlException );
-        std::string httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( CurlException );
-        std::string httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::string contentType ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
         void httpRunRequest( std::string url ) throw ( CurlException );

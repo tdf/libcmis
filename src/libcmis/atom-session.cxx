@@ -152,7 +152,7 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf = httpGetRequest( m_bindingUrl )->str( );
+            buf = httpGetRequest( m_bindingUrl )->getStream( )->str( );
         }
         catch ( const CurlException& e )
         {
@@ -278,7 +278,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
 
     try
     {
-        string buf = httpGetRequest( url )->str( );
+        string buf = httpGetRequest( url )->getStream( )->str( );
         xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
         libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
         xmlFreeDoc( doc );
@@ -307,7 +307,7 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmi
 
     try
     {
-        string buf = httpGetRequest( url )->str( );
+        string buf = httpGetRequest( url )->getStream( )->str( );
         xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
         libcmis::ObjectPtr cmisObject = createObjectFromEntryDoc( doc );
         xmlFreeDoc( doc );

@@ -30,26 +30,10 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include "ws-relatedmultipart.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 using namespace boost::uuids;
-
-namespace
-{
-    string lcl_trim( const string& str )
-    {
-        string spaces = " \t\r\n";
-
-        string result( str );
-        result = result.erase (0, str.find_first_not_of ( spaces ) );
-
-        string::size_type pos ( result.find_last_not_of ( spaces ) );
-        if ( pos == string::npos )
-            return "";
-        else
-            return result.erase( result.find_last_not_of( spaces ) + 1 );
-    }
-}
 
 RelatedPart::RelatedPart( string& name, string& type, string& content ) :
     m_name( name ),
@@ -62,9 +46,9 @@ string RelatedPart::toString( string cid )
 {
     string buf;
 
-    buf += "Content-Id: " + cid + "\n";
-    buf += "Content-Type: " + getContentType( ) + "\n";
-    buf += "Content-Transfer-Encoding: binary\n\n";
+    buf += "Content-Id: " + cid + "\r\n";
+    buf += "Content-Type: " + getContentType( ) + "\r\n";
+    buf += "Content-Transfer-Encoding: binary\r\n\r\n";
     buf += getContent( );
 
     return buf;
@@ -123,16 +107,20 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         }
     }
 
-    // TODO Parse the multipart
-    string boundaryString( "\n--" + m_boundary + "\n" );
-    string endBoundaryString( "\n--" + m_boundary + "--" );
-    string headerSeparator( "\n\n" );
+    // Parse the multipart
+    string bodyFixed( body );
+    if ( bodyFixed.find( "--" + m_boundary + "\r\n" ) == 0 )
+        bodyFixed = "\r\n" + bodyFixed;
+    
+    string boundaryString( "\r\n--" + m_boundary + "\r\n" );
+    string endBoundaryString( "\r\n--" + m_boundary + "--" );
+    string headerSeparator( "\r\n\r\n" );
     lastPos = 0;
-    pos = body.find( boundaryString );
+    pos = bodyFixed.find( boundaryString );
 
     while ( pos != string::npos )
     {
-        string part = body.substr( lastPos, pos - lastPos );
+        string part = bodyFixed.substr( lastPos, pos - lastPos );
 
         size_t bodyPos = part.find( headerSeparator );
         if ( bodyPos != string::npos )
@@ -145,10 +133,11 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
 
             do
             {
-                size_t headerEndPos = headers.find( "\n" );
+                string headerSep( "\r\n" );
+                size_t headerEndPos = headers.find( headerSep );
                 string header = headers.substr( 0, headerEndPos );
                 if ( headerEndPos != string::npos )
-                    headers = headers.substr( headerEndPos + 1 );
+                    headers = headers.substr( headerEndPos + headerSep.length( ) );
                 else
                     headers.clear( );
 
@@ -156,9 +145,9 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
                 string headerName = header.substr( 0, colonPos );
                 string headerValue = header.substr( colonPos + 1 );
                 if ( headerName == "Content-Id" )
-                    cid = lcl_trim( headerValue );
+                    cid = libcmis::trim( headerValue );
                 else if ( headerName == "Content-Type" )
-                    type = lcl_trim( headerValue );
+                    type = libcmis::trim( headerValue );
                 // TODO Handle the Content-Transfer-Encoding
             }
             while ( !headers.empty( ) );
@@ -172,9 +161,9 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         }
 
         lastPos = pos + boundaryString.length( );
-        pos = body.find( boundaryString, lastPos );
+        pos = bodyFixed.find( boundaryString, lastPos );
         if ( pos == string::npos )
-            pos = body.find( endBoundaryString, lastPos );
+            pos = bodyFixed.find( endBoundaryString, lastPos );
     }
 }
 
@@ -241,12 +230,12 @@ string RelatedMultipart::getContentType( )
     return type;
 }
 
-boost::shared_ptr< istringstream > RelatedMultipart::toString( )
+boost::shared_ptr< istringstream > RelatedMultipart::toStream( )
 {
     string buf;
 
     // Output the start part first
-    buf += "\n--" + m_boundary + "\n";
+    buf += "\r\n--" + m_boundary + "\r\n";
     RelatedPartPtr part = getPart( getStartId( ) );
     if ( part.get( ) != NULL )
     {
@@ -258,12 +247,12 @@ boost::shared_ptr< istringstream > RelatedMultipart::toString( )
     {
         if ( it->first != getStartId( ) )
         {
-            buf += "\n--" + m_boundary + "\n";
+            buf += "\r\n--" + m_boundary + "\r\n";
             buf += it->second->toString( it->first );
         }
     }
 
-    buf += "\n--" + m_boundary + "--\n";
+    buf += "\r\n--" + m_boundary + "--\r\n";
 
     boost::shared_ptr< istringstream > is( new istringstream( buf ) );
     return is;

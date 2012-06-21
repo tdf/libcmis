@@ -165,7 +165,7 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis:
     string buf;
     try
     {
-        buf = m_session->httpGetRequest( m_childrenUrl )->str();
+        buf = m_session->httpGetRequest( m_childrenUrl )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -262,7 +262,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf  = m_session->httpGetRequest( url )->str();
+            buf  = m_session->httpGetRequest( url )->getStream()->str();
         }
         catch ( const CurlException& e )
         {

@@ -55,9 +55,9 @@ class GetRepositoriesResponse : public SoapResponse
 
         /** Parse cmisw:getRepositoriesResponse. This function
             assumes that the node is the expected one: this is
-            normally ensures by the SoapResponseFactory.
+            normally ensured by the SoapResponseFactory.
           */
-        static SoapResponsePtr create( xmlNodePtr node );
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart );
 
         std::map< std::string, std::string > getRepositories( ) { return m_repositories; }
 };

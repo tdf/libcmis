@@ -75,8 +75,13 @@ SoapResponseFactory::SoapResponseFactory( ) :
 {
 }
 
-vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string xml ) throw ( SoapFault )
+vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& multipart ) throw ( SoapFault )
 {
+    string xml;
+    RelatedPartPtr part = multipart.getPart( multipart.getStartId( ) );
+    if ( part.get() != NULL )
+        xml = part->getContent( );
+
     vector< SoapResponsePtr > responses;
 
     xmlDocPtr doc = xmlReadMemory( xml.c_str(), xml.size(), "", NULL, 0 );
@@ -113,7 +118,7 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string xml ) throw
                     {
                         throw SoapFault( node );
                     }
-                    SoapResponsePtr response = createResponse( node );
+                    SoapResponsePtr response = createResponse( node, multipart );
                     if ( NULL != response.get( ) )
                         responses.push_back( response );
                 }
@@ -127,21 +132,126 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string xml ) throw
     return responses;
 }
 
-SoapResponsePtr SoapResponseFactory::createResponse( xmlNodePtr node )
+SoapResponsePtr SoapResponseFactory::createResponse( xmlNodePtr node, RelatedMultipart& multipart )
 {
     SoapResponsePtr response;
 
-    // Implement me
-    string ns( ( const char* ) node->ns->prefix );
+    string ns( ( const char* ) node->ns->href );
     string name( ( const char* ) node->name );
-    string id = ns + ":" + name;
+    string id = "{" + ns + "}" + name;
     map< string, SoapResponseCreator >::iterator it = m_mapping.find( id );
 
     if ( it != m_mapping.end( ) )
     {
         SoapResponseCreator creator = it->second;
-        response = creator( node );
+        response = creator( node, multipart );
     }
 
     return response;
+}
+
+RelatedMultipart& SoapRequest::getMultipart( string& username, string& password )
+{
+    // Generate the envelope and add it to the multipart
+    string envelope = createEnvelope( username, password );
+    string name( "root" );
+    string type( "application/xop+xml" );
+    RelatedPartPtr envelopePart( new RelatedPart( name, type, envelope ) );
+    string rootId = m_multipart.addPart( envelopePart );
+
+    // Set the envelope as the start part of the multipart
+    string startInfo( "text/xml" );
+    m_multipart.setStart( rootId, startInfo );
+
+    return m_multipart;
+}
+
+string SoapRequest::createEnvelope( string& username, string& password )
+{
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    /* Sample envelope:
+     <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+        <S:Header>
+            <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+                <Timestamp xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                    <Created>2012-06-14T09:20:29Z</Created>
+                    <Expires>2012-06-15T09:20:29Z</Expires>
+                </Timestamp>
+                <UsernameToken>
+                    <Username>admin</Username>
+                    <Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">admin</Password>
+                    <Created xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">2012-06-14T09:20:29Z</Created>
+                </UsernameToken>
+            </Security>
+        </S:Header>
+        <S:Body>
+            <ns2:getRepositories xmlns="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:ns2="http://docs.oasis-open.org/ns/cmis/messaging/200908/"/>
+        </S:Body>
+     </S:Envelope>
+     */
+    xmlChar* wsseUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" );
+    xmlChar* wsuUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" );
+
+    // TODO Use a more secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
+    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText" );
+
+    // Created must be a UTC time with no more than 3 digits fractional seconds.
+    boost::posix_time::ptime created( boost::posix_time::second_clock::universal_time( ) );
+    boost::posix_time::ptime expires( created );
+    expires = expires + boost::gregorian::days( 1 );
+    xmlChar* createdStr = BAD_CAST( libcmis::writeDateTime( created ).c_str( ) );
+    xmlChar* expiresStr = BAD_CAST( libcmis::writeDateTime( expires ).c_str( ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
+    
+    xmlTextWriterStartElement( writer, BAD_CAST( "S:Header" ) );
+
+    // Write out the Basic Security Profile 1.0 compliant headers
+    xmlTextWriterStartElement( writer, BAD_CAST( "Security" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsseUrl );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "Timestamp" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
+    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
+    xmlTextWriterWriteRaw( writer, createdStr );
+    xmlTextWriterEndElement( writer ); // End of Created
+    xmlTextWriterStartElement( writer, BAD_CAST( "Expires" ) );
+    xmlTextWriterWriteRaw( writer, expiresStr );
+    xmlTextWriterEndElement( writer ); // End of Expires
+    xmlTextWriterEndElement( writer ); // End of Timestamp
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "UsernameToken" ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "Username" ), BAD_CAST( username.c_str( ) ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "Password" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( password.c_str( ) ) );
+    xmlTextWriterEndElement( writer ); // End of Password
+    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
+    xmlTextWriterWriteRaw( writer, createdStr );
+    xmlTextWriterEndElement( writer ); // End of Created
+    xmlTextWriterEndElement( writer ); // End of UsernameToken
+
+    xmlTextWriterEndElement( writer ); // End of Security
+
+    xmlTextWriterEndElement( writer ); // End of S:Header
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "S:Body" ) );
+    toXml( writer );
+    xmlTextWriterEndElement( writer ); // End of S:Body
+
+    xmlTextWriterEndElement( writer );  // End of S:Envelope
+    xmlTextWriterEndDocument( writer );
+
+    string str( ( const char * )xmlBufferContent( buf ) );
+
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    return str;
 }

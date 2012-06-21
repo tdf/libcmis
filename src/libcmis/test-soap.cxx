@@ -80,7 +80,7 @@ class TestResponse : public SoapResponse
 
     public:
 
-        static SoapResponsePtr create( xmlNodePtr node )
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& )
         {
             SoapResponsePtr resp ( new TestResponse( ) );
             return resp;
@@ -90,7 +90,7 @@ class TestResponse : public SoapResponse
 map< string, SoapResponseCreator > SoapTest::getTestMapping( )
 {
     map< string, SoapResponseCreator > mapping;
-    mapping[ "test:testResponse" ] = &TestResponse::create;
+    mapping[ "{test-ns-url}testResponse" ] = &TestResponse::create;
     return mapping;
 }
 
@@ -107,9 +107,10 @@ void SoapTest::createResponseTest( )
     factory.setMapping( getTestMapping() );
     factory.setNamespaces( getTestNamespaces( ) );
 
-    string xml = "<test:testResponse xmlns:test=\"test-ns-url\"/>";
+    string xml = "<n1:testResponse xmlns:n1=\"test-ns-url\"/>";
+    RelatedMultipart multipart; // Multipart won't be used in that test
 
-    SoapResponsePtr actual = factory.createResponse( test::getXmlNode( xml ) );
+    SoapResponsePtr actual = factory.createResponse( test::getXmlNode( xml ), multipart );
     CPPUNIT_ASSERT_MESSAGE( "Wrong response created", dynamic_cast< TestResponse* >( actual.get( ) ) != NULL );
 }
 
@@ -123,8 +124,16 @@ void SoapTest::parseResponseTest( )
                  "<test:testResponse xmlns:test=\"test-ns-url\"/>"
                  "<test:testResponse xmlns:test=\"test-ns-url\"/>"
                  "</S:Body></S:Envelope>";
+    string name( "name" );
+    string type( "application/xop+xml" );
+    RelatedPartPtr requestPart( new RelatedPart( name, type, xml ) );
 
-    vector< SoapResponsePtr > actual = factory.parseResponse( xml );
+    RelatedMultipart multipart;
+    string cid = multipart.addPart( requestPart );
+    string startInfo( "text/xml" );
+    multipart.setStart( cid, startInfo );
+
+    vector< SoapResponsePtr > actual = factory.parseResponse( multipart );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of responses", size_t( 2 ), actual.size( ) );
 }
 
@@ -142,10 +151,19 @@ void SoapTest::parseResponseFaultTest( )
                  "      <faultstring xsi:type=\"xsd:string\">Some Error Message</faultstring>"
                  "  </S:Fault></S:Body>"
                  "</S:Envelope>";
+
+    string name( "name" );
+    string type( "application/xop+xml" );
+    RelatedPartPtr requestPart( new RelatedPart( name, type, xml ) );
+
+    RelatedMultipart multipart;
+    string cid = multipart.addPart( requestPart );
+    string startInfo( "text/xml" );
+    multipart.setStart( cid, startInfo );
    
     try
     {
-        factory.parseResponse( xml );
+        factory.parseResponse( multipart );
         CPPUNIT_FAIL( "Should have thrown the SoapFault" );
     }
     catch ( const SoapFault& e )
@@ -168,16 +186,16 @@ void SoapTest::serializeMultipartSimpleTest( )
     string cid = multipart.addPart( part );
     multipart.setStart( cid, startInfo );
 
-    boost::shared_ptr< istringstream > actual = multipart.toString( );
+    boost::shared_ptr< istringstream > actual = multipart.toStream( );
 
     string boundary = multipart.getBoundary( );
-    string expected = "\n--" + boundary + "\n" +
-                      "Content-Id: " + cid + "\n" +
-                      "Content-Type: " + partType + "\n" +
-                      "Content-Transfer-Encoding: binary\n" +
-                      "\n" +
+    string expected = "\r\n--" + boundary + "\r\n" +
+                      "Content-Id: " + cid + "\r\n" +
+                      "Content-Type: " + partType + "\r\n" +
+                      "Content-Transfer-Encoding: binary\r\n" +
+                      "\r\n" +
                       partContent +
-                      "\n--" + boundary + "--\n";
+                      "\r\n--" + boundary + "--\r\n";
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong body", expected, actual->str() );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content type",
@@ -207,22 +225,22 @@ void SoapTest::serializeMultipartComplexTest( )
     
     multipart.setStart( rootCid, startInfo );
 
-    boost::shared_ptr< istringstream > actual = multipart.toString( );
+    boost::shared_ptr< istringstream > actual = multipart.toStream( );
 
     string boundary = multipart.getBoundary( );
-    string expected = "\n--" + boundary + "\n" +
-                      "Content-Id: " + rootCid + "\n" +
-                      "Content-Type: " + rootType + "\n" +
-                      "Content-Transfer-Encoding: binary\n" +
-                      "\n" +
+    string expected = "\r\n--" + boundary + "\r\n" +
+                      "Content-Id: " + rootCid + "\r\n" +
+                      "Content-Type: " + rootType + "\r\n" +
+                      "Content-Transfer-Encoding: binary\r\n" +
+                      "\r\n" +
                       rootContent +
-                      "\n--" + boundary + "\n" +
-                      "Content-Id: " + part2Cid + "\n" +
-                      "Content-Type: " + part2Type + "\n" +
-                      "Content-Transfer-Encoding: binary\n" +
-                      "\n" +
+                      "\r\n--" + boundary + "\r\n" +
+                      "Content-Id: " + part2Cid + "\r\n" +
+                      "Content-Type: " + part2Type + "\r\n" +
+                      "Content-Transfer-Encoding: binary\r\n" +
+                      "\r\n" +
                       part2Content +
-                      "\n--" + boundary + "--\n";
+                      "\r\n--" + boundary + "--\r\n";
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong body", expected, actual->str() );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content type",
@@ -243,19 +261,19 @@ void SoapTest::parseMultipartTest( )
     string startInfo = "some info";
 
     string boundary = "------------ABCDEF-Boundary";
-    string body = "\n--" + boundary + "\n" +
-                  "Content-Id: " + rootCid + "\n" +
-                  "Content-Type: " + rootType + "\n" +
-                  "Content-Transfer-Encoding: binary\n" +
-                  "\n" +
+    string body = "\r\n--" + boundary + "\r\n" +
+                  "Content-Id: " + rootCid + "\r\n" +
+                  "Content-Type: " + rootType + "\r\n" +
+                  "Content-Transfer-Encoding: binary\r\n" +
+                  "\r\n" +
                   rootContent +
-                  "\n--" + boundary + "\n" +
-                  "Content-Id: " + part2Cid + "\n" +
-                  "Content-Type: " + part2Type + "\n" +
-                  "Content-Transfer-Encoding: binary\n" +
-                  "\n" +
+                  "\r\n--" + boundary + "\r\n" +
+                  "Content-Id: " + part2Cid + "\r\n" +
+                  "Content-Type: " + part2Type + "\r\n" +
+                  "Content-Transfer-Encoding: binary\r\n" +
+                  "\r\n" +
                   part2Content +
-                  "\n--" + boundary + "--\n";
+                  "\r\n--" + boundary + "--\r\n";
             
     string contentType = "multipart/related;start=\"" + rootCid + "\";type=\"" + rootType + "\";" +
                          "boundary=\"" + boundary + "\";start-info=\"" + startInfo + "\"";

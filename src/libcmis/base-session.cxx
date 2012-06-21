@@ -39,6 +39,28 @@ using namespace std;
 
 namespace
 {
+    size_t lcl_getHeaders( void *ptr, size_t size, size_t nmemb, void *userdata )
+    {
+        libcmis::HttpResponse* response = static_cast< libcmis::HttpResponse* >( userdata );
+
+        string buf( ( const char* ) ptr, size * nmemb );
+
+        size_t sepPos = buf.find( ':' );
+        if ( sepPos != string::npos )
+        {
+            string name( buf, 0, sepPos );
+            string value = buf.substr( sepPos + 1 );
+            value = libcmis::trim( value );
+
+            response->getHeaders()[name] = value;
+
+            if ( "Content-Transfer-Encoding" == name )
+                response->getData( )->setEncoding( value );
+        }
+        
+        return nmemb;
+    }
+
     size_t lcl_getEncoding( void *ptr, size_t size, size_t nmemb, void *userdata )
     {
         libcmis::EncodedData* data = static_cast< libcmis::EncodedData* >( userdata );
@@ -220,44 +242,38 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
     return url;
 }
 
-boost::shared_ptr< stringstream > BaseSession::httpGetRequest( string url ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlException )
 {
-    // Get the response to the stringstream, but take care of the encoding
-    // if any is set in the HTTP headers
-    boost::shared_ptr< stringstream > stream( new stringstream( ios_base::out | ios_base::in | ios_base::binary ) );
+    libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
-    libcmis::EncodedData* data = new libcmis::EncodedData( stream.get() );
-
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, &lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, data );
-
-    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getEncoding );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, data );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    
+    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
     try
     {
         httpRunRequest( url );
-        data->finish();
+        response->getData( )->finish();
     }
     catch ( const CurlException& e )
     {
-        delete data;
         throw e;
     }
 
-    delete data;
-
-    return stream;
+    return response;
 }
 
-string BaseSession::httpPutRequest( string url, istream& is, string contentType ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, string contentType ) throw ( CurlException )
 {
-    // Get the response to the stringstream
-    boost::shared_ptr< stringstream > stream( new stringstream( ios_base::out | ios_base::in | ios_base::binary ) );
-    libcmis::EncodedData* data = new libcmis::EncodedData( stream.get() );
+    libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, data );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    
+    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
     // Get the stream length
     is.seekg( 0, ios::end );
@@ -278,29 +294,28 @@ string BaseSession::httpPutRequest( string url, istream& is, string contentType 
     try
     {
         httpRunRequest( url );
-        data->finish();
+        response->getData( )->finish();
     }
     catch ( CurlException& e )
     {
-        delete data;
         curl_slist_free_all( headers_slist );
         throw e;
     }
 
-    delete data;
     curl_slist_free_all( headers_slist );
 
-    return stream->str( );
+    return response;
 }
 
-string BaseSession::httpPostRequest( string url, istringstream& is, string contentType ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istringstream& is, string contentType ) throw ( CurlException )
 {
-    // Get the response to the stringstream
-    boost::shared_ptr< stringstream > stream( new stringstream( ios_base::out | ios_base::in | ios_base::binary ) );
-    libcmis::EncodedData* data = new libcmis::EncodedData( stream.get() );
+    libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, data );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    
+    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
     // Get the stream length
     is.seekg( 0, ios::end );
@@ -321,19 +336,17 @@ string BaseSession::httpPostRequest( string url, istringstream& is, string conte
     try
     {
         httpRunRequest( url );
-        data->finish();
+        response->getData( )->finish();
     }
     catch ( const CurlException& e )
     {
-        delete data;
         curl_slist_free_all( headers_slist );
         throw e;
     }
 
-    delete data;
     curl_slist_free_all( headers_slist );
 
-    return stream->str( );
+    return response;
 }
 
 void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )

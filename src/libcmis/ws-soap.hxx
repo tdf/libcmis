@@ -35,6 +35,7 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "ws-relatedmultipart.hxx"
 #include "xmlserializable.hxx"
 
 /** Base class for all SOAP response objects.
@@ -48,7 +49,7 @@ class SoapResponse
         virtual ~SoapResponse( ) { };
 };
 typedef boost::shared_ptr< SoapResponse > SoapResponsePtr;
-typedef SoapResponsePtr (*SoapResponseCreator) ( xmlNodePtr );
+typedef SoapResponsePtr (*SoapResponseCreator) ( xmlNodePtr, RelatedMultipart& );
 
 
 /** Class representing a SOAP Fault element, to be used as an exception.
@@ -89,23 +90,45 @@ class SoapResponseFactory
           */
         void setNamespaces( std::map< std::string, std::string > namespaces ) { m_namespaces = namespaces; }
 
-        /** Parse the whole SOAP enveloppe to extract the response objects.
+        /** Get the Soap envelope from the multipart and extract the response objects from it. This
+            method will also read the possible related parts to construct the response.
           */
-        std::vector< SoapResponsePtr > parseResponse( std::string xml ) throw ( SoapFault );
+        std::vector< SoapResponsePtr > parseResponse( RelatedMultipart& multipart ) throw ( SoapFault );
 
         /** Create a SoapResponse object depending on the node we have. This shouldn't be used
             directly: only from parseResponse or unit tests.
           */
-        SoapResponsePtr createResponse( xmlNodePtr node );
+        SoapResponsePtr createResponse( xmlNodePtr node, RelatedMultipart& multipart );
 };
 
 
 /** Base class for all SOAP request objects.
+
+    The implementer's toXml() method needs to take care of two things:
+    \li generate the XML to put in the Soap envelope body
+    \li add the potential attachement to the multipart.
+    
+    There is no need to add the envelope to the multipart: it will
+    automatically be added as the start part of it by getMultipart().
+    This also means that adding parts to the multipart will have to
+    be done directly on the m_multipart protected member.
+
+    The RelatedMultipart object is the final result to be used.
   */
 class SoapRequest : public libcmis::XmlSerializable
 {
+    protected:
+        RelatedMultipart m_multipart;
+
     public:
+        SoapRequest( ) : m_multipart( ) { };
         virtual ~SoapRequest( ) { };
+
+        RelatedMultipart& getMultipart( std::string& username, std::string& password );
+
+    protected:
+
+        std::string createEnvelope( std::string& username, std::string& password );
 };
 
 #endif

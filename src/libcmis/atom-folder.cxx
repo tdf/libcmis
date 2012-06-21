@@ -86,7 +86,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
         string buf;
         try
         {
-            buf = getSession()->httpGetRequest( pageUrl )->str( );
+            buf = getSession()->httpGetRequest( pageUrl )->getStream( )->str( );
         }
         catch ( const CurlException& e )
         {
@@ -178,16 +178,17 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );
 
-    string respBuf;
+    libcmis::HttpResponsePtr response;
     try
     {
-        respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
+        response = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
 
+    string respBuf = response->getStream( )->str( );
     xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
@@ -230,16 +231,17 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );
 
-    string respBuf;
+    libcmis::HttpResponsePtr response;
     try
     {
-        respBuf = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
+        response = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
 
+    string respBuf = response->getStream( )->str( );
     xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
