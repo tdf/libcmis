@@ -36,10 +36,11 @@
 
 using namespace std;
 
-SoapFault::SoapFault( xmlNodePtr node ) :
+SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
     exception( ),
     m_faultcode( ),
-    m_faultstring( )
+    m_faultstring( ),
+    m_detail( )
 {
     for ( xmlNodePtr child = node->children; child; child = child->next )
     {
@@ -60,18 +61,29 @@ SoapFault::SoapFault( xmlNodePtr node ) :
             m_faultstring = string( ( char* )content );
             xmlFree( content );
         }
-    }   
+        else if ( xmlStrEqual( child->name, BAD_CAST( "detail" ) ) )
+        {
+            m_detail = factory->parseFaultDetail( child );
+        }
+    }
 }
 
 const char* SoapFault::what( ) const throw ( )
 {
-    return string( getFaultcode() + ": " + getFaultstring() ).c_str( );
+    string message( getFaultcode() + ": " + getFaultstring() );
+    for ( vector< SoapFaultDetailPtr >::const_iterator it = m_detail.begin( ); it != m_detail.end( ); ++it )
+    {
+        message += "\n" + ( *it )->toString( );
+    }
+
+    return message.c_str( );
 }
 
 
 SoapResponseFactory::SoapResponseFactory( ) :
     m_mapping( ),
-    m_namespaces( )
+    m_namespaces( ),
+    m_detailMapping( )
 {
 }
 
@@ -116,7 +128,7 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& 
                     if ( xmlStrEqual( BAD_CAST( NS_SOAP_ENV_URL ), node->ns->href ) &&
                          xmlStrEqual( BAD_CAST( "Fault" ), node->name ) )
                     {
-                        throw SoapFault( node );
+                        throw SoapFault( node, this );
                     }
                     SoapResponsePtr response = createResponse( node, multipart );
                     if ( NULL != response.get( ) )
@@ -148,6 +160,29 @@ SoapResponsePtr SoapResponseFactory::createResponse( xmlNodePtr node, RelatedMul
     }
 
     return response;
+}
+
+vector< SoapFaultDetailPtr > SoapResponseFactory::parseFaultDetail( xmlNodePtr node )
+{
+    vector< SoapFaultDetailPtr > detail;
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        string ns;
+        if ( child->ns != NULL )
+            ns = string( ( const char* ) child->ns->href );
+        string name( ( const char* ) child->name );
+        string id = "{" + ns + "}" + name;
+        map< string, SoapFaultDetailCreator >::iterator it = m_detailMapping.find( id );
+
+        if ( it != m_detailMapping.end( ) )
+        {
+            SoapFaultDetailCreator creator = it->second;
+            detail.push_back( creator( child ) );
+        }
+    }
+
+    return detail;
 }
 
 RelatedMultipart& SoapRequest::getMultipart( string& username, string& password )

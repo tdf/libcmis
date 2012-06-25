@@ -101,6 +101,7 @@ class BaseSession : public libcmis::Session
         std::list< std::string > m_repositoriesIds;
 
         bool m_verbose;
+        bool m_noHttpErrors;
 
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
@@ -114,6 +115,10 @@ class BaseSession : public libcmis::Session
         std::string& getUsername( ) { return m_username; }
 
         std::string& getPassword( ) { return m_password; }
+
+        /** Don't throw the HTTP errors as CurlExceptions. 
+          */
+        void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }
 
         // Utility methods
         

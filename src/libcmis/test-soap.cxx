@@ -42,12 +42,17 @@ class SoapTest : public CppUnit::TestFixture
     private:
         map< string, SoapResponseCreator > getTestMapping( );
         map< string, string > getTestNamespaces( );
+        map< string, SoapFaultDetailCreator > getTestDetailMapping( );
 
     public:
 
         // Soap Responses tests
 
         void createResponseTest( );
+        void parseFaultDetailEmptyTest( );
+        void parseFaultDetailUnknownTest( );
+        void parseFaultDetailValidTest( );
+        void createFaultDefaultTest( );
         void parseResponseTest( );
         void parseResponseFaultTest( );
 
@@ -59,6 +64,9 @@ class SoapTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( SoapTest );
         CPPUNIT_TEST( createResponseTest );
+        CPPUNIT_TEST( parseFaultDetailEmptyTest );
+        CPPUNIT_TEST( parseFaultDetailUnknownTest );
+        CPPUNIT_TEST( parseFaultDetailValidTest );
         CPPUNIT_TEST( parseResponseTest );
         CPPUNIT_TEST( parseResponseFaultTest );
 
@@ -87,10 +95,31 @@ class TestResponse : public SoapResponse
         }
 };
 
+class TestFaultDetail : public SoapFaultDetail
+{
+    private:
+        TestFaultDetail( xmlNodePtr node ) : SoapFaultDetail( ) { };
+
+    public:
+        ~TestFaultDetail( ) throw ( ) { };
+
+        static SoapFaultDetailPtr create( xmlNodePtr node )
+        {
+            return SoapFaultDetailPtr( new TestFaultDetail( node ) );
+        }
+};
+
 map< string, SoapResponseCreator > SoapTest::getTestMapping( )
 {
     map< string, SoapResponseCreator > mapping;
     mapping[ "{test-ns-url}testResponse" ] = &TestResponse::create;
+    return mapping;
+}
+
+map< string, SoapFaultDetailCreator > SoapTest::getTestDetailMapping( )
+{
+    map< string, SoapFaultDetailCreator > mapping;
+    mapping[ "{test-ns-url}testFault" ] = &TestFaultDetail::create;
     return mapping;
 }
 
@@ -106,6 +135,7 @@ void SoapTest::createResponseTest( )
     SoapResponseFactory factory;
     factory.setMapping( getTestMapping() );
     factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
 
     string xml = "<n1:testResponse xmlns:n1=\"test-ns-url\"/>";
     RelatedMultipart multipart; // Multipart won't be used in that test
@@ -114,11 +144,51 @@ void SoapTest::createResponseTest( )
     CPPUNIT_ASSERT_MESSAGE( "Wrong response created", dynamic_cast< TestResponse* >( actual.get( ) ) != NULL );
 }
 
+void SoapTest::parseFaultDetailEmptyTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    string xml = "<detail/>";
+
+    vector< SoapFaultDetailPtr > actual = factory.parseFaultDetail( test::getXmlNode( xml ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Shouldn't have any detail", size_t( 0 ), actual.size() );
+}
+
+void SoapTest::parseFaultDetailUnknownTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    string xml = "<detail><unknown-detail/></detail>";
+
+    vector< SoapFaultDetailPtr > actual = factory.parseFaultDetail( test::getXmlNode( xml ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Shouldn't have ignored unknonw details", size_t( 0 ), actual.size() );
+}
+void SoapTest::parseFaultDetailValidTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    string xml = "<detail><n1:testFault xmlns:n1=\"test-ns-url\"/></detail>";
+
+    vector< SoapFaultDetailPtr > actual = factory.parseFaultDetail( test::getXmlNode( xml ) );
+    CPPUNIT_ASSERT_MESSAGE( "Wrong fault detail created",
+            dynamic_cast< TestFaultDetail* >( actual.front( ).get( ) ) != NULL );
+}
+
 void SoapTest::parseResponseTest( )
 {
     SoapResponseFactory factory;
     factory.setMapping( getTestMapping() );
     factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
 
     string xml = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body>"
                  "<test:testResponse xmlns:test=\"test-ns-url\"/>"
@@ -142,6 +212,7 @@ void SoapTest::parseResponseFaultTest( )
     SoapResponseFactory factory;
     factory.setMapping( getTestMapping() );
     factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
 
     string xml = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\""
                  "            xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\""
@@ -149,6 +220,7 @@ void SoapTest::parseResponseFaultTest( )
                  "  <S:Body><S:Fault>"
                  "      <faultcode xsi:type=\"xsd:string\">S:Client</faultcode>"
                  "      <faultstring xsi:type=\"xsd:string\">Some Error Message</faultstring>"
+                 "      <detail><n1:testFault xmlns:n1=\"test-ns-url\"/></detail>"
                  "  </S:Fault></S:Body>"
                  "</S:Envelope>";
 
@@ -170,6 +242,8 @@ void SoapTest::parseResponseFaultTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong detail string", string( "Some Error Message" ), e.getFaultstring() );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong detail string", string( "Client" ), e.getFaultcode() );
+        CPPUNIT_ASSERT_MESSAGE( "Wrong fault detail created",
+                dynamic_cast< TestFaultDetail* >( e.getDetail( ).front( ).get( ) ) != NULL );
     }
 }
 

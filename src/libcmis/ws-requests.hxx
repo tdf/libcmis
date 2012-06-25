@@ -31,8 +31,29 @@
 #include <map>
 #include <string>
 
+#include <libxml/tree.h>
+
 #include "repository.hxx"
 #include "ws-soap.hxx"
+
+class CmisSoapFaultDetail : public SoapFaultDetail
+{
+    private:
+        std::string m_type;
+        long m_code;
+        std::string m_message;
+
+        CmisSoapFaultDetail( xmlNodePtr node );
+
+    public:
+        ~CmisSoapFaultDetail( ) throw ( ) { };
+
+        std::string getType( ) { return m_type; }
+        int getCode( ) { return m_code; }
+        std::string getMessage( ) { return m_message; }
+
+        static SoapFaultDetailPtr create( xmlNodePtr node );
+};
 
 /** getRepositories request.
   */

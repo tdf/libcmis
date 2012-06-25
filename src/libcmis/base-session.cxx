@@ -148,7 +148,8 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId,
     m_password( password ),
     m_authProvided( false ),
     m_repositoriesIds( ),
-    m_verbose( verbose )
+    m_verbose( verbose ),
+    m_noHttpErrors( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -164,7 +165,8 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
     m_repositoriesIds( copy.m_repositoriesIds ),
-    m_verbose( copy.m_verbose )
+    m_verbose( copy.m_verbose ),
+    m_noHttpErrors( copy.m_noHttpErrors )
 {
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
@@ -183,6 +185,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
     m_authProvided = copy.m_authProvided;
     m_repositoriesIds = copy.m_repositoriesIds;
     m_verbose = copy.m_verbose;
+    m_noHttpErrors = copy.m_noHttpErrors;
     
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
@@ -386,7 +389,10 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     // Get some feedback when something wrong happens
     char errBuff[CURL_ERROR_SIZE];
     curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
-    curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
+
+    // We want to get the response even if there is an Http error
+    if ( !m_noHttpErrors )
+        curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
 
     if ( m_verbose )
         curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
@@ -397,7 +403,8 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     // Reset the handle for the next request
     curl_easy_reset( m_curlHandle );
 
-    if ( CURLE_OK != errCode )
+    bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
+    if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
         long httpError = 0;
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );

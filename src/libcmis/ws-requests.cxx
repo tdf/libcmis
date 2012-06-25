@@ -31,6 +31,46 @@
 
 using namespace std;
 
+CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
+    SoapFaultDetail( ),
+    m_type( ),
+    m_code( 0 ),
+    m_message( )
+{
+    // Extract the type, code and message
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        xmlChar* content = xmlNodeGetContent( child );
+        string value( ( char * )content );
+        xmlFree( content );
+
+        if ( xmlStrEqual( child->name, BAD_CAST( "type" ) ) )
+        {
+            m_type = value;
+        }
+        else if ( xmlStrEqual( child->name, BAD_CAST( "code" ) ) )
+        {
+            try
+            {
+                m_code = libcmis::parseInteger( value );
+            }
+            catch ( const libcmis::Exception& )
+            {
+                // Simply leave the default error code if unparsable
+            }
+        }
+        else if ( xmlStrEqual( child->name, BAD_CAST( "message" ) ) )
+        {
+            m_message = value;
+        }
+    }
+}
+
+SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
+{
+    return SoapFaultDetailPtr( new CmisSoapFaultDetail( node ) );
+}
+
 void GetRepositories::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );

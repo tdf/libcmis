@@ -31,6 +31,7 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#include <ws-requests.hxx>
 #include <ws-session.hxx>
 
 #define SERVER_WSDL_URL string( "http://localhost:8080/inmemory/services/RepositoryService" )
@@ -50,11 +51,13 @@ class WSTest : public CppUnit::TestFixture
         void getRepositoriesTest( );
         void sessionCreationTest( );
         void getRepositoryTest( );
+        void getRepositoryBadTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getRepositoryTest );
+        CPPUNIT_TEST( getRepositoryBadTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -74,6 +77,20 @@ void WSTest::getRepositoryTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Repository info badly retrieved", string( "100" ), session.getRepository()->getRootId( ) );
+}
+
+void WSTest::getRepositoryBadTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD, false );
+    try
+    {
+        session.getRepositoryService( ).getRepositoryInfo( "bad" );
+        CPPUNIT_FAIL( "Should have thrown SoapFault" );
+    }
+    catch( const SoapFault& )
+    {
+        // Test is Ok
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );

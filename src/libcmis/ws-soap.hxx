@@ -49,9 +49,21 @@ class SoapResponse
         virtual ~SoapResponse( ) { };
 };
 typedef boost::shared_ptr< SoapResponse > SoapResponsePtr;
-typedef SoapResponsePtr (*SoapResponseCreator) ( xmlNodePtr, RelatedMultipart& );
+typedef SoapResponsePtr ( *SoapResponseCreator ) ( xmlNodePtr, RelatedMultipart& );
 
+/** Base clas for SoapFault details parsed data.
+  */
+class SoapFaultDetail
+{
+    public:
+        virtual ~SoapFaultDetail() {};
 
+        virtual const std::string toString( ) const { return std::string( ); }
+};
+typedef boost::shared_ptr< SoapFaultDetail > SoapFaultDetailPtr;
+typedef SoapFaultDetailPtr ( *SoapFaultDetailCreator ) ( xmlNodePtr );
+
+class SoapResponseFactory;
 /** Class representing a SOAP Fault element, to be used as an exception.
   */
 class SoapFault : public std::exception
@@ -59,13 +71,15 @@ class SoapFault : public std::exception
     private:
         std::string m_faultcode;
         std::string m_faultstring;
+        std::vector< SoapFaultDetailPtr > m_detail;
 
     public:
-        SoapFault( xmlNodePtr faultNode );
+        SoapFault( xmlNodePtr faultNode, SoapResponseFactory* factory );
         virtual ~SoapFault( ) throw ( ) { };
 
         const std::string& getFaultcode ( ) const { return m_faultcode; }
         const std::string& getFaultstring ( ) const { return m_faultstring; }
+        std::vector< SoapFaultDetailPtr > getDetail( ) const { return m_detail; }
 
         virtual const char* what() const throw();
 };
@@ -78,6 +92,7 @@ class SoapResponseFactory
     private:
         std::map< std::string, SoapResponseCreator > m_mapping;
         std::map< std::string, std::string > m_namespaces;
+        std::map< std::string, SoapFaultDetailCreator > m_detailMapping;
 
     public:
 
@@ -90,6 +105,8 @@ class SoapResponseFactory
           */
         void setNamespaces( std::map< std::string, std::string > namespaces ) { m_namespaces = namespaces; }
 
+        void setDetailMapping( std::map< std::string, SoapFaultDetailCreator > mapping ) { m_detailMapping = mapping; }
+
         /** Get the Soap envelope from the multipart and extract the response objects from it. This
             method will also read the possible related parts to construct the response.
           */
@@ -99,6 +116,8 @@ class SoapResponseFactory
             directly: only from parseResponse or unit tests.
           */
         SoapResponsePtr createResponse( xmlNodePtr node, RelatedMultipart& multipart );
+
+        std::vector< SoapFaultDetailPtr > parseFaultDetail( xmlNodePtr detailNode );
 };
 
 

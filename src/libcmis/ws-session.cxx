@@ -45,6 +45,9 @@ WSSession::WSSession( string bindingUrl, string repositoryId,
     m_servicesUrls( ),
     m_responseFactory( )
 {
+    // We don't want to have the HTTP exceptions as the errors are coming
+    // back as SoapFault elements.
+    setNoHttpErrors( true );
     initialize( );
 }
 
@@ -196,6 +199,7 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         ns[ "cmis" ] = NS_CMIS_URL;
         m_responseFactory.setNamespaces( ns );
         m_responseFactory.setMapping( getResponseMapping() );
+        m_responseFactory.setDetailMapping( getDetailMapping( ) );
 
         // Get all repositories Ids
         map< string, string > repositories = getRepositoryService( ).getRepositories( );
@@ -213,6 +217,15 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
 
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoryInfoResponse" ] = &GetRepositoryInfoResponse::create;
+
+    return mapping;
+}
+
+map< string, SoapFaultDetailCreator > WSSession::getDetailMapping( )
+{
+    map< string, SoapFaultDetailCreator > mapping;
+
+    mapping[ "{" + string( NS_CMISM_URL ) + "}cmisFault" ] = &CmisSoapFaultDetail::create;
 
     return mapping;
 }
