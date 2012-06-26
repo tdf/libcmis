@@ -64,6 +64,9 @@ class XmlTest : public CppUnit::TestFixture
         void propertyStringAsXmlTest( ); 
         void propertyIntegerAsXmlTest( ); 
 
+        // Other utilities tests
+        void sha1Test( );
+
         CPPUNIT_TEST_SUITE( XmlTest );
         CPPUNIT_TEST( parseDateTimeTest );
         CPPUNIT_TEST( parseBoolTest );
@@ -75,6 +78,7 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parsePropertyBoolTest );
         CPPUNIT_TEST( propertyStringAsXmlTest );
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
+        CPPUNIT_TEST( sha1Test );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -462,6 +466,12 @@ void XmlTest::propertyIntegerAsXmlTest( )
              << "</cmis:propertyInteger>\n";
 
     CPPUNIT_ASSERT_EQUAL( expected.str( ), actual );
+}
+
+void XmlTest::sha1Test( )
+{
+    string actual = libcmis::sha1( "Hello" );
+    CPPUNIT_ASSERT_EQUAL( string( "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0" ), actual );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );

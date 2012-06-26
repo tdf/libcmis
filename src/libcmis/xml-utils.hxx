@@ -143,6 +143,10 @@ namespace libcmis
     /** Trim spaces on the left and right of a string.
      */ 
     std::string trim( const std::string& str );
+
+    std::string base64encode( const std::string& str );
+
+    std::string sha1( const std::string& str );
 }
 
 #endif

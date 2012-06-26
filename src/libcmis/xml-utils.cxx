@@ -30,6 +30,7 @@
 #include <sstream>
 #include <stdlib.h>
 
+#include <boost/uuid/sha1.hpp>
 #include <curl/curl.h>
 
 #include "xml-utils.hxx"
@@ -446,5 +447,29 @@ namespace libcmis
             return "";
         else
             return result.erase( result.find_last_not_of( spaces ) + 1 );
+    }
+
+    std::string base64encode( const std::string& str )
+    {
+        stringstream stream;
+        EncodedData data( &stream );
+        data.setEncoding( "base64" );
+        data.encode( ( void * )str.c_str( ), size_t( 1 ), str.size() );
+        data.finish( );
+        return stream.str();
+    }
+
+    std::string sha1( const std::string& str )
+    {
+        boost::uuids::detail::sha1 sha1;
+        sha1.process_bytes( str.c_str(), str.size() );
+
+        unsigned int digest[5];
+        sha1.get_digest( digest );
+
+        stringstream out;
+        for ( int i = 0; i < 5; ++i )
+            out << hex << digest[i];
+        return out.str();
     }
 }

@@ -66,6 +66,8 @@ class DecoderTest : public CppUnit::TestFixture
         void base64EncodePaddedBlockTest( );
         void base64EncodeSplitRunsTest( );
 
+        void base64encodeTest( );
+
         CPPUNIT_TEST_SUITE( DecoderTest );
         CPPUNIT_TEST( noEncodingTest );
         CPPUNIT_TEST( base64DecodeSimpleBlockTest );
@@ -75,6 +77,7 @@ class DecoderTest : public CppUnit::TestFixture
         CPPUNIT_TEST( base64EncodeSimpleBlockTest );
         CPPUNIT_TEST( base64EncodePaddedBlockTest );
         CPPUNIT_TEST( base64EncodeSplitRunsTest );
+        CPPUNIT_TEST( base64encodeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -204,6 +207,12 @@ void DecoderTest::base64EncodeSplitRunsTest( )
     data->encode( ( void* )input2.c_str(), 1, input2.size() );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "cGxlYXN1cmUu" ), getActual( ) );
+}
+
+void DecoderTest::base64encodeTest( )
+{
+    string actual = libcmis::base64encode( "sure." );
+    CPPUNIT_ASSERT_EQUAL( string( "c3VyZS4=" ), actual );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( DecoderTest );

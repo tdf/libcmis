@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -35,6 +37,7 @@
 #include "xml-utils.hxx"
 
 using namespace std;
+using namespace boost::uuids;
 
 SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
     exception( ),
@@ -231,14 +234,15 @@ string SoapRequest::createEnvelope( string& username, string& password )
     xmlChar* wsseUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" );
     xmlChar* wsuUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" );
 
-    // TODO Use a more secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
-    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText" );
+    // Use a secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
+    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest" );
+    xmlChar* nonceEncodingStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" );
 
     // Created must be a UTC time with no more than 3 digits fractional seconds.
     boost::posix_time::ptime created( boost::posix_time::second_clock::universal_time( ) );
     boost::posix_time::ptime expires( created );
     expires = expires + boost::gregorian::days( 1 );
-    xmlChar* createdStr = BAD_CAST( libcmis::writeDateTime( created ).c_str( ) );
+    string createdStr = libcmis::writeDateTime( created );
     xmlChar* expiresStr = BAD_CAST( libcmis::writeDateTime( expires ).c_str( ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
@@ -253,7 +257,7 @@ string SoapRequest::createEnvelope( string& username, string& password )
     xmlTextWriterStartElement( writer, BAD_CAST( "Timestamp" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
     xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
-    xmlTextWriterWriteRaw( writer, createdStr );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Created
     xmlTextWriterStartElement( writer, BAD_CAST( "Expires" ) );
     xmlTextWriterWriteRaw( writer, expiresStr );
@@ -262,13 +266,23 @@ string SoapRequest::createEnvelope( string& username, string& password )
 
     xmlTextWriterStartElement( writer, BAD_CAST( "UsernameToken" ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "Username" ), BAD_CAST( username.c_str( ) ) );
+
+    string nonce = to_string( random_generator()() );
+    string nonceEncoded = libcmis::base64encode( nonce );
+    string hashedPass = libcmis::sha1( string( nonce + createdStr + password ) );
+    string encodedDigest = libcmis::base64encode( hashedPass );
+
     xmlTextWriterStartElement( writer, BAD_CAST( "Password" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( password.c_str( ) ) );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( encodedDigest.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Password
+    xmlTextWriterStartElement( writer, BAD_CAST( "Nonce" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "EncodingType" ), nonceEncodingStr );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( nonceEncoded.c_str( ) ) );
+    xmlTextWriterEndElement( writer ); // End of Nonce
     xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
-    xmlTextWriterWriteRaw( writer, createdStr );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Created
     xmlTextWriterEndElement( writer ); // End of UsernameToken
 
