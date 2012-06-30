@@ -408,7 +408,10 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
 
 string AtomObject::getInfosUrl( )
 {
-    return getLink( "self", "application/atom+xml;type=entry" )->getHref( );
+    AtomLink const* const selfLink = getLink( "self", "application/atom+xml;type=entry" );
+    if ( NULL != selfLink )
+        return selfLink->getHref( );
+    return string( );
 }
 
 void AtomObject::extractInfos( xmlDocPtr doc )
