@@ -33,6 +33,7 @@ for top_builddir in . .. ../.. $ac_auxdir $ac_auxdir/..; do
 	test -f $top_builddir/configure && break
 done
 
+AC_LANG([C++])
 
 # Checks for programs.
 AC_PROG_CC
