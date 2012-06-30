@@ -123,28 +123,31 @@ AtomObjectType::~AtomObjectType( )
 
 AtomObjectType& AtomObjectType::operator=( const AtomObjectType& copy )
 {
-    m_session = copy.m_session;
-    m_refreshTimestamp = copy.m_refreshTimestamp;
-    m_selfUrl = copy.m_selfUrl;
-    m_id = copy.m_id;
-    m_localName = copy.m_localName;
-    m_localNamespace = copy.m_localNamespace;
-    m_displayName = copy.m_displayName;
-    m_queryName = copy.m_queryName;
-    m_description = copy.m_description;
-    m_parentTypeId = copy.m_parentTypeId;
-    m_baseTypeId = copy.m_baseTypeId;
-    m_childrenUrl = copy.m_childrenUrl;
-    m_creatable = copy.m_creatable;
-    m_fileable = copy.m_fileable;
-    m_queryable = copy.m_queryable;
-    m_fulltextIndexed = copy.m_fulltextIndexed;
-    m_includedInSupertypeQuery = copy.m_includedInSupertypeQuery;
-    m_controllablePolicy = copy.m_controllablePolicy;
-    m_controllableAcl = copy.m_controllableAcl;
-    m_versionable = copy.m_versionable;
-    m_contentStreamAllowed = copy.m_contentStreamAllowed;
-    m_propertiesTypes = copy.m_propertiesTypes;
+    if ( this != &copy )
+    {
+        m_session = copy.m_session;
+        m_refreshTimestamp = copy.m_refreshTimestamp;
+        m_selfUrl = copy.m_selfUrl;
+        m_id = copy.m_id;
+        m_localName = copy.m_localName;
+        m_localNamespace = copy.m_localNamespace;
+        m_displayName = copy.m_displayName;
+        m_queryName = copy.m_queryName;
+        m_description = copy.m_description;
+        m_parentTypeId = copy.m_parentTypeId;
+        m_baseTypeId = copy.m_baseTypeId;
+        m_childrenUrl = copy.m_childrenUrl;
+        m_creatable = copy.m_creatable;
+        m_fileable = copy.m_fileable;
+        m_queryable = copy.m_queryable;
+        m_fulltextIndexed = copy.m_fulltextIndexed;
+        m_includedInSupertypeQuery = copy.m_includedInSupertypeQuery;
+        m_controllablePolicy = copy.m_controllablePolicy;
+        m_controllableAcl = copy.m_controllableAcl;
+        m_versionable = copy.m_versionable;
+        m_contentStreamAllowed = copy.m_contentStreamAllowed;
+        m_propertiesTypes = copy.m_propertiesTypes;
+    }
 
     return *this;
 }

@@ -121,20 +121,23 @@ namespace libcmis
 
     PropertyType& PropertyType::operator=( const PropertyType& copy )
     {
-        m_id = copy.m_id;
-        m_localName = copy.m_localName;
-        m_localNamespace = copy.m_localNamespace;
-        m_displayName = copy.m_displayName;
-        m_queryName = copy.m_queryName;
-        m_type = copy.m_type;
-        m_xmlType = copy.m_xmlType;
-        m_multiValued = copy.m_multiValued;
-        m_updatable = copy.m_updatable;
-        m_inherited = copy.m_inherited;
-        m_required = copy.m_required;
-        m_queryable = copy.m_queryable;
-        m_orderable = copy.m_orderable;
-        m_openChoice = copy.m_openChoice;
+        if ( this != &copy )
+        {
+            m_id = copy.m_id;
+            m_localName = copy.m_localName;
+            m_localNamespace = copy.m_localNamespace;
+            m_displayName = copy.m_displayName;
+            m_queryName = copy.m_queryName;
+            m_type = copy.m_type;
+            m_xmlType = copy.m_xmlType;
+            m_multiValued = copy.m_multiValued;
+            m_updatable = copy.m_updatable;
+            m_inherited = copy.m_inherited;
+            m_required = copy.m_required;
+            m_queryable = copy.m_queryable;
+            m_orderable = copy.m_orderable;
+            m_openChoice = copy.m_openChoice;
+        }
 
         return *this;
     }

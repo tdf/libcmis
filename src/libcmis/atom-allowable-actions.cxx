@@ -175,9 +175,12 @@ AtomAllowableActions::AtomAllowableActions( const AtomAllowableActions& copy ) :
 
 AtomAllowableActions& AtomAllowableActions::operator=( const AtomAllowableActions& copy )
 {
-    AllowableActions::operator=( copy );
-    m_url = copy.m_url;
-    m_session = copy.m_session;
+    if ( this != &copy )
+    {
+        AllowableActions::operator=( copy );
+        m_url = copy.m_url;
+        m_session = copy.m_session;
+    }
 
     return *this;
 }

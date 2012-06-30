@@ -51,8 +51,11 @@ RepositoryService::~RepositoryService( )
 
 RepositoryService& RepositoryService::operator=( const RepositoryService& copy )
 {
-    m_session = copy.m_session;
-    m_url = copy.m_url;
+    if ( this != &copy )
+    {
+        m_session = copy.m_session;
+        m_url = copy.m_url;
+    }
 
     return *this;
 }

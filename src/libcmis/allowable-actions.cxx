@@ -50,7 +50,8 @@ namespace libcmis
 
     AllowableActions& AllowableActions::operator=( const AllowableActions& copy )
     {
-        m_states = copy.m_states;
+        if ( this != &copy )
+            m_states = copy.m_states;
 
         return *this;
     }

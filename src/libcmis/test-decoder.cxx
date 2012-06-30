@@ -97,8 +97,11 @@ DecoderTest::DecoderTest( const DecoderTest& rCopy ) :
 
 DecoderTest& DecoderTest::operator=( const DecoderTest& rCopy )
 {
-    data = rCopy.data;
-    stream = rCopy.stream;
+    if ( this != &rCopy )
+    {
+        data = rCopy.data;
+        stream = rCopy.stream;
+    }
     return *this;
 }
 

@@ -96,13 +96,16 @@ namespace libcmis
 
     EncodedData& EncodedData::operator=( const EncodedData& copy )
     {
-        m_stream = copy.m_stream;
-        m_outStream = copy.m_outStream;
-        m_encoding = copy.m_encoding;
-        m_decode = copy.m_decode;
-        m_pendingValue = copy.m_pendingValue;
-        m_pendingRank = copy.m_pendingRank;
-        m_missingBytes = copy.m_missingBytes;
+        if ( this != &copy )
+        {
+            m_stream = copy.m_stream;
+            m_outStream = copy.m_outStream;
+            m_encoding = copy.m_encoding;
+            m_decode = copy.m_decode;
+            m_pendingValue = copy.m_pendingValue;
+            m_pendingRank = copy.m_pendingRank;
+            m_missingBytes = copy.m_missingBytes;
+        }
         return *this;
     }
 

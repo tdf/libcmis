@@ -82,8 +82,11 @@ AtomRepository::~AtomRepository( )
 
 AtomRepository& AtomRepository::operator= ( const AtomRepository& rCopy )
 {
-    m_collections = rCopy.m_collections;
-    m_uriTemplates = rCopy.m_uriTemplates;
+    if ( this != &rCopy )
+    {
+        m_collections = rCopy.m_collections;
+        m_uriTemplates = rCopy.m_uriTemplates;
+    }
 
     return *this;
 }

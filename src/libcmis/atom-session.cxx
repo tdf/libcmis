@@ -134,8 +134,11 @@ AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
 
 AtomPubSession& AtomPubSession::operator=( const AtomPubSession& copy )
 {
-    BaseSession::operator=( copy );
-    m_repository = copy.m_repository;
+    if ( this != &copy )
+    {
+        BaseSession::operator=( copy );
+        m_repository = copy.m_repository;
+    }
     
     return *this;
 }

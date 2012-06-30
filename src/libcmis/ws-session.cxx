@@ -61,9 +61,12 @@ WSSession::WSSession( const WSSession& copy ) :
 
 WSSession& WSSession::operator=( const WSSession& copy )
 {
-    BaseSession::operator=( copy );
-    m_servicesUrls = copy.m_servicesUrls;
-    m_responseFactory = copy.m_responseFactory;
+    if ( this != &copy )
+    {
+        BaseSession::operator=( copy );
+        m_servicesUrls = copy.m_servicesUrls;
+        m_responseFactory = copy.m_responseFactory;
+    }
     
     return *this;
 }

@@ -83,13 +83,16 @@ AtomObject::AtomObject( const AtomObject& copy ) :
 
 AtomObject& AtomObject::operator=( const AtomObject& copy )
 {
-    m_session = copy.m_session;
-    m_refreshTimestamp = copy.m_refreshTimestamp;
-    m_typeId = copy.m_typeId;
-    m_typeDescription = copy.m_typeDescription;
-    m_properties = copy.m_properties;
-    m_allowableActions = copy.m_allowableActions;
-    m_links = copy.m_links;
+    if ( this != &copy )
+    {
+        m_session = copy.m_session;
+        m_refreshTimestamp = copy.m_refreshTimestamp;
+        m_typeId = copy.m_typeId;
+        m_typeDescription = copy.m_typeDescription;
+        m_properties = copy.m_properties;
+        m_allowableActions = copy.m_allowableActions;
+        m_links = copy.m_links;
+    }
 
     return *this;
 }

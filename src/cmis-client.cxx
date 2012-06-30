@@ -54,7 +54,8 @@ class CommandException : public exception
 
         CommandException& operator=( const CommandException& copy )
         {
-            m_msg = copy.m_msg;
+            if ( this != &copy )
+                m_msg = copy.m_msg;
             return *this;
         }
 
