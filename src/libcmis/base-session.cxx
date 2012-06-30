@@ -434,12 +434,17 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
 
 const char* CurlException::what( ) const throw ()
 {
-    stringstream buf;
     if ( !isCancelled( ) )
+    {
+        stringstream buf;
         buf << "CURL error - " << m_code << ": ";
-    buf << m_message;
+        buf << m_message;
+        m_errorMessage = buf.str( );
 
-    return buf.str( ).c_str( );
+        return m_errorMessage.c_str( );
+    }
+
+    return m_message.c_str( );
 }
 
 libcmis::Exception CurlException::getCmisException( ) const

@@ -52,6 +52,8 @@ class CurlException : public std::exception
 
         bool        m_cancelled;
 
+        mutable std::string m_errorMessage;
+
     public:
         CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
             exception( ),
