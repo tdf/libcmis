@@ -46,7 +46,7 @@ class AtomAllowableActions : public libcmis::AllowableActions
         AtomAllowableActions( const AtomAllowableActions& copy );
         ~AtomAllowableActions( ) { };
 
-        const AtomAllowableActions& operator=( const AtomAllowableActions& copy );
+        AtomAllowableActions& operator=( const AtomAllowableActions& copy );
 
         void setUrl( std::string url ) { m_url = url; }
 

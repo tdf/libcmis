@@ -48,7 +48,7 @@ namespace libcmis
         m_states.clear();
     }
 
-    const AllowableActions& AllowableActions::operator=( const AllowableActions& copy )
+    AllowableActions& AllowableActions::operator=( const AllowableActions& copy )
     {
         m_states = copy.m_states;
 

@@ -85,7 +85,7 @@ namespace libcmis
             AllowableActions( const AllowableActions& copy );
             virtual ~AllowableActions( );
 
-            const AllowableActions& operator=( const AllowableActions& copy );
+            AllowableActions& operator=( const AllowableActions& copy );
 
             /** Returns the permissions for the corresponding actions.
               */

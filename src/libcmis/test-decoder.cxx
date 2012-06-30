@@ -50,7 +50,7 @@ class DecoderTest : public CppUnit::TestFixture
         DecoderTest( );
         DecoderTest( const DecoderTest& rCopy );
 
-        const DecoderTest& operator=( const DecoderTest& rCopy );
+        DecoderTest& operator=( const DecoderTest& rCopy );
 
         void setUp( );
         void tearDown( );
@@ -95,7 +95,7 @@ DecoderTest::DecoderTest( const DecoderTest& rCopy ) :
 {
 }
 
-const DecoderTest& DecoderTest::operator=( const DecoderTest& rCopy )
+DecoderTest& DecoderTest::operator=( const DecoderTest& rCopy )
 {
     data = rCopy.data;
     stream = rCopy.stream;

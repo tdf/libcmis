@@ -94,7 +94,7 @@ namespace libcmis
     {
     }
 
-    const EncodedData& EncodedData::operator=( const EncodedData& copy )
+    EncodedData& EncodedData::operator=( const EncodedData& copy )
     {
         m_stream = copy.m_stream;
         m_outStream = copy.m_outStream;

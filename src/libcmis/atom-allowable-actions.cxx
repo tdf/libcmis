@@ -173,7 +173,7 @@ AtomAllowableActions::AtomAllowableActions( const AtomAllowableActions& copy ) :
 {
 }
 
-const AtomAllowableActions& AtomAllowableActions::operator=( const AtomAllowableActions& copy )
+AtomAllowableActions& AtomAllowableActions::operator=( const AtomAllowableActions& copy )
 {
     AllowableActions::operator=( copy );
     m_url = copy.m_url;

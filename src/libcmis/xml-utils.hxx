@@ -79,7 +79,7 @@ namespace libcmis
             EncodedData( std::ostream* stream );
             EncodedData( const EncodedData& rCopy );
 
-            const EncodedData& operator=( const EncodedData& rCopy );
+            EncodedData& operator=( const EncodedData& rCopy );
 
             void setEncoding( std::string encoding ) { m_encoding = encoding; }
             void decode( void* buf, size_t size, size_t nmemb );
