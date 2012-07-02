@@ -61,7 +61,8 @@ class CurlException : public std::exception
             m_code( code ),
             m_url( url ),
             m_httpStatus( httpStatus ),
-            m_cancelled( false )
+            m_cancelled( false ),
+            m_errorMessage( )
         {
         }
         
@@ -71,7 +72,8 @@ class CurlException : public std::exception
             m_code( CURLE_OK ),
             m_url( ),
             m_httpStatus( 0 ),
-            m_cancelled( true )
+            m_cancelled( true ),
+            m_errorMessage( )
         {
         }
 

@@ -411,7 +411,7 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
 
 string AtomObject::getInfosUrl( )
 {
-    AtomLink const* const selfLink = getLink( "self", "application/atom+xml;type=entry" );
+    AtomLink* selfLink = getLink( "self", "application/atom+xml;type=entry" );
     if ( NULL != selfLink )
         return selfLink->getHref( );
     return string( );
