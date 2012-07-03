@@ -277,6 +277,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
+    vars[string( "includeAllowableActions" )] = string( "true" );
     string url = createUrl( pattern, vars );
 
     try
@@ -306,6 +307,7 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmi
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath );
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_PATH] = path;
+    vars[string( "includeAllowableActions" )] = string( "true" );
     string url = createUrl( pattern, vars );
 
     try

@@ -447,12 +447,14 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         }
         xmlXPathFreeObject( xpathObj );
 
-        // Get the URL to the allowableActions
-        AtomLink* allowableActionsLink = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions", "application/cmisallowableactions+xml" );
-        if ( NULL != allowableActionsLink )
+        // Get the allowableActions
+        xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:allowableActions" ), xpathCtx );
+        if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
         {
-            m_allowableActions.reset( new AtomAllowableActions( m_session, allowableActionsLink->getHref( ) ) );
+            xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
+            m_allowableActions.reset( new libcmis::AllowableActions( node ) );
         }
+        xmlXPathFreeObject( xpathObj );
 
         // First get the type id as it will give us the property definitions
         string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );

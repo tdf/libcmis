@@ -38,8 +38,6 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-session.cxx \
 	atom-workspace.hxx \
 	atom-workspace.cxx \
-	atom-allowable-actions.hxx \
-	atom-allowable-actions.cxx \
 	ws-relatedmultipart.hxx \
 	ws-relatedmultipart.cxx \
 	ws-repositoryservice.hxx \

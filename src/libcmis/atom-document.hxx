@@ -35,6 +35,7 @@
 
 #include "document.hxx"
 #include "exception.hxx"
+#include "folder.hxx"
 #include "atom-object.hxx"
 
 class AtomDocument : public libcmis::Document, public AtomObject

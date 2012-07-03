@@ -25,7 +25,6 @@ CFLAGS+=$(CURL_CFLAGS)
 
 SLOFILES= \
     $(SLO)$/allowable-actions.obj \
-	$(SLO)$/atom-allowable-actions.obj \
 	$(SLO)$/atom-document.obj \
 	$(SLO)$/atom-folder.obj \
 	$(SLO)$/atom-object-type.obj \

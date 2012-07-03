@@ -30,7 +30,7 @@
 
 #include <libxml/tree.h>
 
-#include "atom-allowable-actions.hxx"
+#include "allowable-actions.hxx"
 #include "object.hxx"
 
 class AtomPubSession;
@@ -63,7 +63,7 @@ class AtomObject : public virtual libcmis::Object
         libcmis::ObjectTypePtr m_typeDescription;
 
         std::map< std::string, libcmis::PropertyPtr > m_properties;
-        boost::shared_ptr< AtomAllowableActions > m_allowableActions;
+        boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
 
         std::vector< AtomLink > m_links;
 
