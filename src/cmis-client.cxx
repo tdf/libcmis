@@ -162,16 +162,11 @@ void CmisClient::execute( ) throw ( exception )
         if ( "list-repos" == command )
         {
             map< int, string > params = getSessionParams( );
-            list< string > ids = libcmis::SessionFactory::getRepositories( params );
+            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( params );
         
-            cout << "Repositories: ";
-            for ( list< string >::iterator it = ids.begin(); it != ids.end(); it++ )
-            {
-                if ( it != ids.begin() )
-                    cout << ", ";
-                cout << *it;
-            }
-            cout << endl;
+            cout << "Repositories: name (id)" << endl;
+            for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); it++ )
+                cout << "\t" << ( *it )->getName( ) << " (" << ( *it )->getId( ) << ")" << endl;
         }
         else if ( "show-root" == command )
         {

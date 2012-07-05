@@ -137,7 +137,7 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
 
 void WSSession::initialize( ) throw ( libcmis::Exception )
 {
-    if ( m_repositoriesIds.empty() )
+    if ( m_repositories.empty() )
     {
         // Get the wsdl file
         string buf;
@@ -204,12 +204,13 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         m_responseFactory.setMapping( getResponseMapping() );
         m_responseFactory.setDetailMapping( getDetailMapping( ) );
 
-        // Get all repositories Ids
+        // Get all repositories
         map< string, string > repositories = getRepositoryService( ).getRepositories( );
         for ( map< string, string >::iterator it = repositories.begin( );
               it != repositories.end( ); ++it )
         {
-            m_repositoriesIds.push_back( it->first );
+            string repoId = it->first;
+            m_repositories.push_back( getRepositoryService( ).getRepositoryInfo( repoId ) );
         }
     }
 }
@@ -249,11 +250,11 @@ RepositoryService WSSession::getRepositoryService( )
     return RepositoryService( this );
 }
 
-list< string > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
+list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     WSSession session( url, string(), username, password, verbose );
     session.initialize( );
-    return session.m_repositoriesIds;
+    return session.m_repositories;
 }
 
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )

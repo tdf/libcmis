@@ -51,7 +51,7 @@ class WSSession : public BaseSession
 
         WSSession& operator=( const WSSession& copy );
 
-        static std::list< std::string > getRepositories( std::string url,
+        static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 

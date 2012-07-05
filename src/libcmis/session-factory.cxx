@@ -74,9 +74,9 @@ namespace libcmis
         return session;
     }
 
-    list< string > SessionFactory::getRepositories( map< int, string > params ) throw ( Exception )
+    list< RepositoryPtr > SessionFactory::getRepositories( map< int, string > params ) throw ( Exception )
     {
-        list< string > repos;
+        list< RepositoryPtr > repos;
 
         map< int, string >::iterator pIt = params.find( ATOMPUB_URL );
         if ( pIt != params.end( ) )

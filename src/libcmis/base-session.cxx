@@ -147,7 +147,7 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId,
     m_username( username ),
     m_password( password ),
     m_authProvided( false ),
-    m_repositoriesIds( ),
+    m_repositories( ),
     m_verbose( verbose ),
     m_noHttpErrors( false )
 {
@@ -164,7 +164,7 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
-    m_repositoriesIds( copy.m_repositoriesIds ),
+    m_repositories( copy.m_repositories ),
     m_verbose( copy.m_verbose ),
     m_noHttpErrors( copy.m_noHttpErrors )
 {
@@ -183,7 +183,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
     m_username = copy.m_username;
     m_password = copy.m_password;
     m_authProvided = copy.m_authProvided;
-    m_repositoriesIds = copy.m_repositoriesIds;
+    m_repositories = copy.m_repositories;
     m_verbose = copy.m_verbose;
     m_noHttpErrors = copy.m_noHttpErrors;
     

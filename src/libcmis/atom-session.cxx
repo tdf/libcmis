@@ -149,7 +149,7 @@ AtomPubSession::~AtomPubSession( )
 
 void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 {
-    if ( m_repositoriesIds.empty() )
+    if ( m_repositories.empty() )
     {
         // Pull the content from sAtomPubUrl
         string buf;
@@ -193,7 +193,7 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
                             if ( lcl_tolower( ws->getId( ) ) == lcl_tolower( m_repositoryId ) )
                                 m_repository = ws;
 
-                            m_repositoriesIds.push_back( ws->getId() );
+                            m_repositories.push_back( ws );
                         }
                         catch ( const libcmis::Exception& e )
                         {
@@ -212,11 +212,11 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 
 }
 
-list< string > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
+list< libcmis::RepositoryPtr > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     AtomPubSession session( url, string(), username, password, verbose );
     session.initialize( );
-    return session.m_repositoriesIds;
+    return session.m_repositories;
 }
 
 AtomRepositoryPtr AtomPubSession::getAtomRepository( ) throw ( libcmis::Exception )

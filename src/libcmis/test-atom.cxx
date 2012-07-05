@@ -158,9 +158,9 @@ class AtomTest : public CppUnit::TestFixture
 
 void AtomTest::getRepositoriesTest()
 {
-    list< string > ids = AtomPubSession::getRepositories( SERVER_ATOM_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "One repository should be found", SERVER_REPOSITORIES_COUNT, ids.size() );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, ids.front() );
+    list< libcmis::RepositoryPtr > repos = AtomPubSession::getRepositories( SERVER_ATOM_URL, SERVER_USERNAME, SERVER_PASSWORD );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "One repository should be found", SERVER_REPOSITORIES_COUNT, repos.size() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, repos.front()->getId( ) );
 }
 
 void AtomTest::sessionCreationTest( )

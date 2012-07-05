@@ -33,6 +33,7 @@
 #include <string>
 
 #include "exception.hxx"
+#include "repository.hxx"
 #include "session.hxx"
 
 #define ATOMPUB_URL         0
@@ -63,7 +64,7 @@ namespace libcmis
               */
             static Session* createSession( std::map< int, std::string > params ) throw ( Exception );
 
-            static std::list< std::string > getRepositories( std::map< int, std::string > params ) throw ( Exception );
+            static std::list< RepositoryPtr > getRepositories( std::map< int, std::string > params ) throw ( Exception );
     };
 }
 

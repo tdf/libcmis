@@ -45,7 +45,7 @@ class AtomPubSession : public BaseSession
 
         AtomPubSession& operator=( const AtomPubSession& copy );
 
-        static std::list< std::string > getRepositories( std::string url,
+        static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
                         std::string username, std::string password,
                         bool verbose = false ) throw ( libcmis::Exception );
 

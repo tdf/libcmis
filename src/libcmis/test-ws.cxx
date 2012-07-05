@@ -63,8 +63,8 @@ class WSTest : public CppUnit::TestFixture
 
 void WSTest::getRepositoriesTest()
 {
-    list< string > actual = WSSession::getRepositories( SERVER_WSDL_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories ids", size_t( 1 ), actual.size( ) );
+    list< libcmis::RepositoryPtr > actual = WSSession::getRepositories( SERVER_WSDL_URL, SERVER_USERNAME, SERVER_PASSWORD );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
 }
 
 void WSTest::sessionCreationTest( )

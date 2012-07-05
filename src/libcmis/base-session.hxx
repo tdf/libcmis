@@ -102,7 +102,7 @@ class BaseSession : public libcmis::Session
         std::string m_password;
         bool m_authProvided;
 
-        std::list< std::string > m_repositoriesIds;
+        std::list< libcmis::RepositoryPtr > m_repositories;
 
         bool m_verbose;
         bool m_noHttpErrors;
