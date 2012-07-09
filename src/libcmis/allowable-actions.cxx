@@ -44,7 +44,7 @@ namespace libcmis
             m_type = parseType( string( ( char* ) node->name ) );
             m_valid = true;
         }
-        catch ( const Exception& e )
+        catch ( const Exception& )
         {
             m_valid = false;
         }
@@ -56,7 +56,7 @@ namespace libcmis
             m_enabled = parseBool( string( ( char* )content ) );
             xmlFree( content );
         }
-        catch ( const Exception& e )
+        catch ( const Exception& )
         {
             m_enabled = false;
         }
