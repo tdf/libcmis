@@ -1,0 +1,29 @@
+
+libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
+
+libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
+	error.h \
+	object.h \
+	repository.h \
+	session.h \
+	session-factory.h
+
+lib_LTLIBRARIES = libcmis_c-@LIBCMIS_API_VERSION@.la
+libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
+	$(libcmis_c_headers_public) \
+	error.cxx \
+	internals.hxx \
+	object.cxx \
+	repository.cxx \
+	session.cxx \
+	session-factory.cxx
+
+libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 2:2:0
+
+libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
+	$(XML2_LIBS) \
+	$(CURL_LIBS) \
+	$(BOOST_SMART_PTR_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+libcmis_c_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis_c-@LIBCMIS_API_VERSION@/libcmis-c

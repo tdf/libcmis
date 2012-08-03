@@ -41,10 +41,6 @@
 #include "property.hxx"
 #include "xmlserializable.hxx"
 
-// for compatibility with libcmis in LO tree
-#define CmisObject Object
-#define CmisObjectPtr ObjectPtr
-
 namespace libcmis
 {
     /** Class representing any CMIS object.

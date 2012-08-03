@@ -129,8 +129,10 @@ AC_TYPE_SIZE_T
 AC_CONFIG_FILES([
 	Makefile
 	libcmis.pc
+	libcmis-c.pc
 	src/Makefile
 	src/libcmis/Makefile
+	src/libcmis-c/Makefile
 ])
 AC_OUTPUT
 

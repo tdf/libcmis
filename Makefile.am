@@ -1,22 +1,25 @@
 SUBDIRS = src
 ACLOCAL_AMFLAGS = -I m4
 
-pcfiles = libcmis-@LIBCMIS_API_VERSION@.pc
 libcmis-@LIBCMIS_API_VERSION@.pc: libcmis.pc
 		@cp -f $< $@
+libcmis-c-@LIBCMIS_API_VERSION@.pc: libcmis-c.pc
+		@cp -f $< $@
 
-pkgconfig_DATA = $(pcfiles)
+pkgconfig_DATA = \
+		  libcmis-@LIBCMIS_API_VERSION@.pc \
+		  libcmis-c-@LIBCMIS_API_VERSION@.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
 if WITH_LIBCMIS_MAN
 cmis-client.1: doc/cmis-client.xml
 	$(DOCBOOK2X) $<
 
-install-data-am: cmis-client.1
+install-man: cmis-client.1
 	mkdir -p $(DESTDIR)$(mandir)/man1/
 	$(INSTALL_DATA) cmis-client.1 $(DESTDIR)$(mandir)/man1/
 
-uninstall-am:
+uninstall-man:
 	-rm -rf $(DESTDIR)$(mandir)/man1/
 endif
 
