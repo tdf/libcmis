@@ -30,7 +30,9 @@
 
 #include <time.h>
 
+#include "allowable-actions.h"
 #include "error.h"
+#include "object-type.h"
 
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
@@ -55,8 +57,8 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 /* TODO libcmis_object_getProperties */
 void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 
-/* TODO libcmis_object_getTypeDescription */
-/* TODO libcmis_object_getAllowableActions */
+libcmis_ObjectTypePtr libcmis_object_getTypeDescription( libcmis_ObjectPtr object );
+libcmis_AllowableActionsPtr libcmis_object_getAllowableActions( libcmis_ObjectPtr object );
 
 void libcmis_object_refresh( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 time_t libcmis_object_getRefreshTimestamp( libcmis_ObjectPtr object );

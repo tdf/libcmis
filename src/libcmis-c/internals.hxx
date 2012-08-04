@@ -28,6 +28,7 @@
 #ifndef _LIBCMIS_INTERNALS_H_
 #define _LIBCMIS_INTERNALS_H_
 
+#include <libcmis/allowable-actions.hxx>
 #include <libcmis/exception.hxx>
 #include <libcmis/repository.hxx>
 #include <libcmis/session.hxx>
@@ -81,6 +82,20 @@ struct libcmis_object
     libcmis::ObjectPtr handle;
 
     libcmis_object( ) : handle( ) { }
+};
+
+struct libcmis_object_type
+{
+    libcmis::ObjectTypePtr handle;
+
+    libcmis_object_type( ) : handle( ) { }
+};
+
+struct libcmis_allowable_actions
+{
+    libcmis::AllowableActionsPtr handle;
+
+    libcmis_allowable_actions( ) : handle ( ) { }
 };
 
 #endif

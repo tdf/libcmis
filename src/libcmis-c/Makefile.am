@@ -2,8 +2,10 @@
 libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
+	allowable_actions.h \
 	error.h \
 	object.h \
+	object-type.h \
 	repository.h \
 	session.h \
 	session-factory.h
@@ -11,9 +13,11 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 lib_LTLIBRARIES = libcmis_c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_c_headers_public) \
+	allowable-actions.cxx \
 	error.cxx \
 	internals.hxx \
 	object.cxx \
+	object-type.cxx \
 	repository.cxx \
 	session.cxx \
 	session-factory.cxx

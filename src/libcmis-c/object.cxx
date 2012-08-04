@@ -170,10 +170,28 @@ void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr
 }
 
 
-/* TODO libcmis_object_getTypeDescription */
+libcmis_ObjectTypePtr libcmis_object_getTypeDescription( libcmis_ObjectPtr object )
+{
+    libcmis_ObjectTypePtr result = NULL;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        result = new libcmis_object_type( );
+        result->handle = object->handle->getTypeDescription( );
+    }
+    return result;
+}
 
 
-/* TODO libcmis_object_getAllowableActions */
+libcmis_AllowableActionsPtr libcmis_object_getAllowableActions( libcmis_ObjectPtr object )
+{
+    libcmis_AllowableActionsPtr result = NULL;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        result = new libcmis_allowable_actions( );
+        result->handle = object->handle->getAllowableActions( );
+    }
+    return result;
+}
 
 
 void libcmis_object_refresh( libcmis_ObjectPtr object, libcmis_ErrorPtr error )

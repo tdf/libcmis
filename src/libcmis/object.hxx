@@ -76,7 +76,7 @@ namespace libcmis
             virtual void updateProperties( ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( ) = 0;
-            virtual boost::shared_ptr< AllowableActions > getAllowableActions( ) = 0;
+            virtual AllowableActionsPtr getAllowableActions( ) = 0;
 
             /** Reload the data from the server.
               */

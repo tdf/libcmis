@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
 #include "exception.hxx"
@@ -118,6 +119,7 @@ namespace libcmis
               */
             bool isDefined( ObjectAction::Type action );
     };
+    typedef boost::shared_ptr< AllowableActions > AllowableActionsPtr;
 }
 
 #endif
