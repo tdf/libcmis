@@ -33,6 +33,7 @@
 #include "allowable-actions.h"
 #include "error.h"
 #include "object-type.h"
+#include "property.h"
 
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
@@ -54,7 +55,11 @@ time_t libcmis_object_getLastModificationDate( libcmis_ObjectPtr object );
 const char* libcmis_object_getChangeToken( libcmis_ObjectPtr object );
 bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 
-/* TODO libcmis_object_getProperties */
+libcmis_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object );
+libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, char* name );
+void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );
+void libcmis_object_removeProperty( libcmis_ObjectPtr object, char* name );
+void libcmis_object_clearProperties( libcmis_ObjectPtr object );
 void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 
 libcmis_ObjectTypePtr libcmis_object_getTypeDescription( libcmis_ObjectPtr object );

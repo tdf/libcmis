@@ -105,4 +105,11 @@ struct libcmis_property_type
     libcmis_property_type( ) : handle( ) { }
 };
 
+struct libcmis_property
+{
+    libcmis::PropertyPtr handle;
+
+    libcmis_property( ) : handle( ) { }
+};
+
 #endif

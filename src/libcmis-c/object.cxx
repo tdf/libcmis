@@ -31,6 +31,7 @@
 #include "internals.hxx"
 #include "object.h"
 
+using namespace std;
 
 void libcmis_object_free( libcmis_ObjectPtr object )
 {
@@ -149,7 +150,74 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object )
 }
 
 
-/* TODO libcmis_object_getProperties */
+libcmis_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object )
+{
+    libcmis_PropertyPtr* properties = NULL;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        map< string, libcmis::PropertyPtr >& handles = object->handle->getProperties( );
+        properties = new libcmis_PropertyPtr[ handles.size( ) ];
+        int i = 0;
+        for ( map< string, libcmis::PropertyPtr >::iterator it = handles.begin( );
+                it != handles.end( ); ++it, ++i )
+        {
+            libcmis_PropertyPtr property = new libcmis_property( );
+            property->handle = it->second;
+            properties[i] = property;
+        }
+    }
+    return properties;
+}
+
+
+libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, char* name )
+{
+    libcmis_PropertyPtr property = NULL;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        map< string, libcmis::PropertyPtr >& handles = object->handle->getProperties( );
+        map< string, libcmis::PropertyPtr >::iterator it = handles.find( string( name ) );
+        if ( it != handles.end( ) )
+        {
+            property = new libcmis_property( );
+            property->handle = it->second;
+        }
+    }
+    return property;
+}
+
+
+void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property )
+{
+    if ( object != NULL && object->handle.get( ) != NULL &&
+            property != NULL && property->handle.get( ) != NULL )
+    {
+        map< string, libcmis::PropertyPtr >& properties = object->handle->getProperties( );
+        string id = property->handle->getPropertyType( )->getId( );
+
+        if ( properties.count( id ) > 0 )
+            properties.erase( id );
+
+        properties.insert( pair< string, libcmis::PropertyPtr >( id, property->handle ) );
+    }
+}
+
+
+void libcmis_object_removeProperty( libcmis_ObjectPtr object, char* name )
+{
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        map< string, libcmis::PropertyPtr >& properties = object->handle->getProperties( );
+        properties.erase( string( name ) );
+    }
+}
+
+
+void libcmis_object_clearProperties( libcmis_ObjectPtr object )
+{
+    if ( object != NULL && object->handle.get( ) != NULL )
+        object->handle->getProperties( ).clear( );
+}
 
 
 void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error )

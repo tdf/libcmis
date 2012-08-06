@@ -296,7 +296,7 @@ void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list )
 }
 
 
-libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
+libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id )
 {
     libcmis_PropertyTypePtr propertyType = NULL;
     if ( type != NULL && type->handle != NULL )

@@ -6,6 +6,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	error.h \
 	object.h \
 	object-type.h \
+	property.h \
 	property-type.h \
 	repository.h \
 	session.h \
@@ -19,6 +20,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	internals.hxx \
 	object.cxx \
 	object-type.cxx \
+	property.cxx \
 	property-type.cxx \
 	repository.cxx \
 	session.cxx \
