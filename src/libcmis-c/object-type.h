@@ -58,7 +58,9 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectTypePtr* libcmis_object_type_getChildren( libcmis_ObjectTypePtr type, libcmis_ErrorPtr error );
+libcmis_ObjectTypePtr* libcmis_object_type_getChildren(
+        libcmis_ObjectTypePtr type,
+        libcmis_ErrorPtr error );
 
 bool libcmis_object_type_isCreatable( libcmis_ObjectTypePtr type );
 bool libcmis_object_type_isFileable( libcmis_ObjectTypePtr type );

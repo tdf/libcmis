@@ -103,6 +103,81 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
     return repository;
 }
 
+
+libcmis_ObjectPtr libcmis_session_getObject(
+        libcmis_SessionPtr session,
+        char* id,
+        libcmis_ErrorPtr error )
+{
+    libcmis_ObjectPtr object = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        try
+        {
+            libcmis::ObjectPtr handle = session->handle->getObject( string( id ) );
+            object = new libcmis_object( );
+            object->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return object;
+}
+
+
+libcmis_ObjectPtr libcmis_session_getObjectByPath(
+        libcmis_SessionPtr session,
+        char* path,
+        libcmis_ErrorPtr error )
+{
+    libcmis_ObjectPtr object = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        try
+        {
+            libcmis::ObjectPtr handle = session->handle->getObjectByPath( string( path ) );
+            object = new libcmis_object( );
+            object->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return object;
+}
+
+libcmis_ObjectTypePtr libcmis_session_getType(
+        libcmis_SessionPtr session,
+        char* id,
+        libcmis_ErrorPtr error )
+{
+    libcmis_ObjectTypePtr type = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        try
+        {
+            libcmis::ObjectTypePtr handle = session->handle->getType( string( id ) );
+            type = new libcmis_object_type( );
+            type->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return type;
+}
+
+
 void libcmis_session_setAuthenticationCallback(
         libcmis_SessionPtr session,
         libcmis_authenticationCallback callback )

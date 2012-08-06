@@ -43,7 +43,24 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
         libcmis_SessionPtr session,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectPtr libcmis_session_getObject( char* id, libcmis_ErrorPtr error );
+/* TODO libcmis_FolderPtr libcmis_session_getRootFolder( libcmis_SessionPtr session, libcmis_ErrorPtr error );*/
+
+libcmis_ObjectPtr libcmis_session_getObject(
+        libcmis_SessionPtr session,
+        char* id,
+        libcmis_ErrorPtr error );
+
+libcmis_ObjectPtr libcmis_session_getObjectByPath(
+        libcmis_SessionPtr session,
+        char* path,
+        libcmis_ErrorPtr error );
+
+/* TODO libcmis_FolderPtr libcmis_session_getFolder( libcmis_SessionPtr session, char* id, libcmis_ErrorPtr error );*/
+
+libcmis_ObjectTypePtr libcmis_session_getType(
+        libcmis_SessionPtr session,
+        char* id,
+        libcmis_ErrorPtr error );
 
 void libcmis_session_setAuthenticationCallback(
         libcmis_SessionPtr session,
