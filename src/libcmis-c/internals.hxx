@@ -98,4 +98,11 @@ struct libcmis_allowable_actions
     libcmis_allowable_actions( ) : handle ( ) { }
 };
 
+struct libcmis_property_type
+{
+    libcmis::PropertyTypePtr handle;
+
+    libcmis_property_type( ) : handle( ) { }
+};
+
 #endif

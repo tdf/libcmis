@@ -29,6 +29,8 @@
 #include "internals.hxx"
 #include "object-type.h"
 
+using namespace std;
+
 void libcmis_object_type_free( libcmis_ObjectTypePtr type )
 {
     delete type;
@@ -262,7 +264,55 @@ libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAll
     return result;
 }
 
-/* TODO libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type ) */
+
+libcmis_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type )
+{
+    libcmis_PropertyTypePtr* propertyTypes = NULL;
+    if ( type != NULL && type->handle != NULL )
+    {
+        map< string, libcmis::PropertyTypePtr >& handles = type->handle->getPropertiesTypes( );
+        propertyTypes = new libcmis_PropertyTypePtr[ handles.size( ) ];
+        int i = 0;
+        for ( map< string, libcmis::PropertyTypePtr >::iterator it = handles.begin( );
+                it != handles.end( ); ++it, ++i )
+        {
+            libcmis_PropertyTypePtr propertyType = new libcmis_property_type( );
+            propertyType->handle = it->second;
+            propertyTypes[i] = propertyType;
+        }
+    }
+
+    return propertyTypes;
+}
+
+void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list )
+{
+    int size = sizeof( list ) / sizeof( *list );
+    for ( int i = 0; i < size; ++i )
+    {
+        delete list[i];
+    }
+    delete[ ] list;
+}
+
+
+libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
+{
+    libcmis_PropertyTypePtr propertyType = NULL;
+    if ( type != NULL && type->handle != NULL )
+    {
+        map< string, libcmis::PropertyTypePtr >& handles = type->handle->getPropertiesTypes( );
+        map< string, libcmis::PropertyTypePtr >::iterator it = handles.find( string( id ) );
+        if ( it != handles.end( ) )
+        {
+            propertyType = new libcmis_property_type( );
+            propertyType->handle = it->second;
+        }
+    }
+
+    return propertyType;
+}
+
 
 const char* libcmis_object_type_toString( libcmis_ObjectTypePtr type )
 {
