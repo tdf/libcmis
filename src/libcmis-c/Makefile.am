@@ -11,7 +11,8 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	property-type.h \
 	repository.h \
 	session.h \
-	session-factory.h
+	session-factory.h \
+	vectors.h
 
 lib_LTLIBRARIES = libcmis_c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -26,7 +27,8 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	property-type.cxx \
 	repository.cxx \
 	session.cxx \
-	session-factory.cxx
+	session-factory.cxx \
+	vectors.cxx
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 2:2:0
 
@@ -46,6 +48,7 @@ test_api_SOURCES = \
 	test-api.cxx \
 	test-dummies.hxx \
 	test-dummies.cxx \
+	test-property.cxx \
 	test-property-type.cxx \
 	test-repository.cxx
 

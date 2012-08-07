@@ -31,15 +31,14 @@
 
 using namespace std;
 
-libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, char** strValues )
+libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const char** strValues, size_t size )
 {
     libcmis_PropertyPtr property = NULL;
     if ( type != NULL && type->handle.get( ) != NULL )
     {
         property = new libcmis_property( );
-        int size = sizeof( strValues ) / sizeof( *strValues );
         vector< string > values;
-        for ( int i = 0; i < size; ++i )
+        for ( size_t i = 0; i < size; ++i )
             values.push_back( string( strValues[i] ) );
         libcmis::PropertyPtr prop( new libcmis::Property( type->handle, values ) );
         property->handle = prop;
@@ -68,104 +67,77 @@ libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr pr
 }
 
 
-time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property )
+libcmis_vector_time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property )
 {
-    time_t* times = NULL;
+    libcmis_vector_time_t* times = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< boost::posix_time::ptime > handles = property->handle->getDateTimes( );
-        times = new time_t[ handles.size( ) ];
-        int i = 0;
-        for ( vector< boost::posix_time::ptime >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
-        {
-            tm time = boost::posix_time::to_tm( *it );
-            times[i] = mktime( &time );
-        }
+        times = new libcmis_vector_time_t( );
+        times->handle = handles;
     }
    return times; 
 }
 
 
-bool* libcmis_property_getBools( libcmis_PropertyPtr property )
+libcmis_vector_bool* libcmis_property_getBools( libcmis_PropertyPtr property )
 {
-    bool* values = NULL;
+    libcmis_vector_bool* values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< bool > handles = property->handle->getBools( );
-        values = new bool[ handles.size( ) ];
-        int i = 0;
-        for ( vector< bool >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
-        {
-            values[i] = *it;
-        }
+        values = new libcmis_vector_bool( );
+        values->handle = handles;
     }
     return values;
 }
 
 
-const char** libcmis_property_getStrings( libcmis_PropertyPtr property )
+libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property )
 {
-    const char** values = NULL;
+    libcmis_vector_string* values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< string > handles = property->handle->getStrings( );
-        values = new const char*[ handles.size( ) ];
-        int i = 0;
-        for ( vector< string >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
-        {
-            values[i] = it->c_str( );
-        }
+        values = new libcmis_vector_string( );
+        values->handle = handles;
     }
     return values;
 }
 
 
-long* libcmis_property_getLongs( libcmis_PropertyPtr property )
+libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property )
 {
-    long* values = NULL;
+    libcmis_vector_long* values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< long > handles = property->handle->getLongs( );
-        values = new long[ handles.size( ) ];
-        int i = 0;
-        for ( vector< long >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
-        {
-            values[i] = *it;
-        }
+        values = new libcmis_vector_long( );
+        values->handle = handles;
     }
     return values;
 }
 
 
-double* libcmis_property_getDoubles( libcmis_PropertyPtr property )
+libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property )
 {
-    double* values = NULL;
+    libcmis_vector_double* values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< double > handles = property->handle->getDoubles( );
-        values = new double[ handles.size( ) ];
-        int i = 0;
-        for ( vector< double >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
-        {
-            values[i] = *it;
-        }
+        values = new libcmis_vector_double( );
+        values->handle = handles;
     }
     return values;
 }
 
 
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues )
+void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues, size_t size )
 {
     if ( property != NULL && property->handle.get() != NULL )
     {
-        int size = sizeof( strValues ) / sizeof( *strValues );
         vector< string > values;
-        for ( int i = 0; i < size; ++i )
+        for ( size_t i = 0; i < size; ++i )
             values.push_back( string( strValues[i] ) );
         property->handle->setValues( values );
     }

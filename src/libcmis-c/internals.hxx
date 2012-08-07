@@ -28,6 +28,8 @@
 #ifndef _LIBCMIS_INTERNALS_H_
 #define _LIBCMIS_INTERNALS_H_
 
+#include <vector>
+
 #include <libcmis/allowable-actions.hxx>
 #include <libcmis/document.hxx>
 #include <libcmis/exception.hxx>
@@ -139,6 +141,41 @@ struct libcmis_document : public libcmis_object
         handle = document;
         libcmis_object::handle = document;
     }
+};
+
+struct libcmis_vector_bool
+{
+    std::vector< bool > handle;
+
+    libcmis_vector_bool( ) : handle( ) { }
+};
+
+struct libcmis_vector_string
+{
+    std::vector< std::string > handle;
+
+    libcmis_vector_string( ) : handle( ) { }
+};
+
+struct libcmis_vector_long
+{
+    std::vector< long > handle;
+
+    libcmis_vector_long( ) : handle( ) { }
+};
+
+struct libcmis_vector_double
+{
+    std::vector< double > handle;
+
+    libcmis_vector_double( ) : handle( ) { }
+};
+
+struct libcmis_vector_time_t
+{
+    std::vector< boost::posix_time::ptime > handle;
+
+    libcmis_vector_time_t( ) : handle( ) { }
 };
 
 #endif

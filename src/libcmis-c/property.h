@@ -29,21 +29,22 @@
 #define _LIBCMIS_PROPERTY_HXX_
 
 #include "property-type.h"
+#include "vectors.h"
 
 typedef struct libcmis_property* libcmis_PropertyPtr;
 
-libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, char** strValues );
+libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const char** strValues, size_t size );
 void libcmis_property_free( libcmis_PropertyPtr property );
 
 libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr property );
 
-time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property );
-bool* libcmis_property_getBools( libcmis_PropertyPtr property );
-const char** libcmis_property_getStrings( libcmis_PropertyPtr property );
-long* libcmis_property_getLongs( libcmis_PropertyPtr property );
-double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
+libcmis_vector_time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property );
+libcmis_vector_bool* libcmis_property_getBools( libcmis_PropertyPtr property );
+libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property );
+libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property );
+libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
 
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues );
+void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues, size_t size );
 
 #endif
 
