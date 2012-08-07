@@ -34,6 +34,7 @@ typedef struct libcmis_repository* libcmis_RepositoryPtr;
 
 libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node );
 void libcmis_repository_free( libcmis_RepositoryPtr repository );
+void libcmis_repository_list_free( libcmis_RepositoryPtr* list );
 
 const char* libcmis_repository_getId( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getName( libcmis_RepositoryPtr repository );

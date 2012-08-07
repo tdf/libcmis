@@ -38,6 +38,7 @@
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
 void libcmis_object_free( libcmis_ObjectPtr object );
+void libcmis_object_list_free( libcmis_ObjectPtr* list );
 
 const char* libcmis_object_getId( libcmis_ObjectPtr object );
 const char* libcmis_object_getName( libcmis_ObjectPtr object );

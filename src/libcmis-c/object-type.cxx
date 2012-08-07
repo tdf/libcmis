@@ -285,17 +285,6 @@ libcmis_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectT
     return propertyTypes;
 }
 
-void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list )
-{
-    int size = sizeof( list ) / sizeof( *list );
-    for ( int i = 0; i < size; ++i )
-    {
-        delete list[i];
-    }
-    delete[ ] list;
-}
-
-
 libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id )
 {
     libcmis_PropertyTypePtr propertyType = NULL;

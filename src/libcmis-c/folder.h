@@ -25,51 +25,46 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _LIBCMIS_SESSION_H_
-#define _LIBCMIS_SESSION_H_
+#ifndef _LIBCMIS_FOLDER_H_
+#define _LIBCMIS_FOLDER_H_
 
 #include "error.h"
-#include "folder.h"
 #include "object.h"
-#include "repository.h"
 
-typedef struct libcmis_session* libcmis_SessionPtr;
+typedef struct libcmis_folder* libcmis_FolderPtr;
+    
+enum libcmis_folder_UnfileObjects
+{
+    Unfile,
+    DeleteSingleFiled,
+    Delete
+};
 
-typedef bool ( *libcmis_authenticationCallback )( char* username, char* password );
+void libcmis_folder_free( libcmis_FolderPtr folder );
 
+libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
+libcmis_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
+char* libcmis_folder_getPath( libcmis_FolderPtr folder );
 
-void libcmis_session_free( libcmis_SessionPtr session );
+bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder );
 
-libcmis_RepositoryPtr libcmis_session_getRepository(
-        libcmis_SessionPtr session,
+libcmis_FolderPtr libcmis_folder_createFolder(
+        libcmis_FolderPtr folder,
+        libcmis_PropertyPtr* properties,
         libcmis_ErrorPtr error );
 
-libcmis_FolderPtr libcmis_session_getRootFolder(
-        libcmis_SessionPtr session,
-        libcmis_ErrorPtr error );
 
-libcmis_ObjectPtr libcmis_session_getObject(
-        libcmis_SessionPtr session,
-        char* id,
-        libcmis_ErrorPtr error );
+/* TODO libcmis_DocumentPtr libcmis_folder_createDocument(*/
+/*         libcmis_FolderPtr folder,*/
+/*         libcmis_PropertyPtr* properties,*/
+/*         readFn,*/
+/*         char* contentType,*/
+/*         libcmis_ErrorPtr );*/
 
-libcmis_ObjectPtr libcmis_session_getObjectByPath(
-        libcmis_SessionPtr session,
-        char* path,
+void libcmis_folder_removeTree( libcmis_FolderPtr folder,
+        bool allVersion,
+        libcmis_folder_UnfileObjects unfile,
+        bool continueOnError,
         libcmis_ErrorPtr error );
-
-libcmis_FolderPtr libcmis_session_getFolder(
-        libcmis_SessionPtr session,
-        char* id,
-        libcmis_ErrorPtr error );
-
-libcmis_ObjectTypePtr libcmis_session_getType(
-        libcmis_SessionPtr session,
-        char* id,
-        libcmis_ErrorPtr error );
-
-void libcmis_session_setAuthenticationCallback(
-        libcmis_SessionPtr session,
-        libcmis_authenticationCallback callback );
 
 #endif

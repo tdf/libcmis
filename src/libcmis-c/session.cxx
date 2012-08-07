@@ -104,6 +104,30 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
 }
 
 
+libcmis_FolderPtr libcmis_session_getRootFolder(
+        libcmis_SessionPtr session,
+        libcmis_ErrorPtr error )
+{
+    libcmis_FolderPtr folder = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        try
+        {
+            libcmis::FolderPtr handle = session->handle->getRootFolder( );
+            folder = new libcmis_folder( );
+            folder->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return folder;
+}
+
+
 libcmis_ObjectPtr libcmis_session_getObject(
         libcmis_SessionPtr session,
         char* id,
@@ -152,6 +176,32 @@ libcmis_ObjectPtr libcmis_session_getObjectByPath(
     }
     return object;
 }
+
+
+libcmis_FolderPtr libcmis_session_getFolder(
+        libcmis_SessionPtr session,
+        char* id,
+        libcmis_ErrorPtr error )
+{
+    libcmis_FolderPtr folder = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        try
+        {
+            libcmis::FolderPtr handle = session->handle->getFolder( string( id ) );
+            folder = new libcmis_folder( );
+            folder->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return folder;
+}
+
 
 libcmis_ObjectTypePtr libcmis_session_getType(
         libcmis_SessionPtr session,

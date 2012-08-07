@@ -115,14 +115,3 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
     }
     return repositories;
 }
-
-
-void libcmis_repository_list_free( libcmis_RepositoryPtr* list )
-{
-    long size = sizeof( list ) / sizeof( *list );
-    for ( int i = 0; i < size; ++i )
-    {
-        delete list[i];
-    }
-    delete[] list;
-}

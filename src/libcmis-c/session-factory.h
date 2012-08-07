@@ -48,6 +48,4 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
         bool  verbose,
         libcmis_ErrorPtr error );
 
-void libcmis_repository_list_free( libcmis_RepositoryPtr* list );
-
 #endif

@@ -26,8 +26,6 @@
  * instead of those above.
  */
 
-#include <libcmis/property.hxx>
-
 #include "internals.hxx"
 #include "property.h"
 

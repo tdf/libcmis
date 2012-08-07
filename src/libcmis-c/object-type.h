@@ -74,7 +74,6 @@ bool libcmis_object_type_isVersionable( libcmis_ObjectTypePtr type );
 libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAllowed( libcmis_ObjectTypePtr type );
 
 libcmis_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
-void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list );
 libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
 
 const char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );

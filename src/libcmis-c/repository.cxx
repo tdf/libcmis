@@ -46,6 +46,17 @@ void libcmis_repository_free( libcmis_RepositoryPtr repository )
 }
 
 
+void libcmis_repository_list_free( libcmis_RepositoryPtr* list )
+{
+    long size = sizeof( list ) / sizeof( *list );
+    for ( int i = 0; i < size; ++i )
+    {
+        delete list[i];
+    }
+    delete[] list;
+}
+
+
 const char* libcmis_repository_getId( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )

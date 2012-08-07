@@ -26,8 +26,6 @@
  * instead of those above.
  */
 
-#include <libcmis/object.hxx>
-
 #include "internals.hxx"
 #include "object.h"
 
@@ -36,6 +34,17 @@ using namespace std;
 void libcmis_object_free( libcmis_ObjectPtr object )
 {
     delete object;
+}
+
+
+void libcmis_object_list_free( libcmis_ObjectPtr* list )
+{
+    int size = sizeof( list ) / sizeof( *list );
+    for ( int i = 0 ; i < size; ++i )
+    {
+        delete list[i];
+    }
+    delete[] list;
 }
 
 

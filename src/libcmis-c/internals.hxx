@@ -30,6 +30,9 @@
 
 #include <libcmis/allowable-actions.hxx>
 #include <libcmis/exception.hxx>
+#include <libcmis/folder.hxx>
+#include <libcmis/object.hxx>
+#include <libcmis/property.hxx>
 #include <libcmis/repository.hxx>
 #include <libcmis/session.hxx>
 
@@ -110,6 +113,13 @@ struct libcmis_property
     libcmis::PropertyPtr handle;
 
     libcmis_property( ) : handle( ) { }
+};
+
+struct libcmis_folder
+{
+    libcmis::FolderPtr handle;
+
+    libcmis_folder( ) : handle( ) { }
 };
 
 #endif

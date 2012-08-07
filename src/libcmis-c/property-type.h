@@ -40,6 +40,7 @@ enum libcmis_property_type_Type
 };
 
 void libcmis_property_type_free( libcmis_PropertyTypePtr type );
+void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list );
 
 const char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
 const char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );

@@ -35,6 +35,17 @@ void libcmis_property_type_free( libcmis_PropertyTypePtr type )
 }
 
 
+void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list )
+{
+    int size = sizeof( list ) / sizeof( *list );
+    for ( int i = 0; i < size; ++i )
+    {
+        delete list[i];
+    }
+    delete[ ] list;
+}
+
+
 const char* libcmis_property_type_getId( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
