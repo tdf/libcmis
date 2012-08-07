@@ -22,6 +22,7 @@ ChangeLog
 libcmis-*.*.*.tar.gz
 test-atom
 test-ws
+test-api
 cmis-client
 test-server
 *.tar.gz

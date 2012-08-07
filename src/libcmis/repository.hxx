@@ -41,7 +41,7 @@ namespace libcmis
       */
     class Repository
     {
-        private:
+        protected:
             std::string m_id;
             std::string m_name;
             std::string m_description;
@@ -54,7 +54,6 @@ namespace libcmis
             boost::shared_ptr< std::string > m_principalAnonymous;
             boost::shared_ptr< std::string > m_principalAnyone;
 
-        protected:
             Repository( );
             void initializeFromNode( xmlNodePtr node );
 

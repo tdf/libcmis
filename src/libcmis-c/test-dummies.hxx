@@ -25,25 +25,23 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _LIBCMIS_PROPERTY_HXX_
-#define _LIBCMIS_PROPERTY_HXX_
+#ifndef _LIBCMIS_TEST_DUMMIES_HXX_
+#define _LIBCMIS_TEST_DUMMIES_HXX_
 
-#include "property-type.h"
 
-typedef struct libcmis_property* libcmis_PropertyPtr;
+#include <libcmis/repository.hxx>
 
-libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, char** strValues );
-void libcmis_property_free( libcmis_PropertyPtr property );
-
-libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr property );
-
-time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property );
-bool* libcmis_property_getBools( libcmis_PropertyPtr property );
-const char** libcmis_property_getStrings( libcmis_PropertyPtr property );
-long* libcmis_property_getLongs( libcmis_PropertyPtr property );
-double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
-
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues );
+/** This namespace contains dummy classes to simulate the libcmis layer
+    in the libcmis-c unit tests.
+  */
+namespace dummies
+{
+    class Repository : public libcmis::Repository
+    {
+        public:
+            Repository( );
+            ~Repository( );
+    };
+}
 
 #endif
-

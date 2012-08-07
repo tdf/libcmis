@@ -93,6 +93,15 @@ const char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository )
 }
 
 
+const char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository )
+{
+    if ( repository != NULL && repository->handle != NULL )
+        return repository->handle->getProductName( ).c_str( );
+    else
+        return NULL;
+}
+
+
 const char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )

@@ -25,25 +25,30 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _LIBCMIS_PROPERTY_HXX_
-#define _LIBCMIS_PROPERTY_HXX_
 
-#include "property-type.h"
+#include "test-dummies.hxx"
 
-typedef struct libcmis_property* libcmis_PropertyPtr;
+using namespace std;
 
-libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, char** strValues );
-void libcmis_property_free( libcmis_PropertyPtr property );
+namespace dummies
+{
+    Repository::Repository( ) :
+        libcmis::Repository( )
+    {
+        m_id = string( "Repository::Id" );
+        m_name = string( "Repository::Name" );
+        m_description = string( "Repository::Description" );
+        m_vendorName = string( "Repository::VendorName" );
+        m_productName = string( "Repository::ProductName" );
+        m_productVersion = string( "Repository::ProductVersion" );
+        m_rootId = string( "Repository::RootId" );
+        m_cmisVersionSupported = string( "Repository::CmisVersionSupported" );
+        m_thinClientUri.reset( new string( "Repository::ThinClientUri" ) );
+        m_principalAnonymous.reset( new string( "Repository::PrincipalAnonymous" ) );
+        m_principalAnyone.reset( new string( "Repository::PrincipalAnyone" ) );
+    }
 
-libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr property );
-
-time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property );
-bool* libcmis_property_getBools( libcmis_PropertyPtr property );
-const char** libcmis_property_getStrings( libcmis_PropertyPtr property );
-long* libcmis_property_getLongs( libcmis_PropertyPtr property );
-double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
-
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues );
-
-#endif
-
+    Repository::~Repository( )
+    {
+    }
+}

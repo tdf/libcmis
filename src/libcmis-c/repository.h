@@ -40,6 +40,7 @@ const char* libcmis_repository_getId( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getName( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getDescription( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository );
+const char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getRootId( libcmis_RepositoryPtr repository );
 const char* libcmis_repository_getCmisVersionSupported( libcmis_RepositoryPtr repository );

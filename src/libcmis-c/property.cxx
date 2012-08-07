@@ -105,18 +105,18 @@ bool* libcmis_property_getBools( libcmis_PropertyPtr property )
 }
 
 
-char** libcmis_property_getStrings( libcmis_PropertyPtr property )
+const char** libcmis_property_getStrings( libcmis_PropertyPtr property )
 {
-    char** values = NULL;
+    const char** values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< string > handles = property->handle->getStrings( );
-        values = new char*[ handles.size( ) ];
+        values = new const char*[ handles.size( ) ];
         int i = 0;
         for ( vector< string >::iterator it = handles.begin( );
                 it != handles.end( ); ++it, ++i )
         {
-            values[i] = strdup( it->c_str( ) );
+            values[i] = it->c_str( );
         }
     }
     return values;
