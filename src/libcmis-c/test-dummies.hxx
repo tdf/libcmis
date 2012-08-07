@@ -29,6 +29,7 @@
 #define _LIBCMIS_TEST_DUMMIES_HXX_
 
 
+#include <libcmis/property-type.hxx>
 #include <libcmis/repository.hxx>
 
 /** This namespace contains dummy classes to simulate the libcmis layer
@@ -41,6 +42,13 @@ namespace dummies
         public:
             Repository( );
             ~Repository( );
+    };
+
+    class PropertyType : public libcmis::PropertyType
+    {
+        public:
+            PropertyType( std::string id, std::string xmlType );
+            ~PropertyType( );
     };
 }
 

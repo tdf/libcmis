@@ -71,7 +71,7 @@ namespace libcmis
             PropertyType( );
             PropertyType( xmlNodePtr node );
             PropertyType( const PropertyType& copy );
-            ~PropertyType( ) { };
+            virtual ~PropertyType( ) { };
 
             PropertyType& operator=( const PropertyType& copy );
 

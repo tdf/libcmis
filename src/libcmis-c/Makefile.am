@@ -46,6 +46,7 @@ test_api_SOURCES = \
 	test-api.cxx \
 	test-dummies.hxx \
 	test-dummies.cxx \
+	test-property-type.cxx \
 	test-repository.cxx
 
 test_api_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)

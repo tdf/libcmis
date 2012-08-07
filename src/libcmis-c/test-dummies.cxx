@@ -51,4 +51,29 @@ namespace dummies
     Repository::~Repository( )
     {
     }
+
+    PropertyType::PropertyType( string id, string xmlType ) :
+        libcmis::PropertyType( )
+    {
+        setId( id );
+        setLocalName( string( "PropertyType::LocalName" ) );
+        setLocalNamespace( string( "PropertyType::LocalNamespace" ) );
+        setDisplayName( string( "PropertyType::DisplayName" ) );
+        setQueryName( string( "PropertyType::QueryName" ) );
+        setTypeFromXml( xmlType );
+
+        // Setting true for the tests to see a difference with 
+        // the default false result of the tested functions
+        setMultiValued( true );
+        setUpdatable( true );
+        setInherited( true );
+        setRequired( true );
+        setQueryable( true );
+        setOrderable( true );
+        setOpenChoice( true );
+    }
+
+    PropertyType::~PropertyType( )
+    {
+    }
 }
