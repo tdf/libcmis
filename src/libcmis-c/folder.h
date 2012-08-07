@@ -28,6 +28,7 @@
 #ifndef _LIBCMIS_FOLDER_H_
 #define _LIBCMIS_FOLDER_H_
 
+#include "document.h"
 #include "error.h"
 #include "object.h"
 
@@ -44,6 +45,9 @@ void libcmis_folder_free( libcmis_FolderPtr folder );
 
 libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
 libcmis_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
+
+/** Get the path of the folder. The returned string needs to be freed.
+  */
 char* libcmis_folder_getPath( libcmis_FolderPtr folder );
 
 bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder );

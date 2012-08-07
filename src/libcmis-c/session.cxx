@@ -115,7 +115,7 @@ libcmis_FolderPtr libcmis_session_getRootFolder(
         {
             libcmis::FolderPtr handle = session->handle->getRootFolder( );
             folder = new libcmis_folder( );
-            folder->handle = handle;
+            folder->setHandle( handle );
         }
         catch ( const libcmis::Exception& e )
         {
@@ -190,7 +190,7 @@ libcmis_FolderPtr libcmis_session_getFolder(
         {
             libcmis::FolderPtr handle = session->handle->getFolder( string( id ) );
             folder = new libcmis_folder( );
-            folder->handle = handle;
+            folder->setHandle( handle );
         }
         catch ( const libcmis::Exception& e )
         {

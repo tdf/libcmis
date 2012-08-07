@@ -29,6 +29,7 @@
 #define _LIBCMIS_INTERNALS_H_
 
 #include <libcmis/allowable-actions.hxx>
+#include <libcmis/document.hxx>
 #include <libcmis/exception.hxx>
 #include <libcmis/folder.hxx>
 #include <libcmis/object.hxx>
@@ -85,6 +86,7 @@ struct libcmis_object
     libcmis::ObjectPtr handle;
 
     libcmis_object( ) : handle( ) { }
+    virtual ~libcmis_object( ) { }
 };
 
 struct libcmis_object_type
@@ -115,11 +117,28 @@ struct libcmis_property
     libcmis_property( ) : handle( ) { }
 };
 
-struct libcmis_folder
+struct libcmis_folder : public libcmis_object
 {
     libcmis::FolderPtr handle;
 
-    libcmis_folder( ) : handle( ) { }
+    libcmis_folder( ) : libcmis_object( ), handle( ) { }
+    void setHandle( libcmis::FolderPtr folder )
+    {
+        handle = folder;
+        libcmis_object::handle = folder;
+    }
+};
+
+struct libcmis_document : public libcmis_object
+{
+    libcmis::DocumentPtr handle;
+
+    libcmis_document( ) : libcmis_object( ), handle( ) { }
+    void setHandle( libcmis::DocumentPtr document )
+    {
+        handle = document;
+        libcmis_object::handle = document;
+    }
 };
 
 #endif

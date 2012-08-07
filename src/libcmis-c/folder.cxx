@@ -47,7 +47,7 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
         {
             libcmis::FolderPtr handle = folder->handle->getFolderParent( );
             parent = new libcmis_folder( );
-            parent->handle = handle;
+            parent->setHandle( handle );
         }
         catch ( const libcmis::Exception& e )
         {
@@ -130,7 +130,7 @@ libcmis_FolderPtr libcmis_folder_createFolder(
 
             libcmis::FolderPtr handle = folder->handle->createFolder( mappedProperties );
             result = new libcmis_folder( );
-            result->handle = handle;
+            result->setHandle( handle );
         }
         catch ( const libcmis::Exception& e )
         {
