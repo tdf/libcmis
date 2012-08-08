@@ -36,16 +36,48 @@ libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node );
 void libcmis_repository_free( libcmis_RepositoryPtr repository );
 void libcmis_repository_list_free( libcmis_RepositoryPtr* list );
 
-const char* libcmis_repository_getId( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getName( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getDescription( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getRootId( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getCmisVersionSupported( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getThinClientUri( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository );
-const char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository );
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getId( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getName( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getDescription( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getRootId( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getCmisVersionSupported( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getThinClientUri( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository );
+
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository );
 
 #endif

@@ -84,110 +84,121 @@ libcmis_RepositoryPtr RepositoryTest::getTested( )
 void RepositoryTest::getIdTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getId( tested );
+    char* actual = libcmis_repository_getId( tested );
     string expected( "Repository::Id" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getNameTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getName( tested );
+    char* actual = libcmis_repository_getName( tested );
     string expected( "Repository::Name" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getDescriptionTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getDescription( tested );
+    char* actual = libcmis_repository_getDescription( tested );
     string expected( "Repository::Description" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getVendorNameTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getVendorName( tested );
+    char* actual = libcmis_repository_getVendorName( tested );
     string expected( "Repository::VendorName" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getProductNameTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getProductName( tested );
+    char* actual = libcmis_repository_getProductName( tested );
     string expected( "Repository::ProductName" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getProductVersionTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getProductVersion( tested );
+    char* actual = libcmis_repository_getProductVersion( tested );
     string expected( "Repository::ProductVersion" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getRootIdTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getRootId( tested );
+    char* actual = libcmis_repository_getRootId( tested );
     string expected( "Repository::RootId" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getCmisVersionSupportedTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getCmisVersionSupported( tested );
+    char* actual = libcmis_repository_getCmisVersionSupported( tested );
     string expected( "Repository::CmisVersionSupported" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getThinClientUriTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getThinClientUri( tested );
+    char* actual = libcmis_repository_getThinClientUri( tested );
     string expected( "Repository::ThinClientUri" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getPrincipalAnonymousTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getPrincipalAnonymous( tested );
+    char* actual = libcmis_repository_getPrincipalAnonymous( tested );
     string expected( "Repository::PrincipalAnonymous" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 
 void RepositoryTest::getPrincipalAnyoneTest( )
 {
     libcmis_RepositoryPtr tested = getTested( );
-    const char* actual = libcmis_repository_getPrincipalAnyone( tested );
+    char* actual = libcmis_repository_getPrincipalAnyone( tested );
     string expected( "Repository::PrincipalAnyone" );
     CPPUNIT_ASSERT_EQUAL( expected, string( actual ) );
 
+    free( actual );
     libcmis_repository_free( tested );
 }
 

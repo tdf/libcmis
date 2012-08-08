@@ -63,46 +63,46 @@ void libcmis_property_type_free( libcmis_PropertyTypePtr type )
 }
 
 
-const char* libcmis_property_type_getId( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getId( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getId( ).c_str( );
+        return strdup( type->handle->getId( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getLocalName( ).c_str( );
+        return strdup( type->handle->getLocalName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getLocalNamespace( ).c_str( );
+        return strdup( type->handle->getLocalNamespace( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getDisplayName( ).c_str( );
+        return strdup( type->handle->getDisplayName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getQueryName( ).c_str( );
+        return strdup( type->handle->getQueryName( ).c_str( ) );
     else
         return NULL;
 }
@@ -117,10 +117,10 @@ libcmis_property_type_Type libcmis_property_type_getType( libcmis_PropertyTypePt
 }
 
 
-const char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type )
+char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getXmlType( ).c_str( );
+        return strdup( type->handle->getXmlType( ).c_str( ) );
     else
         return NULL;
 }

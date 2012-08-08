@@ -57,103 +57,103 @@ void libcmis_repository_list_free( libcmis_RepositoryPtr* list )
 }
 
 
-const char* libcmis_repository_getId( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getId( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getId( ).c_str( );
+        return strdup( repository->handle->getId( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getName( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getName( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getName( ).c_str( );
+        return strdup( repository->handle->getName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getDescription( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getDescription( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getDescription( ).c_str( );
+        return strdup( repository->handle->getDescription( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getVendorName( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getVendorName( ).c_str( );
+        return strdup( repository->handle->getVendorName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getProductName( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getProductName( ).c_str( );
+        return strdup( repository->handle->getProductName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getProductVersion( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getProductVersion( ).c_str( );
+        return strdup( repository->handle->getProductVersion( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getRootId( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getRootId( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getRootId( ).c_str( );
+        return strdup( repository->handle->getRootId( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getCmisVersionSupported( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getCmisVersionSupported( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL )
-        return repository->handle->getCmisVersionSupported( ).c_str( );
+        return strdup( repository->handle->getCmisVersionSupported( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getThinClientUri( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getThinClientUri( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL &&
             repository->handle->getThinClientUri( ).get( ) != NULL )
-        return repository->handle->getThinClientUri( )->c_str( );
+        return strdup( repository->handle->getThinClientUri( )->c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL &&
             repository->handle->getPrincipalAnonymous( ).get( ) != NULL )
-        return repository->handle->getPrincipalAnonymous( )->c_str( );
+        return strdup( repository->handle->getPrincipalAnonymous( )->c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository )
+char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository )
 {
     if ( repository != NULL && repository->handle != NULL &&
             repository->handle->getPrincipalAnyone( ).get( ) != NULL )
-        return repository->handle->getPrincipalAnyone( )->c_str( );
+        return strdup( repository->handle->getPrincipalAnyone( )->c_str( ) );
     else
         return NULL;
 }

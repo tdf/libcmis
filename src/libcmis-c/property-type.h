@@ -47,14 +47,31 @@ libcmis_PropertyTypePtr libcmis_vector_PropertyTypePtr_get( libcmis_vector_Prope
 
 void libcmis_property_type_free( libcmis_PropertyTypePtr type );
 
-const char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
-const char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );
-const char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type );
-const char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type );
-const char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type );
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type );
 
 libcmis_property_type_Type libcmis_property_type_getType( libcmis_PropertyTypePtr type );
-const char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type );
 
 bool libcmis_property_type_isMultiValued( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isUpdatable( libcmis_PropertyTypePtr type );

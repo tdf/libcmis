@@ -355,7 +355,9 @@ void ObjectTypeTest::getPropertyTypeTest( )
     libcmis_ObjectTypePtr tested = getTested( false, false );
     string id( "Property2" );
     libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( tested, id.c_str( ) );
-    CPPUNIT_ASSERT_EQUAL( id, string( libcmis_property_type_getId( propertyType ) ) );
+    char* propertyId = libcmis_property_type_getId( propertyType );
+    CPPUNIT_ASSERT_EQUAL( id, string( propertyId ) );
+    free( propertyId );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( tested );
 }

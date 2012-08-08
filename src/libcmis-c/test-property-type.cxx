@@ -88,45 +88,50 @@ void PropertyTypeTest::getIdTest( )
 {
     string id( "Id" );
     libcmis_PropertyTypePtr tested = getTested( id, "string" );
-    const char* actual = libcmis_property_type_getId( tested );
+    char* actual = libcmis_property_type_getId( tested );
     CPPUNIT_ASSERT_EQUAL( id, string( actual ) );
 
+    free( actual );
     libcmis_property_type_free( tested );
 }
 
 void PropertyTypeTest::getLocalNameTest( )
 {
     libcmis_PropertyTypePtr tested = getTested( "id", "string" );
-    const char* actual = libcmis_property_type_getLocalName( tested );
+    char* actual = libcmis_property_type_getLocalName( tested );
     CPPUNIT_ASSERT_EQUAL( string( "PropertyType::LocalName" ), string( actual ) );
 
+    free( actual );
     libcmis_property_type_free( tested );
 }
 
 void PropertyTypeTest::getLocalNamespaceTest( )
 {
     libcmis_PropertyTypePtr tested = getTested( "id", "string" );
-    const char* actual = libcmis_property_type_getLocalNamespace( tested );
+    char* actual = libcmis_property_type_getLocalNamespace( tested );
     CPPUNIT_ASSERT_EQUAL( string( "PropertyType::LocalNamespace" ), string( actual ) );
 
+    free( actual );
     libcmis_property_type_free( tested );
 }
 
 void PropertyTypeTest::getDisplayNameTest( )
 {
     libcmis_PropertyTypePtr tested = getTested( "id", "string" );
-    const char* actual = libcmis_property_type_getDisplayName( tested );
+    char* actual = libcmis_property_type_getDisplayName( tested );
     CPPUNIT_ASSERT_EQUAL( string( "PropertyType::DisplayName" ), string( actual ) );
 
+    free( actual );
     libcmis_property_type_free( tested );
 }
 
 void PropertyTypeTest::getQueryNameTest( )
 {
     libcmis_PropertyTypePtr tested = getTested( "id", "string" );
-    const char* actual = libcmis_property_type_getQueryName( tested );
+    char* actual = libcmis_property_type_getQueryName( tested );
     CPPUNIT_ASSERT_EQUAL( string( "PropertyType::QueryName" ), string( actual ) );
 
+    free( actual );
     libcmis_property_type_free( tested );
 }
 
@@ -137,9 +142,10 @@ void PropertyTypeTest::getTypeTest( )
         libcmis_PropertyTypePtr tested = getTested( "id", "string" );
         libcmis_property_type_Type actualType = libcmis_property_type_getType( tested );
         CPPUNIT_ASSERT_EQUAL( libcmis_String, actualType );
-        const char* actualXml = libcmis_property_type_getXmlType( tested );
+        char* actualXml = libcmis_property_type_getXmlType( tested );
         CPPUNIT_ASSERT_EQUAL( string( "String" ), string( actualXml ) );
 
+        free( actualXml );
         libcmis_property_type_free( tested );
     }
     
@@ -148,9 +154,10 @@ void PropertyTypeTest::getTypeTest( )
         libcmis_PropertyTypePtr tested = getTested( "id", "datetime" );
         libcmis_property_type_Type actualType = libcmis_property_type_getType( tested );
         CPPUNIT_ASSERT_EQUAL( libcmis_DateTime, actualType );
-        const char* actualXml = libcmis_property_type_getXmlType( tested );
+        char* actualXml = libcmis_property_type_getXmlType( tested );
         CPPUNIT_ASSERT_EQUAL( string( "DateTime" ), string( actualXml ) );
 
+        free( actualXml );
         libcmis_property_type_free( tested );
     }
     
@@ -159,9 +166,10 @@ void PropertyTypeTest::getTypeTest( )
         libcmis_PropertyTypePtr tested = getTested( "id", "integer" );
         libcmis_property_type_Type actualType = libcmis_property_type_getType( tested );
         CPPUNIT_ASSERT_EQUAL( libcmis_Integer, actualType );
-        const char* actualXml = libcmis_property_type_getXmlType( tested );
+        char* actualXml = libcmis_property_type_getXmlType( tested );
         CPPUNIT_ASSERT_EQUAL( string( "Integer" ), string( actualXml ) );
 
+        free( actualXml );
         libcmis_property_type_free( tested );
     }
     
@@ -170,9 +178,10 @@ void PropertyTypeTest::getTypeTest( )
         libcmis_PropertyTypePtr tested = getTested( "id", "html" );
         libcmis_property_type_Type actualType = libcmis_property_type_getType( tested );
         CPPUNIT_ASSERT_EQUAL( libcmis_String, actualType );
-        const char* actualXml = libcmis_property_type_getXmlType( tested );
+        char* actualXml = libcmis_property_type_getXmlType( tested );
         CPPUNIT_ASSERT_EQUAL( string( "Html" ), string( actualXml ) );
 
+        free( actualXml );
         libcmis_property_type_free( tested );
     }
 }
