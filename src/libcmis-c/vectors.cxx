@@ -85,7 +85,7 @@ size_t libcmis_vector_long_size( libcmis_vector_long* vector )
     return size;
 }
 
-long libcmis_vector_bool_get( libcmis_vector_long* vector, size_t i )
+long libcmis_vector_long_get( libcmis_vector_long* vector, size_t i )
 {
     long item = 0;
     if ( vector != NULL && i < vector->handle.size( ) )
@@ -106,7 +106,7 @@ size_t libcmis_vector_double_size( libcmis_vector_double* vector )
     return size;
 }
 
-double libcmis_vector_bool_get( libcmis_vector_double* vector, size_t i )
+double libcmis_vector_double_get( libcmis_vector_double* vector, size_t i )
 {
     double item = 0.0;
     if ( vector != NULL && i < vector->handle.size( ) )
@@ -127,7 +127,7 @@ size_t libcmis_vector_time_t_size( libcmis_vector_time_t* vector )
     return size;
 }
 
-time_t libcmis_vector_bool_get( libcmis_vector_time_t* vector, size_t i )
+time_t libcmis_vector_time_t_get( libcmis_vector_time_t* vector, size_t i )
 {
     time_t item = 0;
     if ( vector != NULL && i < vector->handle.size( ) )

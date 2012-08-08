@@ -132,7 +132,7 @@ libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property
 }
 
 
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues, size_t size )
+void libcmis_property_setValues( libcmis_PropertyPtr property, const char** strValues, size_t size )
 {
     if ( property != NULL && property->handle.get() != NULL )
     {

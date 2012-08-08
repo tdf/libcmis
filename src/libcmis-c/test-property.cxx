@@ -45,20 +45,18 @@ class PropertyTest : public CppUnit::TestFixture
     public:
         void getDateTimesTest( );
         void getBoolsTest( );
-        /*
         void getStringsTest( );
         void getLongsTest( );
         void getDoublesTest( );
-        */
+        void setValuesTest( );
 
         CPPUNIT_TEST_SUITE( PropertyTest );
         CPPUNIT_TEST( getDateTimesTest );
         CPPUNIT_TEST( getBoolsTest );
-        /*
         CPPUNIT_TEST( getStringsTest );
         CPPUNIT_TEST( getLongsTest );
         CPPUNIT_TEST( getDoublesTest );
-        */
+        CPPUNIT_TEST( setValuesTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -124,6 +122,118 @@ void PropertyTest::getBoolsTest( )
     libcmis_vector_long* longs = libcmis_property_getLongs( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_long_size( longs ) );
     libcmis_vector_long_free( longs );
+
+    libcmis_property_free( tested );
+    libcmis_property_type_free( type );
+}
+
+
+void PropertyTest::getStringsTest( )
+{
+    libcmis_PropertyTypePtr type = getTestType( "string" );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "string 1";
+    values[1] = "string 2";
+    libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
+
+    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
+    CPPUNIT_ASSERT_EQUAL( string( values[0] ), string( libcmis_vector_string_get( strings, 0 ) ) );
+    CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
+    libcmis_vector_string_free( strings );
+    delete[] values;
+
+    libcmis_vector_double* doubles = libcmis_property_getDoubles( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_double_size( doubles ) );
+    libcmis_vector_double_free( doubles );
+
+    libcmis_property_free( tested );
+    libcmis_property_type_free( type );
+}
+
+
+void PropertyTest::getLongsTest( )
+{
+    libcmis_PropertyTypePtr type = getTestType( "integer" );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "123456";
+    values[1] = "789";
+    libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
+
+    libcmis_vector_long* longs = libcmis_property_getLongs( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_long_size( longs ) );
+    CPPUNIT_ASSERT_EQUAL( long( 123456 ), libcmis_vector_long_get( longs, 0 ) );
+    CPPUNIT_ASSERT_EQUAL( long( 789 ), libcmis_vector_long_get( longs, 1 ) );
+    libcmis_vector_long_free( longs );
+
+    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
+    CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
+    libcmis_vector_string_free( strings );
+    delete[] values;
+
+    libcmis_vector_time_t* times = libcmis_property_getDateTimes( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_time_t_size( times ) );
+    libcmis_vector_time_t_free( times );
+
+    libcmis_property_free( tested );
+    libcmis_property_type_free( type );
+}
+
+
+void PropertyTest::getDoublesTest( )
+{
+    libcmis_PropertyTypePtr type = getTestType( "decimal" );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "123.456";
+    values[1] = "7.89";
+    libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
+
+    libcmis_vector_double* doubles = libcmis_property_getDoubles( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_double_size( doubles ) );
+    CPPUNIT_ASSERT_EQUAL( 123.456, libcmis_vector_double_get( doubles, 0 ) );
+    CPPUNIT_ASSERT_EQUAL( 7.89, libcmis_vector_double_get( doubles, 1 ) );
+    libcmis_vector_double_free( doubles );
+
+    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
+    CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
+    libcmis_vector_string_free( strings );
+    delete[] values;
+
+    libcmis_vector_long* longs = libcmis_property_getLongs( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_long_size( longs ) );
+    libcmis_vector_long_free( longs );
+
+    libcmis_property_free( tested );
+    libcmis_property_type_free( type );
+}
+
+
+void PropertyTest::setValuesTest( )
+{
+    libcmis_PropertyTypePtr type = getTestType( "string" );
+    size_t size = 1;
+    const char** values = new const char*[size];
+    values[0] = "string 1";
+    libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
+    delete[] values;
+
+    size_t newSize = 2;
+    const char** newValues = new const char*[newSize];
+    newValues[0] = "new string 1";
+    newValues[1] = "new string 2";
+    libcmis_property_setValues( tested, newValues, newSize );
+
+    libcmis_vector_string* newStrings = libcmis_property_getStrings( tested );
+    CPPUNIT_ASSERT_EQUAL( newSize, libcmis_vector_string_size( newStrings ) );
+    CPPUNIT_ASSERT_EQUAL( string( newValues[0] ), string( libcmis_vector_string_get( newStrings, 0 ) ) );
+    CPPUNIT_ASSERT_EQUAL( string( newValues[1] ), string( libcmis_vector_string_get( newStrings, 1 ) ) );
+    libcmis_vector_string_free( newStrings );
+    delete[] newValues;
 
     libcmis_property_free( tested );
     libcmis_property_type_free( type );

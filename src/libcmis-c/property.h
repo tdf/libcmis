@@ -44,7 +44,7 @@ libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property
 libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property );
 libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
 
-void libcmis_property_setValues( libcmis_PropertyPtr property, char** strValues, size_t size );
+void libcmis_property_setValues( libcmis_PropertyPtr property, const char** strValues, size_t size );
 
 #endif
 
