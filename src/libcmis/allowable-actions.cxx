@@ -129,6 +129,11 @@ namespace libcmis
         return value;
     }
 
+    AllowableActions::AllowableActions( ) :
+        m_states( )
+    {
+    }
+
     AllowableActions::AllowableActions( xmlNodePtr node ) :
         m_states( )
     {

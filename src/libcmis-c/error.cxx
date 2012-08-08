@@ -49,7 +49,7 @@ void libcmis_error_free( libcmis_ErrorPtr error )
     }
 }
 
-const char* libcmis_error_get_message( libcmis_ErrorPtr error )
+const char* libcmis_error_getMessage( libcmis_ErrorPtr error )
 {
     if ( error != NULL && error->handle != NULL )
         return error->handle->what( );

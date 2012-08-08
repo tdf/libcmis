@@ -33,6 +33,8 @@
 
 typedef struct libcmis_object_type* libcmis_ObjectTypePtr;
 
+struct libcmis_vector_ObjectTypePtr;
+
 enum libcmis_object_type_ContentStreamAllowed
 {
     libcmis_NotAllowed,
@@ -41,15 +43,36 @@ enum libcmis_object_type_ContentStreamAllowed
 };
 
 
-void libcmis_object_type_free( libcmis_ObjectTypePtr type );
-void libcmis_object_type_list_free( libcmis_ObjectTypePtr* list );
+void libcmis_vector_ObjectTypePtr_free( libcmis_vector_ObjectTypePtr* vector );
+size_t libcmis_vector_ObjectTypePtr_size( libcmis_vector_ObjectTypePtr* vector );
+libcmis_ObjectTypePtr libcmis_vector_ObjectTypePtr_get( libcmis_vector_ObjectTypePtr* vector, size_t i );
 
-const char* libcmis_object_type_getId( libcmis_ObjectTypePtr type );
-const char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type );
-const char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type );
-const char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type );
-const char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type );
-const char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type );
+
+void libcmis_object_type_free( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getId( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type );
 
 libcmis_ObjectTypePtr libcmis_object_type_getParentType(
         libcmis_ObjectTypePtr type,
@@ -58,7 +81,7 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectTypePtr* libcmis_object_type_getChildren(
+libcmis_vector_ObjectTypePtr* libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
@@ -73,9 +96,12 @@ bool libcmis_object_type_isVersionable( libcmis_ObjectTypePtr type );
 
 libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAllowed( libcmis_ObjectTypePtr type );
 
-libcmis_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
+libcmis_vector_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
 libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
 
-const char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+  */
+char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );
 
 #endif

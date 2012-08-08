@@ -104,6 +104,9 @@ namespace libcmis
             std::map< ObjectAction::Type, bool > m_states;
 
         public:
+            /** Default constructor for testing purpose
+              */
+            AllowableActions( );
             AllowableActions( xmlNodePtr node );
             AllowableActions( const AllowableActions& copy );
             virtual ~AllowableActions( );

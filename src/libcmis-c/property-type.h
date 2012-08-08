@@ -30,6 +30,8 @@
 
 typedef struct libcmis_property_type* libcmis_PropertyTypePtr;
 
+struct libcmis_vector_PropertyTypePtr;
+
 enum libcmis_property_type_Type
 {
     libcmis_String,
@@ -39,8 +41,11 @@ enum libcmis_property_type_Type
     libcmis_DateTime
 };
 
+void libcmis_vector_PropertyTypePtr_free( libcmis_vector_PropertyTypePtr* vector );
+size_t libcmis_vector_PropertyTypePtr_size( libcmis_vector_PropertyTypePtr* vector );
+libcmis_PropertyTypePtr libcmis_vector_PropertyTypePtr_get( libcmis_vector_PropertyTypePtr* vector, size_t i );
+
 void libcmis_property_type_free( libcmis_PropertyTypePtr type );
-void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list );
 
 const char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
 const char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );

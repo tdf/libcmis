@@ -31,72 +31,90 @@
 
 using namespace std;
 
+
+void libcmis_vector_ObjectTypePtr_free( libcmis_vector_ObjectTypePtr* vector )
+{
+    delete vector;
+}
+
+
+size_t libcmis_vector_ObjectTypePtr_size( libcmis_vector_ObjectTypePtr* vector )
+{
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_ObjectTypePtr libcmis_vector_ObjectTypePtr_get( libcmis_vector_ObjectTypePtr* vector, size_t i )
+{
+    libcmis_ObjectTypePtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
+    {
+        libcmis::ObjectTypePtr type = vector->handle[i];
+        item = new libcmis_object_type( );
+        item->handle = type;
+    }
+    return item;
+}
+
+
 void libcmis_object_type_free( libcmis_ObjectTypePtr type )
 {
     delete type;
 }
 
 
-void libcmis_object_type_list_free( libcmis_ObjectTypePtr* list )
-{
-    int size = sizeof( list ) / sizeof( *list );
-    for ( int i = 0; i < size; ++i )
-    {
-        delete list[i];
-    }
-    delete[ ] list;
-}
-
-
-const char* libcmis_object_type_getId( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getId( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getId( ).c_str( );
+        return strdup( type->handle->getId( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getLocalName( ).c_str( );
+        return strdup( type->handle->getLocalName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getLocalNamespace( ).c_str( );
+        return strdup( type->handle->getLocalNamespace( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getQueryName( ).c_str( );
+        return strdup( type->handle->getQueryName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getDisplayName( ).c_str( );
+        return strdup( type->handle->getDisplayName( ).c_str( ) );
     else
         return NULL;
 }
 
 
-const char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->getDescription( ).c_str( );
+        return strdup( type->handle->getDescription( ).c_str( ) );
     else
         return NULL;
 }
@@ -112,8 +130,11 @@ libcmis_ObjectTypePtr libcmis_object_type_getParentType(
         try
         {
             libcmis::ObjectTypePtr handle = type->handle->getParentType( );
-            result = new libcmis_object_type( );
-            result->handle = handle;
+            if ( handle.get ( ) )
+            {
+                result = new libcmis_object_type( );
+                result->handle = handle;
+            }
         }
         catch( const libcmis::Exception& e )
         {
@@ -152,22 +173,17 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
 }
 
 
-libcmis_ObjectTypePtr* libcmis_object_type_getChildren(
+libcmis_vector_ObjectTypePtr* libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type, libcmis_ErrorPtr error )
 {
-    libcmis_ObjectTypePtr* children = NULL;
+    libcmis_vector_ObjectTypePtr* children = NULL;
     if ( type != NULL && type->handle.get( ) != NULL )
     {
         try
         {
             std::vector< libcmis::ObjectTypePtr > types = type->handle->getChildren( );
-            children = new libcmis_ObjectTypePtr[ types.size( ) ];
-            for ( size_t i = 0; i < types.size( ); ++i )
-            {
-                libcmis_ObjectTypePtr child = new libcmis_object_type( );
-                child->handle = types[i];
-                children[i] = child;
-            }
+            children = new libcmis_vector_ObjectTypePtr( );
+            children->handle = types;
         }
         catch( const libcmis::Exception& e )
         {
@@ -265,20 +281,18 @@ libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAll
 }
 
 
-libcmis_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type )
+libcmis_vector_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type )
 {
-    libcmis_PropertyTypePtr* propertyTypes = NULL;
+    libcmis_vector_PropertyTypePtr* propertyTypes = NULL;
     if ( type != NULL && type->handle != NULL )
     {
         map< string, libcmis::PropertyTypePtr >& handles = type->handle->getPropertiesTypes( );
-        propertyTypes = new libcmis_PropertyTypePtr[ handles.size( ) ];
+        propertyTypes = new libcmis_vector_PropertyTypePtr( );
         int i = 0;
         for ( map< string, libcmis::PropertyTypePtr >::iterator it = handles.begin( );
                 it != handles.end( ); ++it, ++i )
         {
-            libcmis_PropertyTypePtr propertyType = new libcmis_property_type( );
-            propertyType->handle = it->second;
-            propertyTypes[i] = propertyType;
+            propertyTypes->handle.push_back( it->second );
         }
     }
 
@@ -303,10 +317,10 @@ libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypeP
 }
 
 
-const char* libcmis_object_type_toString( libcmis_ObjectTypePtr type )
+char* libcmis_object_type_toString( libcmis_ObjectTypePtr type )
 {
     if ( type != NULL && type->handle.get( ) != NULL )
-        return type->handle->toString( ).c_str( );
+        return strdup( type->handle->toString( ).c_str( ) );
     else
         return NULL;
 }

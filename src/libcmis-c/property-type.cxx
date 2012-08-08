@@ -29,20 +29,37 @@
 #include "internals.hxx"
 #include "property-type.h"
 
-void libcmis_property_type_free( libcmis_PropertyTypePtr type )
+void libcmis_vector_PropertyTypePtr_free( libcmis_vector_PropertyTypePtr* vector )
 {
-    delete type;
+    delete vector;
 }
 
 
-void libcmis_property_type_list_free( libcmis_PropertyTypePtr* list )
+size_t libcmis_vector_PropertyTypePtr_size( libcmis_vector_PropertyTypePtr* vector )
 {
-    int size = sizeof( list ) / sizeof( *list );
-    for ( int i = 0; i < size; ++i )
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_PropertyTypePtr libcmis_vector_PropertyTypePtr_get( libcmis_vector_PropertyTypePtr* vector, size_t i )
+{
+    libcmis_PropertyTypePtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
     {
-        delete list[i];
+        libcmis::PropertyTypePtr type = vector->handle[i];
+        item = new libcmis_property_type( );
+        item->handle = type;
     }
-    delete[ ] list;
+    return item;
+}
+
+
+void libcmis_property_type_free( libcmis_PropertyTypePtr type )
+{
+    delete type;
 }
 
 

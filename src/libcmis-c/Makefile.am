@@ -46,8 +46,10 @@ check_PROGRAMS = \
 
 test_api_SOURCES = \
 	test-api.cxx \
+	test-allowable-actions.cxx \
 	test-dummies.hxx \
 	test-dummies.cxx \
+	test-object-type.cxx \
 	test-property.cxx \
 	test-property-type.cxx \
 	test-repository.cxx

@@ -76,4 +76,164 @@ namespace dummies
     PropertyType::~PropertyType( )
     {
     }
+    
+    AllowableActions::AllowableActions( ) :
+        libcmis::AllowableActions( )
+    {
+        m_states.insert( pair< libcmis::ObjectAction::Type, bool >( libcmis::ObjectAction::GetProperties, true ) );
+        m_states.insert( pair< libcmis::ObjectAction::Type, bool >( libcmis::ObjectAction::GetFolderParent, false ) );
+    }
+
+    AllowableActions::~AllowableActions( )
+    {
+    }
+
+    ObjectType::ObjectType( ) :
+        libcmis::ObjectType( ),
+        m_id( ),
+        m_parentId( ),
+        m_baseId( ),
+        m_childrenIds( ),
+        m_triggersFaults( false ),
+        m_propertyTypes( )
+    {
+    }
+
+    ObjectType::ObjectType( bool rootType, bool triggersFaults ) :
+        libcmis::ObjectType( ),
+        m_id( ),
+        m_parentId( ),
+        m_baseId( ),
+        m_childrenIds( ),
+        m_triggersFaults( triggersFaults ),
+        m_propertyTypes( )
+    {
+        if ( rootType )
+            m_id = "RootType";
+        else
+        {
+            m_id = "ObjectType";
+            m_parentId = "ParentType";
+            m_childrenIds.push_back( "ChildType1" );
+            m_childrenIds.push_back( "ChildType2" );
+        }
+
+        m_baseId = "RootType";
+        libcmis::PropertyTypePtr propType1( new PropertyType( "Property1", "string" ) );
+        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType1->getId( ), propType1 ) );
+        libcmis::PropertyTypePtr propType2( new PropertyType( "Property2", "string" ) );
+        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType2->getId( ), propType2 ) );
+        libcmis::PropertyTypePtr propType3( new PropertyType( "Property3", "string" ) );
+        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType3->getId( ), propType3 ) );
+    }
+
+    ObjectType::~ObjectType( )
+    {
+    }
+    
+    string ObjectType::getId( )
+    {
+        return m_id + "::Id";
+    }
+
+    string ObjectType::getLocalName( )
+    {
+        return m_id + "::LocalName";
+    }
+
+    string ObjectType::getLocalNamespace( )
+    {
+        return m_id + "::LocalNamespace";
+    }
+
+    string ObjectType::getDisplayName( )
+    {
+        return m_id + "::DisplayName";
+    }
+
+    string ObjectType::getQueryName( )
+    {
+        return m_id + "::QueryName";
+    }
+
+    string ObjectType::getDescription( )
+    {
+        return m_id + "::Description";
+    }
+
+    libcmis::ObjectTypePtr  ObjectType::getParentType( )
+        throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        ObjectType* parent = NULL;
+        if ( !m_parentId.empty( ) )
+        {
+            parent = new ObjectType( );
+            parent->m_id = m_parentId;
+            parent->m_parentId = m_baseId;
+            parent->m_baseId = m_baseId;
+            parent->m_childrenIds.push_back( m_id );
+            parent->m_triggersFaults = m_triggersFaults;
+            parent->m_propertyTypes = m_propertyTypes;
+        }
+
+        libcmis::ObjectTypePtr result( parent );
+        return result;
+    }
+
+    libcmis::ObjectTypePtr  ObjectType::getBaseType( )
+        throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        ObjectType* base = this;
+        if ( m_id != m_baseId )
+        {
+            base = new ObjectType( );
+            base->m_id = m_baseId;
+            base->m_baseId = m_baseId;
+            base->m_childrenIds.push_back( m_id );
+            base->m_triggersFaults = m_triggersFaults;
+            base->m_propertyTypes = m_propertyTypes;
+        }
+
+        libcmis::ObjectTypePtr result( base );
+        return result;
+    }
+
+    vector< libcmis::ObjectTypePtr > ObjectType::getChildren( )
+        throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        vector< libcmis::ObjectTypePtr > children;
+
+        for ( vector< string >::iterator it = m_childrenIds.begin( ); it != m_childrenIds.end( ); ++it )
+        {
+            ObjectType* child = new ObjectType( );
+            child->m_id = *it;
+            child->m_parentId = m_id;
+            child->m_baseId = m_baseId;
+            child->m_triggersFaults = m_triggersFaults;
+            child->m_propertyTypes = m_propertyTypes;
+            libcmis::ObjectTypePtr result( child );
+            children.push_back( result );
+        } 
+
+        return children; 
+    }
+    
+    map< string, libcmis::PropertyTypePtr >& ObjectType::getPropertiesTypes( )
+    {
+        return m_propertyTypes;
+    }
+
+    string ObjectType::toString( )
+    {
+        return m_id + "::toString";
+    }
 }

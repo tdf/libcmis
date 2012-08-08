@@ -178,4 +178,18 @@ struct libcmis_vector_time_t
     libcmis_vector_time_t( ) : handle( ) { }
 };
 
+struct libcmis_vector_ObjectTypePtr
+{
+    std::vector< libcmis::ObjectTypePtr > handle;
+
+    libcmis_vector_ObjectTypePtr( ) : handle( ) { }
+};
+
+struct libcmis_vector_PropertyTypePtr
+{
+    std::vector< libcmis::PropertyTypePtr > handle;
+
+    libcmis_vector_PropertyTypePtr( ) : handle( ) { }
+};
+
 #endif
