@@ -31,20 +31,38 @@
 
 using namespace std;
 
-void libcmis_object_free( libcmis_ObjectPtr object )
+
+void libcmis_vector_ObjectPtr_free( libcmis_vector_ObjectPtr* vector )
 {
-    delete object;
+    delete vector;
 }
 
 
-void libcmis_object_list_free( libcmis_ObjectPtr* list )
+size_t libcmis_vector_ObjectPtr_size( libcmis_vector_ObjectPtr* vector )
 {
-    int size = sizeof( list ) / sizeof( *list );
-    for ( int i = 0 ; i < size; ++i )
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_ObjectPtr libcmis_vector_ObjectPtr_get( libcmis_vector_ObjectPtr* vector, size_t i )
+{
+    libcmis_ObjectPtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
     {
-        delete list[i];
+        libcmis::ObjectPtr type = vector->handle[i];
+        item = new libcmis_object( );
+        item->handle = type;
     }
-    delete[] list;
+    return item;
+}
+
+
+void libcmis_object_free( libcmis_ObjectPtr object )
+{
+    delete object;
 }
 
 

@@ -199,4 +199,10 @@ struct libcmis_vector_PropertyPtr
     libcmis_vector_PropertyPtr( ) : handle( ) { }
 };
 
+struct libcmis_vector_ObjectPtr
+{
+    std::vector< libcmis::ObjectPtr > handle;
+
+    libcmis_vector_ObjectPtr( ) : handle( ) { }
+};
 #endif

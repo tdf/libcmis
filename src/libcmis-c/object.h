@@ -38,8 +38,14 @@
 
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
+struct libcmis_vector_ObjectPtr;
+
+void libcmis_vector_ObjectPtr_free( libcmis_vector_ObjectPtr* vector );
+size_t libcmis_vector_ObjectPtr_size( libcmis_vector_ObjectPtr* vector );
+libcmis_ObjectPtr libcmis_vector_ObjectPtr_get( libcmis_vector_ObjectPtr* vector, size_t i );
+
+
 void libcmis_object_free( libcmis_ObjectPtr object );
-void libcmis_object_list_free( libcmis_ObjectPtr* list );
 
 /** The resulting value needs to be free'd.
   */

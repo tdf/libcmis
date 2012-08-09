@@ -30,6 +30,8 @@
 
 
 #include <libcmis/allowable-actions.hxx>
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
 #include <libcmis/object.hxx>
 #include <libcmis/object-type.hxx>
 #include <libcmis/property-type.hxx>
@@ -108,15 +110,16 @@ namespace dummies
             virtual std::string toString( );
     };
 
-    class Object : public libcmis::Object
+    class Object : public virtual libcmis::Object
     {
-        private:
+        protected:
+            std::string m_type;
             bool m_triggersFaults;
             time_t m_timestamp;
             std::map< std::string, libcmis::PropertyPtr > m_properties;
 
         public:
-            Object( bool triggersFaults );
+            Object( bool triggersFaults, std::string m_type = "Object" );
             ~Object( ) { }
 
             virtual std::string getId( );
@@ -127,12 +130,12 @@ namespace dummies
             virtual std::string getBaseType( );
             virtual std::string getType( );
 
-            virtual std::string getCreatedBy( ) { return std::string( "Object::CreatedBy" ); };
+            virtual std::string getCreatedBy( ) { return m_type + "::CreatedBy"; }
             virtual boost::posix_time::ptime getCreationDate( );
-            virtual std::string getLastModifiedBy( ) { return std::string( "Object::LastModifiedBy" ); };
+            virtual std::string getLastModifiedBy( ) { return m_type + "::LastModifiedBy"; }
             virtual boost::posix_time::ptime getLastModificationDate( );
 
-            virtual std::string getChangeToken( ) { return std::string( "Object::ChangeToken" ); }
+            virtual std::string getChangeToken( ) { return m_type + "::ChangeToken"; }
             virtual bool isImmutable( ) { return true; };
 
             virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
@@ -146,9 +149,32 @@ namespace dummies
 
             virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
 
-            virtual std::string toString( ) { return std::string( "Object::toString" ); }
+            virtual std::string toString( ) { return m_type + "::toString"; }
             
             virtual void toXml( xmlTextWriterPtr writer );
+    };
+
+    class Folder : public libcmis::Folder, public Object
+    {
+        private:
+            bool m_isRoot;
+
+        public:
+            Folder( bool isRoot, bool triggersFaults );
+            ~Folder( ) { }
+            
+            virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
+            virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
+            virtual std::string getPath( );
+
+            virtual bool isRootFolder( );
+
+            virtual libcmis::FolderPtr createFolder( std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+            virtual libcmis::DocumentPtr createDocument( std::map< std::string, libcmis::PropertyPtr >& properties,
+                                    boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
+
+            virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
+                                    bool continueOnError = false ) throw ( libcmis::Exception );
     };
 }
 

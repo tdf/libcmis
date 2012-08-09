@@ -152,6 +152,7 @@ bool AtomFolder::isRootFolder( )
 }
 
 libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >& properties )
+    throw( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 

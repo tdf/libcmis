@@ -237,8 +237,9 @@ namespace dummies
         return m_id + "::toString";
     }
 
-    Object::Object( bool triggersFaults ):
+    Object::Object( bool triggersFaults, string type ):
         libcmis::Object( ),
+        m_type( type ),
         m_triggersFaults( triggersFaults ),
         m_timestamp( 0 ),
         m_properties( )
@@ -252,12 +253,12 @@ namespace dummies
 
     std::string Object::getId( )
     {
-        return string( "Object::Id" );
+        return m_type + "::Id";
     }
 
     std::string Object::getName( )
     {
-        return string( "Object::Name" );
+        return m_type + "::Name";
     }
 
     std::vector< std::string > Object::getPaths( )
@@ -271,12 +272,12 @@ namespace dummies
 
     std::string Object::getBaseType( )
     {
-        return string( "Object::BaseType" );
+        return m_type + "::BaseType";
     }
 
     std::string Object::getType( )
     {
-        return string( "Object::Type" );
+        return m_type + "::Type";
     }
 
     boost::posix_time::ptime Object::getCreationDate( )
@@ -334,5 +335,81 @@ namespace dummies
 
     void Object::toXml( xmlTextWriterPtr )
     {
+    }
+
+    Folder::Folder( bool isRoot, bool triggersFaults ) :
+        libcmis::Folder( ),
+        dummies::Object( triggersFaults, "Folder" ),
+        m_isRoot( isRoot )
+    {
+    }
+
+    libcmis::FolderPtr Folder::getFolderParent( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        libcmis::FolderPtr parent;
+
+        if ( !m_isRoot )
+            parent.reset( new Folder( true, m_triggersFaults ) );
+
+        return parent;
+    }
+
+    vector< libcmis::ObjectPtr > Folder::getChildren( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        vector< libcmis::ObjectPtr > children;
+
+        libcmis::ObjectPtr child1( new Object( m_triggersFaults ) );
+        children.push_back( child1 );
+        libcmis::ObjectPtr child2( new Object( m_triggersFaults ) );
+        children.push_back( child2 );
+
+        return children;
+    }
+
+    string Folder::getPath( )
+    {
+        return string( "/Path/" );
+    }
+
+    bool Folder::isRootFolder( )
+    {
+        return m_isRoot;
+    }
+
+    libcmis::FolderPtr Folder::createFolder( map< string, libcmis::PropertyPtr >& ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        libcmis::FolderPtr created( new Folder( true, m_triggersFaults ) );
+        return created;
+    }
+
+    libcmis::DocumentPtr Folder::createDocument( map< std::string, libcmis::PropertyPtr >& properties,
+                            boost::shared_ptr< ostream > os, std::string contentType ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        libcmis::DocumentPtr created;
+
+        // TODO Implement me
+
+        return created;
+    }
+
+    void Folder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile,
+                            bool continueOnError ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
     }
 }

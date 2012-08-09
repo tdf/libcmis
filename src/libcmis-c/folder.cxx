@@ -46,8 +46,11 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
         try
         {
             libcmis::FolderPtr handle = folder->handle->getFolderParent( );
-            parent = new libcmis_folder( );
-            parent->setHandle( handle );
+            if ( handle.get( ) != NULL )
+            {
+                parent = new libcmis_folder( );
+                parent->setHandle( handle );
+            }
         }
         catch ( const libcmis::Exception& e )
         {
@@ -60,23 +63,16 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
 }
 
 
-libcmis_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error )
+libcmis_vector_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error )
 {
-    libcmis_ObjectPtr* result = NULL;
+    libcmis_vector_ObjectPtr* result = NULL;
     if ( folder != NULL && folder->handle.get( ) != NULL )
     {
         try
         {
             std::vector< libcmis::ObjectPtr > handles = folder->handle->getChildren( );
-            result = new libcmis_ObjectPtr[ handles.size( ) ];
-            int i = 0;
-            for ( std::vector< libcmis::ObjectPtr >::iterator it = handles.begin( );
-                    it != handles.end( ); ++it, ++i )
-            {
-                libcmis_ObjectPtr child = new libcmis_object( );
-                child->handle = *it;
-                result[i] = child;
-            }
+            result = new libcmis_vector_ObjectPtr( );
+            result->handle = handles;
         }
         catch ( const libcmis::Exception& e )
         {
@@ -108,7 +104,7 @@ bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder )
 
 libcmis_FolderPtr libcmis_folder_createFolder(
         libcmis_FolderPtr folder,
-        libcmis_PropertyPtr* properties,
+        libcmis_vector_PropertyPtr* properties,
         libcmis_ErrorPtr error )
 {
     libcmis_FolderPtr result = NULL;
@@ -117,14 +113,17 @@ libcmis_FolderPtr libcmis_folder_createFolder(
         try
         {
             map< string, libcmis::PropertyPtr > mappedProperties;
-            int size = sizeof( properties ) / sizeof( *properties );
-            for ( int i = 0; i < size; ++i )
+            if ( properties != NULL )
             {
-                libcmis_PropertyPtr property = properties[i];
-                if ( property != NULL && property->handle.get( ) != NULL )
+                size_t size = properties->handle.size( );
+                for ( size_t i = 0; i < size; ++i )
                 {
-                    string id = property->handle->getPropertyType( )->getId( );
-                    mappedProperties.insert( pair< string, libcmis::PropertyPtr >( id, property->handle ) );
+                    libcmis::PropertyPtr property = properties->handle[i];
+                    if ( property.get( ) != NULL )
+                    {
+                        string id = property->getPropertyType( )->getId( );
+                        mappedProperties.insert( pair< string, libcmis::PropertyPtr >( id, property ) );
+                    }
                 }
             }
 

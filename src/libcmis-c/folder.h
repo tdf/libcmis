@@ -36,15 +36,15 @@ typedef struct libcmis_folder* libcmis_FolderPtr;
     
 enum libcmis_folder_UnfileObjects
 {
-    Unfile,
-    DeleteSingleFiled,
-    Delete
+    libcmis_Unfile,
+    libcmis_DeleteSingleFiled,
+    libcmis_Delete
 };
 
 void libcmis_folder_free( libcmis_FolderPtr folder );
 
 libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
-libcmis_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
+libcmis_vector_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error );
 
 /** Get the path of the folder. The returned string needs to be freed.
   */
@@ -54,13 +54,13 @@ bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder );
 
 libcmis_FolderPtr libcmis_folder_createFolder(
         libcmis_FolderPtr folder,
-        libcmis_PropertyPtr* properties,
+        libcmis_vector_PropertyPtr* properties,
         libcmis_ErrorPtr error );
 
 
 /* TODO libcmis_DocumentPtr libcmis_folder_createDocument(*/
 /*         libcmis_FolderPtr folder,*/
-/*         libcmis_PropertyPtr* properties,*/
+/*         libcmis_vector_PropertyPtr* properties,*/
 /*         readFn,*/
 /*         char* contentType,*/
 /*         libcmis_ErrorPtr );*/

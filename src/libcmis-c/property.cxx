@@ -32,6 +32,12 @@
 using namespace std;
 
 
+libcmis_vector_PropertyPtr* libcmis_vector_PropertyPtr_create( )
+{
+    return new libcmis_vector_PropertyPtr( );
+}
+
+
 void libcmis_vector_PropertyPtr_free( libcmis_vector_PropertyPtr* vector )
 {
     delete vector;
@@ -57,6 +63,16 @@ libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* 
         item->handle = type;
     }
     return item;
+}
+
+
+void libcmis_vector_PropertyPtr_append( libcmis_vector_PropertyPtr* vector, libcmis_PropertyPtr item )
+{
+    if ( vector != NULL &&
+            item != NULL && item->handle.get( ) != NULL )
+    {
+        vector->handle.push_back( item->handle );
+    }
 }
 
 
