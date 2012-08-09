@@ -28,6 +28,10 @@
 #ifndef _LIBCMIS_SESSION_H_
 #define _LIBCMIS_SESSION_H_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #include "error.h"
 #include "folder.h"
 #include "object.h"

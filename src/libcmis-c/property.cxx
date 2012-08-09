@@ -32,19 +32,19 @@
 using namespace std;
 
 
-libcmis_vector_PropertyPtr* libcmis_vector_PropertyPtr_create( )
+libcmis_vector_property_Ptr libcmis_vector_property_create( )
 {
-    return new libcmis_vector_PropertyPtr( );
+    return new libcmis_vector_property( );
 }
 
 
-void libcmis_vector_PropertyPtr_free( libcmis_vector_PropertyPtr* vector )
+void libcmis_vector_property_free( libcmis_vector_property_Ptr vector )
 {
     delete vector;
 }
 
 
-size_t libcmis_vector_PropertyPtr_size( libcmis_vector_PropertyPtr* vector )
+size_t libcmis_vector_property_size( libcmis_vector_property_Ptr vector )
 {
     size_t size = 0;
     if ( vector != NULL )
@@ -53,7 +53,7 @@ size_t libcmis_vector_PropertyPtr_size( libcmis_vector_PropertyPtr* vector )
 }
 
 
-libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* vector, size_t i )
+libcmis_PropertyPtr libcmis_vector_property_get( libcmis_vector_property_Ptr vector, size_t i )
 {
     libcmis_PropertyPtr item = NULL;
     if ( vector != NULL && i < vector->handle.size( ) )
@@ -66,7 +66,7 @@ libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* 
 }
 
 
-void libcmis_vector_PropertyPtr_append( libcmis_vector_PropertyPtr* vector, libcmis_PropertyPtr item )
+void libcmis_vector_property_append( libcmis_vector_property_Ptr vector, libcmis_PropertyPtr item )
 {
     if ( vector != NULL &&
             item != NULL && item->handle.get( ) != NULL )
@@ -112,22 +112,22 @@ libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr pr
 }
 
 
-libcmis_vector_time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property )
+libcmis_vector_time_Ptr libcmis_property_getDateTimes( libcmis_PropertyPtr property )
 {
-    libcmis_vector_time_t* times = NULL;
+    libcmis_vector_time_Ptr times = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< boost::posix_time::ptime > handles = property->handle->getDateTimes( );
-        times = new libcmis_vector_time_t( );
+        times = new libcmis_vector_time( );
         times->handle = handles;
     }
    return times; 
 }
 
 
-libcmis_vector_bool* libcmis_property_getBools( libcmis_PropertyPtr property )
+libcmis_vector_bool_Ptr libcmis_property_getBools( libcmis_PropertyPtr property )
 {
-    libcmis_vector_bool* values = NULL;
+    libcmis_vector_bool_Ptr values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< bool > handles = property->handle->getBools( );
@@ -138,9 +138,9 @@ libcmis_vector_bool* libcmis_property_getBools( libcmis_PropertyPtr property )
 }
 
 
-libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property )
+libcmis_vector_string_Ptr libcmis_property_getStrings( libcmis_PropertyPtr property )
 {
-    libcmis_vector_string* values = NULL;
+    libcmis_vector_string_Ptr values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< string > handles = property->handle->getStrings( );
@@ -151,9 +151,9 @@ libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property
 }
 
 
-libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property )
+libcmis_vector_long_Ptr libcmis_property_getLongs( libcmis_PropertyPtr property )
 {
-    libcmis_vector_long* values = NULL;
+    libcmis_vector_long_Ptr values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< long > handles = property->handle->getLongs( );
@@ -164,9 +164,9 @@ libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property )
 }
 
 
-libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property )
+libcmis_vector_double_Ptr libcmis_property_getDoubles( libcmis_PropertyPtr property )
 {
-    libcmis_vector_double* values = NULL;
+    libcmis_vector_double_Ptr values = NULL;
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< double > handles = property->handle->getDoubles( );

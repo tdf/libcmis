@@ -28,38 +28,42 @@
 #ifndef _LIBCMIS_VECTORS_HXX_
 #define _LIBCMIS_VECTORS_HXX_
 
-struct libcmis_vector_bool;
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
-void libcmis_vector_bool_free( libcmis_vector_bool* vector );
-size_t libcmis_vector_bool_size( libcmis_vector_bool* vector );
-bool libcmis_vector_bool_get( libcmis_vector_bool* vector, size_t i );
+typedef struct libcmis_vector_bool* libcmis_vector_bool_Ptr;
 
-
-struct libcmis_vector_string;
-
-void libcmis_vector_string_free( libcmis_vector_string* vector );
-size_t libcmis_vector_string_size( libcmis_vector_string* vector );
-const char* libcmis_vector_string_get( libcmis_vector_string* vector, size_t i );
+void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector );
+size_t libcmis_vector_bool_size( libcmis_vector_bool_Ptr vector );
+bool libcmis_vector_bool_get( libcmis_vector_bool_Ptr vector, size_t i );
 
 
-struct libcmis_vector_long;
+typedef struct libcmis_vector_string* libcmis_vector_string_Ptr;
 
-void libcmis_vector_long_free( libcmis_vector_long* vector );
-size_t libcmis_vector_long_size( libcmis_vector_long* vector );
-long libcmis_vector_long_get( libcmis_vector_long* vector, size_t i );
-
-
-struct libcmis_vector_double;
-
-void libcmis_vector_double_free( libcmis_vector_double* vector );
-size_t libcmis_vector_double_size( libcmis_vector_double* vector );
-double libcmis_vector_double_get( libcmis_vector_double* vector, size_t i );
+void libcmis_vector_string_free( libcmis_vector_string_Ptr vector );
+size_t libcmis_vector_string_size( libcmis_vector_string_Ptr vector );
+const char* libcmis_vector_string_get( libcmis_vector_string_Ptr vector, size_t i );
 
 
-struct libcmis_vector_time_t;
+typedef struct libcmis_vector_long* libcmis_vector_long_Ptr;
 
-void libcmis_vector_time_t_free( libcmis_vector_time_t* vector );
-size_t libcmis_vector_time_t_size( libcmis_vector_time_t* vector );
-time_t libcmis_vector_time_t_get( libcmis_vector_time_t* vector, size_t i );
+void libcmis_vector_long_free( libcmis_vector_long_Ptr vector );
+size_t libcmis_vector_long_size( libcmis_vector_long_Ptr vector );
+long libcmis_vector_long_get( libcmis_vector_long_Ptr vector, size_t i );
+
+
+typedef struct libcmis_vector_double* libcmis_vector_double_Ptr;
+
+void libcmis_vector_double_free( libcmis_vector_double_Ptr vector );
+size_t libcmis_vector_double_size( libcmis_vector_double_Ptr vector );
+double libcmis_vector_double_get( libcmis_vector_double_Ptr vector, size_t i );
+
+
+typedef struct libcmis_vector_time* libcmis_vector_time_Ptr;
+
+void libcmis_vector_time_free( libcmis_vector_time_Ptr vector );
+size_t libcmis_vector_time_size( libcmis_vector_time_Ptr vector );
+time_t libcmis_vector_time_get( libcmis_vector_time_Ptr vector, size_t i );
 
 #endif

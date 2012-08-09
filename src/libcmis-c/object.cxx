@@ -32,13 +32,13 @@
 using namespace std;
 
 
-void libcmis_vector_ObjectPtr_free( libcmis_vector_ObjectPtr* vector )
+void libcmis_vector_object_free( libcmis_vector_object_Ptr vector )
 {
     delete vector;
 }
 
 
-size_t libcmis_vector_ObjectPtr_size( libcmis_vector_ObjectPtr* vector )
+size_t libcmis_vector_object_size( libcmis_vector_object_Ptr vector )
 {
     size_t size = 0;
     if ( vector != NULL )
@@ -47,7 +47,7 @@ size_t libcmis_vector_ObjectPtr_size( libcmis_vector_ObjectPtr* vector )
 }
 
 
-libcmis_ObjectPtr libcmis_vector_ObjectPtr_get( libcmis_vector_ObjectPtr* vector, size_t i )
+libcmis_ObjectPtr libcmis_vector_object_get( libcmis_vector_object_Ptr vector, size_t i )
 {
     libcmis_ObjectPtr item = NULL;
     if ( vector != NULL && i < vector->handle.size( ) )
@@ -83,12 +83,12 @@ char* libcmis_object_getName( libcmis_ObjectPtr object )
         return NULL;
 }
 
-libcmis_vector_string* libcmis_object_getPaths( libcmis_ObjectPtr object )
+libcmis_vector_string_Ptr libcmis_object_getPaths( libcmis_ObjectPtr object )
 {
     if ( object != NULL && object->handle != NULL )
     {
         std::vector< std::string > paths = object->handle->getPaths( );
-        libcmis_vector_string* c_paths = new libcmis_vector_string( );
+        libcmis_vector_string_Ptr c_paths = new libcmis_vector_string( );
         c_paths->handle = paths;
         return c_paths;
     }
@@ -174,13 +174,13 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object )
 }
 
 
-libcmis_vector_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object )
+libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object )
 {
-    libcmis_vector_PropertyPtr* properties = NULL;
+    libcmis_vector_property_Ptr properties = NULL;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
         map< string, libcmis::PropertyPtr >& handles = object->handle->getProperties( );
-        properties = new libcmis_vector_PropertyPtr( );
+        properties = new libcmis_vector_property( );
         int i = 0;
         for ( map< string, libcmis::PropertyPtr >::iterator it = handles.begin( );
                 it != handles.end( ); ++it, ++i )

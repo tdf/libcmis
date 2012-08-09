@@ -63,15 +63,15 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
 }
 
 
-libcmis_vector_ObjectPtr* libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error )
+libcmis_vector_object_Ptr libcmis_folder_getChildren( libcmis_FolderPtr folder, libcmis_ErrorPtr error )
 {
-    libcmis_vector_ObjectPtr* result = NULL;
+    libcmis_vector_object_Ptr result = NULL;
     if ( folder != NULL && folder->handle.get( ) != NULL )
     {
         try
         {
             std::vector< libcmis::ObjectPtr > handles = folder->handle->getChildren( );
-            result = new libcmis_vector_ObjectPtr( );
+            result = new libcmis_vector_object( );
             result->handle = handles;
         }
         catch ( const libcmis::Exception& e )
@@ -104,7 +104,7 @@ bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder )
 
 libcmis_FolderPtr libcmis_folder_createFolder(
         libcmis_FolderPtr folder,
-        libcmis_vector_PropertyPtr* properties,
+        libcmis_vector_property_Ptr properties,
         libcmis_ErrorPtr error )
 {
     libcmis_FolderPtr result = NULL;

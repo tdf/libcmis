@@ -33,16 +33,16 @@
 
 typedef struct libcmis_property* libcmis_PropertyPtr;
 
-struct libcmis_vector_PropertyPtr;
+typedef struct libcmis_vector_property* libcmis_vector_property_Ptr;
 
-libcmis_vector_PropertyPtr* libcmis_vector_PropertyPtr_create( );
-void libcmis_vector_PropertyPtr_free( libcmis_vector_PropertyPtr* vector );
-size_t libcmis_vector_PropertyPtr_size( libcmis_vector_PropertyPtr* vector );
-libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* vector, size_t i );
+libcmis_vector_property_Ptr libcmis_vector_property_create( );
+void libcmis_vector_property_free( libcmis_vector_property_Ptr vector );
+size_t libcmis_vector_property_size( libcmis_vector_property_Ptr vector );
+libcmis_PropertyPtr libcmis_vector_property_get( libcmis_vector_property_Ptr vector, size_t i );
 
 /** The item object can be deleted after this call safely.
   */
-void libcmis_vector_PropertyPtr_append( libcmis_vector_PropertyPtr* vector, libcmis_PropertyPtr item );
+void libcmis_vector_property_append( libcmis_vector_property_Ptr vector, libcmis_PropertyPtr item );
 
 
 libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const char** strValues, size_t size );
@@ -50,11 +50,11 @@ void libcmis_property_free( libcmis_PropertyPtr property );
 
 libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr property );
 
-libcmis_vector_time_t* libcmis_property_getDateTimes( libcmis_PropertyPtr property );
-libcmis_vector_bool* libcmis_property_getBools( libcmis_PropertyPtr property );
-libcmis_vector_string* libcmis_property_getStrings( libcmis_PropertyPtr property );
-libcmis_vector_long* libcmis_property_getLongs( libcmis_PropertyPtr property );
-libcmis_vector_double* libcmis_property_getDoubles( libcmis_PropertyPtr property );
+libcmis_vector_time_Ptr libcmis_property_getDateTimes( libcmis_PropertyPtr property );
+libcmis_vector_bool_Ptr libcmis_property_getBools( libcmis_PropertyPtr property );
+libcmis_vector_string_Ptr libcmis_property_getStrings( libcmis_PropertyPtr property );
+libcmis_vector_long_Ptr libcmis_property_getLongs( libcmis_PropertyPtr property );
+libcmis_vector_double_Ptr libcmis_property_getDoubles( libcmis_PropertyPtr property );
 
 void libcmis_property_setValues( libcmis_PropertyPtr property, const char** strValues, size_t size );
 

@@ -252,14 +252,14 @@ void ObjectTypeTest::getChildrenTest( )
 {
     libcmis_ObjectTypePtr tested = getTested( false, false );
     libcmis_ErrorPtr error = libcmis_error_create( );
-    libcmis_vector_ObjectTypePtr* children = libcmis_object_type_getChildren( tested, error );
+    libcmis_vector_object_type_Ptr children = libcmis_object_type_getChildren( tested, error );
 
     CPPUNIT_ASSERT( string( libcmis_error_getMessage( error ) ).empty( ) );
-    size_t size = libcmis_vector_ObjectTypePtr_size( children );
+    size_t size = libcmis_vector_object_type_size( children );
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), size );
 
     libcmis_error_free( error );
-    libcmis_vector_ObjectTypePtr_free( children );
+    libcmis_vector_object_type_free( children );
     libcmis_object_type_free( tested );
 }
 
@@ -267,7 +267,7 @@ void ObjectTypeTest::getChildrenErrorTest( )
 {
     libcmis_ObjectTypePtr tested = getTested( false, true );
     libcmis_ErrorPtr error = libcmis_error_create( );
-    libcmis_vector_ObjectTypePtr* children = libcmis_object_type_getChildren( tested, error );
+    libcmis_vector_object_type_Ptr children = libcmis_object_type_getChildren( tested, error );
 
     CPPUNIT_ASSERT_EQUAL( string( "Fault triggered" ), string( libcmis_error_getMessage( error ) ) );
     CPPUNIT_ASSERT( NULL == children );
@@ -344,9 +344,9 @@ void ObjectTypeTest::getContentStreamAllowedTest( )
 void ObjectTypeTest::getPropertiesTypesTest( )
 {
     libcmis_ObjectTypePtr tested = getTested( false, false );
-    libcmis_vector_PropertyTypePtr* propertiesTypes = libcmis_object_type_getPropertiesTypes( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 3 ), libcmis_vector_PropertyTypePtr_size( propertiesTypes ) );
-    libcmis_vector_PropertyTypePtr_free( propertiesTypes );
+    libcmis_vector_property_type_Ptr propertiesTypes = libcmis_object_type_getPropertiesTypes( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 3 ), libcmis_vector_property_type_size( propertiesTypes ) );
+    libcmis_vector_property_type_free( propertiesTypes );
     libcmis_object_type_free( tested );
 }
 

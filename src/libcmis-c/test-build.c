@@ -25,31 +25,20 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _SESSION_FACTORY_H_
-#define _SESSION_FACTORY_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#endif
-
+#include "allowable-actions.h"
 #include "error.h"
+#include "folder.h"
+#include "object.h"
+#include "object-type.h"
+#include "property.h"
+#include "property-type.h"
 #include "repository.h"
 #include "session.h"
+#include "session-factory.h"
+#include "vectors.h"
 
-libcmis_SessionPtr libcmis_createSession(
-        char* bindingUrl,
-        char* repositoryId,
-        char* username,
-        char* password,
-        bool  verbose,
-        libcmis_ErrorPtr error );
-
-libcmis_RepositoryPtr* libcmis_getRepositories(
-        char* bindingUrl,
-        char* repositoryId,
-        char* username,
-        char* password,
-        bool  verbose,
-        libcmis_ErrorPtr error );
-
-#endif
+int main ( int argc, char ** argv )
+{
+    return 0;
+}

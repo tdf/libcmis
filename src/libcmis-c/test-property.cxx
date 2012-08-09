@@ -80,17 +80,17 @@ void PropertyTest::getDateTimesTest( )
     values[1] = "2012-02-19T09:06:57.388Z";
     libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
 
-    libcmis_vector_time_t* times = libcmis_property_getDateTimes( tested );
-    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_time_t_size( times ) ); 
-    libcmis_vector_time_t_free( times );
+    libcmis_vector_time_Ptr times = libcmis_property_getDateTimes( tested );
+    CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_time_size( times ) ); 
+    libcmis_vector_time_free( times );
 
-    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr strings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
     CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
     libcmis_vector_string_free( strings );
     delete[] values;
 
-    libcmis_vector_bool* bools = libcmis_property_getBools( tested );
+    libcmis_vector_bool_Ptr bools = libcmis_property_getBools( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_bool_size( bools ) );
     libcmis_vector_bool_free( bools );
 
@@ -107,19 +107,19 @@ void PropertyTest::getBoolsTest( )
     values[1] = "false";
     libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
 
-    libcmis_vector_bool* bools = libcmis_property_getBools( tested );
+    libcmis_vector_bool_Ptr bools = libcmis_property_getBools( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_bool_size( bools ) );
     CPPUNIT_ASSERT_EQUAL( true, libcmis_vector_bool_get( bools, 0 ) );
     CPPUNIT_ASSERT_EQUAL( false, libcmis_vector_bool_get( bools, 1 ) );
     libcmis_vector_bool_free( bools );
 
-    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr strings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
     CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
     libcmis_vector_string_free( strings );
     delete[] values;
 
-    libcmis_vector_long* longs = libcmis_property_getLongs( tested );
+    libcmis_vector_long_Ptr longs = libcmis_property_getLongs( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_long_size( longs ) );
     libcmis_vector_long_free( longs );
 
@@ -137,14 +137,14 @@ void PropertyTest::getStringsTest( )
     values[1] = "string 2";
     libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
 
-    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr strings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
     CPPUNIT_ASSERT_EQUAL( string( values[0] ), string( libcmis_vector_string_get( strings, 0 ) ) );
     CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
     libcmis_vector_string_free( strings );
     delete[] values;
 
-    libcmis_vector_double* doubles = libcmis_property_getDoubles( tested );
+    libcmis_vector_double_Ptr doubles = libcmis_property_getDoubles( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_double_size( doubles ) );
     libcmis_vector_double_free( doubles );
 
@@ -162,21 +162,21 @@ void PropertyTest::getLongsTest( )
     values[1] = "789";
     libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
 
-    libcmis_vector_long* longs = libcmis_property_getLongs( tested );
+    libcmis_vector_long_Ptr longs = libcmis_property_getLongs( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_long_size( longs ) );
     CPPUNIT_ASSERT_EQUAL( long( 123456 ), libcmis_vector_long_get( longs, 0 ) );
     CPPUNIT_ASSERT_EQUAL( long( 789 ), libcmis_vector_long_get( longs, 1 ) );
     libcmis_vector_long_free( longs );
 
-    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr strings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
     CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
     libcmis_vector_string_free( strings );
     delete[] values;
 
-    libcmis_vector_time_t* times = libcmis_property_getDateTimes( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_time_t_size( times ) );
-    libcmis_vector_time_t_free( times );
+    libcmis_vector_time_Ptr times = libcmis_property_getDateTimes( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_time_size( times ) );
+    libcmis_vector_time_free( times );
 
     libcmis_property_free( tested );
     libcmis_property_type_free( type );
@@ -192,19 +192,19 @@ void PropertyTest::getDoublesTest( )
     values[1] = "7.89";
     libcmis_PropertyPtr tested  = libcmis_property_create( type, values, size );
 
-    libcmis_vector_double* doubles = libcmis_property_getDoubles( tested );
+    libcmis_vector_double_Ptr doubles = libcmis_property_getDoubles( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_double_size( doubles ) );
     CPPUNIT_ASSERT_EQUAL( 123.456, libcmis_vector_double_get( doubles, 0 ) );
     CPPUNIT_ASSERT_EQUAL( 7.89, libcmis_vector_double_get( doubles, 1 ) );
     libcmis_vector_double_free( doubles );
 
-    libcmis_vector_string* strings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr strings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( size, libcmis_vector_string_size( strings ) );
     CPPUNIT_ASSERT_EQUAL( string( values[1] ), string( libcmis_vector_string_get( strings, 1 ) ) );
     libcmis_vector_string_free( strings );
     delete[] values;
 
-    libcmis_vector_long* longs = libcmis_property_getLongs( tested );
+    libcmis_vector_long_Ptr longs = libcmis_property_getLongs( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_long_size( longs ) );
     libcmis_vector_long_free( longs );
 
@@ -228,7 +228,7 @@ void PropertyTest::setValuesTest( )
     newValues[1] = "new string 2";
     libcmis_property_setValues( tested, newValues, newSize );
 
-    libcmis_vector_string* newStrings = libcmis_property_getStrings( tested );
+    libcmis_vector_string_Ptr newStrings = libcmis_property_getStrings( tested );
     CPPUNIT_ASSERT_EQUAL( newSize, libcmis_vector_string_size( newStrings ) );
     CPPUNIT_ASSERT_EQUAL( string( newValues[0] ), string( libcmis_vector_string_get( newStrings, 0 ) ) );
     CPPUNIT_ASSERT_EQUAL( string( newValues[1] ), string( libcmis_vector_string_get( newStrings, 1 ) ) );

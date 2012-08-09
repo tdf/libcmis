@@ -29,13 +29,13 @@
 #include "internals.hxx"
 #include "property-type.h"
 
-void libcmis_vector_PropertyTypePtr_free( libcmis_vector_PropertyTypePtr* vector )
+void libcmis_vector_property_type_free( libcmis_vector_property_type* vector )
 {
     delete vector;
 }
 
 
-size_t libcmis_vector_PropertyTypePtr_size( libcmis_vector_PropertyTypePtr* vector )
+size_t libcmis_vector_property_type_size( libcmis_vector_property_type* vector )
 {
     size_t size = 0;
     if ( vector != NULL )
@@ -44,7 +44,7 @@ size_t libcmis_vector_PropertyTypePtr_size( libcmis_vector_PropertyTypePtr* vect
 }
 
 
-libcmis_PropertyTypePtr libcmis_vector_PropertyTypePtr_get( libcmis_vector_PropertyTypePtr* vector, size_t i )
+libcmis_PropertyTypePtr libcmis_vector_property_type_get( libcmis_vector_property_type* vector, size_t i )
 {
     libcmis_PropertyTypePtr item = NULL;
     if ( vector != NULL && i < vector->handle.size( ) )

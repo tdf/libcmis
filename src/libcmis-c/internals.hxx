@@ -171,38 +171,38 @@ struct libcmis_vector_double
     libcmis_vector_double( ) : handle( ) { }
 };
 
-struct libcmis_vector_time_t
+struct libcmis_vector_time
 {
     std::vector< boost::posix_time::ptime > handle;
 
-    libcmis_vector_time_t( ) : handle( ) { }
+    libcmis_vector_time( ) : handle( ) { }
 };
 
-struct libcmis_vector_ObjectTypePtr
+struct libcmis_vector_object_type
 {
     std::vector< libcmis::ObjectTypePtr > handle;
 
-    libcmis_vector_ObjectTypePtr( ) : handle( ) { }
+    libcmis_vector_object_type( ) : handle( ) { }
 };
 
-struct libcmis_vector_PropertyTypePtr
+struct libcmis_vector_property_type
 {
     std::vector< libcmis::PropertyTypePtr > handle;
 
-    libcmis_vector_PropertyTypePtr( ) : handle( ) { }
+    libcmis_vector_property_type( ) : handle( ) { }
 };
 
-struct libcmis_vector_PropertyPtr
+struct libcmis_vector_property
 {
     std::vector< libcmis::PropertyPtr > handle;
 
-    libcmis_vector_PropertyPtr( ) : handle( ) { }
+    libcmis_vector_property( ) : handle( ) { }
 };
 
-struct libcmis_vector_ObjectPtr
+struct libcmis_vector_object
 {
     std::vector< libcmis::ObjectPtr > handle;
 
-    libcmis_vector_ObjectPtr( ) : handle( ) { }
+    libcmis_vector_object( ) : handle( ) { }
 };
 #endif

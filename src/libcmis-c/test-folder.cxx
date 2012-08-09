@@ -127,9 +127,9 @@ void FolderTest::getChildrenTest( )
     libcmis_FolderPtr tested = getTested( false, false );
     libcmis_ErrorPtr error = libcmis_error_create( );
 
-    libcmis_vector_ObjectPtr* children = libcmis_folder_getChildren( tested, error );
-    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_ObjectPtr_size( children ) );
-    libcmis_vector_ObjectPtr_free( children );
+    libcmis_vector_object_Ptr children = libcmis_folder_getChildren( tested, error );
+    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_object_size( children ) );
+    libcmis_vector_object_free( children );
     libcmis_error_free( error );
     libcmis_folder_free( tested );
 }
@@ -139,7 +139,7 @@ void FolderTest::getChildrenErrorTest( )
     libcmis_FolderPtr tested = getTested( false, true );
     libcmis_ErrorPtr error = libcmis_error_create( );
 
-    libcmis_vector_ObjectPtr* children = libcmis_folder_getChildren( tested, error );
+    libcmis_vector_object_Ptr children = libcmis_folder_getChildren( tested, error );
     CPPUNIT_ASSERT( NULL == children );
     const char* actualMessage = libcmis_error_getMessage( error );
     CPPUNIT_ASSERT( !string( actualMessage ).empty( ) );
@@ -153,7 +153,7 @@ void FolderTest::createFolderTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
 
     // Create the properties for the new folder
-    libcmis_vector_PropertyPtr* properties = libcmis_vector_PropertyPtr_create( );
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
     libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
     const char* id = "Property1";
     libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
@@ -163,7 +163,7 @@ void FolderTest::createFolderTest( )
     values[1] = "Value 2";
     libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
     delete[] values;
-    libcmis_vector_PropertyPtr_append( properties, property );
+    libcmis_vector_property_append( properties, property );
 
     // Create the new folder (method to test)
     libcmis_FolderPtr created = libcmis_folder_createFolder( tested, properties, error );
@@ -176,7 +176,7 @@ void FolderTest::createFolderTest( )
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );
-    libcmis_vector_PropertyPtr_free( properties );
+    libcmis_vector_property_free( properties );
     libcmis_error_free( error );
     libcmis_folder_free( tested );
 }
@@ -187,7 +187,7 @@ void FolderTest::createFolderErrorTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
 
     // Create the properties for the new folder
-    libcmis_vector_PropertyPtr* properties = libcmis_vector_PropertyPtr_create( );
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
     libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
     const char* id = "Property1";
     libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
@@ -197,7 +197,7 @@ void FolderTest::createFolderErrorTest( )
     values[1] = "Value 2";
     libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
     delete[] values;
-    libcmis_vector_PropertyPtr_append( properties, property );
+    libcmis_vector_property_append( properties, property );
 
     // Create the new folder (method to test)
     libcmis_FolderPtr created = libcmis_folder_createFolder( tested, properties, error );
@@ -213,7 +213,7 @@ void FolderTest::createFolderErrorTest( )
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );
-    libcmis_vector_PropertyPtr_free( properties );
+    libcmis_vector_property_free( properties );
     libcmis_error_free( error );
     libcmis_folder_free( tested );
 }

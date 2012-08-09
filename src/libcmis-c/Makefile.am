@@ -42,7 +42,8 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis_c-@LIBCMIS
 
 if ENABLE_TESTS
 check_PROGRAMS = \
-	test-api
+	test-api \
+	test-c-build
 
 test_api_SOURCES = \
 	test-api.cxx \
@@ -59,6 +60,19 @@ test_api_SOURCES = \
 test_api_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 
 test_api_LDADD = \
+	libcmis_c-@LIBCMIS_API_VERSION@.la \
+	$(top_srcdir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(XML2_LIBS) \
+	$(CURL_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+test_c_build_SOURCES = \
+	test-build.c
+
+test_c_build_CFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS)
+
+test_c_build_LDADD = \
 	libcmis_c-@LIBCMIS_API_VERSION@.la \
 	$(top_srcdir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \

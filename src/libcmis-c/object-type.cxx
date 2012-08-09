@@ -32,13 +32,13 @@
 using namespace std;
 
 
-void libcmis_vector_ObjectTypePtr_free( libcmis_vector_ObjectTypePtr* vector )
+void libcmis_vector_object_type_free( libcmis_vector_object_type_Ptr vector )
 {
     delete vector;
 }
 
 
-size_t libcmis_vector_ObjectTypePtr_size( libcmis_vector_ObjectTypePtr* vector )
+size_t libcmis_vector_object_type_size( libcmis_vector_object_type_Ptr vector )
 {
     size_t size = 0;
     if ( vector != NULL )
@@ -47,7 +47,7 @@ size_t libcmis_vector_ObjectTypePtr_size( libcmis_vector_ObjectTypePtr* vector )
 }
 
 
-libcmis_ObjectTypePtr libcmis_vector_ObjectTypePtr_get( libcmis_vector_ObjectTypePtr* vector, size_t i )
+libcmis_ObjectTypePtr libcmis_vector_object_type_get( libcmis_vector_object_type_Ptr vector, size_t i )
 {
     libcmis_ObjectTypePtr item = NULL;
     if ( vector != NULL && i < vector->handle.size( ) )
@@ -173,16 +173,16 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
 }
 
 
-libcmis_vector_ObjectTypePtr* libcmis_object_type_getChildren(
+libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type, libcmis_ErrorPtr error )
 {
-    libcmis_vector_ObjectTypePtr* children = NULL;
+    libcmis_vector_object_type_Ptr children = NULL;
     if ( type != NULL && type->handle.get( ) != NULL )
     {
         try
         {
             std::vector< libcmis::ObjectTypePtr > types = type->handle->getChildren( );
-            children = new libcmis_vector_ObjectTypePtr( );
+            children = new libcmis_vector_object_type( );
             children->handle = types;
         }
         catch( const libcmis::Exception& e )
@@ -281,13 +281,13 @@ libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAll
 }
 
 
-libcmis_vector_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type )
+libcmis_vector_property_type_Ptr libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type )
 {
-    libcmis_vector_PropertyTypePtr* propertyTypes = NULL;
+    libcmis_vector_property_type_Ptr propertyTypes = NULL;
     if ( type != NULL && type->handle != NULL )
     {
         map< string, libcmis::PropertyTypePtr >& handles = type->handle->getPropertiesTypes( );
-        propertyTypes = new libcmis_vector_PropertyTypePtr( );
+        propertyTypes = new libcmis_vector_property_type( );
         int i = 0;
         for ( map< string, libcmis::PropertyTypePtr >::iterator it = handles.begin( );
                 it != handles.end( ); ++it, ++i )

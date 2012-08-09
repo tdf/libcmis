@@ -38,11 +38,11 @@
 
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
-struct libcmis_vector_ObjectPtr;
+typedef struct libcmis_vector_object* libcmis_vector_object_Ptr;
 
-void libcmis_vector_ObjectPtr_free( libcmis_vector_ObjectPtr* vector );
-size_t libcmis_vector_ObjectPtr_size( libcmis_vector_ObjectPtr* vector );
-libcmis_ObjectPtr libcmis_vector_ObjectPtr_get( libcmis_vector_ObjectPtr* vector, size_t i );
+void libcmis_vector_object_free( libcmis_vector_object_Ptr vector );
+size_t libcmis_vector_object_size( libcmis_vector_object_Ptr vector );
+libcmis_ObjectPtr libcmis_vector_object_get( libcmis_vector_object_Ptr vector, size_t i );
 
 
 void libcmis_object_free( libcmis_ObjectPtr object );
@@ -55,7 +55,7 @@ char* libcmis_object_getId( libcmis_ObjectPtr object );
   */
 char* libcmis_object_getName( libcmis_ObjectPtr object );
 
-libcmis_vector_string* libcmis_object_getPaths( libcmis_ObjectPtr object );
+libcmis_vector_string_Ptr libcmis_object_getPaths( libcmis_ObjectPtr object );
 
 
 /** The resulting value needs to be free'd.
@@ -83,7 +83,7 @@ time_t libcmis_object_getLastModificationDate( libcmis_ObjectPtr object );
 char* libcmis_object_getChangeToken( libcmis_ObjectPtr object );
 bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 
-libcmis_vector_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object );
+libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object );
 libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );
 void libcmis_object_removeProperty( libcmis_ObjectPtr object, const char* name );

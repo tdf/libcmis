@@ -28,9 +28,13 @@
 #ifndef _LIBCMIS_ALLOWABLE_ACTIONS_H_
 #define _LIBCMIS_ALLOWABLE_ACTIONS_H_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 typedef struct libcmis_allowable_actions* libcmis_AllowableActionsPtr;
 
-enum libcmis_allowable_actions_Type
+typedef enum 
 {
     libcmis_DeleteObject,
     libcmis_UpdateProperties,
@@ -61,7 +65,7 @@ enum libcmis_allowable_actions_Type
     libcmis_GetRenditions,
     libcmis_GetACL,
     libcmis_ApplyACL
-};
+} libcmis_allowable_actions_Type;
 
 void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
 

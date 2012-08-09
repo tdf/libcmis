@@ -135,7 +135,7 @@ void ObjectTest::getNameTest( )
 void ObjectTest::getPathsTest( )
 {
     libcmis_ObjectPtr tested = getTested( false );
-    libcmis_vector_string* actual = libcmis_object_getPaths( tested );
+    libcmis_vector_string_Ptr actual = libcmis_object_getPaths( tested );
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_string_size( actual ) );
     CPPUNIT_ASSERT_EQUAL(
             string( "/Path1/" ),
@@ -215,9 +215,9 @@ void ObjectTest::isImmutableTest( )
 void ObjectTest::getPropertiesTest( )
 {
     libcmis_ObjectPtr tested = getTested( false );
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
     libcmis_object_free( tested );
 }
 
@@ -247,9 +247,9 @@ void ObjectTest::removePropertyTest( )
     const char* id = "Property1";
     libcmis_object_removeProperty( tested, id );
 
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
     libcmis_object_free( tested );
 }
 
@@ -272,9 +272,9 @@ void ObjectTest::setPropertyTest( )
     libcmis_object_setProperty( tested, property );
 
     // Check
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
 
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
@@ -301,12 +301,12 @@ void ObjectTest::setPropertyReplaceTest( )
     libcmis_object_setProperty( tested, property );
 
     // Check
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
 
     libcmis_PropertyPtr updatedProperty = libcmis_object_getProperty( tested, id );
-    libcmis_vector_string* newValues = libcmis_property_getStrings( updatedProperty );
+    libcmis_vector_string_Ptr newValues = libcmis_property_getStrings( updatedProperty );
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_string_size( newValues ) );
     libcmis_vector_string_free( newValues );
     libcmis_property_free( updatedProperty );
@@ -323,9 +323,9 @@ void ObjectTest::removePropertyMissingTest( )
     const char* id = "MissingProperty";
     libcmis_object_removeProperty( tested, id );
 
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
     libcmis_object_free( tested );
 }
 
@@ -334,9 +334,9 @@ void ObjectTest::clearPropertiesTest( )
     libcmis_ObjectPtr tested = getTested( false );
     libcmis_object_clearProperties( tested );
 
-    libcmis_vector_PropertyPtr* actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_PropertyPtr_size( actual ) );
-    libcmis_vector_PropertyPtr_free( actual );
+    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_property_size( actual ) );
+    libcmis_vector_property_free( actual );
     libcmis_object_free( tested );
 }
 

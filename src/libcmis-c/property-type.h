@@ -28,22 +28,26 @@
 #ifndef _LIBCMIS_PROPERTY_TYPE_H_
 #define _LIBCMIS_PROPERTY_TYPE_H_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 typedef struct libcmis_property_type* libcmis_PropertyTypePtr;
 
-struct libcmis_vector_PropertyTypePtr;
+typedef struct libcmis_vector_property_type* libcmis_vector_property_type_Ptr;
 
-enum libcmis_property_type_Type
+typedef enum
 {
     libcmis_String,
     libcmis_Integer,
     libcmis_Decimal,
     libcmis_Bool,
     libcmis_DateTime
-};
+} libcmis_property_type_Type;
 
-void libcmis_vector_PropertyTypePtr_free( libcmis_vector_PropertyTypePtr* vector );
-size_t libcmis_vector_PropertyTypePtr_size( libcmis_vector_PropertyTypePtr* vector );
-libcmis_PropertyTypePtr libcmis_vector_PropertyTypePtr_get( libcmis_vector_PropertyTypePtr* vector, size_t i );
+void libcmis_vector_property_type_free( libcmis_vector_property_type_Ptr vector );
+size_t libcmis_vector_property_type_size( libcmis_vector_property_type_Ptr vector );
+libcmis_PropertyTypePtr libcmis_vector_property_type_get( libcmis_vector_property_type_Ptr vector, size_t i );
 
 void libcmis_property_type_free( libcmis_PropertyTypePtr type );
 

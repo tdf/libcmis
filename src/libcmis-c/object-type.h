@@ -28,24 +28,28 @@
 #ifndef _LIBCMIS_OBJECT_TYPE_H_
 #define _LIBCMIS_OBJECT_TYPE_H_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #include "error.h"
 #include "property-type.h"
 
 typedef struct libcmis_object_type* libcmis_ObjectTypePtr;
 
-struct libcmis_vector_ObjectTypePtr;
+typedef struct libcmis_vector_object_type* libcmis_vector_object_type_Ptr;
 
-enum libcmis_object_type_ContentStreamAllowed
+typedef enum
 {
     libcmis_NotAllowed,
     libcmis_Allowed,
     libcmis_Required
-};
+} libcmis_object_type_ContentStreamAllowed;
 
 
-void libcmis_vector_ObjectTypePtr_free( libcmis_vector_ObjectTypePtr* vector );
-size_t libcmis_vector_ObjectTypePtr_size( libcmis_vector_ObjectTypePtr* vector );
-libcmis_ObjectTypePtr libcmis_vector_ObjectTypePtr_get( libcmis_vector_ObjectTypePtr* vector, size_t i );
+void libcmis_vector_object_type_free( libcmis_vector_object_type_Ptr vector );
+size_t libcmis_vector_object_type_size( libcmis_vector_object_type_Ptr vector );
+libcmis_ObjectTypePtr libcmis_vector_object_type_get( libcmis_vector_object_type_Ptr vector, size_t i );
 
 
 void libcmis_object_type_free( libcmis_ObjectTypePtr type );
@@ -81,7 +85,7 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
-libcmis_vector_ObjectTypePtr* libcmis_object_type_getChildren(
+libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
@@ -96,7 +100,7 @@ bool libcmis_object_type_isVersionable( libcmis_ObjectTypePtr type );
 
 libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAllowed( libcmis_ObjectTypePtr type );
 
-libcmis_vector_PropertyTypePtr* libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
+libcmis_vector_property_type_Ptr libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
 libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
 
 

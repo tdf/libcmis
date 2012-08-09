@@ -32,6 +32,10 @@
 #include <map>
 #include <string>
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
 

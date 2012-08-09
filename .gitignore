@@ -23,6 +23,7 @@ libcmis-*.*.*.tar.gz
 test-atom
 test-ws
 test-api
+test-c-build
 cmis-client
 test-server
 *.tar.gz
