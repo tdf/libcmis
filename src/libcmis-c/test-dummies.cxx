@@ -236,4 +236,103 @@ namespace dummies
     {
         return m_id + "::toString";
     }
+
+    Object::Object( bool triggersFaults ):
+        libcmis::Object( ),
+        m_triggersFaults( triggersFaults ),
+        m_timestamp( 0 ),
+        m_properties( )
+    {
+        libcmis::PropertyTypePtr propertyType( new PropertyType( "Property1", "string" ) );
+        vector< string > values;
+        values.push_back( "Value1" );
+        libcmis::PropertyPtr property( new libcmis::Property( propertyType, values ) );
+        m_properties.insert( pair< string, libcmis::PropertyPtr >( propertyType->getId( ), property ) );
+    }
+
+    std::string Object::getId( )
+    {
+        return string( "Object::Id" );
+    }
+
+    std::string Object::getName( )
+    {
+        return string( "Object::Name" );
+    }
+
+    std::vector< std::string > Object::getPaths( )
+    {
+        vector< string > paths;
+        paths.push_back( string( "/Path1/" ) );
+        paths.push_back( string( "/Path2/" ) );
+
+        return paths;
+    }
+
+    std::string Object::getBaseType( )
+    {
+        return string( "Object::BaseType" );
+    }
+
+    std::string Object::getType( )
+    {
+        return string( "Object::Type" );
+    }
+
+    boost::posix_time::ptime Object::getCreationDate( )
+    {
+        boost::posix_time::ptime now( boost::posix_time::second_clock::local_time( ) );
+        return now;
+    }
+
+    boost::posix_time::ptime Object::getLastModificationDate( )
+    {
+        boost::posix_time::ptime now( boost::posix_time::second_clock::local_time( ) );
+        return now;
+    }
+
+    std::map< std::string, libcmis::PropertyPtr >& Object::getProperties( )
+    {
+        return m_properties;
+    }
+
+    void Object::updateProperties( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
+    libcmis::ObjectTypePtr Object::getTypeDescription( )
+    {
+        libcmis::ObjectTypePtr type( new ObjectType( false, m_triggersFaults ) );
+        return type;
+    }
+
+    libcmis::AllowableActionsPtr Object::getAllowableActions( )
+    {
+        libcmis::AllowableActionsPtr allowableActions( new AllowableActions( ) );
+        return allowableActions;
+    }
+
+    void Object::refresh( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
+    void Object::remove( bool ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
+    void Object::toXml( xmlTextWriterPtr )
+    {
+    }
 }

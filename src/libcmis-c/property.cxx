@@ -31,6 +31,35 @@
 
 using namespace std;
 
+
+void libcmis_vector_PropertyPtr_free( libcmis_vector_PropertyPtr* vector )
+{
+    delete vector;
+}
+
+
+size_t libcmis_vector_PropertyPtr_size( libcmis_vector_PropertyPtr* vector )
+{
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* vector, size_t i )
+{
+    libcmis_PropertyPtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
+    {
+        libcmis::PropertyPtr type = vector->handle[i];
+        item = new libcmis_property( );
+        item->handle = type;
+    }
+    return item;
+}
+
+
 libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const char** strValues, size_t size )
 {
     libcmis_PropertyPtr property = NULL;

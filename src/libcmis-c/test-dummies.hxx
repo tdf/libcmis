@@ -30,6 +30,7 @@
 
 
 #include <libcmis/allowable-actions.hxx>
+#include <libcmis/object.hxx>
 #include <libcmis/object-type.hxx>
 #include <libcmis/property-type.hxx>
 #include <libcmis/repository.hxx>
@@ -105,6 +106,49 @@ namespace dummies
             virtual std::map< std::string, libcmis::PropertyTypePtr >& getPropertiesTypes( );
 
             virtual std::string toString( );
+    };
+
+    class Object : public libcmis::Object
+    {
+        private:
+            bool m_triggersFaults;
+            time_t m_timestamp;
+            std::map< std::string, libcmis::PropertyPtr > m_properties;
+
+        public:
+            Object( bool triggersFaults );
+            ~Object( ) { }
+
+            virtual std::string getId( );
+            virtual std::string getName( );
+
+            virtual std::vector< std::string > getPaths( );
+
+            virtual std::string getBaseType( );
+            virtual std::string getType( );
+
+            virtual std::string getCreatedBy( ) { return std::string( "Object::CreatedBy" ); };
+            virtual boost::posix_time::ptime getCreationDate( );
+            virtual std::string getLastModifiedBy( ) { return std::string( "Object::LastModifiedBy" ); };
+            virtual boost::posix_time::ptime getLastModificationDate( );
+
+            virtual std::string getChangeToken( ) { return std::string( "Object::ChangeToken" ); }
+            virtual bool isImmutable( ) { return true; };
+
+            virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
+            virtual void updateProperties( ) throw ( libcmis::Exception );
+
+            virtual libcmis::ObjectTypePtr getTypeDescription( );
+            virtual libcmis::AllowableActionsPtr getAllowableActions( );
+
+            virtual void refresh( ) throw ( libcmis::Exception );
+            virtual time_t getRefreshTimestamp( ) { return m_timestamp; }
+
+            virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+
+            virtual std::string toString( ) { return std::string( "Object::toString" ); }
+            
+            virtual void toXml( xmlTextWriterPtr writer );
     };
 }
 

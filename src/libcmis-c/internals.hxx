@@ -192,4 +192,11 @@ struct libcmis_vector_PropertyTypePtr
     libcmis_vector_PropertyTypePtr( ) : handle( ) { }
 };
 
+struct libcmis_vector_PropertyPtr
+{
+    std::vector< libcmis::PropertyPtr > handle;
+
+    libcmis_vector_PropertyPtr( ) : handle( ) { }
+};
+
 #endif

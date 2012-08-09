@@ -49,6 +49,7 @@ test_api_SOURCES = \
 	test-allowable-actions.cxx \
 	test-dummies.hxx \
 	test-dummies.cxx \
+	test-object.cxx \
 	test-object-type.cxx \
 	test-property.cxx \
 	test-property-type.cxx \

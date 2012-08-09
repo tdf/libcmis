@@ -34,32 +34,53 @@
 #include "error.h"
 #include "object-type.h"
 #include "property.h"
+#include "vectors.h"
 
 typedef struct libcmis_object* libcmis_ObjectPtr;
 
 void libcmis_object_free( libcmis_ObjectPtr object );
 void libcmis_object_list_free( libcmis_ObjectPtr* list );
 
-const char* libcmis_object_getId( libcmis_ObjectPtr object );
-const char* libcmis_object_getName( libcmis_ObjectPtr object );
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getId( libcmis_ObjectPtr object );
 
-const char** libcmis_object_getPaths( libcmis_ObjectPtr object );
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getName( libcmis_ObjectPtr object );
 
-const char* libcmis_object_getBaseType( libcmis_ObjectPtr object );
-const char* libcmis_object_getType( libcmis_ObjectPtr object );
+libcmis_vector_string* libcmis_object_getPaths( libcmis_ObjectPtr object );
 
-const char* libcmis_object_getCreatedBy( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getBaseType( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getType( libcmis_ObjectPtr object );
+
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getCreatedBy( libcmis_ObjectPtr object );
 time_t libcmis_object_getCreationDate( libcmis_ObjectPtr object );
-const char* libcmis_object_getLastModifiedBy( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getLastModifiedBy( libcmis_ObjectPtr object );
 time_t libcmis_object_getLastModificationDate( libcmis_ObjectPtr object );
 
-const char* libcmis_object_getChangeToken( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getChangeToken( libcmis_ObjectPtr object );
 bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 
-libcmis_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object );
-libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, char* name );
+libcmis_vector_PropertyPtr* libcmis_object_getProperties( libcmis_ObjectPtr object );
+libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );
-void libcmis_object_removeProperty( libcmis_ObjectPtr object, char* name );
+void libcmis_object_removeProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_clearProperties( libcmis_ObjectPtr object );
 void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 
@@ -71,6 +92,9 @@ time_t libcmis_object_getRefreshTimestamp( libcmis_ObjectPtr object );
 
 void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_ErrorPtr error );
 
-const char* libcmis_object_toString( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_toString( libcmis_ObjectPtr object );
 
 #endif

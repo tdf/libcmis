@@ -33,6 +33,12 @@
 
 typedef struct libcmis_property* libcmis_PropertyPtr;
 
+struct libcmis_vector_PropertyPtr;
+
+void libcmis_vector_PropertyPtr_free( libcmis_vector_PropertyPtr* vector );
+size_t libcmis_vector_PropertyPtr_size( libcmis_vector_PropertyPtr* vector );
+libcmis_PropertyPtr libcmis_vector_PropertyPtr_get( libcmis_vector_PropertyPtr* vector, size_t i );
+
 libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const char** strValues, size_t size );
 void libcmis_property_free( libcmis_PropertyPtr property );
 
