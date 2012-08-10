@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 #include "error.h"
@@ -75,5 +77,9 @@ libcmis_ObjectTypePtr libcmis_session_getType(
 void libcmis_session_setAuthenticationCallback(
         libcmis_SessionPtr session,
         libcmis_authenticationCallback callback );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

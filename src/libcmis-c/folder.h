@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 #include "document.h"
@@ -74,5 +76,9 @@ void libcmis_folder_removeTree( libcmis_FolderPtr folder,
         libcmis_folder_UnfileObjects unfile,
         bool continueOnError,
         libcmis_ErrorPtr error );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

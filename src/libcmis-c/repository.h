@@ -28,6 +28,10 @@
 #ifndef _REPOSITORY_H_
 #define _REPOSITORY_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <libxml/tree.h>
 
 typedef struct libcmis_repository* libcmis_RepositoryPtr;
@@ -79,5 +83,9 @@ char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository
 /** The resulting value needs to be freed.
   */
 char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

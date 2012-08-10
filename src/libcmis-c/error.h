@@ -28,6 +28,10 @@
 #ifndef _LIBCMIS_ERROR_H_
 #define _LIBCMIS_ERROR_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct libcmis_error* libcmis_ErrorPtr;
 
 libcmis_ErrorPtr libcmis_error_create( );
@@ -35,5 +39,8 @@ void           libcmis_error_free( libcmis_ErrorPtr e );
 
 const char* libcmis_error_getMessage( libcmis_ErrorPtr e );
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

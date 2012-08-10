@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 #include "error.h"
@@ -107,5 +109,9 @@ libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypeP
 /** The resulting value needs to be freed
   */
 char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

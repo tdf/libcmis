@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 typedef struct libcmis_allowable_actions* libcmis_AllowableActionsPtr;
@@ -74,5 +76,9 @@ bool libcmis_allowable_actions_isAllowed( libcmis_AllowableActionsPtr allowable,
 
 bool libcmis_allowable_actions_isDefined( libcmis_AllowableActionsPtr allowable,
         libcmis_allowable_actions_Type action );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

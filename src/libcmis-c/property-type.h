@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 typedef struct libcmis_property_type* libcmis_PropertyTypePtr;
@@ -84,5 +86,9 @@ bool libcmis_property_type_isRequired( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isQueryable( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isOrderable( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isOpenChoice( libcmis_PropertyTypePtr type );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

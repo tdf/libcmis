@@ -28,11 +28,18 @@
 #ifndef _LIBCMIS_DOCUMENT_H_
 #define _LIBCMIS_DOCUMENT_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "error.h"
 
 typedef struct libcmis_document* libcmis_DocumentPtr;
 
 void libcmis_document_free( libcmis_DocumentPtr document );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

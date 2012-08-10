@@ -28,6 +28,12 @@
 #ifndef _LIBCMIS_PROPERTY_HXX_
 #define _LIBCMIS_PROPERTY_HXX_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#else
+extern "C" {
+#endif
+
 #include "property-type.h"
 #include "vectors.h"
 
@@ -57,6 +63,10 @@ libcmis_vector_long_Ptr libcmis_property_getLongs( libcmis_PropertyPtr property 
 libcmis_vector_double_Ptr libcmis_property_getDoubles( libcmis_PropertyPtr property );
 
 void libcmis_property_setValues( libcmis_PropertyPtr property, const char** strValues, size_t size );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

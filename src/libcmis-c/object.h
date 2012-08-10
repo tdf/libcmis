@@ -28,6 +28,12 @@
 #ifndef _LIBCMIS_OBJECT_H_
 #define _LIBCMIS_OBJECT_H_
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#else
+extern "C" {
+#endif
+
 #include <time.h>
 
 #include "allowable-actions.h"
@@ -102,5 +108,9 @@ void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_
 /** The resulting value needs to be free'd.
   */
 char* libcmis_object_toString( libcmis_ObjectPtr object );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 #include "error.h"
@@ -51,5 +53,9 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
         char* password,
         bool  verbose,
         libcmis_ErrorPtr error );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

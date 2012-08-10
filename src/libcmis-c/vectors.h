@@ -30,6 +30,8 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#else
+extern "C" {
 #endif
 
 typedef struct libcmis_vector_bool* libcmis_vector_bool_Ptr;
@@ -65,5 +67,9 @@ typedef struct libcmis_vector_time* libcmis_vector_time_Ptr;
 void libcmis_vector_time_free( libcmis_vector_time_Ptr vector );
 size_t libcmis_vector_time_size( libcmis_vector_time_Ptr vector );
 time_t libcmis_vector_time_get( libcmis_vector_time_Ptr vector, size_t i );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
