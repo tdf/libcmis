@@ -427,10 +427,13 @@ namespace dummies
             throw libcmis::Exception( "Fault triggered" );
 
         vector< libcmis::FolderPtr > parents;
-        libcmis::FolderPtr parent1( new Folder( true, m_triggersFaults ) );
-        parents.push_back( parent1 );
-        libcmis::FolderPtr parent2( new Folder( false, m_triggersFaults ) );
-        parents.push_back( parent2 );
+        if ( m_isFiled )
+        {
+            libcmis::FolderPtr parent1( new Folder( true, m_triggersFaults ) );
+            parents.push_back( parent1 );
+            libcmis::FolderPtr parent2( new Folder( false, m_triggersFaults ) );
+            parents.push_back( parent2 );
+        }
 
         return parents;
     }
@@ -501,12 +504,14 @@ namespace dummies
         time( &m_timestamp );
     }
 
-    void Document::checkIn( bool, string, map< string, libcmis::PropertyPtr >&,
-                  boost::shared_ptr< ostream >, string ) throw ( libcmis::Exception )
+    void Document::checkIn( bool, string, map< string, libcmis::PropertyPtr >& properties,
+                  boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
+        m_properties = properties;
+        setContentStream( os, contentType );
         time( &m_timestamp );
     }
 }

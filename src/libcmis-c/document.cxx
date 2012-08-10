@@ -204,3 +204,58 @@ void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_Erro
         }
     }
 }
+
+void libcmis_document_checkIn(
+        libcmis_DocumentPtr document,
+        bool isMajor,
+        const char* comment,
+        libcmis_vector_property_Ptr properties,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        libcmis_ErrorPtr error )
+{
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            // Create the ostream
+            boost::shared_ptr< std::ostream > stream( new stringstream( ) );
+
+            size_t bufSize = 2048;
+            char* buf = new char[ bufSize ];
+            size_t read = 0;
+            {
+                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
+                stream->write( buf, read );
+            } while ( read == bufSize );
+            delete[] buf;
+
+            // Create the property map
+            map< string, libcmis::PropertyPtr > propertiesMap;
+            if ( properties != NULL )
+            {
+                for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                        it != properties->handle.end( ); ++it )
+                {
+                    string id = ( *it )->getPropertyType( )->getId( );
+                    propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                }
+            }
+
+            document->handle->checkIn( isMajor, comment, propertiesMap, stream, contentType );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+        catch ( const ios_base::failure& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new ios_base::failure( e );
+        }
+    }
+}

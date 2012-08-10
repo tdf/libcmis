@@ -65,6 +65,7 @@ class DocumentTest : public CppUnit::TestFixture
     public:
         void objectFunctionsTest( );
         void getParentsTest( );
+        void getParentsUnfiledTest( );
         void getParentsErrorTest( );
         void getContentStreamTest( );
         void getContentStreamErrorTest( );
@@ -77,10 +78,13 @@ class DocumentTest : public CppUnit::TestFixture
         void checkOutErrorTest( );
         void cancelCheckoutTest( );
         void cancelCheckoutErrorTest( );
+        void checkInTest( );
+        void checkInErrorTest( );
 
         CPPUNIT_TEST_SUITE( DocumentTest );
         CPPUNIT_TEST( objectFunctionsTest );
         CPPUNIT_TEST( getParentsTest );
+        CPPUNIT_TEST( getParentsUnfiledTest );
         CPPUNIT_TEST( getParentsErrorTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( getContentStreamErrorTest );
@@ -93,6 +97,8 @@ class DocumentTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutErrorTest );
         CPPUNIT_TEST( cancelCheckoutTest );
         CPPUNIT_TEST( cancelCheckoutErrorTest );
+        CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( checkInErrorTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -132,6 +138,23 @@ void DocumentTest::getParentsTest( )
 
     // Check
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_folder_size( actual ) );
+
+    // Free it all
+    libcmis_vector_folder_free( actual );
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getParentsUnfiledTest( )
+{
+    libcmis_DocumentPtr tested = getTested( false, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get the parent folders (tested method)
+    libcmis_vector_folder_Ptr actual = libcmis_document_getParents( tested, error );
+
+    // Check
+    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_folder_size( actual ) );
 
     // Free it all
     libcmis_vector_folder_free( actual );
@@ -347,6 +370,110 @@ void DocumentTest::cancelCheckoutErrorTest( )
     CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
 
     // Free it all
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::checkInTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+    
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string expected( "New Content Stream" );
+    fwrite( expected.c_str( ), 1, expected.size( ), tmp );
+    rewind( tmp );
+
+    // Create the properties for the new version
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    const char* id = "Property1";
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
+    delete[] values;
+    libcmis_vector_property_append( properties, property );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    const char* comment = "Version comment";
+    libcmis_document_checkIn( tested, true, comment, properties, 
+            ( libcmis_readFn )fread, tmp, contentType, error );
+    fclose( tmp );
+
+    // Check
+    string actual = getTestedImplementation( tested )->getContentString( );
+    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT_EQUAL( expected, actual );
+
+    libcmis_PropertyPtr checkedProperty = libcmis_object_getProperty( tested, "Property1" );
+    libcmis_vector_string_Ptr newValues = libcmis_property_getStrings( checkedProperty );
+    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_string_size( newValues ) );
+
+    // Free it all
+    libcmis_vector_string_free( newValues );
+    libcmis_property_free( checkedProperty );
+    libcmis_property_free( property );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( properties );
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::checkInErrorTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, true );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+    
+    string expected = getTestedImplementation( tested )->getContentString( );
+
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string newContent( "New Content Stream" );
+    fwrite( newContent.c_str( ), 1, newContent.size( ), tmp );
+    rewind( tmp );
+
+    // Create the properties for the new version
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    const char* id = "Property1";
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
+    delete[] values;
+    libcmis_vector_property_append( properties, property );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    const char* comment = "Version comment";
+    libcmis_document_checkIn( tested, true, comment, properties, 
+            ( libcmis_readFn )fread, tmp, contentType, error );
+    fclose( tmp );
+
+    // Check
+    string actual = getTestedImplementation( tested )->getContentString( );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+    CPPUNIT_ASSERT_EQUAL( expected, actual );
+
+    libcmis_PropertyPtr checkedProperty = libcmis_object_getProperty( tested, "Property1" );
+    libcmis_vector_string_Ptr newValues = libcmis_property_getStrings( checkedProperty );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_string_size( newValues ) );
+
+    // Free it all
+    libcmis_vector_string_free( newValues );
+    libcmis_property_free( checkedProperty );
+    libcmis_property_free( property );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( properties );
     libcmis_error_free( error );
     libcmis_document_free( tested );
 }

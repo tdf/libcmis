@@ -70,7 +70,15 @@ long libcmis_document_getContentLength( libcmis_DocumentPtr document );
 libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
 void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
 
-/* TODO libcmis_document_checkIn */
+void libcmis_document_checkIn(
+        libcmis_DocumentPtr document,
+        bool isMajor,
+        const char* comment,
+        libcmis_vector_property_Ptr properties,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        libcmis_ErrorPtr error );
 
 #ifdef __cplusplus
 }
