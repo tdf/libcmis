@@ -170,6 +170,64 @@ libcmis_FolderPtr libcmis_folder_createFolder(
 }
 
 
+libcmis_DocumentPtr libcmis_folder_createDocument(
+        libcmis_FolderPtr folder,
+        libcmis_vector_property_Ptr properties,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        libcmis_ErrorPtr error )
+{
+    libcmis_DocumentPtr created = NULL;
+    if ( folder != NULL && folder->handle.get( ) != NULL )
+    {
+        try
+        {
+            // Create the ostream
+            boost::shared_ptr< std::ostream > stream( new stringstream( ) );
+
+            size_t bufSize = 2048;
+            char* buf = new char[ bufSize ];
+            size_t read = 0;
+            {
+                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
+                stream->write( buf, read );
+            } while ( read == bufSize );
+            delete[] buf;
+
+            // Create the property map
+            map< string, libcmis::PropertyPtr > propertiesMap;
+            if ( properties != NULL )
+            {
+                for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                        it != properties->handle.end( ); ++it )
+                {
+                    string id = ( *it )->getPropertyType( )->getId( );
+                    propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                }
+            }
+
+            libcmis::DocumentPtr handle = folder->handle->createDocument( propertiesMap, stream, contentType );
+            created = new libcmis_document( );
+            created->setHandle( handle );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+        catch ( const ios_base::failure& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new ios_base::failure( e );
+        }
+    }
+    return created;
+}
+
+
 void libcmis_folder_removeTree( libcmis_FolderPtr folder,
         bool allVersion,
         libcmis_folder_UnfileObjects unfile,

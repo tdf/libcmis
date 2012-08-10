@@ -112,7 +112,7 @@ namespace dummies
 
     class Object : public virtual libcmis::Object
     {
-        protected:
+        public:
             std::string m_type;
             bool m_triggersFaults;
             time_t m_timestamp;

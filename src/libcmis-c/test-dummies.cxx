@@ -397,10 +397,12 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        libcmis::DocumentPtr created;
+        dummies::Document* document = new dummies::Document( true, false );
 
-        // TODO Implement me
+        document->m_properties = properties;
+        document->setContentStream( os, contentType );
 
+        libcmis::DocumentPtr created( document );
         return created;
     }
 

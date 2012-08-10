@@ -30,6 +30,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include "document.h"
 #include "internals.hxx"
 #include "folder.h"
 #include "test-dummies.hxx"
@@ -40,6 +41,7 @@ class FolderTest : public CppUnit::TestFixture
 {
     private:
         libcmis_FolderPtr getTested( bool isRoot, bool triggersFaults );
+        dummies::Document* getDocumentImplementation( libcmis_DocumentPtr document );
 
     public:
         void objectFunctionsTest( );
@@ -50,6 +52,8 @@ class FolderTest : public CppUnit::TestFixture
         void getChildrenErrorTest( );
         void createFolderTest( );
         void createFolderErrorTest( );
+        void createDocumentTest( );
+        void createDocumentErrorTest( );
         void removeTreeTest( );
         void removeTreeErrorTest( );
 
@@ -62,6 +66,8 @@ class FolderTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenErrorTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderErrorTest );
+        CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( createDocumentErrorTest );
         CPPUNIT_TEST( removeTreeTest );
         CPPUNIT_TEST( removeTreeErrorTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -76,6 +82,12 @@ libcmis_FolderPtr FolderTest::getTested( bool isRoot, bool triggersFaults )
     result->setHandle( handle );
 
     return result;
+}
+
+dummies::Document* FolderTest::getDocumentImplementation( libcmis_DocumentPtr document )
+{
+    dummies::Document* impl = dynamic_cast< dummies::Document* >( document->handle.get( ) );
+    return impl;
 }
 
 void FolderTest::objectFunctionsTest( )
@@ -210,6 +222,100 @@ void FolderTest::createFolderErrorTest( )
 
     // Free everything
     libcmis_folder_free( created );
+    libcmis_property_free( property );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( properties );
+    libcmis_error_free( error );
+    libcmis_folder_free( tested );
+}
+
+void FolderTest::createDocumentTest( )
+{
+    libcmis_FolderPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+    
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string expectedStream( "New Content Stream" );
+    fwrite( expectedStream.c_str( ), 1, expectedStream.size( ), tmp );
+    rewind( tmp );
+
+    // Create the properties for the new version
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    const char* id = "Property1";
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
+    delete[] values;
+    libcmis_vector_property_append( properties, property );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    libcmis_DocumentPtr actual = libcmis_folder_createDocument( tested, properties, 
+            ( libcmis_readFn )fread, tmp, contentType, error );
+    fclose( tmp );
+
+    // Check
+    string actualStream = getDocumentImplementation( actual )->getContentString( );
+    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT_EQUAL( expectedStream, actualStream );
+
+    libcmis_PropertyPtr checkedProperty = libcmis_object_getProperty( actual, "Property1" );
+    libcmis_vector_string_Ptr newValues = libcmis_property_getStrings( checkedProperty );
+    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_string_size( newValues ) );
+
+    // Free it all
+    libcmis_vector_string_free( newValues );
+    libcmis_property_free( checkedProperty );
+    libcmis_document_free( actual );
+    libcmis_property_free( property );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( properties );
+    libcmis_error_free( error );
+    libcmis_folder_free( tested );
+}
+
+void FolderTest::createDocumentErrorTest( )
+{
+    libcmis_FolderPtr tested = getTested( true, true );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+    
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string newStream( "New Content Stream" );
+    fwrite( newStream.c_str( ), 1, newStream.size( ), tmp );
+    rewind( tmp );
+
+    // Create the properties for the new version
+    libcmis_vector_property_Ptr properties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    const char* id = "Property1";
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
+    delete[] values;
+    libcmis_vector_property_append( properties, property );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    libcmis_DocumentPtr actual = libcmis_folder_createDocument( tested, properties, 
+            ( libcmis_readFn )fread, tmp, contentType, error );
+    fclose( tmp );
+
+    // Check
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+    CPPUNIT_ASSERT( NULL == actual );
+
+    // Free it all
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );

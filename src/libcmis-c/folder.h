@@ -39,6 +39,7 @@ extern "C" {
 
 typedef struct libcmis_folder* libcmis_FolderPtr;
 typedef struct libcmis_document* libcmis_DocumentPtr;
+typedef size_t ( *libcmis_readFn )( void*, size_t, size_t, void* );
 
 
 typedef struct libcmis_vector_folder* libcmis_vector_folder_Ptr;
@@ -71,13 +72,13 @@ libcmis_FolderPtr libcmis_folder_createFolder(
         libcmis_vector_property_Ptr properties,
         libcmis_ErrorPtr error );
 
-
-/* TODO libcmis_DocumentPtr libcmis_folder_createDocument(*/
-/*         libcmis_FolderPtr folder,*/
-/*         libcmis_vector_property_Ptr properties,*/
-/*         readFn,*/
-/*         char* contentType,*/
-/*         libcmis_ErrorPtr );*/
+libcmis_DocumentPtr libcmis_folder_createDocument(
+        libcmis_FolderPtr folder,
+        libcmis_vector_property_Ptr properties,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        libcmis_ErrorPtr error );
 
 void libcmis_folder_removeTree( libcmis_FolderPtr folder,
         bool allVersion,
