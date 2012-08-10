@@ -37,6 +37,7 @@ extern "C" {
 
 typedef struct libcmis_document* libcmis_DocumentPtr;
 typedef size_t ( *libcmis_writeFn )( const void*, size_t, size_t, void* );
+typedef size_t ( *libcmis_readFn )( void*, size_t, size_t, void* );
 
 void libcmis_document_free( libcmis_DocumentPtr document );
 
@@ -48,7 +49,13 @@ void libcmis_document_getContentStream(
         void* userData,
         libcmis_ErrorPtr error );
 
-/* TODO libcmis_document_setContentStream */
+void libcmis_document_setContentStream(
+        libcmis_DocumentPtr document,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        bool overwrite,
+        libcmis_ErrorPtr );
 
 /** The resulting value needs to be free'd
   */

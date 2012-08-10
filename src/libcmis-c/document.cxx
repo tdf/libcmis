@@ -98,6 +98,47 @@ void libcmis_document_getContentStream(
 }
 
 
+void libcmis_document_setContentStream(
+        libcmis_DocumentPtr document,
+        libcmis_readFn readFn,
+        void* userData,
+        const char* contentType,
+        bool overwrite,
+        libcmis_ErrorPtr error )
+{
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            boost::shared_ptr< std::ostream > stream( new stringstream( ) );
+
+            size_t bufSize = 2048;
+            char* buf = new char[ bufSize ];
+            size_t read = 0;
+            {
+                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
+                stream->write( buf, read );
+            } while ( read == bufSize );
+            delete[] buf;
+
+            document->handle->setContentStream( stream, contentType, overwrite );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+        catch ( const ios_base::failure& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new ios_base::failure( e );
+        }
+    }
+}
+
+
 char* libcmis_document_getContentType( libcmis_DocumentPtr document )
 {
     char* value = NULL;

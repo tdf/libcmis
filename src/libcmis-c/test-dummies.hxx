@@ -181,11 +181,14 @@ namespace dummies
     {
         private:
             bool m_isFiled;
+            std::string m_contentString;
 
         public:
             Document( bool isFiled, bool triggersFaults );
             ~Document( ) { }
-            
+
+            std::string getContentString( ) { return m_contentString; }
+
             virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
             
             virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );

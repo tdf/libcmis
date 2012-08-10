@@ -60,12 +60,16 @@ class DocumentTest : public CppUnit::TestFixture
 {
     private:
         libcmis_DocumentPtr getTested( bool isFiled, bool triggersFaults );
+        dummies::Document* getTestedImplementation( libcmis_DocumentPtr document );
 
     public:
         void objectFunctionsTest( );
         void getParentsTest( );
         void getParentsErrorTest( );
         void getContentStreamTest( );
+        void getContentStreamErrorTest( );
+        void setContentStreamTest( );
+        void setContentStreamErrorTest( );
         void getContentTypeTest( );
         void getContentFilenameTest( );
         void getContentLengthTest( );
@@ -79,6 +83,9 @@ class DocumentTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getParentsTest );
         CPPUNIT_TEST( getParentsErrorTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( getContentStreamErrorTest );
+        CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( setContentStreamErrorTest );
         CPPUNIT_TEST( getContentTypeTest );
         CPPUNIT_TEST( getContentFilenameTest );
         CPPUNIT_TEST( getContentLengthTest );
@@ -98,6 +105,12 @@ libcmis_DocumentPtr DocumentTest::getTested( bool isFiled, bool triggersFaults )
     result->setHandle( handle );
 
     return result;
+}
+
+dummies::Document* DocumentTest::getTestedImplementation( libcmis_DocumentPtr document )
+{
+    dummies::Document* impl = dynamic_cast< dummies::Document* >( document->handle.get( ) );
+    return impl;
 }
 
 void DocumentTest::objectFunctionsTest( )
@@ -155,10 +168,89 @@ void DocumentTest::getContentStreamTest( )
             ( libcmis_writeFn )fwrite, tmp, error );
 
     // Check
+    string expected = getTestedImplementation( tested )->getContentString( );
+    
     string actual = lcl_readFile( tmp );
     fclose( tmp );
     CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
-    CPPUNIT_ASSERT_EQUAL( string( "Document::ContentStream" ), actual );
+    CPPUNIT_ASSERT_EQUAL( expected, actual );
+
+    // Free it all
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getContentStreamErrorTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, true );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get the content into a temporary file (tested method)
+    FILE* tmp = tmpfile( );
+    libcmis_document_getContentStream( tested, 
+            ( libcmis_writeFn )fwrite, tmp, error );
+
+    // Check
+    string actual = lcl_readFile( tmp );
+    fclose( tmp );
+    CPPUNIT_ASSERT_EQUAL( string( ), actual );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+
+    // Free it all
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::setContentStreamTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string expected( "New Content Stream" );
+    fwrite( expected.c_str( ), 1, expected.size( ), tmp );
+    rewind( tmp );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    libcmis_document_setContentStream( tested, 
+            ( libcmis_readFn )fread, tmp, contentType, true, error );
+    fclose( tmp );
+
+    // Check
+    string actual = getTestedImplementation( tested )->getContentString( );
+    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT_EQUAL( expected, actual );
+
+    // Free it all
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::setContentStreamErrorTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, true );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+    
+    string expected = getTestedImplementation( tested )->getContentString( );
+
+    // Prepare the content to set
+    FILE* tmp = tmpfile( );
+    string newContent( "New Content Stream" );
+    fwrite( expected.c_str( ), 1, expected.size( ), tmp );
+    rewind( tmp );
+
+    // get the content into a temporary file (tested method)
+    const char* contentType = "content/type";
+    libcmis_document_setContentStream( tested, 
+            ( libcmis_readFn )fread, tmp, contentType, true, error );
+    fclose( tmp );
+
+    // Check
+    string actual = getTestedImplementation( tested )->getContentString( );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+    CPPUNIT_ASSERT_EQUAL( expected, actual );
 
     // Free it all
     libcmis_error_free( error );

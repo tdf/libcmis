@@ -416,7 +416,8 @@ namespace dummies
     Document::Document( bool isFiled, bool triggersFaults ) :
         libcmis::Document( ),
         dummies::Object( triggersFaults, "Document" ),
-        m_isFiled( isFiled )
+        m_isFiled( isFiled ),
+        m_contentString( "Document::ContentStream" )
     {
     }
             
@@ -439,14 +440,29 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        boost::shared_ptr< istream > stream( new stringstream( "Document::ContentStream" ) );
+        boost::shared_ptr< istream > stream( new stringstream( m_contentString ) );
         return stream;
     }
 
-    void Document::setContentStream( boost::shared_ptr< ostream >, string, bool overwrite ) throw ( libcmis::Exception )
+    void Document::setContentStream( boost::shared_ptr< ostream > os, string, bool overwrite ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
+
+        istream is( os->rdbuf( ) );
+        stringstream out;
+        is.seekg( 0 );
+        int bufSize = 2048;
+        char* buf = new char[ bufSize ];
+        while ( !is.eof( ) )
+        {
+            is.read( buf, bufSize );
+            size_t read = is.gcount( );
+            out.write( buf, read );
+        }
+        delete[] buf;
+
+        m_contentString = out.str( );
 
         time( &m_timestamp );
     }
