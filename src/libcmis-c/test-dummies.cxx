@@ -439,7 +439,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        boost::shared_ptr< istream > stream( new stringstream( "Document::Stream" ) );
+        boost::shared_ptr< istream > stream( new stringstream( "Document::ContentStream" ) );
         return stream;
     }
 

@@ -59,6 +59,45 @@ libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr docum
 }
 
 
+void libcmis_document_getContentStream(
+        libcmis_DocumentPtr document,
+        libcmis_writeFn writeFn,
+        void* userData,
+        libcmis_ErrorPtr error )
+{
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            boost::shared_ptr< istream > stream = document->handle->getContentStream( );
+
+            stream->seekg( 0 );
+            int bufSize = 2048;
+            char* buf = new char[ bufSize ];
+            while ( !stream->eof( ) )
+            {
+                stream->read( buf, bufSize );
+                size_t read = stream->gcount( );
+                writeFn( ( const void * )buf, size_t( 1 ), read, userData );
+            }
+            delete[] buf;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+        catch ( const ios_base::failure& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new ios_base::failure( e );
+        }
+    }
+}
+
+
 char* libcmis_document_getContentType( libcmis_DocumentPtr document )
 {
     char* value = NULL;

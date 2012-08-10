@@ -36,12 +36,18 @@ extern "C" {
 #include "folder.h"
 
 typedef struct libcmis_document* libcmis_DocumentPtr;
+typedef size_t ( *libcmis_writeFn )( const void*, size_t, size_t, void* );
 
 void libcmis_document_free( libcmis_DocumentPtr document );
 
 libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
 
-/* TODO libcmis_document_getContentStream */
+void libcmis_document_getContentStream(
+        libcmis_DocumentPtr document,
+        libcmis_writeFn writeFn,
+        void* userData,
+        libcmis_ErrorPtr error );
+
 /* TODO libcmis_document_setContentStream */
 
 /** The resulting value needs to be free'd

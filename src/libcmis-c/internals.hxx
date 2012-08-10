@@ -41,7 +41,7 @@
 
 struct libcmis_error
 {
-    libcmis::Exception* handle;
+    std::exception* handle;
 
     libcmis_error( ) : handle( NULL ) { }
 };

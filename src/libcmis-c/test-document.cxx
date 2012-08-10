@@ -36,6 +36,26 @@
 
 using namespace std;
 
+namespace
+{
+    string lcl_readFile( FILE* file )
+    {
+        // Get the size
+        fseek( file, 0, SEEK_END );
+        long size = ftell( file );
+        rewind( file );
+
+        char* buf = new char[size + 1];
+        fread( buf, 1, size, file );
+        buf[ size ] = '\0';
+
+        string result( buf );
+        delete[] buf;
+
+        return result;
+    }
+}
+
 class DocumentTest : public CppUnit::TestFixture
 {
     private:
@@ -45,6 +65,7 @@ class DocumentTest : public CppUnit::TestFixture
         void objectFunctionsTest( );
         void getParentsTest( );
         void getParentsErrorTest( );
+        void getContentStreamTest( );
         void getContentTypeTest( );
         void getContentFilenameTest( );
         void getContentLengthTest( );
@@ -57,6 +78,7 @@ class DocumentTest : public CppUnit::TestFixture
         CPPUNIT_TEST( objectFunctionsTest );
         CPPUNIT_TEST( getParentsTest );
         CPPUNIT_TEST( getParentsErrorTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( getContentTypeTest );
         CPPUNIT_TEST( getContentFilenameTest );
         CPPUNIT_TEST( getContentLengthTest );
@@ -118,6 +140,27 @@ void DocumentTest::getParentsErrorTest( )
 
     // Free it all
     libcmis_vector_folder_free( actual );
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getContentStreamTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get the content into a temporary file (tested method)
+    FILE* tmp = tmpfile( );
+    libcmis_document_getContentStream( tested, 
+            ( libcmis_writeFn )fwrite, tmp, error );
+
+    // Check
+    string actual = lcl_readFile( tmp );
+    fclose( tmp );
+    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT_EQUAL( string( "Document::ContentStream" ), actual );
+
+    // Free it all
     libcmis_error_free( error );
     libcmis_document_free( tested );
 }
