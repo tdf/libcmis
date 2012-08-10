@@ -29,7 +29,98 @@
 #include "document.h"
 #include "internals.hxx"
 
+using namespace std;
+
 void libcmis_document_free( libcmis_DocumentPtr document )
 {
     delete document;
+}
+
+
+libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr document, libcmis_ErrorPtr error )
+{
+    libcmis_vector_folder_Ptr parents = NULL;
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            vector< libcmis::FolderPtr > handles = document->handle->getParents( );
+            parents = new libcmis_vector_folder( );
+            parents->handle = handles;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return parents;
+}
+
+
+char* libcmis_document_getContentType( libcmis_DocumentPtr document )
+{
+    char* value = NULL;
+    if ( document != NULL && document->handle.get( ) != NULL )
+        value = strdup( document->handle->getContentType( ).c_str( ) );
+    return value;
+}
+
+
+char* libcmis_document_getContentFilename( libcmis_DocumentPtr document )
+{
+    char* value = NULL;
+    if ( document != NULL && document->handle.get( ) != NULL )
+        value = strdup( document->handle->getContentFilename( ).c_str( ) );
+    return value;
+}
+
+
+long libcmis_document_getContentLength( libcmis_DocumentPtr document )
+{
+    long value = 0;
+    if ( document != NULL && document->handle.get( ) != NULL )
+        value = document->handle->getContentLength( );
+    return value;
+}
+
+
+libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, libcmis_ErrorPtr error )
+{
+    libcmis_DocumentPtr pwc = NULL;
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            libcmis::DocumentPtr handle = document->handle->checkOut( );
+            pwc= new libcmis_document( );
+            pwc->handle = handle;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return pwc;
+}
+
+
+void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_ErrorPtr error )
+{
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            document->handle->cancelCheckout( );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
 }

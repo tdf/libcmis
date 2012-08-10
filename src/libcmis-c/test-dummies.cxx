@@ -412,4 +412,85 @@ namespace dummies
 
         time( &m_timestamp );
     }
+            
+    Document::Document( bool isFiled, bool triggersFaults ) :
+        libcmis::Document( ),
+        dummies::Object( triggersFaults, "Document" ),
+        m_isFiled( isFiled )
+    {
+    }
+            
+    vector< libcmis::FolderPtr > Document::getParents( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        vector< libcmis::FolderPtr > parents;
+        libcmis::FolderPtr parent1( new Folder( true, m_triggersFaults ) );
+        parents.push_back( parent1 );
+        libcmis::FolderPtr parent2( new Folder( false, m_triggersFaults ) );
+        parents.push_back( parent2 );
+
+        return parents;
+    }
+    
+    boost::shared_ptr< istream > Document::getContentStream( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        boost::shared_ptr< istream > stream( new stringstream( "Document::Stream" ) );
+        return stream;
+    }
+
+    void Document::setContentStream( boost::shared_ptr< ostream >, string, bool overwrite ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
+    string Document::getContentType( )
+    {
+        return "Document::ContentType";
+    }
+    
+    string Document::getContentFilename( )
+    {
+        return "Document::ContentFilename";
+    }
+
+    long Document::getContentLength( )
+    {
+        return long( 12345 );
+    }
+
+    libcmis::DocumentPtr Document::checkOut( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+
+        libcmis::DocumentPtr result( new Document( true, m_triggersFaults ) );
+        return result;
+    }
+
+    void Document::cancelCheckout( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
+    void Document::checkIn( bool, string, map< string, libcmis::PropertyPtr >&,
+                  boost::shared_ptr< ostream >, string ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
 }

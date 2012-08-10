@@ -3,6 +3,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	allowable-actions.h \
+	document.h \
 	error.h \
 	folder.h \
 	object.h \
@@ -18,6 +19,7 @@ lib_LTLIBRARIES = libcmis_c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_c_headers_public) \
 	allowable-actions.cxx \
+	document.cxx \
 	error.cxx \
 	folder.cxx \
 	internals.hxx \
@@ -48,6 +50,7 @@ check_PROGRAMS = \
 test_api_SOURCES = \
 	test-api.cxx \
 	test-allowable-actions.cxx \
+	test-document.cxx \
 	test-dummies.hxx \
 	test-dummies.cxx \
 	test-folder.cxx \

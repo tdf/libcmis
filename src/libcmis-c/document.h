@@ -33,10 +33,31 @@ extern "C" {
 #endif
 
 #include "error.h"
+#include "folder.h"
 
 typedef struct libcmis_document* libcmis_DocumentPtr;
 
 void libcmis_document_free( libcmis_DocumentPtr document );
+
+libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
+
+/* TODO libcmis_document_getContentStream */
+/* TODO libcmis_document_setContentStream */
+
+/** The resulting value needs to be free'd
+  */
+char* libcmis_document_getContentType( libcmis_DocumentPtr document );
+
+/** The resulting value needs to be free'd
+  */
+char* libcmis_document_getContentFilename( libcmis_DocumentPtr document );
+
+long libcmis_document_getContentLength( libcmis_DocumentPtr document );
+
+libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
+void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
+
+/* TODO libcmis_document_checkIn */
 
 #ifdef __cplusplus
 }

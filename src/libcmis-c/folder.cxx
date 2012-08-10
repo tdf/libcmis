@@ -32,6 +32,34 @@
 using namespace std;
 
 
+void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector )
+{
+    delete vector;
+}
+
+
+size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector )
+{
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_ObjectPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, size_t i )
+{
+    libcmis_ObjectPtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
+    {
+        libcmis::ObjectPtr type = vector->handle[i];
+        item = new libcmis_folder( );
+        item->handle = type;
+    }
+    return item;
+}
+
+
 void libcmis_folder_free( libcmis_FolderPtr folder )
 {
     delete folder;

@@ -34,11 +34,14 @@
 extern "C" {
 #endif
 
-#include "document.h"
 #include "error.h"
 #include "object.h"
 
 typedef struct libcmis_folder* libcmis_FolderPtr;
+typedef struct libcmis_document* libcmis_DocumentPtr;
+
+
+typedef struct libcmis_vector_folder* libcmis_vector_folder_Ptr;
     
 typedef enum
 {
@@ -46,6 +49,11 @@ typedef enum
     libcmis_DeleteSingleFiled,
     libcmis_Delete
 } libcmis_folder_UnfileObjects;
+
+void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector );
+size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector );
+libcmis_ObjectPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, size_t i );
+
 
 void libcmis_folder_free( libcmis_FolderPtr folder );
 

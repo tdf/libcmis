@@ -205,4 +205,12 @@ struct libcmis_vector_object
 
     libcmis_vector_object( ) : handle( ) { }
 };
+
+struct libcmis_vector_folder
+{
+    std::vector< libcmis::FolderPtr > handle;
+
+    libcmis_vector_folder( ) : handle( ) { }
+};
+
 #endif

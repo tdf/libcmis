@@ -176,6 +176,38 @@ namespace dummies
             virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
                                     bool continueOnError = false ) throw ( libcmis::Exception );
     };
+
+    class Document : public libcmis::Document, public Object
+    {
+        private:
+            bool m_isFiled;
+
+        public:
+            Document( bool isFiled, bool triggersFaults );
+            ~Document( ) { }
+            
+            virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
+            
+            virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
+
+            virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
+                                           bool overwrite = true ) throw ( libcmis::Exception );
+
+            virtual std::string getContentType( );
+            
+            virtual std::string getContentFilename( );
+
+            virtual long getContentLength( );
+
+            virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
+
+            virtual void cancelCheckout( ) throw ( libcmis::Exception );
+
+            virtual void checkIn( bool isMajor, std::string comment,
+                                  std::map< std::string, libcmis::PropertyPtr >& properties,
+                                  boost::shared_ptr< std::ostream > stream,
+                                  std::string contentType ) throw ( libcmis::Exception );
+    };
 }
 
 #endif
