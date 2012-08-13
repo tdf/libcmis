@@ -56,6 +56,9 @@ size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector );
 libcmis_ObjectPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, size_t i );
 
 
+bool libcmis_is_folder( libcmis_ObjectPtr object );
+libcmis_FolderPtr libcmis_folder_cast( libcmis_ObjectPtr object );
+
 void libcmis_folder_free( libcmis_FolderPtr folder );
 
 libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_ErrorPtr error );

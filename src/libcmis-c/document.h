@@ -39,6 +39,10 @@ typedef struct libcmis_document* libcmis_DocumentPtr;
 typedef size_t ( *libcmis_writeFn )( const void*, size_t, size_t, void* );
 typedef size_t ( *libcmis_readFn )( void*, size_t, size_t, void* );
 
+
+bool libcmis_is_document( libcmis_ObjectPtr object );
+libcmis_DocumentPtr libcmis_document_cast( libcmis_ObjectPtr object );
+
 void libcmis_document_free( libcmis_DocumentPtr document );
 
 libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr document, libcmis_ErrorPtr error );

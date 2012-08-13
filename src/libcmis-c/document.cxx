@@ -31,6 +31,37 @@
 
 using namespace std;
 
+
+bool libcmis_is_document( libcmis_ObjectPtr object )
+{
+    bool isDocument = false;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object->handle );
+        isDocument = document.get( ) != NULL;
+    }
+    return isDocument;
+}
+
+
+libcmis_DocumentPtr libcmis_document_cast( libcmis_ObjectPtr object )
+{
+    libcmis_DocumentPtr document = NULL;
+
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        libcmis::DocumentPtr handle = boost::dynamic_pointer_cast< libcmis::Document >( object->handle );
+        if ( handle.get( ) != NULL )
+        {
+            document = new libcmis_document( );
+            document->setHandle( handle );
+        }
+    }
+
+    return document;
+}
+
+
 void libcmis_document_free( libcmis_DocumentPtr document )
 {
     delete document;

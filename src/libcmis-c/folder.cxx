@@ -60,6 +60,36 @@ libcmis_ObjectPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, s
 }
 
 
+bool libcmis_is_folder( libcmis_ObjectPtr object )
+{
+    bool isFolder = false;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object->handle );
+        isFolder = folder.get( ) != NULL;
+    }
+    return isFolder;
+}
+
+
+libcmis_FolderPtr libcmis_folder_cast( libcmis_ObjectPtr object )
+{
+    libcmis_FolderPtr folder = NULL;
+
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        libcmis::FolderPtr handle = boost::dynamic_pointer_cast< libcmis::Folder >( object->handle );
+        if ( handle.get( ) != NULL )
+        {
+            folder = new libcmis_folder( );
+            folder->setHandle( handle );
+        }
+    }
+
+    return folder;
+}
+
+
 void libcmis_folder_free( libcmis_FolderPtr folder )
 {
     delete folder;

@@ -63,6 +63,8 @@ class DocumentTest : public CppUnit::TestFixture
         dummies::Document* getTestedImplementation( libcmis_DocumentPtr document );
 
     public:
+        void objectCastTest( );
+        void objectCastFailureTest( );
         void objectFunctionsTest( );
         void getParentsTest( );
         void getParentsUnfiledTest( );
@@ -82,6 +84,8 @@ class DocumentTest : public CppUnit::TestFixture
         void checkInErrorTest( );
 
         CPPUNIT_TEST_SUITE( DocumentTest );
+        CPPUNIT_TEST( objectCastTest );
+        CPPUNIT_TEST( objectCastFailureTest );
         CPPUNIT_TEST( objectFunctionsTest );
         CPPUNIT_TEST( getParentsTest );
         CPPUNIT_TEST( getParentsUnfiledTest );
@@ -117,6 +121,51 @@ dummies::Document* DocumentTest::getTestedImplementation( libcmis_DocumentPtr do
 {
     dummies::Document* impl = dynamic_cast< dummies::Document* >( document->handle.get( ) );
     return impl;
+}
+
+void DocumentTest::objectCastTest( )
+{
+    // Create the test object to cast
+    libcmis_ObjectPtr tested = new libcmis_object( );
+    libcmis::DocumentPtr handle( new dummies::Document( true, false ) );
+    tested->handle = handle;
+
+    // Test libcmis_is_document
+    CPPUNIT_ASSERT( libcmis_is_document( tested ) );
+
+    // Actually cast to a document
+    libcmis_DocumentPtr actual = libcmis_document_cast( tested );
+
+    // Check the result
+    CPPUNIT_ASSERT( NULL != actual );
+
+    // Check that the libcmis_object-* functions are working with the cast result
+    char* actualId = libcmis_object_getId( tested );
+    CPPUNIT_ASSERT_EQUAL( string( "Document::Id" ), string( actualId ) );
+    free( actualId );
+
+    // Free it all
+    libcmis_document_free( actual );
+    libcmis_object_free( tested );
+}
+
+void DocumentTest::objectCastFailureTest( )
+{
+    // Create the test object to cast
+    libcmis_ObjectPtr tested = new libcmis_object( );
+    libcmis::FolderPtr handle( new dummies::Folder( false, false ) );
+    tested->handle = handle;
+
+    // Test libcmis_is_document
+    CPPUNIT_ASSERT( !libcmis_is_document( tested ) );
+
+    // Actually cast to a document
+    libcmis_DocumentPtr actual = libcmis_document_cast( tested );
+
+    // Check the result
+    CPPUNIT_ASSERT( NULL == actual );
+
+    libcmis_object_free( tested );
 }
 
 void DocumentTest::objectFunctionsTest( )

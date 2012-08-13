@@ -44,6 +44,8 @@ class FolderTest : public CppUnit::TestFixture
         dummies::Document* getDocumentImplementation( libcmis_DocumentPtr document );
 
     public:
+        void objectCastTest( );
+        void objectCastFailureTest( );
         void objectFunctionsTest( );
         void getParentTest( );
         void getParentRootTest( );
@@ -58,6 +60,8 @@ class FolderTest : public CppUnit::TestFixture
         void removeTreeErrorTest( );
 
         CPPUNIT_TEST_SUITE( FolderTest );
+        CPPUNIT_TEST( objectCastTest );
+        CPPUNIT_TEST( objectCastFailureTest );
         CPPUNIT_TEST( objectFunctionsTest );
         CPPUNIT_TEST( getParentTest );
         CPPUNIT_TEST( getParentRootTest );
@@ -88,6 +92,51 @@ dummies::Document* FolderTest::getDocumentImplementation( libcmis_DocumentPtr do
 {
     dummies::Document* impl = dynamic_cast< dummies::Document* >( document->handle.get( ) );
     return impl;
+}
+
+void FolderTest::objectCastTest( )
+{
+    // Create the test object to cast
+    libcmis_ObjectPtr tested = new libcmis_object( );
+    libcmis::FolderPtr handle( new dummies::Folder( false, false ) );
+    tested->handle = handle;
+
+    // Test libcmis_is_folder
+    CPPUNIT_ASSERT( libcmis_is_folder( tested ) );
+
+    // Actually cast to a folder
+    libcmis_FolderPtr actual = libcmis_folder_cast( tested );
+
+    // Check the result
+    CPPUNIT_ASSERT( NULL != actual );
+
+    // Check that the libcmis_object-* functions are working with the cast result
+    char* actualId = libcmis_object_getId( tested );
+    CPPUNIT_ASSERT_EQUAL( string( "Folder::Id" ), string( actualId ) );
+    free( actualId );
+
+    // Free it all
+    libcmis_folder_free( actual );
+    libcmis_object_free( tested );
+}
+
+void FolderTest::objectCastFailureTest( )
+{
+    // Create the test object to cast
+    libcmis_ObjectPtr tested = new libcmis_object( );
+    libcmis::DocumentPtr handle( new dummies::Document( true, false ) );
+    tested->handle = handle;
+
+    // Test libcmis_is_folder
+    CPPUNIT_ASSERT( !libcmis_is_folder( tested ) );
+
+    // Actually cast to a folder
+    libcmis_FolderPtr actual = libcmis_folder_cast( tested );
+
+    // Check the result
+    CPPUNIT_ASSERT( NULL == actual );
+
+    libcmis_object_free( tested );
 }
 
 void FolderTest::objectFunctionsTest( )
