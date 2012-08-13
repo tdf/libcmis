@@ -52,6 +52,7 @@ class FolderTest : public CppUnit::TestFixture
         void getParentErrorTest( );
         void getChildrenTest( );
         void getChildrenErrorTest( );
+        void getPathTest( );
         void createFolderTest( );
         void createFolderErrorTest( );
         void createDocumentTest( );
@@ -68,6 +69,7 @@ class FolderTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getParentErrorTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getChildrenErrorTest );
+        CPPUNIT_TEST( getPathTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderErrorTest );
         CPPUNIT_TEST( createDocumentTest );
@@ -205,6 +207,15 @@ void FolderTest::getChildrenErrorTest( )
     const char* actualMessage = libcmis_error_getMessage( error );
     CPPUNIT_ASSERT( !string( actualMessage ).empty( ) );
     libcmis_error_free( error );
+    libcmis_folder_free( tested );
+}
+
+void FolderTest::getPathTest( )
+{
+    libcmis_FolderPtr tested = getTested( false, false );
+    char* actual = libcmis_folder_getPath( tested );
+    CPPUNIT_ASSERT_EQUAL( string( "/Path/" ), string( actual ) );
+    free( actual );
     libcmis_folder_free( tested );
 }
 
