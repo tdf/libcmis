@@ -56,7 +56,7 @@ namespace
                 // Some implementations (xcmis) put extra spaces into the type attribute
                 // (e.g. "application/atom+xml; type=feed" instead of "application/atom+xml;type=feed")
                 string linkType = link.getType( );
-                linkType.erase( remove_if( linkType.begin(), linkType.end(), isspace ), linkType.end() );
+                linkType.erase( remove_if( linkType.begin(), linkType.end(), ::isspace ), linkType.end() );
 
                 // Some implementation (SharePoint) are omitting the type attribute
                 bool matchesType = m_type.empty( ) || linkType.empty() || ( linkType == m_type );
@@ -431,6 +431,8 @@ void AtomObject::extractInfos( xmlDocPtr doc )
 
     if ( NULL != xpathCtx )
     {
+        m_links.clear( );
+
         // Get all the atom links
         string linksReq( "//atom:link" );
         xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( linksReq.c_str() ), xpathCtx );
@@ -476,10 +478,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
                 libcmis::PropertyPtr property = libcmis::parseProperty( node, getTypeDescription( ) );
                 if ( property.get( ) )
-                    m_properties.insert(
-                            std::pair< string, libcmis::PropertyPtr >(
-                                property->getPropertyType( )->getId(),
-                                property ) );
+                    m_properties[ property->getPropertyType( )->getId() ] = property;
             }
         }
         xmlXPathFreeObject( xpathObj );

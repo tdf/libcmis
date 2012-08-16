@@ -182,7 +182,7 @@ namespace libcmis
             else 
             {
                 libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );
-                m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( type->getId(), type ) );
+                m_propertiesTypes[ type->getId() ] = type;
             }
 
             xmlFree( content );
