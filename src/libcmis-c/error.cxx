@@ -56,3 +56,16 @@ const char* libcmis_error_getMessage( libcmis_ErrorPtr error )
     else
         return "";
 }
+
+const char* libcmis_error_getType( libcmis_ErrorPtr error )
+{
+    if ( error != NULL && error->handle != NULL )
+    {
+        libcmis::Exception* cmisException = dynamic_cast< libcmis::Exception* >( error->handle );
+        if ( cmisException != NULL )
+            return cmisException->getType( ).c_str( );
+        else return NULL;
+    }
+    else
+        return NULL;
+}

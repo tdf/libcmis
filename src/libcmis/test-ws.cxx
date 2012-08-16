@@ -87,9 +87,11 @@ void WSTest::getRepositoryBadTest( )
         session.getRepositoryService( ).getRepositoryInfo( "bad" );
         CPPUNIT_FAIL( "Should have thrown SoapFault" );
     }
-    catch( const SoapFault& )
+    catch( const libcmis::Exception& e )
     {
-        // Test is Ok
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "invalidArgument" ), e.getType( ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                string( "invalidArgument - Unknown repository id: bad" ), string( e.what( ) ) );
     }
 }
 

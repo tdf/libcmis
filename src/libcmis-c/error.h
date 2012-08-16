@@ -38,6 +38,7 @@ libcmis_ErrorPtr libcmis_error_create( );
 void           libcmis_error_free( libcmis_ErrorPtr e );
 
 const char* libcmis_error_getMessage( libcmis_ErrorPtr e );
+const char* libcmis_error_getType( libcmis_ErrorPtr e );
 
 #ifdef __cplusplus
 }

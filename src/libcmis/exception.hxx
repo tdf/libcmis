@@ -37,11 +37,24 @@ namespace libcmis
     {
         private:
             std::string m_message;
+            std::string m_type;
 
         public:
-            Exception( std::string message ) : exception( ), m_message( message ) { }
+            Exception( std::string message, std::string type = "runtime" ) :
+                exception( ),
+                m_message( message ),
+                m_type( type )
+            {
+            }
+
             ~Exception( ) throw () { }
-            virtual const char* what() const throw() { return m_message.c_str(); }
+            virtual const char* what() const throw()
+            {
+                std::string result = m_type + " - " + m_message;
+                return result.c_str( );
+            }
+
+            std::string getType( ) const { return m_type; }
     };
 }
 

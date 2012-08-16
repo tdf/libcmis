@@ -51,11 +51,11 @@ class RepositoryService
 
         RepositoryService& operator=( const RepositoryService& copy );
 
-        std::map< std::string, std::string > getRepositories( ) throw ( SoapFault, CurlException );
+        std::map< std::string, std::string > getRepositories( ) throw ( libcmis::Exception );
 
         /** Get the repository information based on its identifier.
           */
-        libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( SoapFault, CurlException );
+        libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( libcmis::Exception );
 };
 
 #endif

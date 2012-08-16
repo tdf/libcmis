@@ -66,6 +66,28 @@ CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
     }
 }
 
+libcmis::Exception CmisSoapFaultDetail::toException( )
+{
+    libcmis::Exception e( m_message, m_type );
+    return e;
+}
+
+boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault )
+{
+    boost::shared_ptr< libcmis::Exception > exception;
+
+    vector< SoapFaultDetailPtr > details = fault.getDetail( );
+    for ( vector< SoapFaultDetailPtr >::iterator it = details.begin( );
+            it != details.end( ) && exception.get( ) == NULL; ++ it )
+    {
+        boost::shared_ptr< CmisSoapFaultDetail > cmisDetail = boost::dynamic_pointer_cast< CmisSoapFaultDetail >( *it );
+        if ( cmisDetail.get( ) != NULL )
+            exception.reset( new libcmis::Exception( cmisDetail->toException( ) ) );
+    }
+
+    return exception;
+}
+
 SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
 {
     return SoapFaultDetailPtr( new CmisSoapFaultDetail( node ) );

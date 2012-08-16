@@ -42,10 +42,7 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
-#define CANCELLED_EXCEPTION_MSG string( "User cancelled authentication request" )
-
 #define TEST_UNEXISTANT_TYPE_ID string( "bad_type" )
-#define INVALID_TYPE_ID_EXCEPTION_MSG string( "No such type: bad_type" )
 
 #define TEST_TYPE_ID string( "ComplexType" )
 #define PARENT_TYPE_ID string( "cmis:document" )
@@ -55,7 +52,6 @@
 #define CHILDREN_TEST_COUNT 10
 
 #define TEST_UNEXISTANT_NODE_ID string( "99" )
-#define INVALID_ID_EXCEPTION_MSG string( "No such node: 99" )
 
 #define TEST_FOLDER_ID string( "101" )
 #define TEST_FOLDER_NAME string( "My_Folder-0-0" )
@@ -74,7 +70,6 @@
 
 #define TEST_PATH_VALID string( "/My_Folder-0-0/My_Document-1-2" )
 #define TEST_PATH_INVALID string( "/some/dummy/path" )
-#define INVALID_PATH_EXCEPTION_MSG string( "No node corresponding to path: /some/dummy/path" )
 
 #define TEST_UPDATE_DOCUMENT_ID string( "114" )
 #define TEST_UPDATED_PROPERTY_NAME string( "cmis:name" )
@@ -229,7 +224,8 @@ void AtomTest::authCallbackTest( )
         }
         catch ( const libcmis::Exception& e )
         {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", CANCELLED_EXCEPTION_MSG , string( e.what() ) );
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                    string( "runtime - User cancelled authentication request" ), string( e.what() ) );
         }
     }
     
@@ -252,7 +248,7 @@ void AtomTest::getUnexistantTypeTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_TYPE_ID_EXCEPTION_MSG , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such type: bad_type" ), string( e.what() ) );
     }
 }
 
@@ -288,7 +284,7 @@ void AtomTest::getUnexistantFolderTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_ID_EXCEPTION_MSG , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: 99" ), string( e.what() ) );
     }
 }
 
@@ -303,7 +299,7 @@ void AtomTest::getUnexistantObjectTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_ID_EXCEPTION_MSG , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: 99" ), string( e.what() ) );
     }
 }
 
@@ -388,7 +384,8 @@ void AtomTest::getByPathInvalidTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", INVALID_PATH_EXCEPTION_MSG , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                string( "runtime - No node corresponding to path: /some/dummy/path" ), string( e.what() ) );
     }
 }
         
@@ -656,7 +653,7 @@ void AtomTest::deleteDocumentTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " + id ) , string( e.what() ) );
     }
 }
 
@@ -678,7 +675,7 @@ void AtomTest::deleteTreeTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " + id ) , string( e.what() ) );
     }
 }
 
@@ -779,7 +776,7 @@ void AtomTest::cancelCheckOutTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " ) + id, string( e.what() ) );
     }
 }
 

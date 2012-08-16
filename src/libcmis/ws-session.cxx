@@ -114,22 +114,38 @@ string WSSession::getWsdl( string url ) throw ( CurlException )
     return buf;
 }
 
-vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& request ) throw ( SoapFault, CurlException )
+vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& request ) throw ( libcmis::Exception )
 {
     vector< SoapResponsePtr > responses;
 
-    // Place the request in an envelope
-    RelatedMultipart& multipart = request.getMultipart( getUsername( ), getPassword( ) );
-    libcmis::HttpResponsePtr response = httpPostRequest( url, *multipart.toStream( ).get( ), multipart.getContentType( ) );
-
-    string responseType;
-    map< string, string >::iterator it = response->getHeaders( ).find( "Content-Type" );
-    if ( it != response->getHeaders( ).end( ) )
+    try
     {
-        responseType = it->second;
-        RelatedMultipart answer( response->getStream( )->str( ), responseType );
-    
-        responses = getResponseFactory( ).parseResponse( answer );
+        // Place the request in an envelope
+        RelatedMultipart& multipart = request.getMultipart( getUsername( ), getPassword( ) );
+        libcmis::HttpResponsePtr response = httpPostRequest( url, *multipart.toStream( ).get( ), multipart.getContentType( ) );
+
+        string responseType;
+        map< string, string >::iterator it = response->getHeaders( ).find( "Content-Type" );
+        if ( it != response->getHeaders( ).end( ) )
+        {
+            responseType = it->second;
+            RelatedMultipart answer( response->getStream( )->str( ), responseType );
+        
+            responses = getResponseFactory( ).parseResponse( answer );
+        }
+    }
+    catch ( const SoapFault& fault )
+    {
+        boost::shared_ptr< libcmis::Exception > cmisException = getCmisException( fault );
+        if ( !cmisException.get( ) )
+        {
+            cmisException.reset( new libcmis::Exception( fault.what( ), "runtime" ) );
+        }
+        throw *cmisException.get( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
     }
 
     return responses;
@@ -260,15 +276,7 @@ list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string us
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
 {
     libcmis::RepositoryPtr repo;
-    try
-    {
-        repo = getRepositoryService( ).getRepositoryInfo( m_repositoryId );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-    return repo;
+    return getRepositoryService( ).getRepositoryInfo( m_repositoryId );
 }
 
 libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception )

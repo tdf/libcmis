@@ -212,7 +212,7 @@ void ObjectTypeTest::getParentTypeErrorTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
     libcmis_ObjectTypePtr parent = libcmis_object_type_getParentType( tested, error );
 
-    CPPUNIT_ASSERT_EQUAL( string( "Fault triggered" ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
     CPPUNIT_ASSERT( NULL == parent );
 
     libcmis_error_free( error );
@@ -241,7 +241,7 @@ void ObjectTypeTest::getBaseTypeErrorTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
     libcmis_ObjectTypePtr base = libcmis_object_type_getBaseType( tested, error );
 
-    CPPUNIT_ASSERT_EQUAL( string( "Fault triggered" ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
     CPPUNIT_ASSERT( NULL == base );
 
     libcmis_error_free( error );
@@ -269,7 +269,7 @@ void ObjectTypeTest::getChildrenErrorTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
     libcmis_vector_object_type_Ptr children = libcmis_object_type_getChildren( tested, error );
 
-    CPPUNIT_ASSERT_EQUAL( string( "Fault triggered" ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
     CPPUNIT_ASSERT( NULL == children );
 
     libcmis_error_free( error );

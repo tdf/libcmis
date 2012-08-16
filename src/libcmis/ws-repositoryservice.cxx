@@ -60,12 +60,13 @@ RepositoryService& RepositoryService::operator=( const RepositoryService& copy )
     return *this;
 }
 
-map< string, string > RepositoryService::getRepositories( ) throw ( SoapFault, CurlException )
+map< string, string > RepositoryService::getRepositories( ) throw ( libcmis::Exception )
 {
     map< string, string > repositories;
 
     GetRepositories request;
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+
     if ( responses.size() == 1 )
     {
        GetRepositoriesResponse* response = dynamic_cast< GetRepositoriesResponse* >( responses.front( ).get( ) );
@@ -77,7 +78,7 @@ map< string, string > RepositoryService::getRepositories( ) throw ( SoapFault, C
     return repositories;
 }
 
-libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw ( SoapFault, CurlException )
+libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw ( libcmis::Exception )
 {
     libcmis::RepositoryPtr repository;
 

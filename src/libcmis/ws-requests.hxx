@@ -31,8 +31,10 @@
 #include <map>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "exception.hxx"
 #include "repository.hxx"
 #include "ws-soap.hxx"
 
@@ -52,8 +54,12 @@ class CmisSoapFaultDetail : public SoapFaultDetail
         int getCode( ) { return m_code; }
         std::string getMessage( ) { return m_message; }
 
+        libcmis::Exception toException( );
+
         static SoapFaultDetailPtr create( xmlNodePtr node );
 };
+
+boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault );
 
 /** getRepositories request.
   */

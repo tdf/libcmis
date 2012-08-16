@@ -286,7 +286,7 @@ void XmlTest::parseBoolTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "Invalid xsd:boolean input: boolcheat" ), string( e.what() ) );
+                   string( "runtime - Invalid xsd:boolean input: boolcheat" ), string( e.what() ) );
         }
     }
 }
@@ -315,7 +315,7 @@ void XmlTest::parseIntegerTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "xsd:integer input can't fit to long: 9999999999999999999" ), string( e.what() ) );
+                   string( "runtime - xsd:integer input can't fit to long: 9999999999999999999" ), string( e.what() ) );
         }
     }
 
@@ -329,7 +329,7 @@ void XmlTest::parseIntegerTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "Invalid xsd:integer input: 123bad" ), string( e.what() ) );
+                   string( "runtime - Invalid xsd:integer input: 123bad" ), string( e.what() ) );
         }
     }
 }
@@ -358,7 +358,7 @@ void XmlTest::parseDoubleTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "Invalid xsd:decimal input: 123.456bad" ), string( e.what() ) );
+                   string( "runtime - Invalid xsd:decimal input: 123.456bad" ), string( e.what() ) );
         }
     }
 }

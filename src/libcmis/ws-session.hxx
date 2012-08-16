@@ -67,7 +67,7 @@ class WSSession : public BaseSession
         std::string getWsdl( std::string url ) throw ( CurlException );
 
         std::vector< SoapResponsePtr > soapRequest( std::string& url, SoapRequest& request )
-            throw ( SoapFault, CurlException );
+            throw ( libcmis::Exception );
 
         /** Get the service location URL given its name.
           */
