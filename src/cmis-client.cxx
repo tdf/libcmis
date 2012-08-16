@@ -493,6 +493,43 @@ void CmisClient::execute( ) throw ( exception )
 
             delete session;
         }
+        else if ( "move-object" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            vector< string > args = m_vm["args"].as< vector< string > > ( );
+            if ( args.size() != 3 )
+                throw CommandException( "Please provide an object id and source and destination folder ids" );
+            string& objId = args[0];
+            string& srcId = args[1];
+            string& dstId = args[2];
+
+            try
+            {
+                libcmis::ObjectPtr obj = session->getObject( objId );
+
+                libcmis::ObjectPtr src = session->getObject( srcId );
+                libcmis::FolderPtr srcFolder = boost::dynamic_pointer_cast< libcmis::Folder > ( src );
+                if ( !srcFolder )
+                    throw CommandException( "Source object is not a folder" );
+
+                libcmis::ObjectPtr dst = session->getObject( dstId );
+                libcmis::FolderPtr dstFolder = boost::dynamic_pointer_cast< libcmis::Folder > ( dst );
+                if ( !dstFolder )
+                    throw CommandException( "Destinaton object is not a folder" );
+
+                obj->move( srcFolder, dstFolder );
+
+                cout << "------------------------------------------------" << endl;
+                cout << obj->toString( ) << endl;
+            }
+            catch ( const std::exception& e )
+            {
+                delete session;
+                throw e;
+            }
+            delete session;
+        }
         else if ( "delete" == command )
         {
             libcmis::Session* session = getSession( );

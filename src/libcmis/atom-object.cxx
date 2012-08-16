@@ -32,6 +32,8 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include "atom-document.hxx"
+#include "atom-folder.hxx"
 #include "atom-object.hxx"
 #include "atom-object-type.hxx"
 #include "atom-session.hxx"
@@ -329,6 +331,63 @@ void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
     {
         throw e.getCmisException( );
     }
+}
+
+void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception )
+{
+    AtomFolder* atomDestination = dynamic_cast< AtomFolder* > ( destination.get() );
+
+    if ( NULL == atomDestination )
+        throw libcmis::Exception( string( "Destination is not an AtomFolder" ) );
+
+    AtomLink* destChildrenLink = atomDestination->getLink( "down", "application/atom+xml;type=feed" );
+
+    if ( ( NULL == destChildrenLink ) || ( getAllowableActions().get() &&
+            !getAllowableActions()->isAllowed( libcmis::ObjectAction::MoveObject ) ) )
+        throw libcmis::Exception( string( "MoveObject not allowed on object " ) + getId() );
+
+    // create object xml
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    toXml( writer );
+    xmlTextWriterEndDocument( writer );
+
+    string str( ( const char * )xmlBufferContent( buf ) );
+    istringstream is( str );
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
+
+    // create post url
+    string postUrl = destChildrenLink->getHref();
+    if ( postUrl.find( '?' ) != string::npos )
+        postUrl += "&";
+    else
+        postUrl += "?";
+    postUrl += "sourceFolderId={sourceFolderId}";
+    // Session::CreateUrl is used to properly escape the id
+    map< string, string > params;
+    params[ "sourceFolderId" ] = source->getId();
+    postUrl = m_session->createUrl( postUrl, params );
+
+    // post it
+    libcmis::HttpResponsePtr response;
+    try
+    {
+        response = getSession( )->httpPostRequest( postUrl, is, "application/atom+xml;type=entry" );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    // refresh self from response
+    string respBuf = response->getStream( )->str( );
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
+    if ( NULL == doc )
+        throw libcmis::Exception( "Failed to parse object infos" );
+    refreshImpl( doc );
+    xmlFreeDoc( doc );
 }
 
 string AtomObject::toString( )

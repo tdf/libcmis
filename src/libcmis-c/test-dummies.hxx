@@ -127,6 +127,8 @@ namespace dummies
             virtual time_t getRefreshTimestamp( ) { return m_timestamp; }
 
             virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+            
+            virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception );
 
             virtual std::string toString( ) { return m_type + "::toString"; }
             

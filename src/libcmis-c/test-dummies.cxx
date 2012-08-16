@@ -322,6 +322,14 @@ namespace dummies
         time( &m_timestamp );
     }
 
+    void Object::move( libcmis::FolderPtr, libcmis::FolderPtr ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        time( &m_timestamp );
+    }
+
     void Object::toXml( xmlTextWriterPtr )
     {
     }

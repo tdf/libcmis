@@ -103,6 +103,8 @@ class AtomObject : public virtual libcmis::Object
 
         virtual void remove( bool allVersion = true ) throw ( libcmis::Exception );
 
+        virtual void move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception );
+
         virtual std::string toString( );
 
         virtual void toXml( xmlTextWriterPtr writer );

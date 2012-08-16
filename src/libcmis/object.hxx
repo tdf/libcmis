@@ -47,6 +47,8 @@
 
 namespace libcmis
 {
+    class Folder;
+
     /** Class representing any CMIS object.
       */
     class Object : public XmlSerializable
@@ -88,6 +90,8 @@ namespace libcmis
             virtual time_t getRefreshTimestamp( ) = 0;
 
             virtual void remove( bool allVersions = true ) throw ( Exception ) = 0;
+
+            virtual void move( boost::shared_ptr< Folder > source, boost::shared_ptr< Folder > destination ) throw ( Exception ) = 0;
 
             /** Dump the object as a string for debugging or display purpose.
               */
