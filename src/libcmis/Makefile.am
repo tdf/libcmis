@@ -60,16 +60,41 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis
 
 if ENABLE_TESTS
+#
+# Note that the test names are important here due to the environment test.
+# Some tests will need to have a running CMIS server while some others don't.
+#
+# In order to allow running the tests that don't need the server during the
+# packaging process, a simple naming convention wil distinguish between those
+# two kinds of tests:
+#
+# 	test-nosrv-* is a test that doesn't need a running server,
+# 	others will trigger a server start / stop
+#
 check_PROGRAMS = \
+	test-nosrv-utils \
 	test-atom \
 	test-ws
 
-test_atom_SOURCES =	\
-	test-atom.cxx \
+test_nosrv_utils_SOURCES =	\
 	test-decoder.cxx \
+	test-soap.cxx \
 	test-xmlutils.cxx \
 	test-helpers.hxx \
-	test-helpers.cxx
+	test-helpers.cxx \
+	test-main.cxx
+
+test_nosrv_utils_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
+	$(XML2_LIBS) \
+	$(CURL_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+test_atom_SOURCES =	\
+	test-atom.cxx \
+	test-helpers.hxx \
+	test-helpers.cxx \
+	test-main.cxx
 
 test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
@@ -78,10 +103,10 @@ test_atom_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_ws_SOURCES =	\
-	test-soap.cxx \
 	test-ws.cxx \
 	test-helpers.hxx \
-	test-helpers.cxx
+	test-helpers.cxx \
+	test-main.cxx
 
 test_ws_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
@@ -89,6 +114,13 @@ test_ws_LDADD = libcmis-@LIBCMIS_API_VERSION@.la \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
+if ENABLE_LONG_TESTS
+long_tests = \
+	test-atom \
+	test-ws
+endif
+
 TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
-TESTS = test-atom test-ws
+TESTS = test-nosrv-utils ${long_tests}
+
 endif

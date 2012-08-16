@@ -25,6 +25,15 @@ AC_ARG_ENABLE([tests],
 )
 AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" != "xno")
 
+AS_IF([test "x$enable_tests" != "xno"], [
+	AC_ARG_ENABLE([long-tests],
+		[AS_HELP_STRING([--disable-long-tests], [Do not build the unit tests needing to start a server])],
+		[enable_long_tests="$enableval"],
+		[enable_long_tests=yes]
+	)
+], [enable_long_tests=no])
+AM_CONDITIONAL(ENABLE_LONG_TESTS, test "x$enable_long_tests" != "xno")
+
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
 
@@ -145,5 +154,6 @@ libcmis $VERSION:
               client: ${enable_client}
               werror: ${enable_werror}
                tests: ${enable_tests}
+          long tests: ${enable_long_tests}
                 mans: ${build_man}
 ])

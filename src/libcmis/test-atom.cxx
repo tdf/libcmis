@@ -29,7 +29,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
-#include <cppunit/ui/text/TestRunner.h>
 
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
@@ -846,12 +845,3 @@ void AtomTest::checkInTest( )
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
-
-int main( int argc, char* argv[] )
-{
-    CppUnit::TextUi::TestRunner runner;
-    CppUnit::TestFactoryRegistry &registry = CppUnit::TestFactoryRegistry::getRegistry();
-    runner.addTest( registry.makeTest() );
-    bool wasSuccess = runner.run( "", false );
-    return !wasSuccess;
-}

@@ -73,12 +73,24 @@ if test ! -e ${TEST_SERVER}/webapps/inmemory.war; then
     setup_server
 fi
 
-server "start"
+case `basename $1` in
+    test-nosrv*)
+        ;;
+    *)
+        server "start"
+        ;;
+esac
 
 #Run the test
 $1 $REST_URL $SOAP_URL
 result=$?
 
-server "stop"
+case `basename $1` in
+    test-nosrv*)
+        ;;
+    *)
+        server "stop"
+        ;;
+esac
 
 exit $result
