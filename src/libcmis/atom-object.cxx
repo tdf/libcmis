@@ -27,6 +27,7 @@
  */
 
 #include <algorithm>
+#include <locale>
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -52,8 +53,13 @@ namespace
             {
                 bool matchesRel = link.getRel( ) == m_rel;
 
+                // Some implementations (xcmis) put extra spaces into the type attribute
+                // (e.g. "application/atom+xml; type=feed" instead of "application/atom+xml;type=feed")
+                string linkType = link.getType( );
+                linkType.erase( remove_if( linkType.begin(), linkType.end(), isspace ), linkType.end() );
+
                 // Some implementation (SharePoint) are omitting the type attribute
-                bool matchesType = m_type.empty( ) || link.getType().empty() || ( link.getType( ) == m_type );
+                bool matchesType = m_type.empty( ) || linkType.empty() || ( linkType == m_type );
                 return matchesRel && matchesType;
             }
     };
