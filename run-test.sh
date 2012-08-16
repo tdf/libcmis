@@ -69,14 +69,14 @@ function server()
     esac
 }
 
-if test ! -e ${TEST_SERVER}/webapps/inmemory.war; then
-    setup_server
-fi
 
 case `basename $1` in
     test-nosrv*)
         ;;
     *)
+        if test ! -e ${TEST_SERVER}/webapps/inmemory.war; then
+            setup_server
+        fi
         server "start"
         ;;
 esac
