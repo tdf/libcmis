@@ -53,6 +53,7 @@ class WSTest : public CppUnit::TestFixture
         void getRepositoryBadTest( );
         void getTypeDefinitionTest( );
         void getTypeDefinitionErrorTest( );
+        void getTypeChildrenTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -61,6 +62,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getRepositoryBadTest );
         CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
+        CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -124,6 +126,16 @@ void WSTest::getTypeDefinitionErrorTest( )
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "objectNotFound" ), e.getType( ) );
         CPPUNIT_ASSERT_MESSAGE( "Empty exception message", !string( e.what() ).empty( ) );
     }
+}
+
+void WSTest::getTypeChildrenTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectTypePtr actual = session.getType( "cmis:document" );
+
+    vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children imported", size_t( 10 ), children.size() );
 }
 
 

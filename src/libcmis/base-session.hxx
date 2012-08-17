@@ -120,6 +120,8 @@ class BaseSession : public libcmis::Session
 
         std::string& getPassword( ) { return m_password; }
 
+        std::string& getRepositoryId( ) { return m_repositoryId; }
+
         /** Don't throw the HTTP errors as CurlExceptions. 
           */
         void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }

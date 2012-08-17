@@ -195,3 +195,39 @@ SoapResponsePtr GetTypeDefinitionResponse::create( xmlNodePtr node, RelatedMulti
 
     return SoapResponsePtr( response );
 }
+
+void GetTypeChildren::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeChildren" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includePropertyDefinitions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetTypeChildrenResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetTypeChildrenResponse* response = new GetTypeChildrenResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "types" ) ) )
+        {
+            for ( xmlNodePtr gdchild = child->children; gdchild; gdchild = gdchild->next )
+            {
+                if ( xmlStrEqual( gdchild->name, BAD_CAST( "types" ) ) )
+                {
+                    libcmis::ObjectTypePtr type( new WSObjectType( wsSession, gdchild ) );
+                    response->m_children.push_back( type );
+                }
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

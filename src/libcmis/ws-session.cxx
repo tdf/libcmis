@@ -239,6 +239,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoryInfoResponse" ] = &GetRepositoryInfoResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeDefinitionResponse" ] = &GetTypeDefinitionResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeChildrenResponse" ] = &GetTypeChildrenResponse::create;
 
     return mapping;
 }

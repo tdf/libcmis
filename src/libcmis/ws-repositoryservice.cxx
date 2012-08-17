@@ -111,3 +111,20 @@ libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, stri
 
     return type;
 }
+
+vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( string repoId, string typeId ) throw ( libcmis::Exception )
+{
+    vector< libcmis::ObjectTypePtr > children;
+
+    GetTypeChildren request( repoId, typeId );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetTypeChildrenResponse* response = dynamic_cast< GetTypeChildrenResponse* >( resp );
+        if ( response != NULL )
+            children = response->getChildren( );
+    }
+
+    return children;
+}

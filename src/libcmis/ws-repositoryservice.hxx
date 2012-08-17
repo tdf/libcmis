@@ -30,6 +30,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base-session.hxx"
 #include "repository.hxx"
@@ -58,6 +59,9 @@ class RepositoryService
         libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( libcmis::Exception );
 
         libcmis::ObjectTypePtr getTypeDefinition( std::string repoId, std::string typeId ) throw ( libcmis::Exception );
+
+        std::vector< libcmis::ObjectTypePtr > getTypeChildren( std::string repoId, std::string typeId )
+            throw ( libcmis::Exception );
 };
 
 #endif

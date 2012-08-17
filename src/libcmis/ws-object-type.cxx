@@ -77,9 +77,8 @@ libcmis::ObjectTypePtr WSObjectType::getBaseType( ) throw ( libcmis::Exception )
 vector< libcmis::ObjectTypePtr > WSObjectType::getChildren( ) throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectTypePtr > children;
-
-    // TODO Implement me
-
+    children = m_session->getRepositoryService( ).getTypeChildren(
+            m_session->getRepositoryId( ), m_id );
     return children;
 }
 

@@ -30,6 +30,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
@@ -155,6 +156,42 @@ class GetTypeDefinitionResponse : public SoapResponse
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         libcmis::ObjectTypePtr getType( ) { return m_type; }
+};
+
+class GetTypeChildren : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_typeId;
+
+    public:
+        GetTypeChildren( std::string repoId, std::string typeId ) :
+            m_repositoryId( repoId ),
+            m_typeId( typeId )
+        {
+        }
+
+        ~GetTypeChildren( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetTypeChildrenResponse : public SoapResponse
+{
+    private:
+        std::vector< libcmis::ObjectTypePtr > m_children;
+
+        GetTypeChildrenResponse( ) : SoapResponse( ), m_children( ) { }
+
+    public:
+
+        /** Parse cmism:getTypeChildrenResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< libcmis::ObjectTypePtr > getChildren( ) { return m_children; }
 };
 
 #endif
