@@ -86,8 +86,30 @@ const char* SoapFault::what( ) const throw ( )
 SoapResponseFactory::SoapResponseFactory( ) :
     m_mapping( ),
     m_namespaces( ),
-    m_detailMapping( )
+    m_detailMapping( ),
+    m_session( NULL )
 {
+}
+
+SoapResponseFactory::SoapResponseFactory( const SoapResponseFactory& copy ) :
+    m_mapping( copy.m_mapping ),
+    m_namespaces( copy.m_namespaces ),
+    m_detailMapping( copy.m_detailMapping ),
+    m_session( copy.m_session )
+{
+}
+
+SoapResponseFactory& SoapResponseFactory::operator=( const SoapResponseFactory& copy )
+{
+    if ( this != &copy )
+    {
+        m_mapping = copy.m_mapping;
+        m_namespaces = copy.m_namespaces;
+        m_detailMapping = copy.m_detailMapping;
+        m_session = copy.m_session;
+    }
+
+    return *this;
 }
 
 vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& multipart ) throw ( SoapFault )
@@ -159,7 +181,7 @@ SoapResponsePtr SoapResponseFactory::createResponse( xmlNodePtr node, RelatedMul
     if ( it != m_mapping.end( ) )
     {
         SoapResponseCreator creator = it->second;
-        response = creator( node, multipart );
+        response = creator( node, multipart, m_session );
     }
 
     return response;

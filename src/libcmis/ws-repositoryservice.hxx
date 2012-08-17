@@ -56,6 +56,8 @@ class RepositoryService
         /** Get the repository information based on its identifier.
           */
         libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( libcmis::Exception );
+
+        libcmis::ObjectTypePtr getTypeDefinition( std::string repoId, std::string typeId ) throw ( libcmis::Exception );
 };
 
 #endif

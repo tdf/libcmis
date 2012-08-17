@@ -71,41 +71,20 @@ namespace dummies
     class ObjectType : public libcmis::ObjectType
     {
         private:
-            std::string m_id;
-            std::string m_parentId;
-            std::string m_baseId;
+            std::string m_typeId;
             std::vector< std::string > m_childrenIds;
             bool m_triggersFaults;
-            std::map< std::string, libcmis::PropertyTypePtr > m_propertyTypes;
 
             ObjectType( );
+            void initMembers( );
 
         public:
             ObjectType( bool rootType, bool triggersFaults );
             ~ObjectType( );
 
-            virtual std::string getId( );
-            virtual std::string getLocalName( );
-            virtual std::string getLocalNamespace( );
-            virtual std::string getDisplayName( );
-            virtual std::string getQueryName( );
-            virtual std::string getDescription( );
-
             virtual boost::shared_ptr< libcmis::ObjectType >  getParentType( ) throw ( libcmis::Exception );
             virtual boost::shared_ptr< libcmis::ObjectType >  getBaseType( ) throw ( libcmis::Exception );
             virtual std::vector< boost::shared_ptr< libcmis::ObjectType > > getChildren( ) throw ( libcmis::Exception );
-            
-            virtual bool isCreatable( ) { return true; }
-            virtual bool isFileable( ) { return true; }
-            virtual bool isQueryable( ) { return true; }
-            virtual bool isFulltextIndexed( ) { return true; }
-            virtual bool isIncludedInSupertypeQuery( ) { return true; }
-            virtual bool isControllablePolicy( ) { return true; }
-            virtual bool isControllableACL( ) { return true; }
-            virtual bool isVersionable( ) { return true; }
-            virtual ContentStreamAllowed getContentStreamAllowed( ) { return libcmis::ObjectType::Allowed; }
-
-            virtual std::map< std::string, libcmis::PropertyTypePtr >& getPropertiesTypes( );
 
             virtual std::string toString( );
     };

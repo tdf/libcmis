@@ -29,6 +29,7 @@
 #define _OBJECT_TYPE_HXX_
 
 #include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
 #include <string>
 #include <vector>
@@ -51,32 +52,75 @@ namespace libcmis
                 Required
             };
 
-            virtual ~ObjectType() { };
+        protected:
+            time_t m_refreshTimestamp;
 
-            virtual std::string getId( ) = 0;
-            virtual std::string getLocalName( ) = 0;
-            virtual std::string getLocalNamespace( ) = 0;
-            virtual std::string getDisplayName( ) = 0;
-            virtual std::string getQueryName( ) = 0;
-            virtual std::string getDescription( ) = 0;
+            std::string m_id;
+            std::string m_localName;
+            std::string m_localNamespace;
+            std::string m_displayName;
+            std::string m_queryName;
+            std::string m_description;
 
-            virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception ) = 0;
-            virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception ) = 0;
-            virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( ) throw ( Exception ) = 0;
+            std::string m_parentTypeId;
+            std::string m_baseTypeId;
+
+            bool m_creatable;
+            bool m_fileable;
+            bool m_queryable;
+            bool m_fulltextIndexed;
+            bool m_includedInSupertypeQuery;
+            bool m_controllablePolicy;
+            bool m_controllableAcl;
+            bool m_versionable;
+            libcmis::ObjectType::ContentStreamAllowed m_contentStreamAllowed;
+
+            std::map< std::string, libcmis::PropertyTypePtr > m_propertiesTypes;
+
+            ObjectType( );
+            void initializeFromNode( xmlNodePtr node );
+
+        public:
+
+            ObjectType( xmlNodePtr node );
+            ObjectType( const ObjectType& copy );
+            virtual ~ObjectType() { }
+
+            ObjectType& operator=( const ObjectType& copy );
+
+            /** Reload the data from the server.
+
+                \attention 
+                    This method needs to be implemented in subclasses or it will
+                    do nothing
+             */
+            virtual void refresh( ) throw ( Exception );
+            virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
+
+            std::string getId( ) { return m_id; }
+            std::string getLocalName( ) { return m_localName; }
+            std::string getLocalNamespace( ) { return m_localNamespace; }
+            std::string getDisplayName( ) { return m_displayName; }
+            std::string getQueryName( ) { return m_queryName; }
+            std::string getDescription( ) { return m_description; }
+
+            virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception );
+            virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception );
+            virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( ) throw ( Exception );
             
-            virtual bool isCreatable( ) = 0;
-            virtual bool isFileable( ) = 0;
-            virtual bool isQueryable( ) = 0;
-            virtual bool isFulltextIndexed( ) = 0;
-            virtual bool isIncludedInSupertypeQuery( ) = 0;
-            virtual bool isControllablePolicy( ) = 0;
-            virtual bool isControllableACL( ) = 0;
-            virtual bool isVersionable( ) = 0;
-            virtual ContentStreamAllowed getContentStreamAllowed( ) = 0;
+            bool isCreatable( ) { return m_creatable; }
+            bool isFileable( ) { return m_fileable; }
+            bool isQueryable( ) { return m_queryable; }
+            bool isFulltextIndexed( ) { return m_fulltextIndexed; }
+            bool isIncludedInSupertypeQuery( ) { return m_includedInSupertypeQuery; }
+            bool isControllablePolicy( ) { return m_controllablePolicy; }
+            bool isControllableACL( ) { return m_controllableAcl; }
+            bool isVersionable( ) { return m_versionable; }
+            ContentStreamAllowed getContentStreamAllowed( ) { return m_contentStreamAllowed; }
 
-            virtual std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) = 0;
+            std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
 
-            virtual std::string toString( ) = 0; 
+            virtual std::string toString( ); 
     };
 
     typedef ::boost::shared_ptr< ObjectType > ObjectTypePtr;

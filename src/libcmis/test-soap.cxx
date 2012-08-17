@@ -88,7 +88,7 @@ class TestResponse : public SoapResponse
 
     public:
 
-        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& )
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
         {
             SoapResponsePtr resp ( new TestResponse( ) );
             return resp;

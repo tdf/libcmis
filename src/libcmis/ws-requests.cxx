@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "ws-object-type.hxx"
 #include "ws-requests.hxx"
 #include "xml-utils.hxx"
 
@@ -101,7 +102,7 @@ void GetRepositories::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipart& )
+SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
 {
     GetRepositoriesResponse* response = new GetRepositoriesResponse( );
 
@@ -150,7 +151,7 @@ void GetRepositoryInfo::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMultipart& )
+SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
 {
     GetRepositoryInfoResponse* response = new GetRepositoryInfoResponse( );
 
@@ -166,3 +167,31 @@ SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMulti
     return SoapResponsePtr( response );
 }
 
+void GetTypeDefinition::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeDefinition" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetTypeDefinitionResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetTypeDefinitionResponse* response = new GetTypeDefinitionResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "type" ) ) )
+        {
+            libcmis::ObjectTypePtr type( new WSObjectType( wsSession, child ) );
+            response->m_type = type;
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

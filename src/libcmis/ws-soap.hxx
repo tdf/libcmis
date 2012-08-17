@@ -38,6 +38,19 @@
 #include "ws-relatedmultipart.hxx"
 #include "xmlserializable.hxx"
 
+/** Interface for soap sessions to communicate to response objects.
+
+    \attention
+        It currently doesn't provide anything, but it may later
+        provide all useful methods for SOAP requests low level handling.
+  */
+class SoapSession
+{
+    public:
+        SoapSession( ) { }
+        virtual ~SoapSession( ) { }
+};
+
 /** Base class for all SOAP response objects.
 
     The factory will need to create the response objects using a static
@@ -49,7 +62,7 @@ class SoapResponse
         virtual ~SoapResponse( ) { };
 };
 typedef boost::shared_ptr< SoapResponse > SoapResponsePtr;
-typedef SoapResponsePtr ( *SoapResponseCreator ) ( xmlNodePtr, RelatedMultipart& );
+typedef SoapResponsePtr ( *SoapResponseCreator ) ( xmlNodePtr, RelatedMultipart&, SoapSession* session );
 
 /** Base clas for SoapFault details parsed data.
   */
@@ -93,10 +106,14 @@ class SoapResponseFactory
         std::map< std::string, SoapResponseCreator > m_mapping;
         std::map< std::string, std::string > m_namespaces;
         std::map< std::string, SoapFaultDetailCreator > m_detailMapping;
+        SoapSession* m_session;
 
     public:
 
         SoapResponseFactory( );
+        SoapResponseFactory( const SoapResponseFactory& copy );
+
+        SoapResponseFactory& operator=( const SoapResponseFactory& copy );
 
         void setMapping( std::map< std::string, SoapResponseCreator > mapping ) { m_mapping = mapping; }
 
@@ -106,6 +123,8 @@ class SoapResponseFactory
         void setNamespaces( std::map< std::string, std::string > namespaces ) { m_namespaces = namespaces; }
 
         void setDetailMapping( std::map< std::string, SoapFaultDetailCreator > mapping ) { m_detailMapping = mapping; }
+
+        void setSession( SoapSession* session ) { m_session = session; }
 
         /** Get the Soap envelope from the multipart and extract the response objects from it. This
             method will also read the possible related parts to construct the response.

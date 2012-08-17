@@ -28,8 +28,6 @@
 #ifndef _ATOM_OBJECT_TYPE_HXX_
 #define _ATOM_OBJECT_TYPE_HXX_
 
-#include <libxml/tree.h>
-
 #include "atom-session.hxx"
 #include "object-type.hxx"
 
@@ -37,32 +35,9 @@ class AtomObjectType : public libcmis::ObjectType
 {
     private:
         AtomPubSession* m_session;
-        time_t m_refreshTimestamp;
 
         std::string m_selfUrl;
-
-        std::string m_id;
-        std::string m_localName;
-        std::string m_localNamespace;
-        std::string m_displayName;
-        std::string m_queryName;
-        std::string m_description;
-
-        std::string m_parentTypeId;
-        std::string m_baseTypeId;
         std::string m_childrenUrl;
-
-        bool m_creatable;
-        bool m_fileable;
-        bool m_queryable;
-        bool m_fulltextIndexed;
-        bool m_includedInSupertypeQuery;
-        bool m_controllablePolicy;
-        bool m_controllableAcl;
-        bool m_versionable;
-        libcmis::ObjectType::ContentStreamAllowed m_contentStreamAllowed;
-
-        std::map< std::string, libcmis::PropertyTypePtr > m_propertiesTypes;
 
     public:
         AtomObjectType( AtomPubSession* session, std::string id ) throw ( libcmis::Exception );
@@ -72,35 +47,11 @@ class AtomObjectType : public libcmis::ObjectType
 
         AtomObjectType& operator=( const AtomObjectType& copy );
         
-        /** Reload the data from the server.
-              */
         virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
-        virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
-
-        virtual std::string getId( ) { return m_id; }
-        virtual std::string getLocalName( ) { return m_localName; }
-        virtual std::string getLocalNamespace( ) { return m_localNamespace; }
-        virtual std::string getDisplayName( ) { return m_displayName; }
-        virtual std::string getQueryName( ) { return m_queryName; }
-        virtual std::string getDescription( ) { return m_description; }
 
         virtual libcmis::ObjectTypePtr getParentType( ) throw ( libcmis::Exception );
         virtual libcmis::ObjectTypePtr getBaseType( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception );
-        
-        virtual bool isCreatable( ) { return m_creatable; }
-        virtual bool isFileable( ) { return m_fileable; }
-        virtual bool isQueryable( ) { return m_queryable; }
-        virtual bool isFulltextIndexed( ) { return m_fulltextIndexed; }
-        virtual bool isIncludedInSupertypeQuery( ) { return m_includedInSupertypeQuery; }
-        virtual bool isControllablePolicy( ) { return m_controllablePolicy; }
-        virtual bool isControllableACL( ) { return m_controllableAcl; }
-        virtual bool isVersionable( ) { return m_versionable; }
-        virtual libcmis::ObjectType::ContentStreamAllowed getContentStreamAllowed( ) { return m_contentStreamAllowed; }
-
-        virtual std::map< std::string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
-
-        virtual std::string toString( );
 
     private:
 

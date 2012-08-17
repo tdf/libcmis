@@ -25,36 +25,29 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _EXCEPTION_HXX_
-#define _EXCEPTION_HXX_
+#ifndef _WS_OBJECT_TYPE_HXX_
+#define _WS_OBJECT_TYPE_HXX_
 
-#include <exception>
-#include <string>
+#include "ws-session.hxx"
+#include "object-type.hxx"
 
-namespace libcmis
+class WSObjectType : public libcmis::ObjectType
 {
-    class Exception : public std::exception
-    {
-        private:
-            std::string m_message;
-            std::string m_type;
+    private:
+        WSSession* m_session;
 
-        public:
-            Exception( std::string message, std::string type = "runtime" ) :
-                exception( ),
-                m_message( message ),
-                m_type( type )
-            {
-            }
+    public:
+        WSObjectType( WSSession* session, xmlNodePtr node );
+        WSObjectType( const WSObjectType& copy );
+        virtual ~WSObjectType( );
 
-            ~Exception( ) throw () { }
-            virtual const char* what() const throw()
-            {
-                return m_message.c_str( );
-            }
+        WSObjectType& operator=( const WSObjectType& copy );
 
-            std::string getType( ) const { return m_type; }
-    };
-}
+        virtual void refresh( ) throw ( libcmis::Exception );
+        
+        virtual libcmis::ObjectTypePtr getParentType( ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getBaseType( ) throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception );
+};
 
 #endif

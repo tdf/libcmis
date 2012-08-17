@@ -86,57 +86,12 @@ class XmlTest : public CppUnit::TestFixture
   */
 class ObjectTypeDummy : public libcmis::ObjectType
 {
-    private:
-        map< string, libcmis::PropertyTypePtr > m_properties;
-
     public:
         ObjectTypeDummy( );
         virtual ~ObjectTypeDummy() { };
-
-        virtual string getId( ) { return string( ); }
-        virtual string getLocalName( ) { return string( ); }
-        virtual string getLocalNamespace( ) { return string( ); }
-        virtual string getDisplayName( ) { return string( ); }
-        virtual string getQueryName( ) { return string( ); }
-        virtual string getDescription( ) { return string( ); }
-
-        virtual libcmis::ObjectTypePtr  getParentType( ) throw ( libcmis::Exception )
-        {
-            libcmis::ObjectTypePtr empty;
-            return empty;
-        }
-
-        virtual libcmis::ObjectTypePtr  getBaseType( ) throw ( libcmis::Exception )
-        {
-            libcmis::ObjectTypePtr empty;
-            return empty;
-        }
-
-        virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception )
-        {
-            vector< libcmis::ObjectTypePtr > empty;
-            return empty;
-        }
-        
-        virtual bool isCreatable( ) { return false; }
-        virtual bool isFileable( ) { return false; }
-        virtual bool isQueryable( ) { return false; }
-        virtual bool isFulltextIndexed( ) { return false; }
-        virtual bool isIncludedInSupertypeQuery( ) { return false; }
-        virtual bool isControllablePolicy( ) { return false; }
-        virtual bool isControllableACL( ) { return false; }
-        virtual bool isVersionable( ) { return false; }
-        virtual libcmis::ObjectType::ContentStreamAllowed getContentStreamAllowed( )
-        {
-            return libcmis::ObjectType::Allowed;
-        }
-
-        virtual map< string, libcmis::PropertyTypePtr >& getPropertiesTypes( ) { return m_properties; }
-
-        virtual string toString( ) { return string( ); }
 };
 
-ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
+ObjectTypeDummy::ObjectTypeDummy( )
 {
     // String Property
     {
@@ -147,7 +102,7 @@ ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
         prop->setQueryName( string( "QUERY" ) );
         prop->setTypeFromXml( "string" );
 
-        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
     
     // Integer Property
@@ -159,7 +114,7 @@ ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
         prop->setQueryName( string( "QUERY" ) );
         prop->setTypeFromXml( "integer" );
 
-        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
     
     // DateTime Property
@@ -171,7 +126,7 @@ ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
         prop->setQueryName( string( "QUERY" ) );
         prop->setTypeFromXml( "datetime" );
 
-        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
     
     // Boolean Property
@@ -183,7 +138,7 @@ ObjectTypeDummy::ObjectTypeDummy( ) : m_properties( )
         prop->setQueryName( string( "QUERY" ) );
         prop->setTypeFromXml( "boolean" );
 
-        m_properties.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
 }
 
@@ -286,7 +241,7 @@ void XmlTest::parseBoolTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "runtime - Invalid xsd:boolean input: boolcheat" ), string( e.what() ) );
+                   string( "Invalid xsd:boolean input: boolcheat" ), string( e.what() ) );
         }
     }
 }
@@ -315,7 +270,7 @@ void XmlTest::parseIntegerTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "runtime - xsd:integer input can't fit to long: 9999999999999999999" ), string( e.what() ) );
+                   string( "xsd:integer input can't fit to long: 9999999999999999999" ), string( e.what() ) );
         }
     }
 
@@ -329,7 +284,7 @@ void XmlTest::parseIntegerTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "runtime - Invalid xsd:integer input: 123bad" ), string( e.what() ) );
+                   string( "Invalid xsd:integer input: 123bad" ), string( e.what() ) );
         }
     }
 }
@@ -358,7 +313,7 @@ void XmlTest::parseDoubleTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad exception message",
-                   string( "runtime - Invalid xsd:decimal input: 123.456bad" ), string( e.what() ) );
+                   string( "Invalid xsd:decimal input: 123.456bad" ), string( e.what() ) );
         }
     }
 }

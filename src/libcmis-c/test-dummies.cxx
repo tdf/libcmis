@@ -90,77 +90,64 @@ namespace dummies
 
     ObjectType::ObjectType( ) :
         libcmis::ObjectType( ),
-        m_id( ),
-        m_parentId( ),
-        m_baseId( ),
+        m_typeId( ),
         m_childrenIds( ),
-        m_triggersFaults( false ),
-        m_propertyTypes( )
+        m_triggersFaults( false )
     {
     }
 
     ObjectType::ObjectType( bool rootType, bool triggersFaults ) :
         libcmis::ObjectType( ),
-        m_id( ),
-        m_parentId( ),
-        m_baseId( ),
+        m_typeId( ),
         m_childrenIds( ),
-        m_triggersFaults( triggersFaults ),
-        m_propertyTypes( )
+        m_triggersFaults( triggersFaults )
     {
         if ( rootType )
-            m_id = "RootType";
+            m_typeId = "RootType";
         else
         {
-            m_id = "ObjectType";
-            m_parentId = "ParentType";
+            m_typeId = "ObjectType";
+            m_parentTypeId = "ParentType";
             m_childrenIds.push_back( "ChildType1" );
             m_childrenIds.push_back( "ChildType2" );
         }
 
-        m_baseId = "RootType";
+        m_baseTypeId = "RootType";
         libcmis::PropertyTypePtr propType1( new PropertyType( "Property1", "string" ) );
-        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType1->getId( ), propType1 ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType1->getId( ), propType1 ) );
         libcmis::PropertyTypePtr propType2( new PropertyType( "Property2", "string" ) );
-        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType2->getId( ), propType2 ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType2->getId( ), propType2 ) );
         libcmis::PropertyTypePtr propType3( new PropertyType( "Property3", "string" ) );
-        m_propertyTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType3->getId( ), propType3 ) );
+        m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( propType3->getId( ), propType3 ) );
+
+        initMembers( );
+    }
+
+    void ObjectType::initMembers( )
+    {
+        
+        m_id = m_typeId + "::Id";
+        m_localName = m_typeId + "::LocalName";
+        m_localNamespace = m_typeId + "::LocalNamespace";
+        m_displayName = m_typeId + "::DisplayName";
+        m_queryName = m_typeId + "::QueryName";
+        m_description = m_typeId + "::Description";
+            
+        m_creatable = true;
+        m_fileable = true;
+        m_queryable = true;
+        m_fulltextIndexed = true;
+        m_includedInSupertypeQuery = true;
+        m_controllablePolicy = true;
+        m_controllableAcl = true;
+        m_versionable = true;
+        m_contentStreamAllowed = libcmis::ObjectType::Allowed;
     }
 
     ObjectType::~ObjectType( )
     {
     }
     
-    string ObjectType::getId( )
-    {
-        return m_id + "::Id";
-    }
-
-    string ObjectType::getLocalName( )
-    {
-        return m_id + "::LocalName";
-    }
-
-    string ObjectType::getLocalNamespace( )
-    {
-        return m_id + "::LocalNamespace";
-    }
-
-    string ObjectType::getDisplayName( )
-    {
-        return m_id + "::DisplayName";
-    }
-
-    string ObjectType::getQueryName( )
-    {
-        return m_id + "::QueryName";
-    }
-
-    string ObjectType::getDescription( )
-    {
-        return m_id + "::Description";
-    }
-
     libcmis::ObjectTypePtr  ObjectType::getParentType( )
         throw ( libcmis::Exception )
     {
@@ -168,15 +155,17 @@ namespace dummies
             throw libcmis::Exception( "Fault triggered" );
 
         ObjectType* parent = NULL;
-        if ( !m_parentId.empty( ) )
+        if ( !m_parentTypeId.empty( ) )
         {
             parent = new ObjectType( );
-            parent->m_id = m_parentId;
-            parent->m_parentId = m_baseId;
-            parent->m_baseId = m_baseId;
+            parent->m_typeId = m_parentTypeId;
+            parent->m_parentTypeId = m_baseTypeId;
+            parent->m_baseTypeId = m_baseTypeId;
             parent->m_childrenIds.push_back( m_id );
             parent->m_triggersFaults = m_triggersFaults;
-            parent->m_propertyTypes = m_propertyTypes;
+            parent->m_propertiesTypes = m_propertiesTypes;
+
+            parent->initMembers( );
         }
 
         libcmis::ObjectTypePtr result( parent );
@@ -190,14 +179,16 @@ namespace dummies
             throw libcmis::Exception( "Fault triggered" );
 
         ObjectType* base = this;
-        if ( m_id != m_baseId )
+        if ( m_typeId != m_baseTypeId )
         {
             base = new ObjectType( );
-            base->m_id = m_baseId;
-            base->m_baseId = m_baseId;
+            base->m_typeId = m_baseTypeId;
+            base->m_baseTypeId = m_baseTypeId;
             base->m_childrenIds.push_back( m_id );
             base->m_triggersFaults = m_triggersFaults;
-            base->m_propertyTypes = m_propertyTypes;
+            base->m_propertiesTypes = m_propertiesTypes;
+
+            base->initMembers( );
         }
 
         libcmis::ObjectTypePtr result( base );
@@ -215,11 +206,14 @@ namespace dummies
         for ( vector< string >::iterator it = m_childrenIds.begin( ); it != m_childrenIds.end( ); ++it )
         {
             ObjectType* child = new ObjectType( );
-            child->m_id = *it;
-            child->m_parentId = m_id;
-            child->m_baseId = m_baseId;
+            child->m_typeId = *it;
+            child->m_parentTypeId = m_typeId;
+            child->m_baseTypeId = m_baseTypeId;
             child->m_triggersFaults = m_triggersFaults;
-            child->m_propertyTypes = m_propertyTypes;
+            child->m_propertiesTypes = m_propertiesTypes;
+
+            child->initMembers( );
+
             libcmis::ObjectTypePtr result( child );
             children.push_back( result );
         } 
@@ -227,14 +221,9 @@ namespace dummies
         return children; 
     }
     
-    map< string, libcmis::PropertyTypePtr >& ObjectType::getPropertiesTypes( )
-    {
-        return m_propertyTypes;
-    }
-
     string ObjectType::toString( )
     {
-        return m_id + "::toString";
+        return m_typeId + "::toString";
     }
 
     Object::Object( bool triggersFaults, string type ):

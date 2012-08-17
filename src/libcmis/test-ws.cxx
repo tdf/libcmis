@@ -51,12 +51,16 @@ class WSTest : public CppUnit::TestFixture
         void sessionCreationTest( );
         void getRepositoryTest( );
         void getRepositoryBadTest( );
+        void getTypeDefinitionTest( );
+        void getTypeDefinitionErrorTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getRepositoryTest );
         CPPUNIT_TEST( getRepositoryBadTest );
+        CPPUNIT_TEST( getTypeDefinitionTest );
+        CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -90,8 +94,37 @@ void WSTest::getRepositoryBadTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "invalidArgument" ), e.getType( ) );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                string( "invalidArgument - Unknown repository id: bad" ), string( e.what( ) ) );
+                string( "Unknown repository id: bad" ), string( e.what( ) ) );
     }
 }
+
+void WSTest::getTypeDefinitionTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    string id( "ComplexType" ); 
+    libcmis::ObjectTypePtr actual = session.getType( id );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent type", string( "cmis:document" ), actual->getParentType( )->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), actual->getBaseType( )->getId( ) );
+}
+
+void WSTest::getTypeDefinitionErrorTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    string id( "bad_type" );
+    try
+    {
+        session.getType( id );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "objectNotFound" ), e.getType( ) );
+        CPPUNIT_ASSERT_MESSAGE( "Empty exception message", !string( e.what() ).empty( ) );
+    }
+}
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );

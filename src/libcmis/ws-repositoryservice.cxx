@@ -94,3 +94,20 @@ libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw (
 
     return repository;
 }
+
+libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, string typeId ) throw ( libcmis::Exception )
+{
+    libcmis::ObjectTypePtr type;
+
+    GetTypeDefinition request( repoId, typeId );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetTypeDefinitionResponse* response = dynamic_cast< GetTypeDefinitionResponse* >( resp );
+        if ( response != NULL )
+            type = response->getType( );
+    }
+
+    return type;
+}

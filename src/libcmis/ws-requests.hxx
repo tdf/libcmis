@@ -35,6 +35,7 @@
 #include <libxml/tree.h>
 
 #include "exception.hxx"
+#include "object-type.hxx"
 #include "repository.hxx"
 #include "ws-soap.hxx"
 
@@ -85,7 +86,7 @@ class GetRepositoriesResponse : public SoapResponse
             assumes that the node is the expected one: this is
             normally ensured by the SoapResponseFactory.
           */
-        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart );
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         std::map< std::string, std::string > getRepositories( ) { return m_repositories; }
 };
@@ -115,9 +116,45 @@ class GetRepositoryInfoResponse : public SoapResponse
             assumes that the node is the expected one: this is
             normally ensured by the SoapResponseFactory.
           */
-        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart );
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         libcmis::RepositoryPtr getRepository( ) { return m_repository; }
+};
+
+class GetTypeDefinition : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_typeId;
+
+    public:
+        GetTypeDefinition( std::string repoId, std::string typeId ) :
+            m_repositoryId( repoId ),
+            m_typeId( typeId )
+        {
+        }
+
+        ~GetTypeDefinition( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetTypeDefinitionResponse : public SoapResponse
+{
+    private:
+        libcmis::ObjectTypePtr m_type;
+
+        GetTypeDefinitionResponse( ) : SoapResponse( ), m_type( ) { }
+
+    public:
+
+        /** Parse cmism:getTypeDefinitionResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        libcmis::ObjectTypePtr getType( ) { return m_type; }
 };
 
 #endif

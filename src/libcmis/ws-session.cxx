@@ -219,6 +219,7 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         m_responseFactory.setNamespaces( ns );
         m_responseFactory.setMapping( getResponseMapping() );
         m_responseFactory.setDetailMapping( getDetailMapping( ) );
+        m_responseFactory.setSession( this );
 
         // Get all repositories
         map< string, string > repositories = getRepositoryService( ).getRepositories( );
@@ -237,6 +238,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
 
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoriesResponse" ] = &GetRepositoriesResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoryInfoResponse" ] = &GetRepositoryInfoResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeDefinitionResponse" ] = &GetTypeDefinitionResponse::create;
 
     return mapping;
 }
@@ -275,7 +277,6 @@ list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string us
 
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
 {
-    libcmis::RepositoryPtr repo;
     return getRepositoryService( ).getRepositoryInfo( m_repositoryId );
 }
 
@@ -297,9 +298,6 @@ libcmis::ObjectPtr WSSession::getObjectByPath( string path ) throw ( libcmis::Ex
 
 libcmis::ObjectTypePtr WSSession::getType( string id ) throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr empty;
-
-    // TODO Implement me
-    return empty;
+    return getRepositoryService( ).getTypeDefinition( m_repositoryId, id );
 }
 

@@ -224,7 +224,7 @@ void AtomTest::authCallbackTest( )
         catch ( const libcmis::Exception& e )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                    string( "runtime - User cancelled authentication request" ), string( e.what() ) );
+                    string( "User cancelled authentication request" ), string( e.what() ) );
         }
     }
     
@@ -247,7 +247,7 @@ void AtomTest::getUnexistantTypeTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such type: bad_type" ), string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such type: bad_type" ), string( e.what() ) );
     }
 }
 
@@ -258,7 +258,7 @@ void AtomTest::getNormalTypeTest( )
     libcmis::ObjectTypePtr type = session.getType( TEST_TYPE_ID );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent type", PARENT_TYPE_ID, type->getParentType( )->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", BASE_TYPE_ID, type->getParentType( )->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", BASE_TYPE_ID, type->getBaseType( )->getId( ) );
 
 }
 
@@ -283,7 +283,7 @@ void AtomTest::getUnexistantFolderTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: 99" ), string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 99" ), string( e.what() ) );
     }
 }
 
@@ -298,7 +298,7 @@ void AtomTest::getUnexistantObjectTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: 99" ), string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 99" ), string( e.what() ) );
     }
 }
 
@@ -384,7 +384,7 @@ void AtomTest::getByPathInvalidTest( )
     catch ( const libcmis::Exception& e )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                string( "runtime - No node corresponding to path: /some/dummy/path" ), string( e.what() ) );
+                string( "No node corresponding to path: /some/dummy/path" ), string( e.what() ) );
     }
 }
         
@@ -652,7 +652,7 @@ void AtomTest::deleteDocumentTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " + id ) , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
 }
 
@@ -674,7 +674,7 @@ void AtomTest::deleteTreeTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " + id ) , string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
 }
 
@@ -775,7 +775,7 @@ void AtomTest::cancelCheckOutTest( )
     }
     catch ( const libcmis::Exception& e )
     {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "runtime - No such node: " ) + id, string( e.what() ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
     }
 }
 

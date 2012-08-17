@@ -35,7 +35,7 @@
 #include "ws-repositoryservice.hxx"
 #include "ws-soap.hxx"
 
-class WSSession : public BaseSession
+class WSSession : public BaseSession, public SoapSession
 {
     private:
         std::map< std::string, std::string > m_servicesUrls;
