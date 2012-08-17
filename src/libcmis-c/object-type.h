@@ -28,25 +28,11 @@
 #ifndef _LIBCMIS_OBJECT_TYPE_H_
 #define _LIBCMIS_OBJECT_TYPE_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "error.h"
-#include "property-type.h"
-
-typedef struct libcmis_object_type* libcmis_ObjectTypePtr;
-
-typedef struct libcmis_vector_object_type* libcmis_vector_object_type_Ptr;
-
-typedef enum
-{
-    libcmis_NotAllowed,
-    libcmis_Allowed,
-    libcmis_Required
-} libcmis_object_type_ContentStreamAllowed;
+#include "types.h"
 
 
 void libcmis_vector_object_type_free( libcmis_vector_object_type_Ptr vector );

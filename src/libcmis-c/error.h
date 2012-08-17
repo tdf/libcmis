@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-typedef struct libcmis_error* libcmis_ErrorPtr;
+#include "types.h"
 
 libcmis_ErrorPtr libcmis_error_create( );
 void           libcmis_error_free( libcmis_ErrorPtr e );

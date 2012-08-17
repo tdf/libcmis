@@ -28,28 +28,11 @@
 #ifndef _LIBCMIS_FOLDER_H_
 #define _LIBCMIS_FOLDER_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "error.h"
-#include "object.h"
-
-typedef struct libcmis_folder* libcmis_FolderPtr;
-typedef struct libcmis_document* libcmis_DocumentPtr;
-typedef size_t ( *libcmis_readFn )( void*, size_t, size_t, void* );
-
-
-typedef struct libcmis_vector_folder* libcmis_vector_folder_Ptr;
-    
-typedef enum
-{
-    libcmis_Unfile,
-    libcmis_DeleteSingleFiled,
-    libcmis_Delete
-} libcmis_folder_UnfileObjects;
+#include "types.h"
 
 void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector );
 size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector );

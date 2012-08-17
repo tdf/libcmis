@@ -34,7 +34,7 @@ extern "C" {
 
 #include <libxml/tree.h>
 
-typedef struct libcmis_repository* libcmis_RepositoryPtr;
+#include "types.h"
 
 libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node );
 void libcmis_repository_free( libcmis_RepositoryPtr repository );

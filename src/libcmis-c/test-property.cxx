@@ -34,6 +34,7 @@
 #include "property.h"
 #include "property-type.h"
 #include "test-dummies.hxx"
+#include "vectors.h"
 
 using namespace std;
 

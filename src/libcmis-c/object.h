@@ -28,23 +28,13 @@
 #ifndef _LIBCMIS_OBJECT_H_
 #define _LIBCMIS_OBJECT_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
-extern "C" {
-#endif
-
 #include <time.h>
 
-#include "allowable-actions.h"
-#include "error.h"
-#include "object-type.h"
-#include "property.h"
-#include "vectors.h"
+#include "types.h"
 
-typedef struct libcmis_object* libcmis_ObjectPtr;
-
-typedef struct libcmis_vector_object* libcmis_vector_object_Ptr;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void libcmis_vector_object_free( libcmis_vector_object_Ptr vector );
 size_t libcmis_vector_object_size( libcmis_vector_object_Ptr vector );
@@ -103,6 +93,11 @@ void libcmis_object_refresh( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 time_t libcmis_object_getRefreshTimestamp( libcmis_ObjectPtr object );
 
 void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_ErrorPtr error );
+
+void libcmis_object_move( libcmis_ObjectPtr object,
+        libcmis_FolderPtr source,
+        libcmis_FolderPtr dest,
+        libcmis_ErrorPtr error );
 
 
 /** The resulting value needs to be free'd.

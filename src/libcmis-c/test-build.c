@@ -28,14 +28,15 @@
 
 #include "allowable-actions.h"
 #include "error.h"
-#include "folder.h"
 #include "object.h"
 #include "object-type.h"
+#include "folder.h"
 #include "property.h"
 #include "property-type.h"
 #include "repository.h"
 #include "session.h"
 #include "session-factory.h"
+#include "types.h"
 #include "vectors.h"
 
 int main ( int argc, char ** argv )

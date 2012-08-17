@@ -28,21 +28,11 @@
 #ifndef _LIBCMIS_SESSION_H_
 #define _LIBCMIS_SESSION_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "error.h"
-#include "folder.h"
-#include "object.h"
-#include "repository.h"
-
-typedef struct libcmis_session* libcmis_SessionPtr;
-
-typedef bool ( *libcmis_authenticationCallback )( char* username, char* password );
-
+#include "types.h"
 
 void libcmis_session_free( libcmis_SessionPtr session );
 

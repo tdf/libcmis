@@ -28,18 +28,11 @@
 #ifndef _LIBCMIS_PROPERTY_HXX_
 #define _LIBCMIS_PROPERTY_HXX_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "property-type.h"
-#include "vectors.h"
-
-typedef struct libcmis_property* libcmis_PropertyPtr;
-
-typedef struct libcmis_vector_property* libcmis_vector_property_Ptr;
+#include "types.h"
 
 libcmis_vector_property_Ptr libcmis_vector_property_create( );
 void libcmis_vector_property_free( libcmis_vector_property_Ptr vector );

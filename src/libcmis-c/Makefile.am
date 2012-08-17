@@ -11,6 +11,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	property.h \
 	property-type.h \
 	repository.h \
+	types.h \
 	session.h \
 	session-factory.h \
 	vectors.h

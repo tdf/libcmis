@@ -30,9 +30,16 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include "allowable-actions.h"
+#include "error.h"
+#include "folder.h"
 #include "internals.hxx"
 #include "object.h"
+#include "object-type.h"
+#include "property.h"
+#include "property-type.h"
 #include "test-dummies.hxx"
+#include "vectors.h"
 
 using namespace std;
 
@@ -40,6 +47,7 @@ class ObjectTest : public CppUnit::TestFixture
 {
     private:
         libcmis_ObjectPtr getTested( bool triggersFaults );
+        libcmis_FolderPtr getTestFolder( );
 
     public:
         void getIdTest( );
@@ -69,6 +77,8 @@ class ObjectTest : public CppUnit::TestFixture
         void refreshErrorTest( );
         void removeTest( );
         void removeErrorTest( );
+        void moveTest( );
+        void moveErrorTest( );
         void toStringTest( );
 
         CPPUNIT_TEST_SUITE( ObjectTest );
@@ -99,6 +109,8 @@ class ObjectTest : public CppUnit::TestFixture
         CPPUNIT_TEST( refreshErrorTest );
         CPPUNIT_TEST( removeTest );
         CPPUNIT_TEST( removeErrorTest );
+        CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( moveErrorTest );
         CPPUNIT_TEST( toStringTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -110,6 +122,15 @@ libcmis_ObjectPtr ObjectTest::getTested( bool triggersFaults )
     libcmis_ObjectPtr result = new libcmis_object( );
     libcmis::ObjectPtr handle( new dummies::Object( triggersFaults ) );
     result->handle = handle;
+
+    return result;
+}
+
+libcmis_FolderPtr ObjectTest::getTestFolder( )
+{
+    libcmis_FolderPtr result = new libcmis_folder( );
+    libcmis::FolderPtr handle( new dummies::Folder( false, false ) );
+    result->setHandle( handle );
 
     return result;
 }
@@ -427,6 +448,31 @@ void ObjectTest::removeErrorTest( )
     CPPUNIT_ASSERT( !string( actualMessage ).empty( ) );
     libcmis_error_free( error );
     libcmis_object_free( tested );
+}
+
+void ObjectTest::moveTest( )
+{
+    libcmis_ObjectPtr tested = getTested( false );
+    CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // Move the object from source to dest (tested method)
+    libcmis_FolderPtr source = getTestFolder( );
+    libcmis_FolderPtr dest = getTestFolder( );
+    libcmis_object_move( tested, source, dest, error );
+
+    // Check
+    CPPUNIT_ASSERT_MESSAGE( "Timestamp not updated", 0 != libcmis_object_getRefreshTimestamp( tested ) );
+
+    // Free it all
+    libcmis_folder_free( dest );
+    libcmis_folder_free( source );
+    libcmis_error_free( error );
+    libcmis_object_free( tested );
+}
+
+void ObjectTest::moveErrorTest( )
+{
 }
 
 void ObjectTest::toStringTest( )

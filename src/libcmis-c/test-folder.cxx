@@ -31,9 +31,15 @@
 #include <cppunit/TestAssert.h>
 
 #include "document.h"
+#include "error.h"
 #include "internals.hxx"
 #include "folder.h"
+#include "object.h"
+#include "object-type.h"
+#include "property.h"
+#include "property-type.h"
 #include "test-dummies.hxx"
+#include "vectors.h"
 
 using namespace std;
 

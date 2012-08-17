@@ -28,46 +28,11 @@
 #ifndef _LIBCMIS_ALLOWABLE_ACTIONS_H_
 #define _LIBCMIS_ALLOWABLE_ACTIONS_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct libcmis_allowable_actions* libcmis_AllowableActionsPtr;
-
-typedef enum 
-{
-    libcmis_DeleteObject,
-    libcmis_UpdateProperties,
-    libcmis_GetFolderTree,
-    libcmis_GetProperties,
-    libcmis_GetObjectRelationships,
-    libcmis_GetObjectParents,
-    libcmis_GetFolderParent,
-    libcmis_GetDescendants,
-    libcmis_MoveObject,
-    libcmis_DeleteContentStream,
-    libcmis_CheckOut,
-    libcmis_CancelCheckOut,
-    libcmis_CheckIn,
-    libcmis_SetContentStream,
-    libcmis_GetAllVersions,
-    libcmis_AddObjectToFolder,
-    libcmis_RemoveObjectFromFolder,
-    libcmis_GetContentStream,
-    libcmis_ApplyPolicy,
-    libcmis_GetAppliedPolicies,
-    libcmis_RemovePolicy,
-    libcmis_GetChildren,
-    libcmis_CreateDocument,
-    libcmis_CreateFolder,
-    libcmis_CreateRelationship,
-    libcmis_DeleteTree,
-    libcmis_GetRenditions,
-    libcmis_GetACL,
-    libcmis_ApplyACL
-} libcmis_allowable_actions_Type;
+#include "types.h"
 
 void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
 

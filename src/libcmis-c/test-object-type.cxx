@@ -31,8 +31,10 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include "error.h"
 #include "internals.hxx"
 #include "object-type.h"
+#include "property-type.h"
 #include "test-dummies.hxx"
 
 using namespace std;

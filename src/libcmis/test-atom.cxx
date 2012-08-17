@@ -118,6 +118,7 @@ class AtomTest : public CppUnit::TestFixture
         void checkOutTest( );
         void cancelCheckOutTest( );
         void checkInTest( );
+        void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -147,6 +148,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -842,6 +844,25 @@ void AtomTest::checkInTest( )
         map< string, libcmis::PropertyPtr >::iterator it = actualProperties.find( "cmis:checkinComment" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "cmis:checkinComment doesn't match", comment, it->second->getStrings().front( ) );
     }
+}
+
+void AtomTest::moveTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    string id( "135" );
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    CPPUNIT_ASSERT_MESSAGE( "Document to move is missing", document != NULL );
+
+    libcmis::FolderPtr src = document->getParents( ).front( );
+    libcmis::FolderPtr dest = session.getFolder( "101" );
+
+    document->move( src, dest );
+
+    vector< libcmis::FolderPtr > parents = document->getParents( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parents size", size_t( 1 ), parents.size( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent", string( "101" ), parents.front( )->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );

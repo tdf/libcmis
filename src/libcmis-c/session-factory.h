@@ -28,15 +28,11 @@
 #ifndef _SESSION_FACTORY_H_
 #define _SESSION_FACTORY_H_
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#else
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "error.h"
-#include "repository.h"
-#include "session.h"
+#include "types.h"
 
 libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,

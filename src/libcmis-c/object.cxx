@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "folder.h"
 #include "internals.hxx"
 #include "object.h"
 
@@ -310,6 +311,7 @@ time_t libcmis_object_getRefreshTimestamp( libcmis_ObjectPtr object )
         return 0;
 }
 
+
 void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_ErrorPtr error )
 {
     if ( object != NULL && object->handle != NULL )
@@ -326,6 +328,35 @@ void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_
         }
     }
 }
+
+
+void libcmis_object_move( libcmis_ObjectPtr object,
+        libcmis_FolderPtr source,
+        libcmis_FolderPtr dest,
+        libcmis_ErrorPtr error )
+{
+    if ( object != NULL && object->handle != NULL )
+    {
+        try
+        {
+            libcmis::FolderPtr sourceHandle;
+            if ( source != NULL )
+                sourceHandle = source->handle;
+            libcmis::FolderPtr destHandle;
+            if ( dest != NULL )
+                destHandle = dest->handle;
+
+            object->handle->move( sourceHandle, destHandle );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+}
+
 
 char* libcmis_object_toString( libcmis_ObjectPtr object )
 {
