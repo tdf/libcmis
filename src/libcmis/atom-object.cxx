@@ -68,23 +68,17 @@ namespace
 }
 
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
+    libcmis::Object( ),
     m_session( session ),
-    m_refreshTimestamp( 0 ),
-    m_typeId( ),
     m_typeDescription( ),
-    m_properties( ),
-    m_allowableActions( ),
     m_links( )
 {
 }
 
 AtomObject::AtomObject( const AtomObject& copy ) :
+    libcmis::Object( copy ),
     m_session( copy.m_session ),
-    m_refreshTimestamp( copy.m_refreshTimestamp ),
-    m_typeId( copy.m_typeId ),
     m_typeDescription( copy.m_typeDescription ),
-    m_properties( copy.m_properties ),
-    m_allowableActions( copy.m_allowableActions ),
     m_links( copy.m_links )
 {
 }
@@ -93,12 +87,9 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
 {
     if ( this != &copy )
     {
-        m_session = copy.m_session;
+        libcmis::Object::operator=( copy );
         m_refreshTimestamp = copy.m_refreshTimestamp;
-        m_typeId = copy.m_typeId;
         m_typeDescription = copy.m_typeDescription;
-        m_properties = copy.m_properties;
-        m_allowableActions = copy.m_allowableActions;
         m_links = copy.m_links;
     }
 
@@ -107,106 +98,6 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
 
 AtomObject::~AtomObject( )
 {
-}
-
-string AtomObject::getId( )
-{
-    string name;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        name = it->second->getStrings( ).front( );
-    return name;
-}
-
-string AtomObject::getName( )
-{
-    string name;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:name" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        name = it->second->getStrings( ).front( );
-    return name;
-}
-
-vector< string > AtomObject::getPaths( )
-{
-    return vector< string > ( );
-}
-
-string AtomObject::getBaseType( )
-{
-    string value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:baseTypeId" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        value = it->second->getStrings( ).front( );
-    return value;
-}
-
-string AtomObject::getType( )
-{
-    string value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectTypeId" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        value = it->second->getStrings( ).front( );
-    return value;
-}
-
-string AtomObject::getCreatedBy( )
-{
-    string value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:createdBy" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        value = it->second->getStrings( ).front( );
-    return value;
-}
-
-boost::posix_time::ptime AtomObject::getCreationDate( )
-{
-    boost::posix_time::ptime value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
-        value = it->second->getDateTimes( ).front( );
-    return value;
-}
-
-string AtomObject::getLastModifiedBy( )
-{
-    string value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModifiedBy" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        value = it->second->getStrings( ).front( );
-    return value;
-}
-
-boost::posix_time::ptime AtomObject::getLastModificationDate( )
-{
-    boost::posix_time::ptime value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
-        value = it->second->getDateTimes( ).front( );
-    return value;
-}
-
-bool AtomObject::isImmutable( )
-{
-    bool value = false;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getBools( ).empty( ) )
-        value = it->second->getBools( ).front( );
-    return value;
-}
-
-string AtomObject::getChangeToken( )
-{
-    string value;
-    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:changeToken" ) );
-    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-        value = it->second->getStrings( ).front( );
-    return value;
-}
-
-std::map< std::string, libcmis::PropertyPtr >& AtomObject::getProperties( )
-{
-    return m_properties;
 }
 
 void AtomObject::updateProperties( ) throw ( libcmis::Exception )
@@ -261,14 +152,9 @@ libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
 {
     // Don't use the type from the properties as it may not be read yet.
     if ( !m_typeDescription.get( ) )
-        m_typeDescription.reset( new AtomObjectType( m_session, m_typeId ) );
+        m_typeDescription.reset( new AtomObjectType( m_session, getType( ) ) );
 
     return m_typeDescription;
-}
-
-boost::shared_ptr< libcmis::AllowableActions > AtomObject::getAllowableActions( )
-{
-    return m_allowableActions;
 }
 
 void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
@@ -390,54 +276,6 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     xmlFreeDoc( doc );
 }
 
-string AtomObject::toString( )
-{
-    stringstream buf;
-
-    buf << "Id: " << getId() << endl;
-    buf << "Name: " << getName() << endl;
-    buf << "Type: " << getType() << endl;
-    buf << "Base type: " << getBaseType() << endl;
-    buf << "Created on " << boost::posix_time::to_simple_string( getCreationDate() )
-        << " by " << getCreatedBy() << endl;
-    buf << "Last modified on " << boost::posix_time::to_simple_string( getLastModificationDate() )
-        << " by " << getLastModifiedBy() << endl;
-    buf << "Change token: " << getChangeToken() << endl;
-
-    // Write remaining properties
-    static const char* skippedProps[] = {
-        "cmis:name", "cmis:baseTypeId", "cmis:objectTypeId", "cmis:createdBy",
-        "cmis:creationDate", "cmis:lastModifiedBy", "cmis:lastModificationDate",
-        "cmis::changeToken"
-    };
-    int skippedCount = sizeof( skippedProps ) / sizeof( char* );
-
-    for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin();
-            it != getProperties( ).end( ); ++it )
-    {
-        string propId = it->first;
-        bool toSkip = false;
-        for ( int i = 0; i < skippedCount && !toSkip; ++i )
-        {
-            toSkip = propId == skippedProps[i];
-        }
-
-        if ( !toSkip )
-        {
-            libcmis::PropertyPtr prop = it->second;
-            buf << prop->getPropertyType( )->getDisplayName( ) << "( " << prop->getPropertyType()->getId( ) << " ): " << endl;
-            vector< string > strValues = prop->getStrings( );
-            for ( vector< string >::iterator valueIt = strValues.begin( );
-                  valueIt != strValues.end( ); ++valueIt )
-            {
-                buf << "\t" << *valueIt << endl; 
-            }
-        }
-    }
-
-    return buf.str();
-}
-
 void AtomObject::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
@@ -461,14 +299,8 @@ void AtomObject::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
 
-    // Output the properties
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmis:properties" ) );
-    for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin( );
-            it != getProperties( ).end( ); ++it )
-    {
-        it->second->toXml( writer );
-    }
-    xmlTextWriterEndElement( writer ); // cmis:properties
+    libcmis::Object::toXml( writer );
+
     xmlTextWriterEndElement( writer ); // cmisra:object
 
     xmlTextWriterEndElement( writer ); // atom:entry
@@ -514,31 +346,12 @@ void AtomObject::extractInfos( xmlDocPtr doc )
         }
         xmlXPathFreeObject( xpathObj );
 
-        // Get the allowableActions
-        xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:allowableActions" ), xpathCtx );
+
+        xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:object" ), xpathCtx );
         if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
         {
             xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
-            m_allowableActions.reset( new libcmis::AllowableActions( node ) );
-        }
-        xmlXPathFreeObject( xpathObj );
-
-        // First get the type id as it will give us the property definitions
-        string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
-        m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
-
-        string propertiesReq( "//cmis:properties/*" );
-        xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
-        if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
-        {
-            int size = xpathObj->nodesetval->nodeNr;
-            for ( int i = 0; i < size; i++ )
-            {
-                xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                libcmis::PropertyPtr property = libcmis::parseProperty( node, getTypeDescription( ) );
-                if ( property.get( ) )
-                    m_properties[ property->getPropertyType( )->getId() ] = property;
-            }
+            initializeFromNode( node );
         }
         xmlXPathFreeObject( xpathObj );
     }

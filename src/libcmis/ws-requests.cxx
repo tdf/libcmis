@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "ws-object.hxx"
 #include "ws-object-type.hxx"
 #include "ws-requests.hxx"
 #include "xml-utils.hxx"
@@ -226,6 +227,36 @@ SoapResponsePtr GetTypeChildrenResponse::create( xmlNodePtr node, RelatedMultipa
                     response->m_children.push_back( type );
                 }
             }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}
+
+void GetObject::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObject" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_id.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetObjectResponse* response = new GetObjectResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "object" ) ) )
+        {
+            libcmis::ObjectPtr object( new WSObject( wsSession, child ) );
+            response->m_object = object;
         }
     }
 

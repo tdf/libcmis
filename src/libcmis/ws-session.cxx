@@ -240,6 +240,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}getRepositoryInfoResponse" ] = &GetRepositoryInfoResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeDefinitionResponse" ] = &GetTypeDefinitionResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeChildrenResponse" ] = &GetTypeChildrenResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectResponse" ] = &GetObjectResponse::create;
 
     return mapping;
 }
@@ -269,6 +270,11 @@ RepositoryService WSSession::getRepositoryService( )
     return RepositoryService( this );
 }
 
+ObjectService WSSession::getObjectService( )
+{
+    return ObjectService( this );
+}
+
 list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     WSSession session( url, string(), username, password, verbose );
@@ -283,10 +289,7 @@ libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
 
 libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception )
 {
-    libcmis::ObjectPtr empty;
-
-    // TODO Implement me
-    return empty;
+    return getObjectService( ).getObject( getRepositoryId( ), id );
 }
 
 libcmis::ObjectPtr WSSession::getObjectByPath( string path ) throw ( libcmis::Exception )

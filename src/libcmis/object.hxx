@@ -38,6 +38,7 @@
 
 #include <boost/date_time.hpp>
 #include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
 #include "allowable-actions.hxx"
 #include "exception.hxx"
@@ -53,11 +54,28 @@ namespace libcmis
       */
     class Object : public XmlSerializable
     {
+        protected:
+            time_t m_refreshTimestamp;
+
+            /** Type id used as cache before we get it as a property
+              */
+            std::string m_typeId;
+
+            std::map< std::string, libcmis::PropertyPtr > m_properties;
+            boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
+
+            Object( );
+            void initializeFromNode( xmlNodePtr node );
+
         public:
+            Object( xmlNodePtr node );
+            Object( const Object& copy );
             virtual ~Object( ) { }
 
-            virtual std::string getId( ) = 0;
-            virtual std::string getName( ) = 0;
+            Object& operator=( const Object& copy );
+
+            virtual std::string getId( );
+            virtual std::string getName( );
 
             /** Computes the paths for the objects.
 
@@ -65,29 +83,30 @@ namespace libcmis
                 several ones and there may be cases where there is no path
                 at all (unfiled objects);
               */
-            virtual std::vector< std::string > getPaths( ) = 0;
+            virtual std::vector< std::string > getPaths( );
 
-            virtual std::string getBaseType( ) = 0;
-            virtual std::string getType( ) = 0;
+            virtual std::string getBaseType( );
+            virtual std::string getType( );
 
-            virtual std::string getCreatedBy( ) = 0;
-            virtual boost::posix_time::ptime getCreationDate( ) = 0;
-            virtual std::string getLastModifiedBy( ) = 0;
-            virtual boost::posix_time::ptime getLastModificationDate( ) = 0;
+            virtual std::string getCreatedBy( );
+            virtual boost::posix_time::ptime getCreationDate( );
+            virtual std::string getLastModifiedBy( );
+            virtual boost::posix_time::ptime getLastModificationDate( );
 
-            virtual std::string getChangeToken( ) = 0;
-            virtual bool isImmutable( ) = 0;
+            virtual std::string getChangeToken( );
+            virtual bool isImmutable( );
 
-            virtual std::map< std::string, PropertyPtr >& getProperties( ) = 0;
+            virtual std::map< std::string, PropertyPtr >& getProperties( );
+            virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
+
             virtual void updateProperties( ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( ) = 0;
-            virtual AllowableActionsPtr getAllowableActions( ) = 0;
 
             /** Reload the data from the server.
               */
             virtual void refresh( ) throw ( Exception ) = 0;
-            virtual time_t getRefreshTimestamp( ) = 0;
+            virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
 
             virtual void remove( bool allVersions = true ) throw ( Exception ) = 0;
 
@@ -95,7 +114,9 @@ namespace libcmis
 
             /** Dump the object as a string for debugging or display purpose.
               */
-            virtual std::string toString( ) = 0;
+            virtual std::string toString( );
+
+            void toXml( xmlTextWriterPtr writer );
     };
 
     typedef ::boost::shared_ptr< Object > ObjectPtr;

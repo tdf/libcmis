@@ -22,6 +22,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	base-session.hxx \
 	base-session.cxx \
 	allowable-actions.cxx \
+	object.cxx \
 	object-type.cxx \
 	property.cxx \
 	property-type.cxx \
@@ -39,8 +40,12 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-session.cxx \
 	atom-workspace.hxx \
 	atom-workspace.cxx \
+	ws-object.hxx \
+	ws-object.cxx \
 	ws-object-type.hxx \
 	ws-object-type.cxx \
+	ws-objectservice.hxx \
+	ws-objectservice.cxx \
 	ws-relatedmultipart.hxx \
 	ws-relatedmultipart.cxx \
 	ws-repositoryservice.hxx \

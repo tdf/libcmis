@@ -28,9 +28,6 @@
 #ifndef _ATOM_OBJECT_HXX_
 #define _ATOM_OBJECT_HXX_
 
-#include <libxml/tree.h>
-
-#include "allowable-actions.hxx"
 #include "object.hxx"
 
 class AtomPubSession;
@@ -57,13 +54,8 @@ class AtomObject : public virtual libcmis::Object
 {
     private:
         AtomPubSession* m_session;
-        time_t m_refreshTimestamp;
 
-        std::string m_typeId;
         libcmis::ObjectTypePtr m_typeDescription;
-
-        std::map< std::string, libcmis::PropertyPtr > m_properties;
-        boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
 
         std::vector< AtomLink > m_links;
 
@@ -75,37 +67,17 @@ class AtomObject : public virtual libcmis::Object
         AtomObject& operator=( const AtomObject& copy );
 
         // Overridden methods from libcmis::Object
-        virtual std::string getId( ); 
-        virtual std::string getName( );
-        virtual std::vector< std::string > getPaths( );
-        
-        virtual std::string getBaseType( );
-        virtual std::string getType( );
-            
-        virtual std::string getCreatedBy( );
-        virtual boost::posix_time::ptime getCreationDate( );
-        virtual std::string getLastModifiedBy( );
-        virtual boost::posix_time::ptime getLastModificationDate( );
-
-        virtual std::string getChangeToken( );
-        virtual bool isImmutable( );
-
-        virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
         virtual void updateProperties( ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getTypeDescription( );
-        virtual boost::shared_ptr< libcmis::AllowableActions > getAllowableActions( );
 
         /** Reload the data from the server.
               */
         virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
-        virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
 
         virtual void remove( bool allVersion = true ) throw ( libcmis::Exception );
 
         virtual void move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception );
-
-        virtual std::string toString( );
 
         virtual void toXml( xmlTextWriterPtr writer );
 

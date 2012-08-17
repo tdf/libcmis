@@ -36,6 +36,7 @@
 #include <libxml/tree.h>
 
 #include "exception.hxx"
+#include "object.hxx"
 #include "object-type.hxx"
 #include "repository.hxx"
 #include "ws-soap.hxx"
@@ -192,6 +193,42 @@ class GetTypeChildrenResponse : public SoapResponse
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         std::vector< libcmis::ObjectTypePtr > getChildren( ) { return m_children; }
+};
+
+class GetObject : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_id;
+
+    public:
+        GetObject( std::string repoId, std::string id ) :
+            m_repositoryId( repoId ),
+            m_id( id )
+        {
+        }
+
+        ~GetObject( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetObjectResponse : public SoapResponse
+{
+    private:
+        libcmis::ObjectPtr m_object;
+
+        GetObjectResponse( ) : SoapResponse( ), m_object( ) { }
+
+    public:
+
+        /** Parse cmism:getObjectResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        libcmis::ObjectPtr getObject( ) { return m_object; }
 };
 
 #endif

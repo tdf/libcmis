@@ -32,6 +32,7 @@
 #include <string>
 
 #include "base-session.hxx"
+#include "ws-objectservice.hxx"
 #include "ws-repositoryservice.hxx"
 #include "ws-soap.hxx"
 
@@ -74,6 +75,9 @@ class WSSession : public BaseSession, public SoapSession
         std::string getServiceUrl( std::string name );
 
         RepositoryService getRepositoryService( );
+
+        ObjectService getObjectService( );
+
 
         // Override session methods
 
