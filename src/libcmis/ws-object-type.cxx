@@ -81,5 +81,3 @@ vector< libcmis::ObjectTypePtr > WSObjectType::getChildren( ) throw ( libcmis::E
             m_session->getRepositoryId( ), m_id );
     return children;
 }
-
-void refresh( ) throw ( libcmis::Exception );

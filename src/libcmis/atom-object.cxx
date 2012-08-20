@@ -84,7 +84,6 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     if ( this != &copy )
     {
         libcmis::Object::operator=( copy );
-        m_refreshTimestamp = copy.m_refreshTimestamp;
         m_links = copy.m_links;
     }
 
@@ -173,7 +172,6 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 
 
     extractInfos( doc );
-    m_refreshTimestamp = time( NULL );
 
     if ( createdDoc )
         xmlFreeDoc( doc );

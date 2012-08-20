@@ -120,6 +120,8 @@ namespace libcmis
 
         xmlXPathFreeContext( xpathCtx );
         xmlFreeDoc( doc );
+
+        m_refreshTimestamp = time( NULL );
     }
 
     string Object::getId( )

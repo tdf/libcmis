@@ -45,15 +45,21 @@ class WSTest : public CppUnit::TestFixture
 {
     public:
 
-        // Generic sesssion factory tests
+        // Generic session factory tests
 
         void getRepositoriesTest( );
         void sessionCreationTest( );
         void getRepositoryTest( );
         void getRepositoryBadTest( );
+
+        // Types tests
+
         void getTypeDefinitionTest( );
         void getTypeDefinitionErrorTest( );
         void getTypeChildrenTest( );
+
+        // Object tests
+        void getObjectTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -63,6 +69,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST( getTypeChildrenTest );
+        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -136,6 +143,19 @@ void WSTest::getTypeChildrenTest( )
     vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children imported", size_t( 10 ), children.size() );
+}
+
+void WSTest::getObjectTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    string id( "101" ); 
+    libcmis::ObjectPtr actual = session.getObject( id );
+
+    CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
+            NULL != actual->getTypeDescription( ).get( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
+    CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
 }
 
 
