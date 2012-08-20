@@ -68,17 +68,13 @@ namespace
 }
 
 AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
-    libcmis::Object( ),
-    m_session( session ),
-    m_typeDescription( ),
+    libcmis::Object( session ),
     m_links( )
 {
 }
 
 AtomObject::AtomObject( const AtomObject& copy ) :
     libcmis::Object( copy ),
-    m_session( copy.m_session ),
-    m_typeDescription( copy.m_typeDescription ),
     m_links( copy.m_links )
 {
 }
@@ -89,7 +85,6 @@ AtomObject& AtomObject::operator=( const AtomObject& copy )
     {
         libcmis::Object::operator=( copy );
         m_refreshTimestamp = copy.m_refreshTimestamp;
-        m_typeDescription = copy.m_typeDescription;
         m_links = copy.m_links;
     }
 
@@ -148,15 +143,6 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     xmlFreeDoc( doc );
 }
 
-libcmis::ObjectTypePtr AtomObject::getTypeDescription( )
-{
-    // Don't use the type from the properties as it may not be read yet.
-    if ( !m_typeDescription.get( ) )
-        m_typeDescription.reset( new AtomObjectType( m_session, getType( ) ) );
-
-    return m_typeDescription;
-}
-
 void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 {
     bool createdDoc = ( NULL == doc );
@@ -211,7 +197,7 @@ void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
             allVersionsStr = "FALSE";
         deleteUrl += "allVersions=" + allVersionsStr;
 
-        m_session->httpDeleteRequest( deleteUrl );
+        getSession( )->httpDeleteRequest( deleteUrl );
     }
     catch ( const CurlException& e )
     {
@@ -254,7 +240,7 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     // Session::CreateUrl is used to properly escape the id
     map< string, string > params;
     params[ "sourceFolderId" ] = source->getId();
-    postUrl = m_session->createUrl( postUrl, params );
+    postUrl = getSession( )->createUrl( postUrl, params );
 
     // post it
     libcmis::HttpResponsePtr response;
@@ -357,6 +343,11 @@ void AtomObject::extractInfos( xmlDocPtr doc )
     }
 
     xmlXPathFreeContext( xpathCtx );
+}
+
+AtomPubSession* AtomObject::getSession( )
+{
+    return dynamic_cast< AtomPubSession* >( m_session );
 }
 
 void AtomObject::contentToXml( xmlTextWriterPtr )

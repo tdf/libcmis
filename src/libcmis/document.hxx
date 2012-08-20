@@ -40,13 +40,14 @@
 namespace libcmis
 {
     class Folder;
+    class Session;
 
     /** Interface for a CMIS Document object.
       */
     class Document : public virtual Object
     {
         public:
-
+            Document( Session* session ) : Object( session ) { }
             virtual ~Document( ) { }
 
             /** Get the folder parents for the document.

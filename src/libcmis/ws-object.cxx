@@ -31,14 +31,12 @@
 using namespace std;
 
 WSObject::WSObject( WSSession* session, xmlNodePtr node ) :
-    libcmis::Object( node ),
-    m_session( session )
+    libcmis::Object( session, node )
 {
 }
 
 WSObject::WSObject( const WSObject& copy ) :
-    libcmis::Object( copy ),
-    m_session( copy.m_session )
+    libcmis::Object( copy )
 {
 }
 
@@ -51,7 +49,6 @@ WSObject& WSObject::operator=( const WSObject& copy )
     if ( this != &copy )
     {
         libcmis::Object::operator=( copy );
-        m_session = copy.m_session;
     }
 
     return *this;
@@ -60,15 +57,6 @@ WSObject& WSObject::operator=( const WSObject& copy )
 void WSObject::updateProperties( ) throw ( libcmis::Exception )
 {
     // TODO Implement me
-}
-
-libcmis::ObjectTypePtr WSObject::getTypeDescription( )
-{
-    libcmis::ObjectTypePtr type;
-
-    // TODO Implement me
-
-    return type;
 }
 
 void WSObject::refresh( ) throw ( libcmis::Exception )

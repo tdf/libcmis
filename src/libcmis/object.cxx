@@ -27,13 +27,16 @@
  */
 
 #include "object.hxx"
+#include "session.hxx"
 #include "xml-utils.hxx"
 
 using namespace std;
 
 namespace libcmis
 {
-    Object::Object( ) :
+    Object::Object( Session* session ) :
+        m_session( session ),
+        m_typeDescription( ),
         m_refreshTimestamp( 0 ),
         m_typeId( ),
         m_properties( ),
@@ -41,7 +44,9 @@ namespace libcmis
     {
     }
 
-    Object::Object( xmlNodePtr node ) :
+    Object::Object( Session* session, xmlNodePtr node ) :
+        m_session( session ),
+        m_typeDescription( ),
         m_refreshTimestamp( 0 ),
         m_typeId( ),
         m_properties( ),
@@ -51,6 +56,8 @@ namespace libcmis
     }
 
     Object::Object( const Object& copy ) :
+        m_session( copy.m_session ),
+        m_typeDescription( copy.m_typeDescription ),
         m_refreshTimestamp( copy.m_refreshTimestamp ),
         m_typeId( copy.m_typeId ),
         m_properties( copy.m_properties ),
@@ -62,6 +69,8 @@ namespace libcmis
     {
         if ( this != &copy )
         {
+            m_session = copy.m_session;
+            m_typeDescription = copy.m_typeDescription;
             m_refreshTimestamp = copy.m_refreshTimestamp;
             m_typeId = copy.m_typeId;
             m_properties = copy.m_properties;
@@ -216,6 +225,13 @@ namespace libcmis
         return m_properties;
     }
 
+    libcmis::ObjectTypePtr Object::getTypeDescription( )
+    {
+        if ( !m_typeDescription.get( ) )
+            m_typeDescription = m_session->getType( getType( ) );
+
+        return m_typeDescription;
+    }
 
     string Object::toString( )
     {

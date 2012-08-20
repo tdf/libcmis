@@ -38,6 +38,7 @@
 namespace libcmis
 {
     class Document;
+    class Session;
     
     struct UnfileObjects {
         enum Type
@@ -53,6 +54,7 @@ namespace libcmis
     class Folder : public virtual Object
     {
         public:
+            Folder( Session* session ) : Object( session ) { }
             virtual ~Folder() { }
 
             virtual ::boost::shared_ptr< Folder > getFolderParent( ) throw ( Exception ) = 0;

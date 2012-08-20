@@ -34,9 +34,6 @@
 
 class WSObject : public libcmis::Object
 {
-    private:
-        WSSession* m_session;
-
     public:
         WSObject( WSSession* session, xmlNodePtr node );
         WSObject( const WSObject& copy );
@@ -45,8 +42,6 @@ class WSObject : public libcmis::Object
         WSObject& operator=( const WSObject& copy );
 
         virtual void updateProperties( ) throw ( libcmis::Exception );
-
-        virtual libcmis::ObjectTypePtr getTypeDescription( );
         
         virtual void refresh( ) throw ( libcmis::Exception );
         

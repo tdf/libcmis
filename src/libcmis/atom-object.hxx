@@ -53,9 +53,6 @@ class AtomLink
 class AtomObject : public virtual libcmis::Object
 {
     private:
-        AtomPubSession* m_session;
-
-        libcmis::ObjectTypePtr m_typeDescription;
 
         std::vector< AtomLink > m_links;
 
@@ -68,8 +65,6 @@ class AtomObject : public virtual libcmis::Object
 
         // Overridden methods from libcmis::Object
         virtual void updateProperties( ) throw ( libcmis::Exception );
-
-        virtual libcmis::ObjectTypePtr getTypeDescription( );
 
         /** Reload the data from the server.
               */
@@ -87,7 +82,7 @@ class AtomObject : public virtual libcmis::Object
         virtual void refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception );
         virtual void extractInfos( xmlDocPtr doc );
 
-        AtomPubSession* getSession( ) { return m_session; }
+        AtomPubSession* getSession( );
 
         /** Documents will override this method to output the content stream
           */
