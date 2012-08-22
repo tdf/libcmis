@@ -189,7 +189,8 @@ void AtomRepository::readUriTemplates( xmlNodeSetPtr nodeSet )
             if ( isTemplate )
             {
                 xmlChar* content = xmlNodeGetContent( child );
-                templateUri = string( ( char * )content );
+                if ( content != NULL )
+                    templateUri = string( ( char * )content );
                 xmlFree( content );
             }
             else if ( isType )

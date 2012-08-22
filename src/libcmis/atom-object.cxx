@@ -94,7 +94,7 @@ AtomObject::~AtomObject( )
 {
 }
 
-void AtomObject::updateProperties( ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomObject::updateProperties( ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
         throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
@@ -138,8 +138,12 @@ void AtomObject::updateProperties( ) throw ( libcmis::Exception )
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    refreshImpl( doc );
+    libcmis::ObjectPtr updated = getSession( )->createObjectFromEntryDoc( doc );
+    if ( updated->getId( ) == getId( ) )
+        refreshImpl( doc );
     xmlFreeDoc( doc );
+
+    return updated;
 }
 
 void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )

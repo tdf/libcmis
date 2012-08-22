@@ -64,7 +64,7 @@ class AtomObject : public virtual libcmis::Object
         AtomObject& operator=( const AtomObject& copy );
 
         // Overridden methods from libcmis::Object
-        virtual void updateProperties( ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr updateProperties( ) throw ( libcmis::Exception );
 
         /** Reload the data from the server.
               */

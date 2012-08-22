@@ -243,13 +243,16 @@ void libcmis_object_clearProperties( libcmis_ObjectPtr object )
 }
 
 
-void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error )
+libcmis_ObjectPtr libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error )
 {
+    libcmis_ObjectPtr result = NULL;
     if ( object != NULL && object->handle != NULL )
     {
         try
         {
-            object->handle->updateProperties( );
+            libcmis::ObjectPtr handle = object->handle->updateProperties( );
+            result = new libcmis_object( );
+            result->handle = handle;
         }
         catch ( const libcmis::Exception& e )
         {
@@ -258,6 +261,7 @@ void libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr
                 error->handle = new libcmis::Exception( e );
         }
     }
+    return result;
 }
 
 

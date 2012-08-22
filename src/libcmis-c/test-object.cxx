@@ -366,8 +366,16 @@ void ObjectTest::updatePropertiesTest( )
     libcmis_ObjectPtr tested = getTested( false );
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
     libcmis_ErrorPtr error = libcmis_error_create( );
-    libcmis_object_updateProperties( tested, error );
+    
+    // Update the properties (method under test)
+    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, error );
+
+    // Checks
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not updated", 0 != libcmis_object_getRefreshTimestamp( tested ) );
+    CPPUNIT_ASSERT( updated != NULL );
+
+    // Free it all
+    libcmis_object_free( updated );
     libcmis_error_free( error );
     libcmis_object_free( tested );
 }
@@ -377,9 +385,17 @@ void ObjectTest::updatePropertiesErrorTest( )
     libcmis_ObjectPtr tested = getTested( true );
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
     libcmis_ErrorPtr error = libcmis_error_create( );
-    libcmis_object_updateProperties( tested, error );
+
+    // Update the properties (method under test)
+    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, error );
+
+    // Checks
+    CPPUNIT_ASSERT( updated == NULL );
     const char* actualMessage = libcmis_error_getMessage( error );
     CPPUNIT_ASSERT( !string( actualMessage ).empty( ) );
+
+    // Free it all
+    libcmis_object_free( updated );
     libcmis_error_free( error );
     libcmis_object_free( tested );
 }

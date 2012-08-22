@@ -486,10 +486,11 @@ void CmisClient::execute( ) throw ( exception )
                 }
             }
 
-            object->updateProperties( );
+            libcmis::ObjectPtr updated = object->updateProperties( );
 
             cout << "------------------------------------------------" << endl;
-            cout << object->toString() << endl;
+            // Output updated instead of object as it may be different depending on the server
+            cout << updated->toString() << endl;
 
             delete session;
         }

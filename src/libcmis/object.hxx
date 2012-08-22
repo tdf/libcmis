@@ -103,7 +103,14 @@ namespace libcmis
             virtual std::map< std::string, PropertyPtr >& getProperties( );
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
-            virtual void updateProperties( ) throw ( Exception ) = 0;
+            /** Update the object properties and return the updated object.
+
+                \attention
+                    even if the returned object may have the same Id than 'this' and thus
+                    representing the same object on the server, those are still two different
+                    instances to ease memory handling.
+              */
+            virtual boost::shared_ptr< Object > updateProperties( ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( );
 

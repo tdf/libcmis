@@ -227,7 +227,7 @@ namespace dummies
     }
 
     Object::Object( bool triggersFaults, string type ):
-        libcmis::Object( ),
+        libcmis::Object( NULL ),
         m_type( type ),
         m_triggersFaults( triggersFaults ),
         m_timestamp( 0 ),
@@ -286,12 +286,14 @@ namespace dummies
         return m_properties;
     }
 
-    void Object::updateProperties( ) throw ( libcmis::Exception )
+    libcmis::ObjectPtr Object::updateProperties( ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
         time( &m_timestamp );
+        libcmis::ObjectPtr result( new Object( false ) );
+        return result;
     }
 
     libcmis::ObjectTypePtr Object::getTypeDescription( )
@@ -335,7 +337,8 @@ namespace dummies
     }
 
     Folder::Folder( bool isRoot, bool triggersFaults ) :
-        libcmis::Folder( ),
+        libcmis::Object( NULL ),
+        libcmis::Folder( NULL ),
         dummies::Object( triggersFaults, "Folder" ),
         m_isRoot( isRoot )
     {
@@ -413,7 +416,8 @@ namespace dummies
     }
             
     Document::Document( bool isFiled, bool triggersFaults ) :
-        libcmis::Document( ),
+        libcmis::Object( NULL ),
+        libcmis::Document( NULL ),
         dummies::Object( triggersFaults, "Document" ),
         m_isFiled( isFiled ),
         m_contentString( "Document::ContentStream" )

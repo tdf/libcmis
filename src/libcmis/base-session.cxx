@@ -223,7 +223,7 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
 #else
             char* escaped = curl_escape( value.c_str(), value.length() );
 #endif
-            url.replace( pos, name.size(), escaped );
+            url = url.replace( pos, name.size(), escaped );
             curl_free( escaped );
         }
 

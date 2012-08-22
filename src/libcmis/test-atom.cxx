@@ -513,10 +513,10 @@ void AtomTest::updatePropertiesTest( )
     values.push_back( TEST_UPDATED_PROPERTY_VALUE );
     it->second->setValues( values );
 
-    object->updateProperties( );
+    libcmis::ObjectPtr updated = object->updateProperties( );
 
-    it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
-    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != object->getProperties( ).end( ) );
+    it = updated->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
+    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != updated->getProperties( ).end( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", TEST_UPDATED_PROPERTY_VALUE, it->second->getStrings().front( ) );
 }
 

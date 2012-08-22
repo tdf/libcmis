@@ -118,7 +118,7 @@ namespace dummies
             virtual bool isImmutable( ) { return true; };
 
             virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
-            virtual void updateProperties( ) throw ( libcmis::Exception );
+            virtual libcmis::ObjectPtr updateProperties( ) throw ( libcmis::Exception );
 
             virtual libcmis::ObjectTypePtr getTypeDescription( );
             virtual libcmis::AllowableActionsPtr getAllowableActions( );

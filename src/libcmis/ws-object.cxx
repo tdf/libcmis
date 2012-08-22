@@ -54,9 +54,13 @@ WSObject& WSObject::operator=( const WSObject& copy )
     return *this;
 }
 
-void WSObject::updateProperties( ) throw ( libcmis::Exception )
+libcmis::ObjectPtr WSObject::updateProperties( ) throw ( libcmis::Exception )
 {
+    libcmis::ObjectPtr empty;
+
     // TODO Implement me
+
+    return empty;
 }
 
 void WSObject::refresh( ) throw ( libcmis::Exception )
