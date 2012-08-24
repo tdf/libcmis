@@ -70,7 +70,8 @@ void WSObject::refresh( ) throw ( libcmis::Exception )
 
 void WSObject::remove( bool allVersions ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).deleteObject( repoId, this->getId( ), allVersions );
 }
 
 void WSObject::move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception )

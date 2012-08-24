@@ -309,3 +309,19 @@ SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultip
 
     return SoapResponsePtr( response );
 }
+
+void DeleteObject::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteObject" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    string allVersionsStr( "false" );
+    if ( m_allVersions )
+        allVersionsStr = "true";
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}

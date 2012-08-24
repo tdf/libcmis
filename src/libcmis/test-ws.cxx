@@ -61,6 +61,7 @@ class WSTest : public CppUnit::TestFixture
         // Object tests
         void getObjectTest( );
         void updatePropertiesTest( );
+        void deleteObjectTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -72,6 +73,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -187,5 +189,27 @@ void WSTest::updatePropertiesTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
+void WSTest::deleteObjectTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    // Get the object to remove
+    string id( "130" );
+    libcmis::ObjectPtr object = session.getObject( id );
+
+    // Remove the object (method to test)
+    object->remove( false );
+
+    // Check that the node doesn't exist anymore
+    try
+    {
+        libcmis::ObjectPtr newObject = session.getObject( id );
+        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "objectNotFound" ), e.getType( ) );
+    }
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );

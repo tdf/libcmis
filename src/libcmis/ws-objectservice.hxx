@@ -56,6 +56,7 @@ class ObjectService
                 std::string objectId,
                 const std::map< std::string, libcmis::PropertyPtr > & properties,
                 std::string changeToken ) throw ( libcmis::Exception );
+        void deleteObject( std::string repoId, std::string id, bool allVersions ) throw ( libcmis::Exception );
 };
 
 #endif
