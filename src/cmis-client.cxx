@@ -469,24 +469,26 @@ void CmisClient::execute( ) throw ( exception )
 
             libcmis::ObjectPtr object = session->getObject( args[0] );
             libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
+            map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
 
-            map< string, libcmis::PropertyPtr >& properties = object->getProperties( );
+            map< string, libcmis::PropertyPtr > properties;
 
             // Checks for the properties to set if any
             map< string, string > propsToSet = getObjectProperties( );
             for ( map< string, string >::iterator it = propsToSet.begin(); it != propsToSet.end(); ++it )
             {
                 // Create the CMIS property if it exists
-                map< string, libcmis::PropertyPtr >::iterator propIt = properties.find( it->first );
-                if ( propIt != properties.end( ) && propIt->second->getPropertyType( )->isUpdatable( ) )
+                map< string, libcmis::PropertyTypePtr >::iterator typeIt = propertiesTypes.find( it->first );
+                if ( typeIt != propertiesTypes.end( ) && typeIt->second->isUpdatable( ) )
                 {
                     vector< string > values;
                     values.push_back( it->second );
-                    propIt->second->setValues( values );
+                    libcmis::PropertyPtr property( new libcmis::Property( typeIt->second, values ) );
+                    properties[ it->first ] = property;
                 }
             }
 
-            libcmis::ObjectPtr updated = object->updateProperties( );
+            libcmis::ObjectPtr updated = object->updateProperties( properties );
 
             cout << "------------------------------------------------" << endl;
             // Output updated instead of object as it may be different depending on the server

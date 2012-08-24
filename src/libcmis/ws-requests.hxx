@@ -236,12 +236,12 @@ class UpdateProperties : public SoapRequest
     private:
         std::string m_repositoryId;
         std::string m_objectId;
-        std::map< std::string, libcmis::PropertyPtr > m_properties;
+        const std::map< std::string, libcmis::PropertyPtr >& m_properties;
         std::string m_changeToken;
 
     public:
         UpdateProperties( std::string repoId, std::string objectId,
-                std::map< std::string, libcmis::PropertyPtr > properties,
+                const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string changeToken ) :
             m_repositoryId( repoId ),
             m_objectId( objectId ),

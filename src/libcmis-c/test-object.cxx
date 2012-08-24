@@ -64,11 +64,6 @@ class ObjectTest : public CppUnit::TestFixture
         void getPropertiesTest( );
         void getPropertyTest( );
         void getPropertyMissingTest( );
-        void setPropertyTest( );
-        void setPropertyReplaceTest( );
-        void removePropertyTest( );
-        void removePropertyMissingTest( );
-        void clearPropertiesTest( );
         void updatePropertiesTest( );
         void updatePropertiesErrorTest( );
         void getTypeDescriptionTest( );
@@ -96,11 +91,6 @@ class ObjectTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getPropertiesTest );
         CPPUNIT_TEST( getPropertyTest );
         CPPUNIT_TEST( getPropertyMissingTest );
-        CPPUNIT_TEST( setPropertyTest );
-        CPPUNIT_TEST( setPropertyReplaceTest );
-        CPPUNIT_TEST( removePropertyTest );
-        CPPUNIT_TEST( removePropertyMissingTest );
-        CPPUNIT_TEST( clearPropertiesTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( updatePropertiesErrorTest );
         CPPUNIT_TEST( getTypeDescriptionTest );
@@ -262,113 +252,26 @@ void ObjectTest::getPropertyMissingTest( )
     libcmis_object_free( tested );
 }
 
-void ObjectTest::removePropertyTest( )
-{
-    libcmis_ObjectPtr tested = getTested( false );
-    const char* id = "Property1";
-    libcmis_object_removeProperty( tested, id );
-
-    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_property_size( actual ) );
-    libcmis_vector_property_free( actual );
-    libcmis_object_free( tested );
-}
-
-void ObjectTest::setPropertyTest( )
-{
-    libcmis_ObjectPtr tested = getTested( false );
-
-    // Create the property
-    const char* id = "Property2";
-    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
-    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
-    size_t size = 2;
-    const char** values = new const char*[size];
-    values[0] = "Value 1";
-    values[1] = "Value 2";
-    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
-    delete[ ] values;
-
-    // Set the property (method to test)
-    libcmis_object_setProperty( tested, property );
-
-    // Check
-    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_property_size( actual ) );
-    libcmis_vector_property_free( actual );
-
-    libcmis_property_free( property );
-    libcmis_property_type_free( propertyType );
-    libcmis_object_type_free( objectType );
-    libcmis_object_free( tested );
-}
-
-void ObjectTest::setPropertyReplaceTest( )
-{
-    libcmis_ObjectPtr tested = getTested( false );
-
-    // Create the property
-    const char* id = "Property1";
-    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
-    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, id );
-    size_t size = 2;
-    const char** values = new const char*[size];
-    values[0] = "Value 1";
-    values[1] = "Value 2";
-    libcmis_PropertyPtr property = libcmis_property_create( propertyType, values, size );
-    delete[ ] values;
-
-    // Set the property (method to test)
-    libcmis_object_setProperty( tested, property );
-
-    // Check
-    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_property_size( actual ) );
-    libcmis_vector_property_free( actual );
-
-    libcmis_PropertyPtr updatedProperty = libcmis_object_getProperty( tested, id );
-    libcmis_vector_string_Ptr newValues = libcmis_property_getStrings( updatedProperty );
-    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_string_size( newValues ) );
-    libcmis_vector_string_free( newValues );
-    libcmis_property_free( updatedProperty );
-
-    libcmis_property_free( property );
-    libcmis_property_type_free( propertyType );
-    libcmis_object_type_free( objectType );
-    libcmis_object_free( tested );
-}
-
-void ObjectTest::removePropertyMissingTest( )
-{
-    libcmis_ObjectPtr tested = getTested( false );
-    const char* id = "MissingProperty";
-    libcmis_object_removeProperty( tested, id );
-
-    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_property_size( actual ) );
-    libcmis_vector_property_free( actual );
-    libcmis_object_free( tested );
-}
-
-void ObjectTest::clearPropertiesTest( )
-{
-    libcmis_ObjectPtr tested = getTested( false );
-    libcmis_object_clearProperties( tested );
-
-    libcmis_vector_property_Ptr actual = libcmis_object_getProperties( tested );
-    CPPUNIT_ASSERT_EQUAL( size_t( 0 ), libcmis_vector_property_size( actual ) );
-    libcmis_vector_property_free( actual );
-    libcmis_object_free( tested );
-}
-
 void ObjectTest::updatePropertiesTest( )
 {
     libcmis_ObjectPtr tested = getTested( false );
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
     libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // Create the changed properties map
+    libcmis_vector_property_Ptr newProperties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, "cmis:Property2" );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr newProperty = libcmis_property_create( propertyType, values, size );
+    delete[ ] values;
+    libcmis_vector_property_append( newProperties, newProperty );
     
     // Update the properties (method under test)
-    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, error );
+    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, newProperties, error );
 
     // Checks
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not updated", 0 != libcmis_object_getRefreshTimestamp( tested ) );
@@ -376,6 +279,10 @@ void ObjectTest::updatePropertiesTest( )
 
     // Free it all
     libcmis_object_free( updated );
+    libcmis_property_free( newProperty );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( newProperties );
     libcmis_error_free( error );
     libcmis_object_free( tested );
 }
@@ -385,9 +292,21 @@ void ObjectTest::updatePropertiesErrorTest( )
     libcmis_ObjectPtr tested = getTested( true );
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
     libcmis_ErrorPtr error = libcmis_error_create( );
-
+    
+    // Create the changed properties map
+    libcmis_vector_property_Ptr newProperties = libcmis_vector_property_create( );
+    libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
+    libcmis_PropertyTypePtr propertyType = libcmis_object_type_getPropertyType( objectType, "cmis:Property2" );
+    size_t size = 2;
+    const char** values = new const char*[size];
+    values[0] = "Value 1";
+    values[1] = "Value 2";
+    libcmis_PropertyPtr newProperty = libcmis_property_create( propertyType, values, size );
+    delete[ ] values;
+    libcmis_vector_property_append( newProperties, newProperty );
+    
     // Update the properties (method under test)
-    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, error );
+    libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, newProperties, error );
 
     // Checks
     CPPUNIT_ASSERT( updated == NULL );
@@ -396,6 +315,10 @@ void ObjectTest::updatePropertiesErrorTest( )
 
     // Free it all
     libcmis_object_free( updated );
+    libcmis_property_free( newProperty );
+    libcmis_property_type_free( propertyType );
+    libcmis_object_type_free( objectType );
+    libcmis_vector_property_free( newProperties );
     libcmis_error_free( error );
     libcmis_object_free( tested );
 }

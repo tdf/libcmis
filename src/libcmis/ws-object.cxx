@@ -54,10 +54,11 @@ WSObject& WSObject::operator=( const WSObject& copy )
     return *this;
 }
 
-libcmis::ObjectPtr WSObject::updateProperties( ) throw ( libcmis::Exception )
+libcmis::ObjectPtr WSObject::updateProperties(
+        const map< string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getObjectService( ).updateProperties( repoId, this );
+    return getSession( )->getObjectService( ).updateProperties( repoId, this->getId( ), properties, this->getChangeToken( ) );
 }
 
 void WSObject::refresh( ) throw ( libcmis::Exception )

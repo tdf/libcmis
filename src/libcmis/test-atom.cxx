@@ -70,10 +70,6 @@
 #define TEST_PATH_VALID string( "/My_Folder-0-0/My_Document-1-2" )
 #define TEST_PATH_INVALID string( "/some/dummy/path" )
 
-#define TEST_UPDATE_DOCUMENT_ID string( "114" )
-#define TEST_UPDATED_PROPERTY_NAME string( "cmis:name" )
-#define TEST_UPDATED_PROPERTY_VALUE string( "New name" )
-
 using boost::shared_ptr;
 using namespace std;
 
@@ -504,20 +500,28 @@ void AtomTest::setContentStreamTest( )
 void AtomTest::updatePropertiesTest( )
 {
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
-    libcmis::ObjectPtr object = session.getObject( TEST_UPDATE_DOCUMENT_ID );
 
-    map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
-    CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
+    // Values for the test
+    libcmis::ObjectPtr object = session.getObject( "114" );
+    string propertyName( "cmis:name" );
+    string expectedValue( "New name" );
 
+    // Fill the map of properties to change
+    map< string, libcmis::PropertyPtr > newProperties;
+
+    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
     vector< string > values;
-    values.push_back( TEST_UPDATED_PROPERTY_VALUE );
-    it->second->setValues( values );
+    values.push_back( expectedValue );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
 
-    libcmis::ObjectPtr updated = object->updateProperties( );
+    // Update the properties (method to test)
+    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
 
-    it = updated->getProperties( ).find( TEST_UPDATED_PROPERTY_NAME );
-    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != updated->getProperties( ).end( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", TEST_UPDATED_PROPERTY_VALUE, it->second->getStrings().front( ) );
+    // Checks
+    map< string, libcmis::PropertyPtr >::iterator propIt = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
 void AtomTest::createFolderTest( )

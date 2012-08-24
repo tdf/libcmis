@@ -276,7 +276,7 @@ void UpdateProperties::toXml( xmlTextWriterPtr writer )
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-    for ( map< string, libcmis::PropertyPtr >::iterator it = m_properties.begin( );
+    for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;

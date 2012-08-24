@@ -82,9 +82,10 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object );
 libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );
-void libcmis_object_removeProperty( libcmis_ObjectPtr object, const char* name );
-void libcmis_object_clearProperties( libcmis_ObjectPtr object );
-libcmis_ObjectPtr libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
+libcmis_ObjectPtr libcmis_object_updateProperties(
+        libcmis_ObjectPtr object,
+        libcmis_vector_property_Ptr properties,
+        libcmis_ErrorPtr error );
 
 libcmis_ObjectTypePtr libcmis_object_getTypeDescription( libcmis_ObjectPtr object );
 libcmis_AllowableActionsPtr libcmis_object_getAllowableActions( libcmis_ObjectPtr object );

@@ -41,7 +41,8 @@ class WSObject : public libcmis::Object
 
         WSObject& operator=( const WSObject& copy );
 
-        virtual libcmis::ObjectPtr updateProperties( ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr updateProperties(
+                const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
         
         virtual void refresh( ) throw ( libcmis::Exception );
         

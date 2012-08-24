@@ -63,9 +63,9 @@ namespace libcmis
 
             virtual bool isRootFolder( ) = 0;
 
-            virtual ::boost::shared_ptr< Folder > createFolder( std::map< std::string, PropertyPtr >& properties )
+            virtual ::boost::shared_ptr< Folder > createFolder( const std::map< std::string, PropertyPtr >& properties )
                 throw ( libcmis::Exception ) = 0;
-            virtual ::boost::shared_ptr< Document > createDocument( std::map< std::string, PropertyPtr >& properties,
+            virtual ::boost::shared_ptr< Document > createDocument( const std::map< std::string, PropertyPtr >& properties,
                                     boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( Exception ) = 0;
 
             virtual void removeTree( bool allVersion = true, UnfileObjects::Type unfile = UnfileObjects::Delete,

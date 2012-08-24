@@ -94,7 +94,7 @@ AtomObject::~AtomObject( )
 {
 }
 
-libcmis::ObjectPtr AtomObject::updateProperties( ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomObject::updateProperties( const map< string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
         throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
@@ -107,6 +107,8 @@ libcmis::ObjectPtr AtomObject::updateProperties( ) throw ( libcmis::Exception )
     // Copy and remove the readonly properties before serializing
     AtomObject copy( *this );
     map< string, libcmis::PropertyPtr >& props = copy.getProperties( );
+    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+    props.swap( propertiesCopy );
     for ( map< string, libcmis::PropertyPtr >::iterator it = props.begin( ); it != props.end( ); )
     {
         if ( !it->second->getPropertyType( )->isUpdatable( ) )

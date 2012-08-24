@@ -127,7 +127,7 @@ namespace libcmis
     string Object::getId( )
     {
         string name;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:objectId" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             name = it->second->getStrings( ).front( );
         return name;
@@ -136,7 +136,7 @@ namespace libcmis
     string Object::getName( )
     {
         string name;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:name" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:name" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             name = it->second->getStrings( ).front( );
         return name;
@@ -150,7 +150,7 @@ namespace libcmis
     string Object::getBaseType( )
     {
         string value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:baseTypeId" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:baseTypeId" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
@@ -159,7 +159,7 @@ namespace libcmis
     string Object::getType( )
     {
         string value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectTypeId" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:objectTypeId" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
 
@@ -171,7 +171,7 @@ namespace libcmis
     string Object::getCreatedBy( )
     {
         string value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:createdBy" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:createdBy" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
@@ -180,7 +180,7 @@ namespace libcmis
     boost::posix_time::ptime Object::getCreationDate( )
     {
         boost::posix_time::ptime value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
         if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
@@ -189,7 +189,7 @@ namespace libcmis
     string Object::getLastModifiedBy( )
     {
         string value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModifiedBy" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:lastModifiedBy" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
@@ -198,7 +198,7 @@ namespace libcmis
     boost::posix_time::ptime Object::getLastModificationDate( )
     {
         boost::posix_time::ptime value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
         if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
@@ -207,7 +207,7 @@ namespace libcmis
     bool Object::isImmutable( )
     {
         bool value = false;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
         if ( it != getProperties( ).end( ) && !it->second->getBools( ).empty( ) )
             value = it->second->getBools( ).front( );
         return value;
@@ -216,7 +216,7 @@ namespace libcmis
     string Object::getChangeToken( )
     {
         string value;
-        map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:changeToken" ) );
+        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:changeToken" ) );
         if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;

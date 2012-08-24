@@ -277,7 +277,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     map< string, libcmis::PropertyPtr >::iterator it = props.find( string( "cmis:objectId" ) );
     if ( it != props.end( ) )
     {
-        tmp.getProperties( ).insert( *it );
+        tmp.m_properties.insert( *it );
     }
 
     tmp.toXml( writer );
@@ -342,7 +342,7 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
 }
 
 void AtomDocument::checkIn( bool isMajor, string comment,
-                            map< string, libcmis::PropertyPtr >& properties,
+                            const map< string, libcmis::PropertyPtr >& properties,
                             boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckIn ) ) )
@@ -373,7 +373,8 @@ void AtomDocument::checkIn( bool isMajor, string comment,
 
     // Create the content to put
     AtomDocument document( getSession() );
-    document.getProperties( ).swap( properties );
+    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+    document.m_properties.swap( propertiesCopy );
     if ( stream.get( ) )
         document.setContentStream( stream, contentType );
    

@@ -124,7 +124,7 @@ namespace libcmis
                 \param contentType the mime type of the stream to set
               */
             virtual void checkIn( bool isMajor, std::string comment,
-                                  std::map< std::string, PropertyPtr >& properties,
+                                  const std::map< std::string, PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType ) throw ( Exception ) = 0;
 

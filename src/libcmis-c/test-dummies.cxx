@@ -229,9 +229,7 @@ namespace dummies
     Object::Object( bool triggersFaults, string type ):
         libcmis::Object( NULL ),
         m_type( type ),
-        m_triggersFaults( triggersFaults ),
-        m_timestamp( 0 ),
-        m_properties( )
+        m_triggersFaults( triggersFaults )
     {
         libcmis::PropertyTypePtr propertyType( new PropertyType( "Property1", "string" ) );
         vector< string > values;
@@ -240,17 +238,17 @@ namespace dummies
         m_properties.insert( pair< string, libcmis::PropertyPtr >( propertyType->getId( ), property ) );
     }
 
-    std::string Object::getId( )
+    string Object::getId( )
     {
         return m_type + "::Id";
     }
 
-    std::string Object::getName( )
+    string Object::getName( )
     {
         return m_type + "::Name";
     }
 
-    std::vector< std::string > Object::getPaths( )
+    vector< string > Object::getPaths( )
     {
         vector< string > paths;
         paths.push_back( string( "/Path1/" ) );
@@ -259,12 +257,12 @@ namespace dummies
         return paths;
     }
 
-    std::string Object::getBaseType( )
+    string Object::getBaseType( )
     {
         return m_type + "::BaseType";
     }
 
-    std::string Object::getType( )
+    string Object::getType( )
     {
         return m_type + "::Type";
     }
@@ -281,17 +279,13 @@ namespace dummies
         return now;
     }
 
-    std::map< std::string, libcmis::PropertyPtr >& Object::getProperties( )
-    {
-        return m_properties;
-    }
-
-    libcmis::ObjectPtr Object::updateProperties( ) throw ( libcmis::Exception )
+    libcmis::ObjectPtr Object::updateProperties(
+           const map< string, libcmis::PropertyPtr >& ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
         libcmis::ObjectPtr result( new Object( false ) );
         return result;
     }
@@ -313,7 +307,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 
     void Object::remove( bool ) throw ( libcmis::Exception )
@@ -321,7 +315,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 
     void Object::move( libcmis::FolderPtr, libcmis::FolderPtr ) throw ( libcmis::Exception )
@@ -329,7 +323,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 
     void Object::toXml( xmlTextWriterPtr )
@@ -382,7 +376,7 @@ namespace dummies
         return m_isRoot;
     }
 
-    libcmis::FolderPtr Folder::createFolder( map< string, libcmis::PropertyPtr >& ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Folder::createFolder( const map< string, libcmis::PropertyPtr >& ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -391,15 +385,16 @@ namespace dummies
         return created;
     }
 
-    libcmis::DocumentPtr Folder::createDocument( map< std::string, libcmis::PropertyPtr >& properties,
-                            boost::shared_ptr< ostream > os, std::string contentType ) throw ( libcmis::Exception )
+    libcmis::DocumentPtr Folder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
+                            boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
         dummies::Document* document = new dummies::Document( true, false );
 
-        document->m_properties = properties;
+        map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+        document->getProperties( ).swap( propertiesCopy );
         document->setContentStream( os, contentType );
 
         libcmis::DocumentPtr created( document );
@@ -412,7 +407,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
             
     Document::Document( bool isFiled, bool triggersFaults ) :
@@ -470,7 +465,7 @@ namespace dummies
 
         m_contentString = out.str( );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 
     string Document::getContentType( )
@@ -493,7 +488,7 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
 
         libcmis::DocumentPtr result( new Document( true, m_triggersFaults ) );
         return result;
@@ -504,10 +499,10 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 
-    void Document::checkIn( bool, string, map< string, libcmis::PropertyPtr >& properties,
+    void Document::checkIn( bool, string, const map< string, libcmis::PropertyPtr >& properties,
                   boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
@@ -515,6 +510,6 @@ namespace dummies
 
         m_properties = properties;
         setContentStream( os, contentType );
-        time( &m_timestamp );
+        time( &m_refreshTimestamp );
     }
 }

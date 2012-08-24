@@ -94,8 +94,6 @@ namespace dummies
         public:
             std::string m_type;
             bool m_triggersFaults;
-            time_t m_timestamp;
-            std::map< std::string, libcmis::PropertyPtr > m_properties;
 
         public:
             Object( bool triggersFaults, std::string m_type = "Object" );
@@ -117,14 +115,13 @@ namespace dummies
             virtual std::string getChangeToken( ) { return m_type + "::ChangeToken"; }
             virtual bool isImmutable( ) { return true; };
 
-            virtual std::map< std::string, libcmis::PropertyPtr >& getProperties( );
-            virtual libcmis::ObjectPtr updateProperties( ) throw ( libcmis::Exception );
+            virtual libcmis::ObjectPtr updateProperties(
+                    const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
 
             virtual libcmis::ObjectTypePtr getTypeDescription( );
             virtual libcmis::AllowableActionsPtr getAllowableActions( );
 
             virtual void refresh( ) throw ( libcmis::Exception );
-            virtual time_t getRefreshTimestamp( ) { return m_timestamp; }
 
             virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
             
@@ -150,8 +147,8 @@ namespace dummies
 
             virtual bool isRootFolder( );
 
-            virtual libcmis::FolderPtr createFolder( std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
-            virtual libcmis::DocumentPtr createDocument( std::map< std::string, libcmis::PropertyPtr >& properties,
+            virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+            virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
                                     boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
 
             virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
@@ -188,7 +185,7 @@ namespace dummies
             virtual void cancelCheckout( ) throw ( libcmis::Exception );
 
             virtual void checkIn( bool isMajor, std::string comment,
-                                  std::map< std::string, libcmis::PropertyPtr >& properties,
+                                  const std::map< std::string, libcmis::PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType ) throw ( libcmis::Exception );
     };

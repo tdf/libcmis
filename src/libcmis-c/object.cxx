@@ -210,47 +210,26 @@ libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const 
 }
 
 
-void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property )
-{
-    if ( object != NULL && object->handle.get( ) != NULL &&
-            property != NULL && property->handle.get( ) != NULL )
-    {
-        map< string, libcmis::PropertyPtr >& properties = object->handle->getProperties( );
-        string id = property->handle->getPropertyType( )->getId( );
-
-        if ( properties.count( id ) > 0 )
-            properties.erase( id );
-
-        properties.insert( pair< string, libcmis::PropertyPtr >( id, property->handle ) );
-    }
-}
-
-
-void libcmis_object_removeProperty( libcmis_ObjectPtr object, const char* name )
-{
-    if ( object != NULL && object->handle.get( ) != NULL )
-    {
-        map< string, libcmis::PropertyPtr >& properties = object->handle->getProperties( );
-        properties.erase( string( name ) );
-    }
-}
-
-
-void libcmis_object_clearProperties( libcmis_ObjectPtr object )
-{
-    if ( object != NULL && object->handle.get( ) != NULL )
-        object->handle->getProperties( ).clear( );
-}
-
-
-libcmis_ObjectPtr libcmis_object_updateProperties( libcmis_ObjectPtr object, libcmis_ErrorPtr error )
+libcmis_ObjectPtr libcmis_object_updateProperties(
+        libcmis_ObjectPtr object,
+        libcmis_vector_property_Ptr properties,
+        libcmis_ErrorPtr error )
 {
     libcmis_ObjectPtr result = NULL;
-    if ( object != NULL && object->handle != NULL )
+    if ( object != NULL && object->handle != NULL && properties != NULL )
     {
         try
         {
-            libcmis::ObjectPtr handle = object->handle->updateProperties( );
+            // Build the map of changed properties
+            map< string, libcmis::PropertyPtr > propertiesMap;
+            for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                    it != properties->handle.end( ); ++it )
+            {
+                libcmis::PropertyPtr propHandle = *it;
+                propertiesMap[ propHandle->getPropertyType()->getId( ) ] = propHandle;
+            }
+
+            libcmis::ObjectPtr handle = object->handle->updateProperties( propertiesMap );
             result = new libcmis_object( );
             result->handle = handle;
         }

@@ -77,25 +77,23 @@ libcmis::ObjectPtr ObjectService::getObject( string repoId, string id ) throw ( 
     return object;
 }
 
-libcmis::ObjectPtr ObjectService::updateProperties( string repoId, libcmis::Object* toUpdate ) throw ( libcmis::Exception )
+libcmis::ObjectPtr ObjectService::updateProperties(
+        string repoId, string objectId,
+        const map< string, libcmis::PropertyPtr >& properties,
+        string changeToken ) throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
 
-    if ( toUpdate != NULL )
+    UpdateProperties request( repoId, objectId, properties, changeToken );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
     {
-        UpdateProperties request( repoId, toUpdate->getId( ), toUpdate->getProperties( ), toUpdate->getChangeToken( ) );
-        vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
-        if ( responses.size( ) == 1 )
+        SoapResponse* resp = responses.front( ).get( );
+        UpdatePropertiesResponse* response = dynamic_cast< UpdatePropertiesResponse* >( resp );
+        if ( response != NULL )
         {
-            SoapResponse* resp = responses.front( ).get( );
-            UpdatePropertiesResponse* response = dynamic_cast< UpdatePropertiesResponse* >( resp );
-            if ( response != NULL )
-            {
-                string id = response->getObjectId( );
-                object = getObject( repoId, id );
-                if ( id == toUpdate->getId( ) )
-                    toUpdate->refresh( );
-            }
+            string id = response->getObjectId( );
+            object = getObject( repoId, id );
         }
     }
 

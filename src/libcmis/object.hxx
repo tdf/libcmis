@@ -100,6 +100,16 @@ namespace libcmis
             virtual std::string getChangeToken( );
             virtual bool isImmutable( );
 
+            /** Gives access to the properties of the object.
+
+                \attention
+                    API users should consider this method as read-only as the
+                    changed properties won't be updated to the server. Updating
+                    the returned map may lead to changes loss when calling
+                    updateProperties.
+
+                \sa updateProperties to change properties on the server
+              */
             virtual std::map< std::string, PropertyPtr >& getProperties( );
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
@@ -110,7 +120,8 @@ namespace libcmis
                     representing the same object on the server, those are still two different
                     instances to ease memory handling.
               */
-            virtual boost::shared_ptr< Object > updateProperties( ) throw ( Exception ) = 0;
+            virtual boost::shared_ptr< Object > updateProperties(
+                        const std::map< std::string, PropertyPtr >& properties ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( );
 

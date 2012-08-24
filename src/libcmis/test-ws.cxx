@@ -164,23 +164,27 @@ void WSTest::updatePropertiesTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
     
+    // Values for the test
     libcmis::ObjectPtr object = session.getObject( "114" );
-   
     string propertyName( "cmis:name" ); 
     string expectedValue( "New name" );
+    
+    // Fill the map of properties to change
+    map< string, libcmis::PropertyPtr > newProperties;
 
-    map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( propertyName );
-    CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
-
+    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
     vector< string > values;
     values.push_back( expectedValue );
-    it->second->setValues( values );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
 
-    libcmis::ObjectPtr updated = object->updateProperties( );
+    // Update the properties (method to test)
+    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
 
-    it = updated->getProperties( ).find( propertyName );
-    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != updated->getProperties( ).end( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, it->second->getStrings().front( ) );
+    // Checks
+    map< string, libcmis::PropertyPtr >::iterator propIt = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
 

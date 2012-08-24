@@ -153,7 +153,7 @@ bool AtomFolder::isRootFolder( )
     return m_parentId.empty( );
 }
 
-libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >& properties )
+libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::PropertyPtr >& properties )
     throw( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
@@ -164,7 +164,8 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
 
     // Actually create the folder
     AtomObject object( getSession() );
-    object.getProperties( ).swap( properties );
+    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+    object.getProperties( ).swap( propertiesCopy );
     
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
@@ -206,7 +207,7 @@ libcmis::FolderPtr AtomFolder::createFolder( map< string, libcmis::PropertyPtr >
     return newFolder;
 }
 
-libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyPtr >& properties,
+libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
         boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
@@ -217,7 +218,8 @@ libcmis::DocumentPtr AtomFolder::createDocument( map< string, libcmis::PropertyP
 
     // Actually create the document
     AtomDocument document( getSession() );
-    document.getProperties( ).swap( properties );
+    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+    document.getProperties( ).swap( propertiesCopy );
     document.setContentStream( os, contentType );
    
     xmlBufferPtr buf = xmlBufferCreate( );
