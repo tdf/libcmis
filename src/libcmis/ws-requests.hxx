@@ -231,4 +231,46 @@ class GetObjectResponse : public SoapResponse
         libcmis::ObjectPtr getObject( ) { return m_object; }
 };
 
+class UpdateProperties : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+        std::map< std::string, libcmis::PropertyPtr > m_properties;
+        std::string m_changeToken;
+
+    public:
+        UpdateProperties( std::string repoId, std::string objectId,
+                std::map< std::string, libcmis::PropertyPtr > properties,
+                std::string changeToken ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId ),
+            m_properties( properties ),
+            m_changeToken( changeToken )
+        {
+        }
+
+        ~UpdateProperties( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class UpdatePropertiesResponse : public SoapResponse
+{
+    private:
+        std::string m_id;
+
+        UpdatePropertiesResponse( ) : SoapResponse( ), m_id( ) { }
+
+    public:
+
+        /** Parse cmism:updatePropertiesResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::string getObjectId( ) { return m_id; }
+};
+
 #endif

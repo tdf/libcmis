@@ -60,6 +60,7 @@ class WSTest : public CppUnit::TestFixture
 
         // Object tests
         void getObjectTest( );
+        void updatePropertiesTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -70,6 +71,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -156,6 +158,29 @@ void WSTest::getObjectTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
     CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
+}
+
+void WSTest::updatePropertiesTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    libcmis::ObjectPtr object = session.getObject( "114" );
+   
+    string propertyName( "cmis:name" ); 
+    string expectedValue( "New name" );
+
+    map< string, libcmis::PropertyPtr >::iterator it = object->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_MESSAGE( "Property to change not found", it != object->getProperties( ).end( ) );
+
+    vector< string > values;
+    values.push_back( expectedValue );
+    it->second->setValues( values );
+
+    libcmis::ObjectPtr updated = object->updateProperties( );
+
+    it = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_MESSAGE( "Property to check not found", it != updated->getProperties( ).end( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, it->second->getStrings().front( ) );
 }
 
 

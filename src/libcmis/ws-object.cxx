@@ -56,11 +56,8 @@ WSObject& WSObject::operator=( const WSObject& copy )
 
 libcmis::ObjectPtr WSObject::updateProperties( ) throw ( libcmis::Exception )
 {
-    libcmis::ObjectPtr empty;
-
-    // TODO Implement me
-
-    return empty;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).updateProperties( repoId, this );
 }
 
 void WSObject::refresh( ) throw ( libcmis::Exception )
@@ -78,4 +75,9 @@ void WSObject::remove( bool allVersions ) throw ( libcmis::Exception )
 void WSObject::move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception )
 {
     // TODO Implement me
+}
+
+WSSession* WSObject::getSession( )
+{
+    return dynamic_cast< WSSession* >( m_session );
 }

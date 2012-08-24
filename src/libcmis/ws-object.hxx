@@ -48,6 +48,9 @@ class WSObject : public libcmis::Object
         virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
 
         virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception );
+
+    protected:
+        WSSession* getSession( );
 };
 
 #endif

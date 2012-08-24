@@ -262,3 +262,50 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
 
     return SoapResponsePtr( response );
 }
+
+void UpdateProperties::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:updateProperties" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    if ( !m_changeToken.empty( ) )
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    for ( map< string, libcmis::PropertyPtr >::iterator it = m_properties.begin( );
+            it != m_properties.end( ); ++it )
+    {
+        libcmis::PropertyPtr property = it->second;
+        if( property->getPropertyType( )->isUpdatable( ) )
+            property->toXml( writer );
+    }
+    xmlTextWriterEndElement( writer ); // cmis:properties
+
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    UpdatePropertiesResponse* response = new UpdatePropertiesResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "objectId" ) ) )
+        {
+            xmlChar* content = xmlNodeGetContent( child );
+            if ( content != NULL )
+            {
+                string value( ( char* ) content );
+                xmlFree( content );
+                response->m_id = value;
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}
