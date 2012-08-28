@@ -36,23 +36,12 @@
 
 class AtomFolder : public libcmis::Folder, public AtomObject
 {
-    private:
-        std::string m_path;
-        std::string m_parentId;
-
     public:
         AtomFolder( AtomPubSession* session, xmlNodePtr entryNd );
         ~AtomFolder( );
 
-        // virtual methods form AtomObject
-        virtual std::vector< std::string > getPaths( );
-
         // virtual pure methods from Folder
-        virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
-        virtual std::string getPath( );
-
-        virtual bool isRootFolder( );
 
         virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties )
             throw ( libcmis::Exception );
@@ -61,11 +50,6 @@ class AtomFolder : public libcmis::Folder, public AtomObject
 
         virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
                                 bool continueOnError = false ) throw ( libcmis::Exception );
-        
-        virtual std::string toString( );
-        
-    protected:
-        virtual void extractInfos( xmlDocPtr doc );
 };
 
 #endif

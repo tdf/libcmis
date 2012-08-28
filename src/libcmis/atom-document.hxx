@@ -42,11 +42,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
 {
     private:
         std::string m_contentUrl;
-        std::string m_contentType;
-        std::string m_contentFilename;
-        long m_contentLength;
-
-        boost::shared_ptr< std::ostream > m_contentStream;
 
     public:
         AtomDocument( AtomPubSession* session );
@@ -54,9 +49,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
         ~AtomDocument( );
 
         virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
-
-        // virtual methods form AtomObject
-        virtual std::vector< std::string > getPaths( );
 
         // Override content methods
         virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
@@ -68,9 +60,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
           */
         virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
                                        bool overwrite = true ) throw ( libcmis::Exception );
-        virtual std::string getContentType( ) { return m_contentType; }
-        virtual std::string getContentFilename( ) { return m_contentFilename; }
-        virtual long getContentLength( ){ return m_contentLength; }
         
         virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
         virtual void cancelCheckout( ) throw ( libcmis::Exception );
@@ -78,13 +67,9 @@ class AtomDocument : public libcmis::Document, public AtomObject
                               const std::map< std::string, libcmis::PropertyPtr >& properties,
                               boost::shared_ptr< std::ostream > stream,
                               std::string contentType ) throw ( libcmis::Exception );
-
-        virtual std::string toString( );
     
     protected:
         virtual void extractInfos( xmlDocPtr doc );
-
-        virtual void contentToXml( xmlTextWriterPtr writer ); 
 };
 
 #endif

@@ -89,15 +89,15 @@ namespace libcmis
 
             /** Get the content mime type.
               */
-            virtual std::string getContentType( ) = 0;
+            virtual std::string getContentType( );
             
             /** Get the content stream filename.
               */
-            virtual std::string getContentFilename( ) = 0;
+            virtual std::string getContentFilename( );
 
             /** Get the content length in bytes.
               */
-            virtual long getContentLength( ) = 0;
+            virtual long getContentLength( );
 
             /** Checks out the document and returns the object corresponding to the 
                 created Private Working Copy.
@@ -128,6 +128,10 @@ namespace libcmis
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType ) throw ( Exception ) = 0;
 
+            // virtual methods form Object
+            virtual std::vector< std::string > getPaths( );
+
+            virtual std::string toString( );
     };
     typedef ::boost::shared_ptr< Document > DocumentPtr;
 }

@@ -28,6 +28,8 @@
 #ifndef _ATOM_OBJECT_HXX_
 #define _ATOM_OBJECT_HXX_
 
+#include <ostream>
+
 #include "object.hxx"
 
 class AtomPubSession;
@@ -75,7 +77,9 @@ class AtomObject : public virtual libcmis::Object
 
         virtual void move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception );
 
-        virtual void toXml( xmlTextWriterPtr writer );
+        static void writeAtomEntry( xmlTextWriterPtr writer,
+                const std::map< std::string, libcmis::PropertyPtr >& properties,
+                boost::shared_ptr< std::ostream > os, std::string contentType );
 
     protected:
 
@@ -84,10 +88,6 @@ class AtomObject : public virtual libcmis::Object
         virtual void extractInfos( xmlDocPtr doc );
 
         AtomPubSession* getSession( );
-
-        /** Documents will override this method to output the content stream
-          */
-        virtual void contentToXml( xmlTextWriterPtr writer );
 
         /** Get the atom link corresponding to the given relation and type or NULL
             if no link matched those criteria.

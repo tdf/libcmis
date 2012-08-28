@@ -22,6 +22,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	base-session.hxx \
 	base-session.cxx \
 	allowable-actions.cxx \
+	document.cxx \
+	folder.cxx \
 	object.cxx \
 	object-type.cxx \
 	property.cxx \

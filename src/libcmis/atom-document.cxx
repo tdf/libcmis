@@ -42,11 +42,7 @@ AtomDocument::AtomDocument( AtomPubSession* session ) :
     libcmis::Object( session ),
     libcmis::Document( session ),
     AtomObject( session ),
-    m_contentUrl( ),
-    m_contentType( ),
-    m_contentFilename( ),
-    m_contentLength( 0 ),
-    m_contentStream( )
+    m_contentUrl( )
 {
 }
 
@@ -55,11 +51,7 @@ AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     libcmis::Object( session ),
     libcmis::Document( session ),
     AtomObject( session ),
-    m_contentUrl( ),
-    m_contentType( ),
-    m_contentFilename( ),
-    m_contentLength( 0 ),
-    m_contentStream( )
+    m_contentUrl( )
 {
     xmlDocPtr doc = libcmis::wrapInDoc( entryNd );
     refreshImpl( doc );
@@ -130,29 +122,6 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     return parents;
 }
 
-vector< string > AtomDocument::getPaths( )
-{
-    vector< string > paths;
-    try
-    {
-        vector< libcmis::FolderPtr > parents = getParents( );
-        for ( vector< libcmis::FolderPtr >::iterator it = parents.begin( );
-             it != parents.end(); ++it )
-        {
-            string path = ( *it )->getPath( );
-            if ( path[path.size() - 1] != '/' )
-                path += "/";
-            path += getName( );
-            paths.push_back( path );
-        }
-    }
-    catch ( const libcmis::Exception& )
-    {
-        // We may not have the permission to get the parents
-    }
-    return paths;
-}
-
 boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
@@ -176,89 +145,81 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
 
-    if ( 0 == getRefreshTimestamp( ) )
-    {
-        m_contentStream = os;
-        m_contentType = contentType;
-    }
+    if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
+        throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
+
+    string overwriteStr( "false" );
+    if ( overwrite )
+        overwriteStr = "true";
+
+    string urlPattern( m_contentUrl );
+    if ( urlPattern.find( '?' ) != string::npos )
+        urlPattern += "&";
     else
+        urlPattern += "?";
+    urlPattern += "overwriteFlag={overwriteFlag}";
+
+    map< string, string > params;
+    params["overwriteFlag"] = overwriteStr;
+
+    // Use the changeToken if set on the object
+    if ( !getChangeToken().empty() )
     {
-        if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
-            throw libcmis::Exception( string( "SetContentStream is not allowed on document " ) + getId() );
-
-        string overwriteStr( "false" );
-        if ( overwrite )
-            overwriteStr = "true";
-
-        string urlPattern( m_contentUrl );
-        if ( urlPattern.find( '?' ) != string::npos )
-            urlPattern += "&";
-        else
-            urlPattern += "?";
-        urlPattern += "overwriteFlag={overwriteFlag}";
-
-        map< string, string > params;
-        params["overwriteFlag"] = overwriteStr;
-
-        // Use the changeToken if set on the object
-        if ( !getChangeToken().empty() )
-        {
-            urlPattern += "&changeToken={changeToken}";
-            params["changeToken"] = getChangeToken();
-        }
-
-        string putUrl = getSession()->createUrl( urlPattern, params );       
-
-        bool tryBase64 = false;
-        do
-        {
-            try
-            {
-                boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-                if ( tryBase64 )
-                {
-                    tryBase64 = false;
-
-                    // Encode the content
-                    stringstream* encodedIn = new stringstream( );
-                    libcmis::EncodedData encoder( encodedIn );
-                    encoder.setEncoding( "base64" );
-
-                    int bufLength = 1000;
-                    char* buf = new char[ bufLength ];
-                    do
-                    {
-                        is->read( buf, bufLength );
-                        int size = is->gcount( );
-                        encoder.encode( buf, 1, size );
-                    } while ( !is->eof( ) && !is->fail( ) );
-                    delete[] buf;
-                    encoder.finish( );
-
-                    encodedIn->seekg( 0, ios_base::beg );
-                    encodedIn->clear( );
-
-                    is.reset( encodedIn );
-                }
-                getSession()->httpPutRequest( putUrl, *is, contentType );
-
-                long httpStatus = getSession( )->getHttpStatus( );
-                if ( httpStatus < 200 || httpStatus >= 300 )
-                    throw libcmis::Exception( "Document content wasn't set for some reason" );
-                refresh( );
-            }
-            catch ( const CurlException& e )
-            {
-                // SharePoint wants base64 encoded content... let's try to figure out
-                // if we falled in that case.
-                if ( !tryBase64 && e.getHttpStatus() == 400 )
-                    tryBase64 = true;
-                else
-                    throw e.getCmisException( );
-            }
-        }
-        while ( tryBase64 );
+        urlPattern += "&changeToken={changeToken}";
+        params["changeToken"] = getChangeToken();
     }
+
+    string putUrl = getSession()->createUrl( urlPattern, params );       
+
+    bool tryBase64 = false;
+    do
+    {
+        try
+        {
+            boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+            if ( tryBase64 )
+            {
+                tryBase64 = false;
+
+                // Encode the content
+                stringstream* encodedIn = new stringstream( );
+                libcmis::EncodedData encoder( encodedIn );
+                encoder.setEncoding( "base64" );
+
+                int bufLength = 1000;
+                char* buf = new char[ bufLength ];
+                do
+                {
+                    is->read( buf, bufLength );
+                    int size = is->gcount( );
+                    encoder.encode( buf, 1, size );
+                } while ( !is->eof( ) && !is->fail( ) );
+                delete[] buf;
+                encoder.finish( );
+
+                encodedIn->seekg( 0, ios_base::beg );
+                encodedIn->clear( );
+
+                is.reset( encodedIn );
+            }
+            getSession()->httpPutRequest( putUrl, *is, contentType );
+
+            long httpStatus = getSession( )->getHttpStatus( );
+            if ( httpStatus < 200 || httpStatus >= 300 )
+                throw libcmis::Exception( "Document content wasn't set for some reason" );
+            refresh( );
+        }
+        catch ( const CurlException& e )
+        {
+            // SharePoint wants base64 encoded content... let's try to figure out
+            // if we falled in that case.
+            if ( !tryBase64 && e.getHttpStatus() == 400 )
+                tryBase64 = true;
+            else
+                throw e.getCmisException( );
+        }
+    }
+    while ( tryBase64 );
 }
 
 libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
@@ -272,15 +233,15 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Create a document with only the needed properties
-    AtomDocument tmp( getSession( ) );
-    map< string, libcmis::PropertyPtr > props = getProperties( ); 
-    map< string, libcmis::PropertyPtr >::iterator it = props.find( string( "cmis:objectId" ) );
-    if ( it != props.end( ) )
+    map< string, libcmis::PropertyPtr > props; 
+    map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
+    if ( it != getProperties( ).end( ) )
     {
-        tmp.m_properties.insert( *it );
+        props.insert( *it );
     }
 
-    tmp.toXml( writer );
+    boost::shared_ptr< ostream > stream;
+    AtomObject::writeAtomEntry( writer, props, stream, string( ) );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
@@ -371,19 +332,12 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     params[ "checkinComment" ] = comment;
     string checkInUrl = getSession( )->createUrl( urlPattern, params );
 
-    // Create the content to put
-    AtomDocument document( getSession() );
-    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
-    document.m_properties.swap( propertiesCopy );
-    if ( stream.get( ) )
-        document.setContentStream( stream, contentType );
-   
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    document.toXml( writer );
+    AtomObject::writeAtomEntry( writer, properties, stream, contentType );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
@@ -413,29 +367,11 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     xmlFreeDoc( doc );
 }
 
-string AtomDocument::toString( )
-{
-    stringstream buf;
-
-    buf << "Document Object:" << endl << endl;
-    buf << AtomObject::toString();
-    buf << "Parents ids: ";
-    vector< libcmis::FolderPtr > parents = getParents( );
-    for ( vector< libcmis::FolderPtr >::iterator it = parents.begin(); it != parents.end(); ++it )
-        buf << "'" << ( *it )->getId( ) << "' ";
-    buf << endl;
-    buf << "Content Type: " << getContentType( ) << endl;
-    buf << "Content Length: " << getContentLength( ) << endl;
-    buf << "Content Filename: " << getContentFilename( ) << endl;
-
-    return buf.str();
-}
-
 void AtomDocument::extractInfos( xmlDocPtr doc )
 {
     AtomObject::extractInfos( doc );
    
-   // Get the content url and type 
+   // Get the content url 
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
     if ( NULL != doc )
     {
@@ -450,49 +386,9 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
                 xmlChar* src = xmlGetProp( contentNd, BAD_CAST( "src" ) );
                 m_contentUrl = string( ( char* ) src );
                 xmlFree( src );
-                
-                xmlChar* type = xmlGetProp( contentNd, BAD_CAST( "type" ) );
-                m_contentType = string( ( char* ) type );
-                xmlFree( type );
-
-                // Get the content filename
-                string filenameReq( "//cmis:propertyString[@propertyDefinitionId='cmis:contentStreamFileName']/cmis:value/text()" );
-                m_contentFilename = libcmis::getXPathValue( xpathCtx, filenameReq );
-
-                // Get the content length
-                string lengthReq( "//cmis:propertyInteger[@propertyDefinitionId='cmis:contentStreamLength']/cmis:value/text()" );
-                string bytes = libcmis::getXPathValue( xpathCtx, lengthReq );
-                m_contentLength = atol( bytes.c_str() );
             }
             xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
-    }
-}
-
-void AtomDocument::contentToXml( xmlTextWriterPtr writer )
-{
-    if ( m_contentStream.get( ) )
-    {
-        xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:content" ) );
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( m_contentType.c_str() ) );
-
-        ostringstream encodedStream;
-        libcmis::EncodedData encoder( &encodedStream );
-        encoder.setEncoding( "base64" );
-        istream is( m_contentStream->rdbuf( ) );
-        int bufLength = 1000;
-        char* buf = new char[ bufLength ];
-        do
-        {
-            is.read( buf, bufLength );
-            int size = is.gcount( );
-            encoder.encode( buf, 1, size );
-        } while ( !is.eof( ) && !is.fail( ) );
-        delete[] buf;
-        encoder.finish( );
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:base64" ), BAD_CAST( encodedStream.str().c_str() ) );
-
-        xmlTextWriterEndElement( writer );
     }
 }

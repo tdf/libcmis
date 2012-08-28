@@ -41,9 +41,7 @@ namespace
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     libcmis::Object( session ),
     libcmis::Folder( session ),
-    AtomObject( session ),
-    m_path( ),
-    m_parentId( )
+    AtomObject( session )
 {
     xmlDocPtr doc = libcmis::wrapInDoc( entryNd );
     refreshImpl( doc );
@@ -53,21 +51,6 @@ AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
 
 AtomFolder::~AtomFolder( )
 {
-}
-
-vector< string > AtomFolder::getPaths( )
-{
-    vector< string > paths;
-    paths.push_back( getPath( ) );
-    return paths;
-}
-
-libcmis::FolderPtr AtomFolder::getFolderParent( ) throw ( libcmis::Exception )
-{
-    if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetFolderParent ) )
-        throw libcmis::Exception( string( "GetFolderParent not allowed on node " ) + getId() );
-
-    return getSession()->getFolder( m_parentId ); 
 }
 
 vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
@@ -143,16 +126,6 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
     return children;
 }
 
-string AtomFolder::getPath( )
-{
-    return m_path;
-}
-
-bool AtomFolder::isRootFolder( )
-{
-    return m_parentId.empty( );
-}
-
 libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::PropertyPtr >& properties )
     throw( libcmis::Exception )
 {
@@ -162,18 +135,14 @@ libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::Propert
                 !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateFolder ) ) )
         throw libcmis::Exception( string( "CreateFolder not allowed on folder " ) + getId() );
 
-    // Actually create the folder
-    AtomObject object( getSession() );
-    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
-    object.getProperties( ).swap( propertiesCopy );
-    
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Copy and remove the readonly properties before serializing
-    object.toXml( writer );
+    boost::shared_ptr< ostream > stream;
+    AtomObject::writeAtomEntry( writer, properties, stream, string( ) );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
@@ -216,18 +185,12 @@ libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::Pro
                 !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) ) )
         throw libcmis::Exception( string( "CreateDocument not allowed on folder " ) + getId() );
 
-    // Actually create the document
-    AtomDocument document( getSession() );
-    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
-    document.getProperties( ).swap( propertiesCopy );
-    document.setContentStream( os, contentType );
-   
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    document.toXml( writer );
+    AtomObject::writeAtomEntry( writer, properties, os, contentType );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
@@ -316,47 +279,4 @@ void AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfi
     {
         throw e.getCmisException( );
     }
-}
-
-string AtomFolder::toString( )
-{
-    stringstream buf;
-
-    buf << "Folder Object:" << endl << endl;
-    buf << AtomObject::toString();
-    buf << "Path: " << getPath() << endl;
-    buf << "Folder Parent Id: " << m_parentId << endl;
-    buf << "Children [Name (Id)]:" << endl;
-
-    vector< libcmis::ObjectPtr > children = getChildren( );
-    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-            it != children.end(); it++ )
-    {
-        libcmis::ObjectPtr child = *it;
-        buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;
-    }
-
-    return buf.str();
-}
-
-void AtomFolder::extractInfos( xmlDocPtr doc )
-{
-    AtomObject::extractInfos( doc );
-
-    xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-
-    // Register the Service Document namespaces
-    libcmis::registerNamespaces( xpathCtx );
-
-    if ( NULL != xpathCtx )
-    {
-        // Get the path
-        string pathReq( "//cmis:propertyString[@propertyDefinitionId='cmis:path']/cmis:value/text()" );
-        m_path = libcmis::getXPathValue( xpathCtx, pathReq );
-        
-        // Get the parent id
-        string parentIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:parentId']/cmis:value/text()" );
-        m_parentId = libcmis::getXPathValue( xpathCtx, parentIdReq );
-    }
-    xmlXPathFreeContext( xpathCtx );
 }
