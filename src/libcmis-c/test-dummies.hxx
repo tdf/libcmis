@@ -153,6 +153,9 @@ namespace dummies
 
             virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
                                     bool continueOnError = false ) throw ( libcmis::Exception );
+
+            virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }
+            virtual std::string toString( ) { return dummies::Object::toString( ); }
     };
 
     class Document : public libcmis::Document, public Object
@@ -188,6 +191,9 @@ namespace dummies
                                   const std::map< std::string, libcmis::PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType ) throw ( libcmis::Exception );
+
+            virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }
+            virtual std::string toString( ) { return dummies::Object::toString( ); }
     };
 }
 

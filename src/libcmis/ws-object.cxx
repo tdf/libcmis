@@ -30,6 +30,12 @@
 
 using namespace std;
 
+WSObject::WSObject( WSSession* session ) :
+    libcmis::Object( session )
+{
+}
+
+
 WSObject::WSObject( WSSession* session, xmlNodePtr node ) :
     libcmis::Object( session, node )
 {

@@ -25,35 +25,30 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _WS_OBJECT_HXX_
-#define _WS_OBJECT_HXX_
+#ifndef _WS_FOLDER_HXX_
+#define _WS_FOLDER_HXX_
 
+#include "document.hxx"
 #include "folder.hxx"
-#include "object.hxx"
+#include "ws-object.hxx"
 #include "ws-session.hxx"
 
-class WSObject : public virtual libcmis::Object
+class WSFolder : public libcmis::Folder, public WSObject
 {
-    protected:
-        WSObject( WSSession* session );
-
     public:
-        WSObject( WSSession* session, xmlNodePtr node );
-        WSObject( const WSObject& copy );
-        virtual ~WSObject( );
+        WSFolder( const WSObject& object );
+        virtual ~WSFolder( );
 
-        WSObject& operator=( const WSObject& copy );
+        // virtual pure methods from Folder
+        virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
 
-        virtual libcmis::ObjectPtr updateProperties(
-                const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
-        
-        virtual void refresh( ) throw ( libcmis::Exception );
-        
-        virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+        virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties )
+            throw ( libcmis::Exception );
+        virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
+                                boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
 
-        virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception );
-
-        WSSession* getSession( );
+        virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
+                                bool continueOnError = false ) throw ( libcmis::Exception );
 };
 
 #endif

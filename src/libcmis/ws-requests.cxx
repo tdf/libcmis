@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "ws-folder.hxx"
 #include "ws-object.hxx"
 #include "ws-object-type.hxx"
 #include "ws-requests.hxx"
@@ -255,7 +256,17 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
     {
         if ( xmlStrEqual( child->name, BAD_CAST( "object" ) ) )
         {
-            libcmis::ObjectPtr object( new WSObject( wsSession, child ) );
+            libcmis::ObjectPtr object;
+            WSObject tmp( wsSession, child );
+            if ( tmp.getBaseType( ) == "cmis:folder" )
+            {
+                object.reset( new WSFolder( tmp ) );
+            }
+            else
+            {
+                // TODO Remove me when WSDocument will be ready
+                object.reset( new WSObject( wsSession, child ) );
+            }
             response->m_object = object;
         }
     }
