@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "ws-document.hxx"
 #include "ws-folder.hxx"
 #include "ws-object.hxx"
 #include "ws-object-type.hxx"
@@ -262,9 +263,13 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
             {
                 object.reset( new WSFolder( tmp ) );
             }
+            else if ( tmp.getBaseType( ) == "cmis:document" )
+            {
+                object.reset( new WSDocument( tmp ) );
+            }
             else
             {
-                // TODO Remove me when WSDocument will be ready
+                // This should never happen... but who knows if the standard is 100% repected?
                 object.reset( new WSObject( wsSession, child ) );
             }
             response->m_object = object;

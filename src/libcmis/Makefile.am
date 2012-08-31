@@ -42,6 +42,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	atom-session.cxx \
 	atom-workspace.hxx \
 	atom-workspace.cxx \
+	ws-document.hxx \
+	ws-document.cxx \
 	ws-folder.hxx \
 	ws-folder.cxx \
 	ws-object.hxx \

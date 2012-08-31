@@ -30,6 +30,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <document.hxx>
 #include <ws-requests.hxx>
 #include <ws-session.hxx>
 
@@ -60,6 +61,7 @@ class WSTest : public CppUnit::TestFixture
 
         // Object tests
         void getObjectTest( );
+        void getObjectDocumentTest( );
         void updatePropertiesTest( );
         void deleteObjectTest( );
 
@@ -72,6 +74,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getObjectDocumentTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -159,6 +162,23 @@ void WSTest::getObjectTest( )
             NULL != actual->getTypeDescription( ).get( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a libcmis::Folder instance",
+            boost::dynamic_pointer_cast< libcmis::Folder >( actual ).get( ) != NULL );
+    CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
+}
+
+void WSTest::getObjectDocumentTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    string id( "114" ); 
+    libcmis::ObjectPtr actual = session.getObject( id );
+
+    CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
+            NULL != actual->getTypeDescription( ).get( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), actual->getBaseType( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a libcmis::Document instance",
+            boost::dynamic_pointer_cast< libcmis::Document >( actual ).get( ) != NULL );
     CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
 }
 

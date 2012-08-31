@@ -25,22 +25,18 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _ATOM_DOCUMENT_HXX_
-#define _ATOM_DOCUMENT_HXX_
+#ifndef _WS_DOCUMENT_HXX_
+#define _WS_DOCUMENT_HXX_
 
 #include "document.hxx"
 #include "folder.hxx"
-#include "atom-object.hxx"
+#include "ws-object.hxx"
 
-class AtomDocument : public libcmis::Document, public AtomObject
+class WSDocument : public libcmis::Document, public WSObject
 {
-    private:
-        std::string m_contentUrl;
-
     public:
-        AtomDocument( AtomPubSession* session );
-        AtomDocument( AtomPubSession* session, xmlNodePtr entryNd );
-        ~AtomDocument( );
+        WSDocument( const WSObject& object );
+        virtual ~WSDocument( );
 
         virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
 
@@ -55,9 +51,6 @@ class AtomDocument : public libcmis::Document, public AtomObject
                               const std::map< std::string, libcmis::PropertyPtr >& properties,
                               boost::shared_ptr< std::ostream > stream,
                               std::string contentType ) throw ( libcmis::Exception );
-    
-    protected:
-        virtual void extractInfos( xmlDocPtr doc );
 };
 
 #endif
