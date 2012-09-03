@@ -279,6 +279,19 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
     return SoapResponsePtr( response );
 }
 
+void GetObjectByPath::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectByPath" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:path" ), BAD_CAST( m_path.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
 void UpdateProperties::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:updateProperties" ) );

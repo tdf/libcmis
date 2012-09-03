@@ -241,6 +241,8 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeDefinitionResponse" ] = &GetTypeDefinitionResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getTypeChildrenResponse" ] = &GetTypeChildrenResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectResponse" ] = &GetObjectResponse::create;
+    // No need to create a GetObjectByPathResponse as it would do the same than GetObjectResponse
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectByPathResponse" ] = &GetObjectResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}updatePropertiesResponse" ] = &UpdatePropertiesResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}deleteTreeResponse" ] = &DeleteTreeResponse::create;
 
@@ -296,10 +298,7 @@ libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception 
 
 libcmis::ObjectPtr WSSession::getObjectByPath( string path ) throw ( libcmis::Exception )
 {
-    libcmis::ObjectPtr empty;
-
-    // TODO Implement me
-    return empty;
+    return getObjectService( ).getObjectByPath( getRepositoryId( ), path );
 }
 
 libcmis::ObjectTypePtr WSSession::getType( string id ) throw ( libcmis::Exception )

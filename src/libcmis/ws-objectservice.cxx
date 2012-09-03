@@ -77,6 +77,23 @@ libcmis::ObjectPtr ObjectService::getObject( string repoId, string id ) throw ( 
     return object;
 }
 
+libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path ) throw ( libcmis::Exception )
+{
+    libcmis::ObjectPtr object;
+
+    GetObjectByPath request( repoId, path );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetObjectResponse* response = dynamic_cast< GetObjectResponse* >( resp );
+        if ( response != NULL )
+            object = response->getObject( );
+    }
+
+    return object;
+}
+
 libcmis::ObjectPtr ObjectService::updateProperties(
         string repoId, string objectId,
         const map< string, libcmis::PropertyPtr >& properties,

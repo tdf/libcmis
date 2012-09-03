@@ -62,6 +62,8 @@ class WSTest : public CppUnit::TestFixture
         // Object tests
         void getObjectTest( );
         void getObjectDocumentTest( );
+        void getByPathValidTest( );
+        void getByPathInvalidTest( );
         void updatePropertiesTest( );
         void deleteObjectTest( );
         void deleteTreeTest( );
@@ -76,6 +78,8 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getObjectDocumentTest );
+        CPPUNIT_TEST( getByPathValidTest );
+        CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -181,6 +185,38 @@ void WSTest::getObjectDocumentTest( )
     CPPUNIT_ASSERT_MESSAGE( "Not a libcmis::Document instance",
             boost::dynamic_pointer_cast< libcmis::Document >( actual ).get( ) != NULL );
     CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
+}
+
+void WSTest::getByPathValidTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    try
+    {
+        libcmis::ObjectPtr object = session.getObjectByPath( "/My_Folder-0-0/My_Document-1-2" );
+
+        CPPUNIT_ASSERT_MESSAGE( "Missing return object", object.get() );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void WSTest::getByPathInvalidTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    try
+    {
+        libcmis::ObjectPtr object = session.getObjectByPath( "/some/dummy/path" );
+        CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "objectNotFound" ), e.getType() );
+        CPPUNIT_ASSERT_MESSAGE( "Empty error message", !string( e.what() ).empty( ) );
+    }
 }
 
 void WSTest::updatePropertiesTest( )

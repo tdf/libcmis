@@ -232,6 +232,24 @@ class GetObjectResponse : public SoapResponse
         libcmis::ObjectPtr getObject( ) { return m_object; }
 };
 
+class GetObjectByPath : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_path;
+
+    public:
+        GetObjectByPath( std::string repoId, std::string path ) :
+            m_repositoryId( repoId ),
+            m_path( path )
+        {
+        }
+
+        ~GetObjectByPath( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
 class UpdateProperties : public SoapRequest
 {
     private:

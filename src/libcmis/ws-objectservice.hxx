@@ -53,6 +53,8 @@ class ObjectService
         ObjectService& operator=( const ObjectService& copy );
 
         libcmis::ObjectPtr getObject( std::string repoId, std::string id ) throw ( libcmis::Exception );
+
+        libcmis::ObjectPtr getObjectByPath( std::string repoId, std::string path ) throw ( libcmis::Exception );
         
         libcmis::ObjectPtr updateProperties(
                 std::string repoId,
