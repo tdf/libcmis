@@ -224,7 +224,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::Pro
     return newDocument;
 }
 
-void AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfile,
+vector< string > AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfile,
         bool continueOnError ) throw ( libcmis::Exception )
 {
     AtomLink* treeLink = getLink( "down", "application/cmistree+xml" );
@@ -279,4 +279,7 @@ void AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfi
     {
         throw e.getCmisException( );
     }
+
+    // TODO Implement getting the failedIDs using a GET request on the same URL
+    return vector< string >( );
 }

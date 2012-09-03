@@ -66,7 +66,7 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
         const char* contentType,
         libcmis_ErrorPtr error );
 
-void libcmis_folder_removeTree( libcmis_FolderPtr folder,
+libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,
         bool allVersion,
         libcmis_folder_UnfileObjects unfile,
         bool continueOnError,

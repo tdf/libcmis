@@ -151,7 +151,8 @@ namespace dummies
             virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
                                     boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
 
-            virtual void removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
+            virtual std::vector< std::string > removeTree( bool allVersion = true,
+                                    libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
                                     bool continueOnError = false ) throw ( libcmis::Exception );
 
             virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }

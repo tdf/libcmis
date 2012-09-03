@@ -71,8 +71,9 @@ libcmis::DocumentPtr WSFolder::createDocument( const map< string, libcmis::Prope
     return empty;
 }
 
-void WSFolder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile, bool continueOnError )
+vector< string > WSFolder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile, bool continueOnError )
     throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).deleteTree( repoId, getId( ), allVersion, unfile, continueOnError );
 }

@@ -397,12 +397,15 @@ void FolderTest::removeTreeTest( )
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
 
     // Remove the tree (method to test)
-    libcmis_folder_removeTree( tested, true, libcmis_Delete, true, error );
+    libcmis_vector_string_Ptr failed = libcmis_folder_removeTree( tested, true, libcmis_Delete, true, error );
     
     // Check
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not updated", 0 != libcmis_object_getRefreshTimestamp( tested ) );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), libcmis_vector_string_size( failed ) );
+    CPPUNIT_ASSERT_EQUAL( string( "failed 1" ), string( libcmis_vector_string_get( failed, 0 ) ) );
 
     // Free everything
+    libcmis_vector_string_free( failed );
     libcmis_error_free( error );
     libcmis_folder_free( tested );
 }

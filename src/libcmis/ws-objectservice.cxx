@@ -105,3 +105,21 @@ void ObjectService::deleteObject( string repoId, string id, bool allVersions ) t
     DeleteObject request( repoId, id, allVersions );
     m_session->soapRequest( m_url, request );
 }
+        
+vector< string > ObjectService::deleteTree( std::string repoId, std::string folderId, bool allVersions,
+        libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception )
+{
+    vector< string > failedIds;
+
+    DeleteTree request( repoId, folderId, allVersions, unfile, continueOnFailure );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        DeleteTreeResponse* response = dynamic_cast< DeleteTreeResponse* >( resp );
+        if ( response != NULL )
+            failedIds = response->getFailedIds( );
+    }
+
+    return failedIds;
+}

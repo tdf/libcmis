@@ -29,8 +29,10 @@
 #define _WS_OBJECTSERVICE_HXX_
 
 #include <string>
+#include <vector>
 
 #include "base-session.hxx"
+#include "folder.hxx"
 #include "object.hxx"
 #include "ws-soap.hxx"
 
@@ -51,12 +53,17 @@ class ObjectService
         ObjectService& operator=( const ObjectService& copy );
 
         libcmis::ObjectPtr getObject( std::string repoId, std::string id ) throw ( libcmis::Exception );
+        
         libcmis::ObjectPtr updateProperties(
                 std::string repoId,
                 std::string objectId,
                 const std::map< std::string, libcmis::PropertyPtr > & properties,
                 std::string changeToken ) throw ( libcmis::Exception );
+
         void deleteObject( std::string repoId, std::string id, bool allVersions ) throw ( libcmis::Exception );
+        
+        std::vector< std::string > deleteTree( std::string repoId, std::string folderId, bool allVersions,
+                libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception );
 };
 
 #endif

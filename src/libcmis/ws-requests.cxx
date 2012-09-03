@@ -341,3 +341,69 @@ void DeleteObject::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterEndElement( writer );
 }
+
+void DeleteTree::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteTree" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+
+    string allVersionsStr( "false" );
+    if ( m_allVersions )
+        allVersionsStr = "true";
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
+
+    string unfileStr( "" );
+    switch ( m_unfile )
+    {
+        case libcmis::UnfileObjects::Unfile:
+            unfileStr = "unfile";
+            break;
+        case libcmis::UnfileObjects::DeleteSingleFiled:
+            unfileStr = "deletesinglefiled";
+            break;
+        case libcmis::UnfileObjects::Delete:
+            unfileStr = "delete";
+            break;
+        default:
+            break;
+    }
+    if ( !unfileStr.empty( ) )
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:unfileObjects" ), BAD_CAST( unfileStr.c_str( ) ) );
+    
+    string continueStr( "false" );
+    if ( m_continueOnFailure )
+        continueStr = "true";
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:continueOnFailure" ), BAD_CAST( continueStr.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    DeleteTreeResponse* response = new DeleteTreeResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "failedToDelete" ) ) )
+        {
+            for ( xmlNodePtr gdchild = node->children; gdchild; gdchild = gdchild->next )
+            {
+                if ( xmlStrEqual( gdchild->name, BAD_CAST( "objectIds" ) ) )
+                {
+                    xmlChar* content = xmlNodeGetContent( gdchild );
+                    if ( content != NULL )
+                    {
+                        string value( ( char* ) content );
+                        xmlFree( content );
+                        response->m_failedIds.push_back( value );
+                    }
+                }
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

@@ -552,7 +552,19 @@ void CmisClient::execute( ) throw ( exception )
                 {
                     try
                     {
-                        folder->removeTree( );
+                        vector< string > failed = folder->removeTree( );
+                        string error;
+                        for ( vector< string >::iterator dumpIt = failed.begin( );
+                                dumpIt != failed.end( ); ++dumpIt )
+                        {
+                            if ( dumpIt == failed.begin( ) )
+                                error += "Failed to remove children nodes: ";
+                            else
+                                error += ", ";
+                            error = *dumpIt;
+                        }
+                        if ( !error.empty( ) )
+                            errors.push_back( error );
                     }
                     catch ( const libcmis::Exception& e )
                     {

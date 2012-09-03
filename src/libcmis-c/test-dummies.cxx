@@ -401,13 +401,17 @@ namespace dummies
         return created;
     }
 
-    void Folder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile,
+    vector< string > Folder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile,
                             bool continueOnError ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
         time( &m_refreshTimestamp );
+
+        vector< string > failed;
+        failed.push_back( "failed 1" );
+        return failed;
     }
             
     Document::Document( bool isFiled, bool triggersFaults ) :

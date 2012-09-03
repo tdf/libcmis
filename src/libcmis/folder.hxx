@@ -71,7 +71,7 @@ namespace libcmis
             virtual ::boost::shared_ptr< Document > createDocument( const std::map< std::string, PropertyPtr >& properties,
                                     boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( Exception ) = 0;
 
-            virtual void removeTree( bool allVersion = true, UnfileObjects::Type unfile = UnfileObjects::Delete,
+            virtual std::vector< std::string > removeTree( bool allVersion = true, UnfileObjects::Type unfile = UnfileObjects::Delete,
                                     bool continueOnError = false ) throw ( Exception ) = 0;
         
             virtual std::string toString( );

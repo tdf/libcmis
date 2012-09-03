@@ -36,6 +36,7 @@
 #include <libxml/tree.h>
 
 #include "exception.hxx"
+#include "folder.hxx"
 #include "object.hxx"
 #include "object-type.hxx"
 #include "repository.hxx"
@@ -291,6 +292,52 @@ class DeleteObject : public SoapRequest
         ~DeleteObject( ) { }
 
         void toXml( xmlTextWriterPtr writer );
+};
+
+class DeleteTree : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_folderId;
+        bool m_allVersions;
+        libcmis::UnfileObjects::Type m_unfile;
+        bool m_continueOnFailure;
+
+    public:
+        DeleteTree( std::string repoId,
+                std::string folderId,
+                bool allVersions,
+                libcmis::UnfileObjects::Type unfile,
+                bool continueOnFailure ) :
+            m_repositoryId( repoId ),
+            m_folderId( folderId ),
+            m_allVersions( allVersions ),
+            m_unfile( unfile ),
+            m_continueOnFailure( continueOnFailure )
+        {
+        }
+
+        ~DeleteTree( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class DeleteTreeResponse : public SoapResponse
+{
+    private:
+        std::vector< std::string > m_failedIds;
+
+        DeleteTreeResponse( ) : SoapResponse( ), m_failedIds( ) { }
+
+    public:
+
+        /** Parse cmism:deleteTreeResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< std::string > getFailedIds( ) { return m_failedIds; }
 };
 
 #endif

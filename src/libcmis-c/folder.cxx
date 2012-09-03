@@ -258,18 +258,20 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
 }
 
 
-void libcmis_folder_removeTree( libcmis_FolderPtr folder,
+libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,
         bool allVersion,
         libcmis_folder_UnfileObjects unfile,
         bool continueOnError,
         libcmis_ErrorPtr error )
 {
+    libcmis_vector_string_Ptr failed = new libcmis_vector_string( );
     if ( folder != NULL && folder->handle.get( ) != NULL )
     {
         try
         {
-            folder->handle->removeTree( allVersion,
+            vector< string > handle = folder->handle->removeTree( allVersion,
                     libcmis::UnfileObjects::Type( unfile ), continueOnError );
+            failed->handle = handle;
         }
         catch ( const libcmis::Exception& e )
         {
@@ -278,4 +280,5 @@ void libcmis_folder_removeTree( libcmis_FolderPtr folder,
                 error->handle = new libcmis::Exception( e );
         }
     }
+    return failed;
 }
