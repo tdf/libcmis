@@ -46,6 +46,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	ws-document.cxx \
 	ws-folder.hxx \
 	ws-folder.cxx \
+	ws-navigationservice.hxx \
+	ws-navigationservice.cxx \
 	ws-object.hxx \
 	ws-object.cxx \
 	ws-object-type.hxx \

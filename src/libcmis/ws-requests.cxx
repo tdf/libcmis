@@ -402,7 +402,7 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
     {
         if ( xmlStrEqual( child->name, BAD_CAST( "failedToDelete" ) ) )
         {
-            for ( xmlNodePtr gdchild = node->children; gdchild; gdchild = gdchild->next )
+            for ( xmlNodePtr gdchild = child->children; gdchild; gdchild = gdchild->next )
             {
                 if ( xmlStrEqual( gdchild->name, BAD_CAST( "objectIds" ) ) )
                 {
@@ -467,6 +467,46 @@ SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultip
                         // We can either have directly the base64 encoded data or
                         // an <xop:Include> pointing to another part of the multipart
                         response->m_stream = getStreamFromNode( gdchild, multipart );
+                    }
+                }
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}
+
+void GetObjectParents::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectParents" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetObjectParentsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetObjectParentsResponse* response = new GetObjectParentsResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "parents" ) ) )
+        {
+            for ( xmlNodePtr gdchild = child->children; gdchild; gdchild = gdchild->next )
+            {
+                if ( xmlStrEqual( gdchild->name, BAD_CAST( "object" ) ) )
+                {
+                    libcmis::FolderPtr parent;
+                    WSObject tmp( wsSession, gdchild );
+                    if ( tmp.getBaseType( ) == "cmis:folder" )
+                    {
+                        parent.reset( new WSFolder( tmp ) );
+                        response->m_parents.push_back( parent );
                     }
                 }
             }

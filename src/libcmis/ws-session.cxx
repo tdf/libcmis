@@ -246,6 +246,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}updatePropertiesResponse" ] = &UpdatePropertiesResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}deleteTreeResponse" ] = &DeleteTreeResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getContentStreamResponse" ] = &GetContentStreamResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectParentsResponse" ] = &GetObjectParentsResponse::create;
 
     return mapping;
 }
@@ -278,6 +279,11 @@ RepositoryService WSSession::getRepositoryService( )
 ObjectService WSSession::getObjectService( )
 {
     return ObjectService( this );
+}
+
+NavigationService WSSession::getNavigationService( )
+{
+    return NavigationService( this );
 }
 
 list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )

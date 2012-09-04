@@ -417,4 +417,41 @@ class GetContentStreamResponse : public SoapResponse
         boost::shared_ptr< std::istream> getStream( ) { return m_stream; }
 };
 
+class GetObjectParents : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+
+    public:
+        GetObjectParents( std::string repoId,
+                std::string objectId ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId )
+        {
+        }
+
+        ~GetObjectParents( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetObjectParentsResponse : public SoapResponse
+{
+    private:
+        std::vector< libcmis::FolderPtr > m_parents;
+
+        GetObjectParentsResponse( ) : SoapResponse( ), m_parents( ) { }
+
+    public:
+
+        /** Parse cmism:getObjectParentsResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< libcmis::FolderPtr > getParents( ) { return m_parents; }
+};
+
 #endif

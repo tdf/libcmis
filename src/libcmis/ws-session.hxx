@@ -32,6 +32,7 @@
 #include <string>
 
 #include "base-session.hxx"
+#include "ws-navigationservice.hxx"
 #include "ws-objectservice.hxx"
 #include "ws-repositoryservice.hxx"
 #include "ws-soap.hxx"
@@ -77,6 +78,8 @@ class WSSession : public BaseSession, public SoapSession
         RepositoryService getRepositoryService( );
 
         ObjectService getObjectService( );
+
+        NavigationService getNavigationService( );
 
 
         // Override session methods

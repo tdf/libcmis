@@ -44,11 +44,8 @@ WSDocument::~WSDocument( )
 
 vector< libcmis::FolderPtr > WSDocument::getParents( ) throw ( libcmis::Exception )
 {
-    vector< libcmis::FolderPtr > empty;
-
-    // TODO Implement me
-
-    return empty;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getNavigationService( ).getObjectParents( repoId, getId( ) );
 }
 
 boost::shared_ptr< istream > WSDocument::getContentStream( ) throw ( libcmis::Exception )
