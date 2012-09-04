@@ -53,11 +53,8 @@ vector< libcmis::FolderPtr > WSDocument::getParents( ) throw ( libcmis::Exceptio
 
 boost::shared_ptr< istream > WSDocument::getContentStream( ) throw ( libcmis::Exception )
 {
-    boost::shared_ptr< istream > stream;
-
-    // TODO Implement me
-
-    return stream;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).getContentStream( repoId, getId( ) );
 }
 
 void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType,

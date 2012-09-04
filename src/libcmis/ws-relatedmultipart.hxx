@@ -35,6 +35,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
 class RelatedPart
 {
@@ -129,5 +130,9 @@ class RelatedMultipart
           */
         std::string createPartId( const std::string& name );
 };
+
+/** Extract stream from xs:base64Binary node using either xop:Include or base64 encoded data.
+  */
+boost::shared_ptr< std::istream > getStreamFromNode( xmlNodePtr node, RelatedMultipart& multipart );
 
 #endif

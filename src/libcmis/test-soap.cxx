@@ -61,6 +61,8 @@ class SoapTest : public CppUnit::TestFixture
         void serializeMultipartSimpleTest( );
         void serializeMultipartComplexTest( );
         void parseMultipartTest( );
+        void getStreamFromNodeXopTest( );
+        void getStreamFromNodeBase64Test( );
 
         CPPUNIT_TEST_SUITE( SoapTest );
         CPPUNIT_TEST( createResponseTest );
@@ -73,6 +75,8 @@ class SoapTest : public CppUnit::TestFixture
         CPPUNIT_TEST( serializeMultipartSimpleTest );
         CPPUNIT_TEST( serializeMultipartComplexTest );
         CPPUNIT_TEST( parseMultipartTest );
+        CPPUNIT_TEST( getStreamFromNodeXopTest );
+        CPPUNIT_TEST( getStreamFromNodeBase64Test );
 
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -370,4 +374,80 @@ void SoapTest::parseMultipartTest( )
     CPPUNIT_ASSERT_MESSAGE( "No part corresponding to part2 cid", actualPart2.get( ) != NULL );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong part2 part content type", part2Type, actualPart2->getContentType( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong part2 part content", part2Content, actualPart2->getContent( ) );
+}
+
+void SoapTest::getStreamFromNodeXopTest( )
+{
+    // Create the test multipart
+    string dataCid = "data-cid";
+    string dataContent = "Some transfered content";
+    
+    string boundary = "------------ABCDEF-Boundary";
+    string body = "\r\n--" + boundary + "\r\n" +
+                  "Content-Id: root-cid\r\n" +
+                  "Content-Type: text/plain\r\n" +
+                  "Content-Transfer-Encoding: binary\r\n" +
+                  "\r\n" +
+                  "Who cares? we assume, this has been properly extracted in this test" +
+                  "\r\n--" + boundary + "\r\n" +
+                  "Content-Id: " + dataCid + "\r\n" +
+                  "Content-Type: text/plain\r\n" +
+                  "Content-Transfer-Encoding: binary\r\n" +
+                  "\r\n" +
+                  dataContent +
+                  "\r\n--" + boundary + "--\r\n";
+            
+    string contentType = string( "multipart/related;start=\"root-cid\";type=\"text/plain\";" ) +
+                         "boundary=\"" + boundary + "\";start-info=\"info\"";
+
+    RelatedMultipart multipart( body, contentType );
+
+    // Create test node
+    stringstream buf;
+    buf << "<stream>"
+        << "  <xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << dataCid << "\"/>"
+        << "</stream>";
+    xmlNodePtr node = test::getXmlNode( buf.str( ) );
+
+    // Run the tested method
+    boost::shared_ptr< istream > stream = getStreamFromNode( node, multipart );
+
+    // Checks
+    stringstream out;
+    out << stream->rdbuf( );
+    CPPUNIT_ASSERT_EQUAL( dataContent, out.str( ) );
+}
+
+void SoapTest::getStreamFromNodeBase64Test( )
+{
+    // Create the test multipart
+    string boundary = "------------ABCDEF-Boundary";
+    string body = "\r\n--" + boundary + "\r\n" +
+                  "Content-Id: root-cid\r\n" +
+                  "Content-Type: text/plain\r\n" +
+                  "Content-Transfer-Encoding: binary\r\n" +
+                  "\r\n" +
+                  "Who cares? we assume, this has been properly extracted in this test" +
+                  "\r\n--" + boundary + "--\r\n";
+            
+    string contentType = string( "multipart/related;start=\"root-cid\";type=\"text/plain\";" ) +
+                         "boundary=\"" + boundary + "\";start-info=\"info\"";
+
+    RelatedMultipart multipart( body, contentType );
+
+    // Create test node
+    string dataContent = "U29tZSB0cmFuc2ZlcmVkIGNvbnRlbnQ=";
+    string expectedContent = "Some transfered content";
+    
+    stringstream buf;
+    buf << "<stream>" << dataContent << "</stream>";
+    xmlNodePtr node = test::getXmlNode( buf.str( ) );
+
+    // Run the tested method
+    boost::shared_ptr< istream > stream = getStreamFromNode( node, multipart );
+
+    // Checks
+    stringstream out;
+    out << stream->rdbuf( );
+    CPPUNIT_ASSERT_EQUAL( expectedContent, out.str( ) );
 }

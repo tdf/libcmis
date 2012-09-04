@@ -140,3 +140,20 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
 
     return failedIds;
 }
+
+boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, string objectId ) throw ( libcmis::Exception )
+{
+    boost::shared_ptr< istream > stream;
+
+    GetContentStream request( repoId, objectId );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetContentStreamResponse* response = dynamic_cast< GetContentStreamResponse* >( resp );
+        if ( response != NULL )
+            stream = response->getStream( );
+    }
+
+    return stream;
+}

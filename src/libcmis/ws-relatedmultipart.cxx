@@ -270,3 +270,40 @@ string RelatedMultipart::createPartId( const string& name )
 
     return cid;
 }
+
+boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipart& multipart )
+{
+    boost::shared_ptr< stringstream > stream;
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "Include" ) ) )
+        {
+            // Get the content from the multipart
+            xmlChar* value = xmlGetProp( child, BAD_CAST( "href" ) );
+            string href( ( char* )value );
+            xmlFree( value );
+            // Get the Content ID from the href (cid:content-id)
+            string id = href;
+            if ( href.substr( 0, 4 ) == "cid:" )
+                id = href.substr( 4 );
+            RelatedPartPtr part = multipart.getPart( id );
+            if ( part != NULL )
+                stream.reset( new stringstream( part->getContent( ) ) );
+        }
+    }
+
+    // If there was no xop:Include, then use the content as base64 data
+    if ( stream.get( ) == NULL )
+    {
+        xmlChar* content = xmlNodeGetContent( node );
+
+        stream.reset( new stringstream( ) );
+        libcmis::EncodedData decoder( stream.get( ) );
+        decoder.setEncoding( "base64" );
+        decoder.decode( ( void* )content, 1, xmlStrlen( content ) );
+        decoder.finish( );
+        
+        xmlFree( content );
+    }
+    return stream;
+}

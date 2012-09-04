@@ -67,6 +67,7 @@ class WSTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void deleteObjectTest( );
         void deleteTreeTest( );
+        void getContentStreamTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -82,6 +83,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( deleteObjectTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -288,6 +290,28 @@ void WSTest::deleteTreeTest( )
     catch ( const libcmis::Exception& e )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
+    }
+}
+
+void WSTest::getContentStreamTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( "116" );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( );
+        CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
+        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", is->good() && !is->eof() );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
     }
 }
 

@@ -28,6 +28,7 @@
 #ifndef _WS_REQUESTS_HXX_
 #define _WS_REQUESTS_HXX_
 
+#include <istream>
 #include <map>
 #include <string>
 #include <vector>
@@ -356,6 +357,42 @@ class DeleteTreeResponse : public SoapResponse
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         std::vector< std::string > getFailedIds( ) { return m_failedIds; }
+};
+
+class GetContentStream : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+
+    public:
+        GetContentStream( std::string repoId, std::string objectId ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId )
+        {
+        }
+
+        ~GetContentStream( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetContentStreamResponse : public SoapResponse
+{
+    private:
+        boost::shared_ptr< std::istream > m_stream;
+
+        GetContentStreamResponse( ) : SoapResponse( ), m_stream( ) { }
+
+    public:
+
+        /** Parse cmism:getContentStreamResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        boost::shared_ptr< std::istream> getStream( ) { return m_stream; }
 };
 
 #endif

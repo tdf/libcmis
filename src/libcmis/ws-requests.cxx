@@ -420,3 +420,45 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
 
     return SoapResponsePtr( response );
 }
+
+void GetContentStream::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getContentStream" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* )
+{
+    GetContentStreamResponse* response = new GetContentStreamResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "contentStream" ) ) )
+        {
+            for ( xmlNodePtr gdchild = child->children; gdchild; gdchild = gdchild->next )
+            {
+                if ( xmlStrEqual( gdchild->name, BAD_CAST( "stream" ) ) )
+                {
+                    xmlChar* content = xmlNodeGetContent( gdchild );
+                    if ( content != NULL )
+                    {
+                        string value( ( char* ) content );
+                        xmlFree( content );
+
+                        // We can either have directly the base64 encoded data or
+                        // an <xop:Include> pointing to another part of the multipart
+                        response->m_stream = getStreamFromNode( gdchild, multipart );
+                    }
+                }
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

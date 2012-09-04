@@ -28,6 +28,7 @@
 #ifndef _WS_OBJECTSERVICE_HXX_
 #define _WS_OBJECTSERVICE_HXX_
 
+#include <istream>
 #include <string>
 #include <vector>
 
@@ -66,6 +67,8 @@ class ObjectService
         
         std::vector< std::string > deleteTree( std::string repoId, std::string folderId, bool allVersions,
                 libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception );
+
+        boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
 };
 
 #endif
