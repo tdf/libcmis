@@ -67,6 +67,9 @@ class WSTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void deleteObjectTest( );
         void deleteTreeTest( );
+        void moveTest( );
+
+        // Document tests
         void getContentStreamTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
@@ -83,6 +86,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( deleteObjectTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -291,6 +295,25 @@ void WSTest::deleteTreeTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
+}
+
+void WSTest::moveTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    
+    string id( "135" );
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    CPPUNIT_ASSERT_MESSAGE( "Document to move is missing", document != NULL );
+
+    libcmis::FolderPtr src = document->getParents( ).front( );
+    libcmis::FolderPtr dest = session.getFolder( "101" );
+
+    document->move( src, dest );
+
+    vector< libcmis::FolderPtr > parents = document->getParents( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parents size", size_t( 1 ), parents.size( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent", string( "101" ), parents.front( )->getId( ) );
 }
 
 void WSTest::getContentStreamTest( )

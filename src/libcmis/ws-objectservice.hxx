@@ -68,6 +68,8 @@ class ObjectService
         std::vector< std::string > deleteTree( std::string repoId, std::string folderId, bool allVersions,
                 libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception );
 
+        void move( std::string repoId, std::string objectId, std::string destId, std::string srcId ) throw ( libcmis::Exception );
+
         boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
 };
 

@@ -359,6 +359,28 @@ class DeleteTreeResponse : public SoapResponse
         std::vector< std::string > getFailedIds( ) { return m_failedIds; }
 };
 
+class MoveObject : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+        std::string m_destId;
+        std::string m_srcId;
+
+    public:
+        MoveObject( std::string repoId, std::string objectId, std::string destId, std::string srcId ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId ),
+            m_destId( destId ),
+            m_srcId( srcId )
+        {
+        }
+
+        ~MoveObject( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
 class GetContentStream : public SoapRequest
 {
     private:

@@ -141,6 +141,12 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
     return failedIds;
 }
 
+void ObjectService::move( string repoId, string objectId, string destId, string srcId ) throw ( libcmis::Exception )
+{
+    MoveObject request( repoId, objectId, destId, srcId );
+    m_session->soapRequest( m_url, request );
+}
+
 boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, string objectId ) throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;

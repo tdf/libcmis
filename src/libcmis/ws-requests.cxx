@@ -421,6 +421,19 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
     return SoapResponsePtr( response );
 }
 
+void MoveObject::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:moveObject" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:targetFolderId" ), BAD_CAST( m_destId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:sourceFolderId" ), BAD_CAST( m_srcId.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
 void GetContentStream::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getContentStream" ) );
