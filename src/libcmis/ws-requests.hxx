@@ -454,4 +454,41 @@ class GetObjectParentsResponse : public SoapResponse
         std::vector< libcmis::FolderPtr > getParents( ) { return m_parents; }
 };
 
+class GetChildren : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_folderId;
+
+    public:
+        GetChildren( std::string repoId,
+                std::string folderId ) :
+            m_repositoryId( repoId ),
+            m_folderId( folderId )
+        {
+        }
+
+        ~GetChildren( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetChildrenResponse : public SoapResponse
+{
+    private:
+        std::vector< libcmis::ObjectPtr > m_children;
+
+        GetChildrenResponse( ) : SoapResponse( ), m_children( ) { }
+
+    public:
+
+        /** Parse cmism:getChildrenResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< libcmis::ObjectPtr > getChildren( ) { return m_children; }
+};
+
 #endif

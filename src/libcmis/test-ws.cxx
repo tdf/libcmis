@@ -62,16 +62,16 @@ class WSTest : public CppUnit::TestFixture
         // Object tests
         void getObjectTest( );
         void getObjectDocumentTest( );
+        void getObjectParentsTest( );
+        void getChildrenTest( );
         void getByPathValidTest( );
         void getByPathInvalidTest( );
         void updatePropertiesTest( );
         void deleteObjectTest( );
         void deleteTreeTest( );
-        void getObjectParentsTest( );
         void moveTest( );
-
-        // Document tests
         void getContentStreamTest( );
+
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -83,11 +83,12 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getObjectDocumentTest );
+        CPPUNIT_TEST( getObjectParentsTest );
+        CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( deleteObjectTest );
-        CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -195,6 +196,44 @@ void WSTest::getObjectDocumentTest( )
     CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
 }
 
+void WSTest::getObjectParentsTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( "116" );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+    vector< libcmis::FolderPtr > actual = document->getParents( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents",
+           size_t( 1 ), actual.size() );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent ID",
+            string( "101" ), actual.front( )->getId( ) );
+}
+
+void WSTest::getChildrenTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::FolderPtr folder = session.getRootFolder( );
+
+    vector< libcmis::ObjectPtr > children = folder->getChildren( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 5 ), children.size() );
+
+    int folderCount = 0;
+    int documentCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); it++ )
+    {
+        if ( boost::dynamic_pointer_cast< libcmis::Folder >( *it ).get( ) != NULL )
+            ++folderCount;
+        else if ( boost::dynamic_pointer_cast< libcmis::Document >( *it ).get( ) != NULL )
+            ++documentCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 2, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children", 3, documentCount );
+}
+
 void WSTest::getByPathValidTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
@@ -297,22 +336,6 @@ void WSTest::deleteTreeTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
     }
-}
-
-void WSTest::getObjectParentsTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
-    libcmis::ObjectPtr object = session.getObject( "116" );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-    vector< libcmis::FolderPtr > actual = document->getParents( );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents",
-           size_t( 1 ), actual.size() );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent ID",
-            string( "101" ), actual.front( )->getId( ) );
 }
 
 void WSTest::moveTest( )

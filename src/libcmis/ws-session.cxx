@@ -247,6 +247,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}deleteTreeResponse" ] = &DeleteTreeResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getContentStreamResponse" ] = &GetContentStreamResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectParentsResponse" ] = &GetObjectParentsResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getChildrenResponse" ] = &GetChildrenResponse::create;
 
     return mapping;
 }

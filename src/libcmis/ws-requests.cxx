@@ -515,3 +515,58 @@ SoapResponsePtr GetObjectParentsResponse::create( xmlNodePtr node, RelatedMultip
 
     return SoapResponsePtr( response );
 }
+
+void GetChildren::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getChildren" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetChildrenResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetChildrenResponse* response = new GetChildrenResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "objects" ) ) )
+        {
+            for ( xmlNodePtr gdchild = child->children; gdchild; gdchild = gdchild->next )
+            {
+                if ( xmlStrEqual( gdchild->name, BAD_CAST( "objects" ) ) )
+                {
+                    for ( xmlNodePtr gdgdchild = gdchild->children; gdgdchild; gdgdchild = gdgdchild->next )
+                    {
+                        if ( xmlStrEqual( gdgdchild->name, BAD_CAST( "object" ) ) )
+                        {
+                            libcmis::ObjectPtr object;
+                            WSObject tmp( wsSession, gdgdchild );
+                            if ( tmp.getBaseType( ) == "cmis:folder" )
+                            {
+                                object.reset( new WSFolder( tmp ) );
+                            }
+                            else if ( tmp.getBaseType( ) == "cmis:document" )
+                            {
+                                object.reset( new WSDocument( tmp ) );
+                            }
+                            else
+                            {
+                                // This should never happen... but who knows if the standard is 100% repected?
+                                object.reset( new WSObject( wsSession, gdgdchild ) );
+                            }
+                            response->m_children.push_back( object );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}
