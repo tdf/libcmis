@@ -163,3 +163,24 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
 
     return stream;
 }
+
+libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string, libcmis::PropertyPtr >& properties,
+        string folderId ) throw ( libcmis::Exception )
+{
+    libcmis::FolderPtr folder;
+
+    CreateFolder request( repoId, properties, folderId );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        CreateFolderResponse* response = dynamic_cast< CreateFolderResponse* >( resp );
+        if ( response != NULL )
+        {
+            string id = response->getObjectId( );
+            folder = m_session->getFolder( id );
+        }
+    }
+
+    return folder;
+}

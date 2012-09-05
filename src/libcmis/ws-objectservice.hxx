@@ -71,6 +71,9 @@ class ObjectService
         void move( std::string repoId, std::string objectId, std::string destId, std::string srcId ) throw ( libcmis::Exception );
 
         boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
+
+        libcmis::FolderPtr createFolder( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
+                std::string folderId ) throw ( libcmis::Exception );
 };
 
 #endif

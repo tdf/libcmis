@@ -51,11 +51,8 @@ vector< libcmis::ObjectPtr > WSFolder::getChildren( ) throw ( libcmis::Exception
 libcmis::FolderPtr WSFolder::createFolder( const map< string, libcmis::PropertyPtr >& properties )
     throw ( libcmis::Exception )
 {
-    libcmis::FolderPtr empty;
-
-    // TODO Implement me
-
-    return empty;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).createFolder( repoId, properties, getId( ) );
 }
 
 libcmis::DocumentPtr WSFolder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
