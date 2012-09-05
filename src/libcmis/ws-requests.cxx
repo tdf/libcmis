@@ -92,6 +92,29 @@ boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault
     return exception;
 }
 
+void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boost::shared_ptr< ostream > os, string& contentType )
+{
+    // Get the length, and add a new part to the multipart
+    stringstream stream;
+    stream << os->rdbuf( );
+    string content = stream.str( );
+
+    xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", content.size( ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:mimeType" ), BAD_CAST( contentType.c_str( ) ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:stream" ) );
+
+    string name( "stream" );
+    RelatedPartPtr streamPart( new RelatedPart( name, contentType, content ) );
+    string partHref = "cid:";
+    partHref += multipart.addPart( streamPart );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "xop:Include" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:xop" ), BAD_CAST( "http://www.w3.org/2004/08/xop/include" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "href" ), BAD_CAST( partHref.c_str( ) ) );
+    xmlTextWriterEndElement( writer ); // xop:Include
+    xmlTextWriterEndElement( writer ); // cmism:stream
+}
+
 SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
 {
     return SoapFaultDetailPtr( new CmisSoapFaultDetail( node ) );
@@ -612,4 +635,29 @@ SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&
     }
 
     return SoapResponsePtr( response );
+}
+
+void SetContentStream::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:setContentStream" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    string overwrite( "false" );
+    if ( m_overwrite )
+        overwrite = "true";
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:overwriteFlag" ), BAD_CAST( overwrite.c_str( ) ) );
+
+    if ( !m_changeToken.empty( ) )
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
+
+    xmlTextWriterEndElement( writer ); // cmism:contentStream
+
+    xmlTextWriterEndElement( writer );
 }

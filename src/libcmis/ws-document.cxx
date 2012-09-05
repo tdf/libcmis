@@ -57,7 +57,11 @@ boost::shared_ptr< istream > WSDocument::getContentStream( ) throw ( libcmis::Ex
 void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType,
                                bool overwrite ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string repoId = getSession( )->getRepositoryId( );
+    getSession( )->getObjectService( ).setContentStream( repoId, getId( ),
+            overwrite, getChangeToken( ), os, contentType );
+
+    refresh( );
 }
 
 libcmis::DocumentPtr WSDocument::checkOut( ) throw ( libcmis::Exception )

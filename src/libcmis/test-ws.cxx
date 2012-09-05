@@ -73,6 +73,7 @@ class WSTest : public CppUnit::TestFixture
         void deleteTreeTest( );
         void moveTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
 
 
         CPPUNIT_TEST_SUITE( WSTest );
@@ -95,6 +96,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -444,8 +446,62 @@ void WSTest::getContentStreamTest( )
     try
     {
         boost::shared_ptr< istream >  is = document->getContentStream( );
+        is->seekg( 0, ios::end );
+        long size = is->tellg( );
+        is->seekg( 0, ios::beg );
+
+        char* buf = new char[ size ];
+        is->read( buf, size );
+        string content( buf, size );
+        delete[ ] buf;
+
         CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
-        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", is->good() && !is->eof() );
+        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", !content.empty( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void WSTest::setContentStreamTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::ObjectPtr object = session.getObject( "116" );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    string expectedContent( "Some content to upload" );
+    string expectedType( "text/plain" );
+    try
+    {
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        document->setContentStream( os, expectedType );
+        
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+
+        // Get the new content to check is has been properly uploaded
+        boost::shared_ptr< istream > newIs = document->getContentStream( );
+        newIs->seekg( 0, ios::end );
+        long size = newIs->tellg( );
+        cout << "Buffer size: " << size << endl;
+        newIs->seekg( 0, ios::beg );
+
+        char* buf = new char[ size ];
+        newIs->read( buf, size );
+        string content( buf, size );
+        delete[] buf;
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
+                expectedContent, content );
+    
+        // Testing other values like LastModifiedBy or LastModificationTime
+        // is server dependent... don't do it. 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
+                ( long )expectedContent.size(), document->getContentLength() );
     }
     catch ( const libcmis::Exception& e )
     {

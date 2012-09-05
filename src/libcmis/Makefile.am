@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS) -O0
 
 libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
     allowable-actions.hxx \

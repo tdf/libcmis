@@ -32,6 +32,7 @@
 #include <cppunit/ui/text/TestRunner.h>
 
 #include "ws-relatedmultipart.hxx"
+#include "ws-requests.hxx"
 #include "ws-soap.hxx"
 #include "test-helpers.hxx"
 
@@ -64,6 +65,9 @@ class SoapTest : public CppUnit::TestFixture
         void getStreamFromNodeXopTest( );
         void getStreamFromNodeBase64Test( );
 
+        // CMISM utilities tests
+        void writeCmismStreamTest( );
+
         CPPUNIT_TEST_SUITE( SoapTest );
         CPPUNIT_TEST( createResponseTest );
         CPPUNIT_TEST( parseFaultDetailEmptyTest );
@@ -77,6 +81,8 @@ class SoapTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parseMultipartTest );
         CPPUNIT_TEST( getStreamFromNodeXopTest );
         CPPUNIT_TEST( getStreamFromNodeBase64Test );
+
+        CPPUNIT_TEST( writeCmismStreamTest );
 
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -450,4 +456,44 @@ void SoapTest::getStreamFromNodeBase64Test( )
     stringstream out;
     out << stream->rdbuf( );
     CPPUNIT_ASSERT_EQUAL( expectedContent, out.str( ) );
+}
+
+void SoapTest::writeCmismStreamTest( )
+{
+    // Initialize the writer
+    xmlBufferPtr buf = xmlBufferCreate( );
+    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+
+    // Test writeCmismStream
+    RelatedMultipart multipart;
+    string contentType( "text/plain" );
+    string content( "Expected content" );
+    boost::shared_ptr< ostream > os( new stringstream( content ) );
+    writeCmismStream( writer, multipart, os, contentType );
+
+    // Close the writer and check the results
+    xmlTextWriterEndDocument( writer );
+    string str( ( const char * )xmlBufferContent( buf ) );
+
+    vector< string > ids = multipart.getIds( );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), ids.size( ) );
+    string partId = ids.front( );
+
+    RelatedPartPtr part = multipart.getPart( partId );
+    CPPUNIT_ASSERT_MESSAGE( "Missing stream related part", part.get( ) != NULL );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content not properly attached", content, part->getContent( ) );
+
+    stringstream expectedXml;
+    expectedXml << "<?xml version=\"1.0\"?>\n"
+                << "<cmism:length>" << content.size( ) << "</cmism:length>"
+                << "<cmism:mimeType>" << contentType << "</cmism:mimeType>"
+                << "<cmism:stream>"
+                << "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << partId << "\"/>"
+                << "</cmism:stream>\n";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Envelope part isn't correct", expectedXml.str( ), str );
+
+    // Free it all
+    xmlFreeTextWriter( writer );
+    xmlBufferFree( buf );
 }

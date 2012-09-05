@@ -93,7 +93,12 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
                 value = value.substr( 1, value.length( ) - 2 );
 
             if ( name == "start" )
+            {
                 m_startId = value;
+                // Remove the '<' '>' around the id if any
+                if ( m_startId[0] == '<' && m_startId[m_startId.size()-1] == '>' )
+                    m_startId = m_startId.substr( 1, m_startId.size() - 2 );
+            }
             else if ( name == "boundary" )
                 m_boundary = value;
             else if ( name == "start-info" )
@@ -145,7 +150,12 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
                 string headerName = header.substr( 0, colonPos );
                 string headerValue = header.substr( colonPos + 1 );
                 if ( headerName == "Content-Id" )
+                {
                     cid = libcmis::trim( headerValue );
+                    // Remove the '<' '>' around the id if any
+                    if ( cid[0] == '<' && cid[cid.size()-1] == '>' )
+                        cid = cid.substr( 1, cid.size() - 2 );
+                }
                 else if ( headerName == "Content-Type" )
                     type = libcmis::trim( headerValue );
                 // TODO Handle the Content-Transfer-Encoding

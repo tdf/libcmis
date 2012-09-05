@@ -30,6 +30,7 @@
 
 #include <istream>
 #include <map>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -65,6 +66,9 @@ class CmisSoapFaultDetail : public SoapFaultDetail
 };
 
 boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault );
+
+void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart,
+        boost::shared_ptr< std::ostream >, std::string& contentType );
 
 /** getRepositories request.
   */
@@ -529,6 +533,37 @@ class CreateFolderResponse : public SoapResponse
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         std::string getObjectId( ) { return m_id; }
+};
+
+class SetContentStream : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+        bool m_overwrite;
+        std::string m_changeToken;
+        boost::shared_ptr< std::ostream > m_stream;
+        std::string m_contentType;
+
+    public:
+        SetContentStream( std::string repoId,
+                std::string objectId,
+                bool overwrite,
+                std::string changeToken,
+                boost::shared_ptr< std::ostream > stream,
+                std::string contentType ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId ),
+            m_overwrite( overwrite ),
+            m_changeToken( changeToken ),
+            m_stream( stream ),
+            m_contentType( contentType )
+        {
+        }
+
+        ~SetContentStream( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
 };
 
 #endif

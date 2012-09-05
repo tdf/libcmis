@@ -164,6 +164,13 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
     return stream;
 }
 
+void ObjectService::setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
+        boost::shared_ptr< std::ostream > stream, std::string contentType ) throw ( libcmis::Exception )
+{
+    SetContentStream request( repoId, objectId, overwrite, changeToken, stream, contentType );
+    m_session->soapRequest( m_url, request );
+}
+
 libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string, libcmis::PropertyPtr >& properties,
         string folderId ) throw ( libcmis::Exception )
 {
