@@ -139,11 +139,20 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
 {
     map< int, string > params = getSessionParams();
 
-    // The repository ID is needed to initiate a session
-    if ( m_vm.count( "repository" ) != 1 )
-        throw CommandException( "Missing repository ID" );
+    string repoId;
+    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory:: getRepositories( params );
+    if ( repositories.size( ) == 1 )
+        repoId = repositories.front( )->getId( );
+    else
+    {
+        // The repository ID is needed to initiate a session
+        if ( m_vm.count( "repository" ) != 1 )
+            throw CommandException( "Missing repository ID" );
+        
+        repoId = m_vm["repository"].as< string >();
+    }
 
-    params[REPOSITORY_ID] = m_vm["repository"].as< string >();
+    params[REPOSITORY_ID] = repoId;
 
     return libcmis::SessionFactory::createSession( params );
 }
