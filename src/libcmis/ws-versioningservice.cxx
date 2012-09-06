@@ -86,3 +86,12 @@ void VersioningService::cancelCheckOut( string repoId, string documentId ) throw
     CancelCheckOut request( repoId, documentId );
     m_session->soapRequest( m_url, request );
 }
+
+void VersioningService::checkIn( string repoId, string objectId, bool isMajor,
+        const map< string, libcmis::PropertyPtr >& properties,
+        boost::shared_ptr< ostream > stream, string contentType,
+        string comment ) throw ( libcmis::Exception )
+{
+    CheckIn request( repoId, objectId, isMajor, properties, stream, contentType, comment );
+    m_session->soapRequest( m_url, request );
+}

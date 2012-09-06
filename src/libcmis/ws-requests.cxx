@@ -732,3 +732,35 @@ void CancelCheckOut::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterEndElement( writer );
 }
+
+void CheckIn::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkIn" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    string major = "false";
+    if ( m_isMajor )
+        major = "true";
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:major" ), BAD_CAST( major.c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );
+            it != m_properties.end( ); ++it )
+    {
+        libcmis::PropertyPtr property = it->second;
+        property->toXml( writer );
+    }
+    xmlTextWriterEndElement( writer ); // cmis:properties
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
+    xmlTextWriterEndElement( writer ); // cmism:contentStream
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:checkinComment" ), BAD_CAST( m_comment.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}

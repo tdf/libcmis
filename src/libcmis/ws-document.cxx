@@ -81,5 +81,9 @@ void WSDocument::checkIn( bool isMajor, string comment,
                           boost::shared_ptr< ostream > stream,
                           string contentType ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string repoId = getSession( )->getRepositoryId( );
+    getSession( )->getVersioningService( ).checkIn( repoId, getId( ), isMajor,
+            properties, stream, contentType, comment );
+
+    refresh( );
 }

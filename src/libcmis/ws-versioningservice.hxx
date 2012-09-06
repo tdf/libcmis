@@ -49,7 +49,13 @@ class VersioningService
         VersioningService& operator=( const VersioningService& copy );
 
         libcmis::DocumentPtr checkOut( std::string repoId, std::string documentId ) throw ( libcmis::Exception );
+
         void cancelCheckOut( std::string repoId, std::string documentId ) throw ( libcmis::Exception );
+
+        void checkIn( std::string repoId, std::string objectId, bool isMajor,
+                const std::map< std::string, libcmis::PropertyPtr >& properties,
+                boost::shared_ptr< std::ostream > stream, std::string contentType,
+                std::string comment ) throw ( libcmis::Exception );
 };
 
 #endif
