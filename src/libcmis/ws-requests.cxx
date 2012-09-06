@@ -687,3 +687,36 @@ void SetContentStream::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterEndElement( writer );
 }
+
+void CheckOut::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkOut" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr CheckOutResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
+{
+    CheckOutResponse* response = new CheckOutResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "objectId" ) ) )
+        {
+            xmlChar* content = xmlNodeGetContent( child );
+            if ( content != NULL )
+            {
+                string value( ( char* ) content );
+                xmlFree( content );
+                response->m_objectId = value;
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

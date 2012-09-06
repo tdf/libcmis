@@ -63,7 +63,9 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	ws-soap.hxx \
 	ws-soap.cxx \
 	ws-session.hxx \
-	ws-session.cxx
+	ws-session.cxx \
+	ws-versioningservice.hxx \
+	ws-versioningservice.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 2:2:0
 

@@ -593,4 +593,41 @@ class SetContentStream : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
+class CheckOut : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+
+    public:
+        CheckOut( std::string repoId,
+                std::string objectId ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId )
+        {
+        }
+
+        ~CheckOut( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class CheckOutResponse : public SoapResponse
+{
+    private:
+        std::string m_objectId;
+
+        CheckOutResponse( ) : SoapResponse( ), m_objectId( ) { }
+
+    public:
+
+        /** Parse cmism:checkOutResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::string getObjectId( ) { return m_objectId; }
+};
+
 #endif

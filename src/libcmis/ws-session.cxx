@@ -251,6 +251,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}createFolderResponse" ] = &CreateFolderResponse::create;
     // Use the same response object than folders as it contains the same elements
     mapping[ "{" + string( NS_CMISM_URL ) + "}createDocumentResponse" ] = &CreateFolderResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}checkOutResponse" ] = &CheckOutResponse::create;
 
     return mapping;
 }
@@ -288,6 +289,11 @@ ObjectService WSSession::getObjectService( )
 NavigationService WSSession::getNavigationService( )
 {
     return NavigationService( this );
+}
+
+VersioningService WSSession::getVersioningService( )
+{
+    return VersioningService( this );
 }
 
 list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )

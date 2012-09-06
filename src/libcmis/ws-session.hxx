@@ -36,6 +36,7 @@
 #include "ws-objectservice.hxx"
 #include "ws-repositoryservice.hxx"
 #include "ws-soap.hxx"
+#include "ws-versioningservice.hxx"
 
 class WSSession : public BaseSession, public SoapSession
 {
@@ -80,6 +81,8 @@ class WSSession : public BaseSession, public SoapSession
         ObjectService getObjectService( );
 
         NavigationService getNavigationService( );
+
+        VersioningService getVersioningService( );
 
 
         // Override session methods

@@ -66,11 +66,8 @@ void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string conte
 
 libcmis::DocumentPtr WSDocument::checkOut( ) throw ( libcmis::Exception )
 {
-    libcmis::DocumentPtr empty;
-
-    // TODO Implement me
-
-    return empty;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getVersioningService( ).checkOut( repoId, getId( ) );
 }
 
 void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
