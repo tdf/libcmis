@@ -44,3 +44,4 @@
 
   * Added Document::checkOut(), Document::cancelCheckout() and Document::checkIn()
   * WebService binding implementation
+  * Session factory automatically detects which binding to use
