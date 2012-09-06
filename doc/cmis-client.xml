@@ -176,8 +176,8 @@
         <varlistentry>
           <term>--url <replaceable class="parameter">url://to/binding</replaceable></term>
           <listitem>
-            <para><replaceable class="parameter">repo-id</replaceable> needs to point to the AtomPub service document.
-							Note that only AtomPub binding is currently supported by libcmis.
+            <para><replaceable class="parameter">url://to/binding</replaceable> needs to point to the service document of
+              either AtomPub or WebService binding.
 						</para>
           </listitem>
         </varlistentry>
@@ -185,7 +185,10 @@
           <term>-r,--repository <replaceable class="parameter">repo-id</replaceable></term>
           <listitem>
             <para>
-							Operate on the <replaceable class="parameter">repo-id</replaceable> CMIS repository.
+              Operate on the <replaceable class="parameter">repo-id</replaceable> CMIS repository.
+              If there is only one repository on the server, this parameter is not needed and that
+              repository will be automatically selected. Use this parameter if there are several
+              repositories on the server.
 						</para>
           </listitem>
         </varlistentry>

@@ -123,6 +123,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
     BaseSession( atomPubUrl, repositoryId, username, password, verbose ),
     m_repository( )
 {
+    initialize( );
 }
 
 AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
@@ -167,6 +168,11 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 
         if ( NULL != doc )
         {
+            // Check that we have an AtomPub service document
+            xmlNodePtr root = xmlDocGetRootElement( doc );
+            if ( !xmlStrEqual( root->name, BAD_CAST( "service" ) ) )
+                throw libcmis::Exception( "Not an atompub service document" );
+
             xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
             // Register the Service Document namespaces
@@ -215,13 +221,11 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 list< libcmis::RepositoryPtr > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     AtomPubSession session( url, string(), username, password, verbose );
-    session.initialize( );
     return session.m_repositories;
 }
 
 AtomRepositoryPtr AtomPubSession::getAtomRepository( ) throw ( libcmis::Exception )
 {
-    initialize( );
     return m_repository;
 }
 

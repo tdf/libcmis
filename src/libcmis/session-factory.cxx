@@ -27,6 +27,7 @@
  */
 #include "atom-session.hxx"
 #include "session-factory.hxx"
+#include "ws-session.hxx"
 
 using namespace std;
 
@@ -41,10 +42,10 @@ namespace libcmis
         if ( pIt != params.end( ) )
             repository = pIt->second;
         
-        pIt = params.find( ATOMPUB_URL );
+        pIt = params.find( BINDING_URL );
         if ( pIt != params.end( ) )
         {
-            string repoId = pIt->second;
+            string bindingUrl = pIt->second;
 
             // Look for the username and password
             pIt = params.find( USERNAME );
@@ -68,7 +69,29 @@ namespace libcmis
             if ( pIt != params.end( ) && !pIt->second.empty() )
                 verbose = true;
 
-            session = new AtomPubSession( repoId, repository, username, password, verbose );
+            try
+            {
+                session = new AtomPubSession( bindingUrl, repository, username, password, verbose );
+            }
+            catch ( const Exception& e )
+            {
+                if ( e.getType( ) == "permissionDenied" )
+                    throw e;
+            }
+            
+            if ( session == NULL )
+            {
+                // We couldn't get an AtomSession, we may have an URL for the WebService binding
+                try
+                {
+                    session = new WSSession( bindingUrl, repository, username, password, verbose );
+                }
+                catch ( const Exception& e )
+                {
+                    if ( e.getType( ) == "permissionDenied" )
+                        throw e;
+                }
+            }
         }
 
         return session;
@@ -78,10 +101,10 @@ namespace libcmis
     {
         list< RepositoryPtr > repos;
 
-        map< int, string >::iterator pIt = params.find( ATOMPUB_URL );
+        map< int, string >::iterator pIt = params.find( BINDING_URL );
         if ( pIt != params.end( ) )
         {
-            string repoId = pIt->second;
+            string bindingUrl = pIt->second;
 
             // Look for the username and password
             pIt = params.find( USERNAME );
@@ -105,7 +128,32 @@ namespace libcmis
             if ( pIt != params.end( ) && !pIt->second.empty() )
                 verbose = true;
 
-            repos = AtomPubSession::getRepositories( repoId, username, password, verbose );
+            bool tryNext = true;
+            try
+            {
+                repos = AtomPubSession::getRepositories( bindingUrl, username, password, verbose );
+                tryNext = false;
+            }
+            catch ( const Exception& e )
+            {
+                if ( e.getType( ) == "permissionDenied" )
+                    throw e;
+            }
+            
+            if ( tryNext )
+            {
+                // It didn't work with AtomSession, we may have an URL for the WebService binding
+                try
+                {
+                    repos = WSSession::getRepositories( bindingUrl, username, password, verbose );
+                    tryNext = false;
+                }
+                catch ( const Exception& e )
+                {
+                    if ( e.getType( ) == "permissionDenied" )
+                        throw e;
+                }
+            }
         }
 
         return repos;

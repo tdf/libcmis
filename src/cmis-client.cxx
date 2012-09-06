@@ -87,10 +87,10 @@ map< int, string > CmisClient::getSessionParams()
     map< int, string > params;
 
     if ( m_vm.count( "url" ) == 0 )
-        throw CommandException( "Missing Atom binding URL" );
+        throw CommandException( "Missing binding URL" );
     
     string url = m_vm["url"].as<string>();
-    params[ATOMPUB_URL] = url;
+    params[BINDING_URL] = url;
 
     // Look for the credentials
     if ( m_vm.count( "username" ) > 0 )

@@ -36,7 +36,7 @@
 #include "repository.hxx"
 #include "session.hxx"
 
-#define ATOMPUB_URL         0
+#define BINDING_URL         0
 #define REPOSITORY_ID       1
 #define USERNAME            2
 #define PASSWORD            3
@@ -48,19 +48,19 @@ namespace libcmis
     {
         public:
 
-            /** Create a session from the given parameters.
+            /** Create a session from the given parameters. The binding type is automatically
+                detected based on the provided URL.
 
-                <p>The parameters are:</p>
-                <ul>
-                    <li><b>ATOMPUB_URL</b>: the atompub binding URL</li>
-                    <li><b>REPOSITORY_ID</b>: the repository id to connect to</li>
-                    <li><b>USERNAME</b>: the username to use for the server connection</li>
-                    <li><b>PASSWORD</b>: the password to use for the server connection/li>
-                    <li><b>VERBOSE</b>: if set to a non-empty string, then report as much as
-                            possible infos for debugging purpose.</li>
+                The parameters are:
+                    \li <b>BINDING_URL</b>: the binding URL
+                    \li <b>REPOSITORY_ID</b>: the repository id to connect to
+                    \li <b>USERNAME</b>: the username to use for the server connection
+                    \li <b>PASSWORD</b>: the password to use for the server connection
+                    \li <b>VERBOSE</b>: if set to a non-empty string, then report as much as
+                            possible infos for debugging purpose.
                 </ul>
 
-                <p>The resulting pointer should be deleted by the caller.</p>
+                The resulting pointer should be deleted by the caller.
               */
             static Session* createSession( std::map< int, std::string > params ) throw ( Exception );
 

@@ -187,6 +187,11 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
 
         if ( NULL != doc )
         {
+            // Check that we have a WSDL document
+            xmlNodePtr root = xmlDocGetRootElement( doc );
+            if ( !xmlStrEqual( root->name, BAD_CAST( "definitions" ) ) )
+                throw libcmis::Exception( "Not a WSDL document" );
+
             // Get all the services soap URLs
             m_servicesUrls.clear( );
 
@@ -323,7 +328,6 @@ VersioningService& WSSession::getVersioningService( )
 list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
 {
     WSSession session( url, string(), username, password, verbose );
-    session.initialize( );
     return session.m_repositories;
 }
 

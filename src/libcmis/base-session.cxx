@@ -456,17 +456,33 @@ const char* CurlException::what( ) const throw ()
 libcmis::Exception CurlException::getCmisException( ) const
 {
     string msg;
+    string type( "runtime" );
 
     switch ( m_httpStatus )
     {
+        case 400:
+            msg = string( what() ) + string( ": " ) + m_url;
+            type = "invalidArgument";
+            break;
+        case 401:
+            msg = "Authentication failure";
+            type = "permissionDenied";
+            break;
         case 403:
             msg = "Invalid credentials";
+            type = "permissionDenied";
             break;
         case 404:
             msg = "Invalid URL: " + m_url;
+            type = "objectNotFound";
+            break;
+        case 405:
+            msg = string( what() ) + string( ": " ) + m_url;
+            type = "notSupported";
             break;
         case 409:
             msg = "Editing conflict error";
+            type = "updateConflict";
             break;
         default:
             msg = what();
@@ -475,5 +491,5 @@ libcmis::Exception CurlException::getCmisException( ) const
             break;
     }
 
-    return libcmis::Exception( msg );
+    return libcmis::Exception( msg, type );
 }

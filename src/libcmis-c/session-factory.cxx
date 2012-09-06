@@ -47,7 +47,7 @@ namespace
             bool verbose )
     {
         map< int, string > params;
-        params[ATOMPUB_URL]   = string( bindingUrl );
+        params[BINDING_URL]   = string( bindingUrl );
         params[REPOSITORY_ID] = string( repositoryId );
         params[USERNAME]      = string( username );
         params[PASSWORD]      = string( password );
