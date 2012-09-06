@@ -43,6 +43,10 @@ WSSession::WSSession( string bindingUrl, string repositoryId,
         string username, string password, bool verbose ) throw ( libcmis::Exception ) :
     BaseSession( bindingUrl, repositoryId, username, password, verbose ),
     m_servicesUrls( ),
+    m_navigationService( NULL ),
+    m_objectService( NULL ),
+    m_repositoryService( NULL ),
+    m_versioningService( NULL ),
     m_responseFactory( )
 {
     // We don't want to have the HTTP exceptions as the errors are coming
@@ -54,6 +58,10 @@ WSSession::WSSession( string bindingUrl, string repositoryId,
 WSSession::WSSession( const WSSession& copy ) :
     BaseSession( copy ),
     m_servicesUrls( copy.m_servicesUrls ),
+    m_navigationService( NULL ),
+    m_objectService( NULL ),
+    m_repositoryService( NULL ),
+    m_versioningService( NULL ),
     m_responseFactory( copy.m_responseFactory )
 {
 }
@@ -65,6 +73,10 @@ WSSession& WSSession::operator=( const WSSession& copy )
     {
         BaseSession::operator=( copy );
         m_servicesUrls = copy.m_servicesUrls;
+        m_navigationService = NULL;
+        m_objectService = NULL;
+        m_repositoryService = NULL;
+        m_versioningService = NULL;
         m_responseFactory = copy.m_responseFactory;
     }
     
@@ -73,6 +85,10 @@ WSSession& WSSession::operator=( const WSSession& copy )
 
 WSSession::~WSSession( )
 {
+    delete m_navigationService;
+    delete m_objectService;
+    delete m_repositoryService;
+    delete m_versioningService;
 }
 
 string WSSession::getWsdl( string url ) throw ( CurlException )
@@ -276,24 +292,32 @@ string WSSession::getServiceUrl( string name )
     return url;
 }
 
-RepositoryService WSSession::getRepositoryService( )
+RepositoryService& WSSession::getRepositoryService( )
 {
-    return RepositoryService( this );
+    if ( m_repositoryService == NULL )
+        m_repositoryService = new RepositoryService( this );
+    return *m_repositoryService;
 }
 
-ObjectService WSSession::getObjectService( )
+ObjectService& WSSession::getObjectService( )
 {
-    return ObjectService( this );
+    if ( m_objectService == NULL )
+        m_objectService = new ObjectService( this );
+    return *m_objectService;
 }
 
-NavigationService WSSession::getNavigationService( )
+NavigationService& WSSession::getNavigationService( )
 {
-    return NavigationService( this );
+    if ( m_navigationService == NULL )
+        m_navigationService = new NavigationService( this );
+    return *m_navigationService;
 }
 
-VersioningService WSSession::getVersioningService( )
+VersioningService& WSSession::getVersioningService( )
 {
-    return VersioningService( this );
+    if ( m_versioningService == NULL )
+        m_versioningService = new VersioningService( this );
+    return *m_versioningService;
 }
 
 list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )

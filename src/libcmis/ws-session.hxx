@@ -42,6 +42,10 @@ class WSSession : public BaseSession, public SoapSession
 {
     private:
         std::map< std::string, std::string > m_servicesUrls;
+        NavigationService* m_navigationService;
+        ObjectService*     m_objectService;
+        RepositoryService* m_repositoryService;
+        VersioningService* m_versioningService;
 
         SoapResponseFactory m_responseFactory;
 
@@ -76,13 +80,13 @@ class WSSession : public BaseSession, public SoapSession
           */
         std::string getServiceUrl( std::string name );
 
-        RepositoryService getRepositoryService( );
+        RepositoryService& getRepositoryService( );
 
-        ObjectService getObjectService( );
+        ObjectService& getObjectService( );
 
-        NavigationService getNavigationService( );
+        NavigationService& getNavigationService( );
 
-        VersioningService getVersioningService( );
+        VersioningService& getVersioningService( );
 
 
         // Override session methods
