@@ -80,3 +80,9 @@ libcmis::DocumentPtr VersioningService::checkOut( string repoId, string document
 
     return pwc;
 }
+
+void VersioningService::cancelCheckOut( string repoId, string documentId ) throw ( libcmis::Exception )
+{
+    CancelCheckOut request( repoId, documentId );
+    m_session->soapRequest( m_url, request );
+}

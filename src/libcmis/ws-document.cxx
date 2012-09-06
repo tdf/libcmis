@@ -72,7 +72,8 @@ libcmis::DocumentPtr WSDocument::checkOut( ) throw ( libcmis::Exception )
 
 void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string repoId = getSession( )->getRepositoryId( );
+    getSession( )->getVersioningService( ).cancelCheckOut( repoId, getId( ) );
 }
 
 void WSDocument::checkIn( bool isMajor, string comment,
