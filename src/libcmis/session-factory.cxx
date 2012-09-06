@@ -33,42 +33,13 @@ using namespace std;
 
 namespace libcmis
 {
-    Session* SessionFactory::createSession( map< int, string > params ) throw ( Exception )
+    Session* SessionFactory::createSession( string bindingUrl, string username,
+            string password, string repository, bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
-
-        string repository;
-        map< int, string >::iterator pIt = params.find( REPOSITORY_ID );
-        if ( pIt != params.end( ) )
-            repository = pIt->second;
         
-        pIt = params.find( BINDING_URL );
-        if ( pIt != params.end( ) )
+        if ( !bindingUrl.empty( ) )
         {
-            string bindingUrl = pIt->second;
-
-            // Look for the username and password
-            pIt = params.find( USERNAME );
-            string username;
-            if ( pIt != params.end( ) )
-                username = pIt->second;
-
-            pIt = params.find( PASSWORD );
-            string password;
-            if ( pIt != params.end( ) )
-                password = pIt->second;
-
-            if ( !username.empty() && password.empty() )
-                password = string();
-            else if ( username.empty() && !password.empty() )
-                username = string();
-
-            // Do we have the verbose flag set?
-            bool verbose = false;
-            pIt = params.find( VERBOSE );
-            if ( pIt != params.end( ) && !pIt->second.empty() )
-                verbose = true;
-
             try
             {
                 session = new AtomPubSession( bindingUrl, repository, username, password, verbose );
@@ -97,37 +68,13 @@ namespace libcmis
         return session;
     }
 
-    list< RepositoryPtr > SessionFactory::getRepositories( map< int, string > params ) throw ( Exception )
+    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl, string username,
+            string password, bool verbose ) throw ( Exception )
     {
         list< RepositoryPtr > repos;
 
-        map< int, string >::iterator pIt = params.find( BINDING_URL );
-        if ( pIt != params.end( ) )
+        if ( !bindingUrl.empty( ) )
         {
-            string bindingUrl = pIt->second;
-
-            // Look for the username and password
-            pIt = params.find( USERNAME );
-            string username;
-            if ( pIt != params.end( ) )
-                username = pIt->second;
-
-            pIt = params.find( PASSWORD );
-            string password;
-            if ( pIt != params.end( ) )
-                password = pIt->second;
-
-            if ( !username.empty() && password.empty() )
-                password = string();
-            else if ( username.empty() && !password.empty() )
-                username = string();
-        
-            // Do we have the verbose flag set?
-            bool verbose = false;
-            pIt = params.find( VERBOSE );
-            if ( pIt != params.end( ) && !pIt->second.empty() )
-                verbose = true;
-
             bool tryNext = true;
             try
             {

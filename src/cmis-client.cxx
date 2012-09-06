@@ -82,38 +82,6 @@ class CmisClient
         map< string, string > getObjectProperties( );
 };
 
-map< int, string > CmisClient::getSessionParams()
-{
-    map< int, string > params;
-
-    if ( m_vm.count( "url" ) == 0 )
-        throw CommandException( "Missing binding URL" );
-    
-    string url = m_vm["url"].as<string>();
-    params[BINDING_URL] = url;
-
-    // Look for the credentials
-    if ( m_vm.count( "username" ) > 0 )
-    {
-        string username = m_vm["username"].as< string >();
-
-        string password;
-        if ( m_vm.count( "password" ) > 0 )
-            password = m_vm["password"].as< string >();
-
-        if ( !username.empty() && !password.empty() )
-        {
-            params[USERNAME] = username;
-            params[PASSWORD] = password;
-        }
-    }
-
-    if ( m_vm.count( "verbose" ) > 0 )
-        params[VERBOSE] = "yes";
-
-    return params;
-}
-
 map< string, string > CmisClient::getObjectProperties( )
 {
     map< string, string > result;
@@ -137,10 +105,27 @@ map< string, string > CmisClient::getObjectProperties( )
 
 libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::Exception )
 {
-    map< int, string > params = getSessionParams();
+    if ( m_vm.count( "url" ) == 0 )
+        throw CommandException( "Missing binding URL" );
+    
+    string url = m_vm["url"].as<string>();
+
+    // Look for the credentials
+    string username;
+    string password;
+    if ( m_vm.count( "username" ) > 0 )
+    {
+        username = m_vm["username"].as< string >();
+
+        if ( m_vm.count( "password" ) > 0 )
+            password = m_vm["password"].as< string >();
+    }
+
+
+    bool verbose = m_vm.count( "verbose" ) > 0;
 
     string repoId;
-    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory:: getRepositories( params );
+    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory:: getRepositories( url, username, password, verbose );
     if ( repositories.size( ) == 1 )
         repoId = repositories.front( )->getId( );
     else
@@ -152,9 +137,7 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
         repoId = m_vm["repository"].as< string >();
     }
 
-    params[REPOSITORY_ID] = repoId;
-
-    return libcmis::SessionFactory::createSession( params );
+    return libcmis::SessionFactory::createSession( url, username, password, repoId, verbose );
 }
 
 void CmisClient::execute( ) throw ( exception )
@@ -170,8 +153,26 @@ void CmisClient::execute( ) throw ( exception )
         string command = m_vm["command"].as<string>();
         if ( "list-repos" == command )
         {
-            map< int, string > params = getSessionParams( );
-            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( params );
+            if ( m_vm.count( "url" ) == 0 )
+                throw CommandException( "Missing binding URL" );
+            
+            string url = m_vm["url"].as<string>();
+
+            // Look for the credentials
+            string username;
+            string password;
+            if ( m_vm.count( "username" ) > 0 )
+            {
+                username = m_vm["username"].as< string >();
+
+                if ( m_vm.count( "password" ) > 0 )
+                    password = m_vm["password"].as< string >();
+            }
+
+
+            bool verbose = m_vm.count( "verbose" ) > 0;
+
+            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( url, username, password, verbose );
         
             cout << "Repositories: name (id)" << endl;
             for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); it++ )

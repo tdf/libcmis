@@ -37,26 +37,6 @@
 
 using namespace std;
 
-namespace
-{
-    map< int, string > getParamsMap(
-            char* bindingUrl,
-            char* repositoryId,
-            char* username,
-            char* password,
-            bool verbose )
-    {
-        map< int, string > params;
-        params[BINDING_URL]   = string( bindingUrl );
-        params[REPOSITORY_ID] = string( repositoryId );
-        params[USERNAME]      = string( username );
-        params[PASSWORD]      = string( password );
-        params[VERBOSE]       = verbose ? string( "true" ): string( );
-
-        return params;
-    }
-}
-
 libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
         char* repositoryId,
@@ -69,8 +49,7 @@ libcmis_SessionPtr libcmis_createSession(
 
     try
     {
-        map< int, string > params = getParamsMap( bindingUrl, repositoryId, username, password, verbose );
-        libcmis::Session* handle = libcmis::SessionFactory::createSession( params );
+        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username, password, repositoryId, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }
@@ -86,7 +65,6 @@ libcmis_SessionPtr libcmis_createSession(
 
 libcmis_RepositoryPtr* libcmis_getRepositories(
         char* bindingUrl,
-        char* repositoryId,
         char* username,
         char* password,
         bool  verbose,
@@ -95,8 +73,8 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
     libcmis_RepositoryPtr* repositories = NULL;
     try
     {
-        map< int, string > params = getParamsMap( bindingUrl, repositoryId, username, password, verbose );
-        list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( params );
+        list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
+               bindingUrl, username, password, verbose );
 
         repositories = new libcmis_RepositoryPtr[ repos.size() ];
         list< libcmis::RepositoryPtr >::iterator it = repos.begin( );

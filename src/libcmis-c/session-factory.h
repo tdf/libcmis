@@ -44,7 +44,6 @@ libcmis_SessionPtr libcmis_createSession(
 
 libcmis_RepositoryPtr* libcmis_getRepositories(
         char* bindingUrl,
-        char* repositoryId,
         char* username,
         char* password,
         bool  verbose,
