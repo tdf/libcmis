@@ -249,6 +249,8 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}getObjectParentsResponse" ] = &GetObjectParentsResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getChildrenResponse" ] = &GetChildrenResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}createFolderResponse" ] = &CreateFolderResponse::create;
+    // Use the same response object than folders as it contains the same elements
+    mapping[ "{" + string( NS_CMISM_URL ) + "}createDocumentResponse" ] = &CreateFolderResponse::create;
 
     return mapping;
 }

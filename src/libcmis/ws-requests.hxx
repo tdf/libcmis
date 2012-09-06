@@ -535,6 +535,33 @@ class CreateFolderResponse : public SoapResponse
         std::string getObjectId( ) { return m_id; }
 };
 
+class CreateDocument : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        const std::map< std::string, libcmis::PropertyPtr >& m_properties;
+        std::string m_folderId;
+        boost::shared_ptr< std::ostream > m_stream;
+        std::string m_contentType;
+
+    public:
+        CreateDocument( std::string repoId,
+                const std::map< std::string, libcmis::PropertyPtr >& properties,
+                std::string folderId, boost::shared_ptr< std::ostream > stream,
+                std::string contentType ) :
+            m_repositoryId( repoId ),
+            m_properties( properties ),
+            m_folderId( folderId ),
+            m_stream( stream ),
+            m_contentType( contentType )
+        {
+        }
+
+        ~CreateDocument( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
 class SetContentStream : public SoapRequest
 {
     private:

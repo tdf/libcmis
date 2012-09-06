@@ -637,6 +637,32 @@ SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&
     return SoapResponsePtr( response );
 }
 
+void CreateDocument::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createDocument" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );
+            it != m_properties.end( ); ++it )
+    {
+        libcmis::PropertyPtr property = it->second;
+        property->toXml( writer );
+    }
+    xmlTextWriterEndElement( writer ); // cmis:properties
+    
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
+    xmlTextWriterEndElement( writer ); // cmism:contentStream
+
+    xmlTextWriterEndElement( writer );
+}
+
 void SetContentStream::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:setContentStream" ) );

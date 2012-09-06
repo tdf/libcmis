@@ -58,11 +58,8 @@ libcmis::FolderPtr WSFolder::createFolder( const map< string, libcmis::PropertyP
 libcmis::DocumentPtr WSFolder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
                         boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
 {
-    libcmis::DocumentPtr empty;
-
-    // TODO Implement me
-
-    return empty;
+    string repoId = getSession( )->getRepositoryId( );
+    return getSession( )->getObjectService( ).createDocument( repoId, properties, getId( ), os, contentType );
 }
 
 vector< string > WSFolder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile, bool continueOnError )

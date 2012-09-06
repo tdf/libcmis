@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "base-session.hxx"
+#include "document.hxx"
 #include "folder.hxx"
 #include "object.hxx"
 #include "ws-soap.hxx"
@@ -77,6 +78,9 @@ class ObjectService
 
         libcmis::FolderPtr createFolder( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId ) throw ( libcmis::Exception );
+
+        libcmis::DocumentPtr createDocument( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
+                std::string folderId, boost::shared_ptr< std::ostream > stream, std::string contentType ) throw ( libcmis::Exception );
 };
 
 #endif

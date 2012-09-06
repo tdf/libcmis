@@ -191,3 +191,25 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string
 
     return folder;
 }
+
+libcmis::DocumentPtr ObjectService::createDocument( string repoId, const map< string, libcmis::PropertyPtr >& properties,
+        string folderId, boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
+{
+    libcmis::DocumentPtr document;
+
+    CreateDocument request( repoId, properties, folderId, stream, contentType );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        CreateFolderResponse* response = dynamic_cast< CreateFolderResponse* >( resp );
+        if ( response != NULL )
+        {
+            string id = response->getObjectId( );
+            libcmis::ObjectPtr object = m_session->getObject( id );
+            document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+        }
+    }
+
+    return document;
+}

@@ -42,6 +42,23 @@
 
 using namespace std;
 
+namespace
+{
+    string lcl_getStreamAsString( boost::shared_ptr< istream > is )
+    {
+        is->seekg( 0, ios::end );
+        long size = is->tellg( );
+        is->seekg( 0, ios::beg );
+
+        char* buf = new char[ size ];
+        is->read( buf, size );
+        string content( buf, size );
+        delete[ ] buf;
+
+        return content;
+    }
+}
+
 class WSTest : public CppUnit::TestFixture
 {
     public:
@@ -69,6 +86,7 @@ class WSTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
+        void createDocumentTest( );
         void deleteObjectTest( );
         void deleteTreeTest( );
         void moveTest( );
@@ -93,6 +111,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getContentStreamTest );
@@ -371,6 +390,48 @@ void WSTest::createFolderBadTypeTest( )
     }
 }
 
+void WSTest::createDocumentTest( )
+{
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    map< string, libcmis::PropertyPtr > props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
+    vector< string > nameValues;
+    nameValues.push_back( "createDocumentTest" );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+   
+    // set the object type 
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:document" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Actually send the document creation request
+    string contentStr = "Some content";
+    boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
+    string contentType = "text/plain";
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+
+    // Check that the content is properly set
+    boost::shared_ptr< istream >  is = created->getContentStream( );
+    string content = lcl_getStreamAsString( is );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content set", contentStr, content );
+}
+
 void WSTest::deleteObjectTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
@@ -446,14 +507,7 @@ void WSTest::getContentStreamTest( )
     try
     {
         boost::shared_ptr< istream >  is = document->getContentStream( );
-        is->seekg( 0, ios::end );
-        long size = is->tellg( );
-        is->seekg( 0, ios::beg );
-
-        char* buf = new char[ size ];
-        is->read( buf, size );
-        string content( buf, size );
-        delete[ ] buf;
+        string content = lcl_getStreamAsString( is );
 
         CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
         CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", !content.empty( ) );
@@ -485,15 +539,7 @@ void WSTest::setContentStreamTest( )
 
         // Get the new content to check is has been properly uploaded
         boost::shared_ptr< istream > newIs = document->getContentStream( );
-        newIs->seekg( 0, ios::end );
-        long size = newIs->tellg( );
-        cout << "Buffer size: " << size << endl;
-        newIs->seekg( 0, ios::beg );
-
-        char* buf = new char[ size ];
-        newIs->read( buf, size );
-        string content( buf, size );
-        delete[] buf;
+        string content = lcl_getStreamAsString( newIs );
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
                 expectedContent, content );
