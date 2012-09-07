@@ -46,7 +46,7 @@ string RelatedPart::toString( string cid )
 {
     string buf;
 
-    buf += "Content-Id: " + cid + "\r\n";
+    buf += "Content-Id: <" + cid + ">\r\n";
     buf += "Content-Type: " + getContentType( ) + "\r\n";
     buf += "Content-Transfer-Encoding: binary\r\n\r\n";
     buf += getContent( );

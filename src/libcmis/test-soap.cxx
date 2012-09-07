@@ -274,7 +274,7 @@ void SoapTest::serializeMultipartSimpleTest( )
 
     string boundary = multipart.getBoundary( );
     string expected = "\r\n--" + boundary + "\r\n" +
-                      "Content-Id: " + cid + "\r\n" +
+                      "Content-Id: <" + cid + ">\r\n" +
                       "Content-Type: " + partType + "\r\n" +
                       "Content-Transfer-Encoding: binary\r\n" +
                       "\r\n" +
@@ -313,13 +313,13 @@ void SoapTest::serializeMultipartComplexTest( )
 
     string boundary = multipart.getBoundary( );
     string expected = "\r\n--" + boundary + "\r\n" +
-                      "Content-Id: " + rootCid + "\r\n" +
+                      "Content-Id: <" + rootCid + ">\r\n" +
                       "Content-Type: " + rootType + "\r\n" +
                       "Content-Transfer-Encoding: binary\r\n" +
                       "\r\n" +
                       rootContent +
                       "\r\n--" + boundary + "\r\n" +
-                      "Content-Id: " + part2Cid + "\r\n" +
+                      "Content-Id: <" + part2Cid + ">\r\n" +
                       "Content-Type: " + part2Type + "\r\n" +
                       "Content-Transfer-Encoding: binary\r\n" +
                       "\r\n" +
@@ -346,13 +346,13 @@ void SoapTest::parseMultipartTest( )
 
     string boundary = "------------ABCDEF-Boundary";
     string body = "\r\n--" + boundary + "\r\n" +
-                  "Content-Id: " + rootCid + "\r\n" +
+                  "Content-Id: <" + rootCid + ">\r\n" +
                   "Content-Type: " + rootType + "\r\n" +
                   "Content-Transfer-Encoding: binary\r\n" +
                   "\r\n" +
                   rootContent +
                   "\r\n--" + boundary + "\r\n" +
-                  "Content-Id: " + part2Cid + "\r\n" +
+                  "Content-Id: <" + part2Cid + ">\r\n" +
                   "Content-Type: " + part2Type + "\r\n" +
                   "Content-Transfer-Encoding: binary\r\n" +
                   "\r\n" +
@@ -390,7 +390,7 @@ void SoapTest::getStreamFromNodeXopTest( )
     
     string boundary = "------------ABCDEF-Boundary";
     string body = "\r\n--" + boundary + "\r\n" +
-                  "Content-Id: root-cid\r\n" +
+                  "Content-Id: <root-cid>\r\n" +
                   "Content-Type: text/plain\r\n" +
                   "Content-Transfer-Encoding: binary\r\n" +
                   "\r\n" +
@@ -429,7 +429,7 @@ void SoapTest::getStreamFromNodeBase64Test( )
     // Create the test multipart
     string boundary = "------------ABCDEF-Boundary";
     string body = "\r\n--" + boundary + "\r\n" +
-                  "Content-Id: root-cid\r\n" +
+                  "Content-Id: <root-cid>\r\n" +
                   "Content-Type: text/plain\r\n" +
                   "Content-Transfer-Encoding: binary\r\n" +
                   "\r\n" +

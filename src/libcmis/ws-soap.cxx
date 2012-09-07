@@ -215,7 +215,7 @@ RelatedMultipart& SoapRequest::getMultipart( string& username, string& password 
     // Generate the envelope and add it to the multipart
     string envelope = createEnvelope( username, password );
     string name( "root" );
-    string type( "application/xop+xml" );
+    string type( "application/xop+xml;charset=UTF-8;type=\"text/xml\"" );
     RelatedPartPtr envelopePart( new RelatedPart( name, type, envelope ) );
     string rootId = m_multipart.addPart( envelopePart );
 
@@ -257,8 +257,7 @@ string SoapRequest::createEnvelope( string& username, string& password )
     xmlChar* wsuUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" );
 
     // Use a secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
-    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest" );
-    xmlChar* nonceEncodingStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" );
+    xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText" );
 
     // Created must be a UTC time with no more than 3 digits fractional seconds.
     boost::posix_time::ptime created( boost::posix_time::second_clock::universal_time( ) );
@@ -269,41 +268,31 @@ string SoapRequest::createEnvelope( string& username, string& password )
 
     xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsu" ), wsuUrl );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsse" ), wsseUrl );
     
     xmlTextWriterStartElement( writer, BAD_CAST( "S:Header" ) );
 
     // Write out the Basic Security Profile 1.0 compliant headers
-    xmlTextWriterStartElement( writer, BAD_CAST( "Security" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsseUrl );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Security" ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "Timestamp" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
-    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Timestamp" ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Created" ) );
     xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Created
-    xmlTextWriterStartElement( writer, BAD_CAST( "Expires" ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Expires" ) );
     xmlTextWriterWriteRaw( writer, expiresStr );
     xmlTextWriterEndElement( writer ); // End of Expires
     xmlTextWriterEndElement( writer ); // End of Timestamp
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "UsernameToken" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "Username" ), BAD_CAST( username.c_str( ) ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:UsernameToken" ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "wsse:Username" ), BAD_CAST( username.c_str( ) ) );
 
-    string nonce = to_string( random_generator()() );
-    string nonceEncoded = libcmis::base64encode( nonce );
-    string hashedPass = libcmis::sha1( string( nonce + createdStr + password ) );
-    string encodedDigest = libcmis::base64encode( hashedPass );
-
-    xmlTextWriterStartElement( writer, BAD_CAST( "Password" ) );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Password" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( encodedDigest.c_str( ) ) );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( password.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Password
-    xmlTextWriterStartElement( writer, BAD_CAST( "Nonce" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "EncodingType" ), nonceEncodingStr );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( nonceEncoded.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Nonce
-    xmlTextWriterStartElement( writer, BAD_CAST( "Created" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns" ), wsuUrl );
+    xmlTextWriterStartElement( writer, BAD_CAST( "wsu:Created" ) );
     xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Created
     xmlTextWriterEndElement( writer ); // End of UsernameToken
