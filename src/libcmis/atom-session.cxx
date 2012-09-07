@@ -25,7 +25,6 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#include <cctype>
 #include <string>
 
 #include <libxml/parser.h>
@@ -105,16 +104,6 @@ namespace
                 errCode = CURLIOE_UNKNOWNCMD;
         }
         return errCode;
-    }
-
-    string lcl_tolower( string sText )
-    {
-        string lower( sText );
-        for ( size_t i = 0; i < sText.size(); ++i )
-        {
-            lower[i] = ::tolower( sText[i] );
-        }
-        return lower;
     }
 }
 
@@ -196,7 +185,7 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
                             AtomRepositoryPtr ws( new AtomRepository( xpathObj->nodesetval->nodeTab[i] ) );
 
                             // SharePoint is case insensitive for the id...
-                            if ( lcl_tolower( ws->getId( ) ) == lcl_tolower( m_repositoryId ) )
+                            if ( libcmis::tolower( ws->getId( ) ) == libcmis::tolower( m_repositoryId ) )
                                 m_repository = ws;
 
                             m_repositories.push_back( ws );

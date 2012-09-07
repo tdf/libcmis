@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include <cctype>
 #include <errno.h>
 #include <sstream>
 #include <stdlib.h>
@@ -474,5 +475,15 @@ namespace libcmis
         for ( int i = 0; i < 5; ++i )
             out << hex << digest[i];
         return out.str();
+    }
+
+    string tolower( string sText )
+    {
+        string lower( sText );
+        for ( size_t i = 0; i < sText.size(); ++i )
+        {
+            lower[i] = ::tolower( sText[i] );
+        }
+        return lower;
     }
 }

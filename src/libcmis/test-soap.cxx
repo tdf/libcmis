@@ -352,7 +352,8 @@ void SoapTest::parseMultipartTest( )
                   "\r\n" +
                   rootContent +
                   "\r\n--" + boundary + "\r\n" +
-                  "Content-Id: <" + part2Cid + ">\r\n" +
+                  // Voluntarily make a case-sensitivity error to test the SharePoint case
+                  "Content-ID: <" + part2Cid + ">\r\n" +
                   "Content-Type: " + part2Type + "\r\n" +
                   "Content-Transfer-Encoding: binary\r\n" +
                   "\r\n" +

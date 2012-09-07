@@ -147,6 +147,8 @@ namespace libcmis
     std::string base64encode( const std::string& str );
 
     std::string sha1( const std::string& str );
+
+    std::string tolower( std::string sText );
 }
 
 #endif
