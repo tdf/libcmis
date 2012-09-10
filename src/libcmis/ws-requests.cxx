@@ -764,3 +764,24 @@ void CheckIn::toXml( xmlTextWriterPtr writer )
 
     xmlTextWriterEndElement( writer );
 }
+
+SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
+{
+    CheckInResponse* response = new CheckInResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "objectId" ) ) )
+        {
+            xmlChar* content = xmlNodeGetContent( child );
+            if ( content != NULL )
+            {
+                string value( ( char* ) content );
+                xmlFree( content );
+                response->m_objectId = value;
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

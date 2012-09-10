@@ -76,14 +76,17 @@ void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
     getSession( )->getVersioningService( ).cancelCheckOut( repoId, getId( ) );
 }
 
-void WSDocument::checkIn( bool isMajor, string comment,
+libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
                           const map< string, libcmis::PropertyPtr >& properties,
                           boost::shared_ptr< ostream > stream,
                           string contentType ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
-    getSession( )->getVersioningService( ).checkIn( repoId, getId( ), isMajor,
-            properties, stream, contentType, comment );
+    libcmis::DocumentPtr newVersion = getSession( )->getVersioningService( ).checkIn(
+            repoId, getId( ), isMajor, properties, stream, contentType, comment );
 
-    refresh( );
+    if ( newVersion->getId( ) == getId( ) )
+        refresh( );
+
+    return newVersion;
 }

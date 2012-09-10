@@ -68,7 +68,7 @@ long libcmis_document_getContentLength( libcmis_DocumentPtr document );
 libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
 void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_ErrorPtr error );
 
-void libcmis_document_checkIn(
+libcmis_DocumentPtr libcmis_document_checkIn(
         libcmis_DocumentPtr document,
         bool isMajor,
         const char* comment,

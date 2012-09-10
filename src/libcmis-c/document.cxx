@@ -236,7 +236,7 @@ void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_Erro
     }
 }
 
-void libcmis_document_checkIn(
+libcmis_DocumentPtr libcmis_document_checkIn(
         libcmis_DocumentPtr document,
         bool isMajor,
         const char* comment,
@@ -246,6 +246,8 @@ void libcmis_document_checkIn(
         const char* contentType,
         libcmis_ErrorPtr error )
 {
+    libcmis_DocumentPtr newVersion = NULL;
+
     if ( document != NULL && document->handle.get( ) != NULL )
     {
         try
@@ -274,7 +276,9 @@ void libcmis_document_checkIn(
                 }
             }
 
-            document->handle->checkIn( isMajor, comment, propertiesMap, stream, contentType );
+            libcmis::DocumentPtr handle = document->handle->checkIn( isMajor, comment, propertiesMap, stream, contentType );
+            newVersion = new libcmis_document( );
+            newVersion->handle = handle;
         }
         catch ( const libcmis::Exception& e )
         {
@@ -289,4 +293,5 @@ void libcmis_document_checkIn(
                 error->handle = new ios_base::failure( e );
         }
     }
+    return newVersion;
 }

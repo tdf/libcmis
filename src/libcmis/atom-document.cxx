@@ -302,7 +302,7 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
     getSession( )->httpDeleteRequest( url );
 }
 
-void AtomDocument::checkIn( bool isMajor, string comment,
+libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
                             const map< string, libcmis::PropertyPtr >& properties,
                             boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
 {
@@ -363,8 +363,14 @@ void AtomDocument::checkIn( bool isMajor, string comment,
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    refreshImpl( doc );
+
+    libcmis::ObjectPtr newVersion = getSession( )->createObjectFromEntryDoc( doc );
+
+    if ( newVersion->getId( ) == getId( ) )
+        refreshImpl( doc );
     xmlFreeDoc( doc );
+
+    return boost::dynamic_pointer_cast< libcmis::Document >( newVersion );
 }
 
 void AtomDocument::extractInfos( xmlDocPtr doc )

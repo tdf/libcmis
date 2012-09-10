@@ -51,7 +51,7 @@ class AtomDocument : public libcmis::Document, public AtomObject
         
         virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
         virtual void cancelCheckout( ) throw ( libcmis::Exception );
-        virtual void checkIn( bool isMajor, std::string comment,
+        virtual libcmis::DocumentPtr checkIn( bool isMajor, std::string comment,
                               const std::map< std::string, libcmis::PropertyPtr >& properties,
                               boost::shared_ptr< std::ostream > stream,
                               std::string contentType ) throw ( libcmis::Exception );

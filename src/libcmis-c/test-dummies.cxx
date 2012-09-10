@@ -506,7 +506,7 @@ namespace dummies
         time( &m_refreshTimestamp );
     }
 
-    void Document::checkIn( bool, string, const map< string, libcmis::PropertyPtr >& properties,
+    libcmis::DocumentPtr Document::checkIn( bool, string, const map< string, libcmis::PropertyPtr >& properties,
                   boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
@@ -515,5 +515,7 @@ namespace dummies
         m_properties = properties;
         setContentStream( os, contentType );
         time( &m_refreshTimestamp );
+
+        return libcmis::DocumentPtr( new Document( true, false ) );
     }
 }

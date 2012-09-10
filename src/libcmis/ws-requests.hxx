@@ -681,4 +681,22 @@ class CheckIn : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
+class CheckInResponse : public SoapResponse
+{
+    private:
+        std::string m_objectId;
+
+        CheckInResponse( ) : SoapResponse( ), m_objectId( ) { }
+
+    public:
+
+        /** Parse cmism:checkInResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::string getObjectId( ) { return m_objectId; }
+};
+
 #endif

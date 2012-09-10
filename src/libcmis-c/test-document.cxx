@@ -457,11 +457,14 @@ void DocumentTest::checkInTest( )
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
     const char* comment = "Version comment";
-    libcmis_document_checkIn( tested, true, comment, properties, 
+    libcmis_DocumentPtr newVersion = libcmis_document_checkIn(
+            tested, true, comment, properties, 
             ( libcmis_readFn )fread, tmp, contentType, error );
     fclose( tmp );
 
     // Check
+    CPPUNIT_ASSERT( NULL != newVersion );
+    
     string actual = getTestedImplementation( tested )->getContentString( );
     CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
     CPPUNIT_ASSERT_EQUAL( expected, actual );
@@ -473,6 +476,7 @@ void DocumentTest::checkInTest( )
     // Free it all
     libcmis_vector_string_free( newValues );
     libcmis_property_free( checkedProperty );
+    libcmis_document_free( newVersion );
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );
@@ -510,11 +514,14 @@ void DocumentTest::checkInErrorTest( )
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
     const char* comment = "Version comment";
-    libcmis_document_checkIn( tested, true, comment, properties, 
+    libcmis_DocumentPtr newVersion = libcmis_document_checkIn(
+            tested, true, comment, properties, 
             ( libcmis_readFn )fread, tmp, contentType, error );
     fclose( tmp );
 
     // Check
+    CPPUNIT_ASSERT( NULL == newVersion );
+
     string actual = getTestedImplementation( tested )->getContentString( );
     CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
     CPPUNIT_ASSERT_EQUAL( expected, actual );
@@ -526,6 +533,7 @@ void DocumentTest::checkInErrorTest( )
     // Free it all
     libcmis_vector_string_free( newValues );
     libcmis_property_free( checkedProperty );
+    libcmis_document_free( newVersion );
     libcmis_property_free( property );
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );

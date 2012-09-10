@@ -122,8 +122,10 @@ namespace libcmis
                 \param properties the properties to set the new version
                 \param stream the content stream to set for the new version
                 \param contentType the mime type of the stream to set
+
+                \return the document with the new version
               */
-            virtual void checkIn( bool isMajor, std::string comment,
+            virtual boost::shared_ptr< Document > checkIn( bool isMajor, std::string comment,
                                   const std::map< std::string, PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType ) throw ( Exception ) = 0;
