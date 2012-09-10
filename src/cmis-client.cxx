@@ -675,6 +675,10 @@ void CmisClient::execute( ) throw ( exception )
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
                 throw CommandException( "Please provide the node id to checkin as command args" );
+            if ( m_vm.count( "input-file" ) == 0 )
+                throw CommandException( "Missing --input-file" );
+            if ( m_vm.count( "input-type" ) == 0 )
+                throw CommandException( "Missing --input-type" );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
@@ -702,19 +706,15 @@ void CmisClient::execute( ) throw ( exception )
 
                 // Get the content stream if any
                 string contentType;
-                boost::shared_ptr< ostream > stream;
-                if ( m_vm.count( "input-file" ) > 0 )
+                string filename = m_vm["input-file"].as<string>();
+                ifstream is( filename.c_str() );
+                boost::shared_ptr< ostream > stream ( new ostream ( is.rdbuf( ) ) );
+                if ( is.fail( ) )
+                    throw CommandException( string( "Unable to open file " ) + filename );
+                
+                if ( m_vm.count( "input-type" ) > 0 )
                 {
-                    string filename = m_vm["input-file"].as<string>();
-                    ifstream is( filename.c_str(), ifstream::in );
-                    stream.reset ( new ostream ( is.rdbuf( ) ) );
-                    if ( is.fail( ) )
-                        throw CommandException( string( "Unable to open file " ) + filename );
-                    
-                    if ( m_vm.count( "input-type" ) > 0 )
-                    {
-                        contentType = m_vm["input-type"].as<string>();
-                    }
+                    contentType = m_vm["input-type"].as<string>();
                 }
 
                 bool major = false;
@@ -726,9 +726,12 @@ void CmisClient::execute( ) throw ( exception )
                     comment = m_vm["message"].as< string >( );
 
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
-                doc->checkIn( major, comment, properties, stream, contentType );
+                libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType );
+
+                is.close( );
+
                 cout << "------------------------------------------------" << endl;
-                cout << doc->toString() << endl;
+                cout << newDoc->toString() << endl;
             }
             else
                 cout << "No such node: " << objIds.front() << endl;
