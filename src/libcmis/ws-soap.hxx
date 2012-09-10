@@ -130,6 +130,10 @@ class SoapResponseFactory
             method will also read the possible related parts to construct the response.
           */
         std::vector< SoapResponsePtr > parseResponse( RelatedMultipart& multipart ) throw ( SoapFault );
+        
+        /** Get the Soap envelope from an XML-only file and extract the response objects from it.
+         */
+        std::vector< SoapResponsePtr > parseResponse( std::string& xml ) throw ( SoapFault );
 
         /** Create a SoapResponse object depending on the node we have. This shouldn't be used
             directly: only from parseResponse or unit tests.

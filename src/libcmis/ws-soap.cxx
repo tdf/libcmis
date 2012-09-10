@@ -112,6 +112,21 @@ SoapResponseFactory& SoapResponseFactory::operator=( const SoapResponseFactory& 
     return *this;
 }
 
+vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string& xml ) throw ( SoapFault )
+{
+    // Create a fake multipart
+    RelatedMultipart multipart;
+    string name = "root";
+    string type = "text/xml";
+    string info;
+    RelatedPartPtr part( new RelatedPart( name, type, xml ) );
+    string cid = multipart.addPart( part );
+    multipart.setStart( cid, info );
+
+    // Then parse it normally
+    return parseResponse( multipart );
+}
+
 vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& multipart ) throw ( SoapFault )
 {
     string xml;

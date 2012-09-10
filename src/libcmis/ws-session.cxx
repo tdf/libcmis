@@ -145,9 +145,18 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
         if ( it != response->getHeaders( ).end( ) )
         {
             responseType = it->second;
-            RelatedMultipart answer( response->getStream( )->str( ), responseType );
-        
-            responses = getResponseFactory( ).parseResponse( answer );
+            if ( string::npos != responseType.find( "multipart/related" ) )
+            {
+                RelatedMultipart answer( response->getStream( )->str( ), responseType );
+            
+                responses = getResponseFactory( ).parseResponse( answer );
+            }
+            else if ( string::npos != responseType.find( "text/xml" ) )
+            {
+                // Parse the envelope
+                string xml = response->getStream( )->str( );
+                responses = getResponseFactory( ).parseResponse( xml );
+            }
         }
     }
     catch ( const SoapFault& fault )
