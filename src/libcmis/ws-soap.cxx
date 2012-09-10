@@ -256,7 +256,7 @@ string SoapRequest::createEnvelope( string& username, string& password )
     xmlChar* wsseUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" );
     xmlChar* wsuUrl = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" );
 
-    // Use a secure password transmission (PasswordDigest). See Basic Security Profile 1.0 section 11.1.3
+    // Use an unsecure password transmission (PasswordText) because some clients can't support the PasswordDigest.
     xmlChar* passTypeStr = BAD_CAST( "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText" );
 
     // Created must be a UTC time with no more than 3 digits fractional seconds.
