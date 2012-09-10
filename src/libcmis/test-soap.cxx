@@ -386,7 +386,8 @@ void SoapTest::parseMultipartTest( )
 void SoapTest::getStreamFromNodeXopTest( )
 {
     // Create the test multipart
-    string dataCid = "data-cid";
+    string dataCid = "http://data-cid";
+    string dataCidEncoded = "http%3A%2F%2Fdata-cid";
     string dataContent = "Some transfered content";
     
     string boundary = "------------ABCDEF-Boundary";
@@ -412,7 +413,7 @@ void SoapTest::getStreamFromNodeXopTest( )
     // Create test node
     stringstream buf;
     buf << "<stream>"
-        << "  <xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << dataCid << "\"/>"
+        << "  <xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << dataCidEncoded << "\"/>"
         << "</stream>";
     xmlNodePtr node = test::getXmlNode( buf.str( ) );
 

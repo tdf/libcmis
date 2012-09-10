@@ -28,6 +28,7 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <curl/curl.h>
 
 #include "ws-relatedmultipart.hxx"
 #include "xml-utils.hxx"
@@ -295,7 +296,17 @@ boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipar
             // Get the Content ID from the href (cid:content-id)
             string id = href;
             if ( href.substr( 0, 4 ) == "cid:" )
+            {
                 id = href.substr( 4 );
+                // URL-decode the id
+#if LIBCURL_VERSION_VALUE >= 0x071504
+                char* escaped = curl_easy_unescape( NULL, id.c_str(), id.length(), NULL );
+#else
+                char* escaped = curl_unescape( id.c_str(), id.length() );
+#endif
+                id = string( escaped );
+                curl_free( escaped );
+            }
             RelatedPartPtr part = multipart.getPart( id );
             if ( part != NULL )
                 stream.reset( new stringstream( part->getContent( ) ) );
