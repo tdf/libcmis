@@ -43,5 +43,9 @@
 0.3.0
 
   * Added Document::checkOut(), Document::cancelCheckout() and Document::checkIn()
+  * Added Object::move( ) -- Grau Data
+  * Fixes for xcmis and cloudoku.com -- Grau Data
   * WebService binding implementation
   * Session factory automatically detects which binding to use
+  * C wrapper API
+  * Unit tests are now split between quick ones and the ones needing a CMIS server
