@@ -118,7 +118,9 @@ libcmis::ObjectPtr AtomObject::updateProperties( const map< string, libcmis::Pro
     libcmis::HttpResponsePtr response;
     try
     {
-        response = getSession( )->httpPutRequest( getInfosUrl( ), is, "application/atom+xml;type=entry" );
+        vector< string > headers;
+        headers.push_back( "Content-Type: application/atom+xml;type=entry" );
+        response = getSession( )->httpPutRequest( getInfosUrl( ), is, headers );
     }
     catch ( const CurlException& e )
     {

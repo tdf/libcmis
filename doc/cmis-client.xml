@@ -58,6 +58,7 @@
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <arg choice="plain">--input-file <replaceable>path/to/file</replaceable></arg>
       <arg choice="plain">--input-type <replaceable>mime/type</replaceable></arg>
+      <arg choice="opt">--input-name <replaceable>name.ext</replaceable></arg>
       <arg choice="plain">set-content <replaceable>id</replaceable></arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -80,6 +81,7 @@
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <arg choice="plain">--input-file <replaceable>path/to/file</replaceable></arg>
       <arg choice="plain">--input-type <replaceable>mime/type</replaceable></arg>
+      <arg choice="opt">--input-name <replaceable>name.ext</replaceable></arg>
       <arg choice="opt">--object-type <replaceable>some:cmistype</replaceable></arg>
       <arg choice="opt" rep="repeat">--object-property <replaceable>prop-id=prop-value</replaceable></arg>
       <arg choice="plain">create-document <replaceable>parent-id name</replaceable></arg>
@@ -135,6 +137,7 @@
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <arg choice="opt">--input-file <replaceable>path/to/file</replaceable></arg>
       <arg choice="opt">--input-type <replaceable>mime/type</replaceable></arg>
+      <arg choice="opt">--input-name <replaceable>name.ext</replaceable></arg>
       <arg choice="opt" rep="repeat">--object-property <replaceable>prop-id=prop-value</replaceable></arg>
       <arg choice="opt">--major</arg>
       <arg choice="opt">--message</arg>
@@ -228,6 +231,14 @@
           <listitem>
             <para>
               Set the mime type of the new content stream of the object to <replaceable class="parameter">mime/type</replaceable>.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--input-name <replaceable class="parameter">name.ext</replaceable></term>
+          <listitem>
+            <para>
+              Set the remote content stream filename of the new content stream of the object to <replaceable class="parameter">name.ext</replaceable>.
 						</para>
           </listitem>
         </varlistentry>

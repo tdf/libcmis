@@ -206,6 +206,7 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* filename,
         libcmis_ErrorPtr error )
 {
     libcmis_DocumentPtr created = NULL;
@@ -237,7 +238,7 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
                 }
             }
 
-            libcmis::DocumentPtr handle = folder->handle->createDocument( propertiesMap, stream, contentType );
+            libcmis::DocumentPtr handle = folder->handle->createDocument( propertiesMap, stream, contentType, filename );
             created = new libcmis_document( );
             created->setHandle( handle );
         }

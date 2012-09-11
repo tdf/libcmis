@@ -92,15 +92,23 @@ boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault
     return exception;
 }
 
-void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boost::shared_ptr< ostream > os, string& contentType )
+void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boost::shared_ptr< ostream > os, string& contentType, string filename )
 {
-    // Get the length, and add a new part to the multipart
-    stringstream stream;
-    stream << os->rdbuf( );
-    string content = stream.str( );
+    // Get the stream as a string
+    istream is( os->rdbuf( ) );
+    is.seekg( 0, ios::end );
+    long size = is.tellg( );
+    is.seekg( 0, ios::beg );
+
+    char* buf = new char[ size ];
+    is.read( buf, size );
+    string content( buf, size );
+    delete[ ] buf;
 
     xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", content.size( ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:mimeType" ), BAD_CAST( contentType.c_str( ) ) );
+    if ( !filename.empty( ) )
+        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:filename" ), BAD_CAST( filename.c_str( ) ) );
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:stream" ) );
 
     string name( "stream" );
@@ -657,7 +665,7 @@ void CreateDocument::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
-    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
+    writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_filename );
     xmlTextWriterEndElement( writer ); // cmism:contentStream
 
     xmlTextWriterEndElement( writer );
@@ -681,7 +689,7 @@ void SetContentStream::toXml( xmlTextWriterPtr writer )
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
-    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
+    writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_filename );
 
     xmlTextWriterEndElement( writer ); // cmism:contentStream
 
@@ -747,18 +755,24 @@ void CheckIn::toXml( xmlTextWriterPtr writer )
         major = "true";
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:major" ), BAD_CAST( major.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-    for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );
-            it != m_properties.end( ); ++it )
+    if ( m_properties.size( ) > 0 )
     {
-        libcmis::PropertyPtr property = it->second;
-        property->toXml( writer );
+        xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+        for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );
+                it != m_properties.end( ); ++it )
+        {
+            libcmis::PropertyPtr property = it->second;
+            property->toXml( writer );
+        }
+        xmlTextWriterEndElement( writer ); // cmis:properties
     }
-    xmlTextWriterEndElement( writer ); // cmis:properties
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
-    writeCmismStream( writer, m_multipart, m_stream, m_contentType );
-    xmlTextWriterEndElement( writer ); // cmism:contentStream
+    if ( m_stream.get( ) )
+    {
+        xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+        writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_fileName );
+        xmlTextWriterEndElement( writer ); // cmism:contentStream
+    }
 
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:checkinComment" ), BAD_CAST( m_comment.c_str( ) ) );
 

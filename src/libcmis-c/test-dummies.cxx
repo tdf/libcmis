@@ -386,7 +386,7 @@ namespace dummies
     }
 
     libcmis::DocumentPtr Folder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
-                            boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
+                            boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -395,7 +395,7 @@ namespace dummies
 
         map< string, libcmis::PropertyPtr > propertiesCopy( properties );
         document->getProperties( ).swap( propertiesCopy );
-        document->setContentStream( os, contentType );
+        document->setContentStream( os, contentType, filename );
 
         libcmis::DocumentPtr created( document );
         return created;
@@ -449,7 +449,7 @@ namespace dummies
         return stream;
     }
 
-    void Document::setContentStream( boost::shared_ptr< ostream > os, string, bool overwrite ) throw ( libcmis::Exception )
+    void Document::setContentStream( boost::shared_ptr< ostream > os, string, string fileName, bool overwrite ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -507,13 +507,13 @@ namespace dummies
     }
 
     libcmis::DocumentPtr Document::checkIn( bool, string, const map< string, libcmis::PropertyPtr >& properties,
-                  boost::shared_ptr< ostream > os, string contentType ) throw ( libcmis::Exception )
+                  boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
         m_properties = properties;
-        setContentStream( os, contentType );
+        setContentStream( os, contentType, filename );
         time( &m_refreshTimestamp );
 
         return libcmis::DocumentPtr( new Document( true, false ) );

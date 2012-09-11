@@ -47,14 +47,14 @@ class AtomDocument : public libcmis::Document, public AtomObject
         virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
 
         virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
-                                       bool overwrite = true ) throw ( libcmis::Exception );
+                                       std::string fileName, bool overwrite = true ) throw ( libcmis::Exception );
         
         virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
         virtual void cancelCheckout( ) throw ( libcmis::Exception );
         virtual libcmis::DocumentPtr checkIn( bool isMajor, std::string comment,
                               const std::map< std::string, libcmis::PropertyPtr >& properties,
                               boost::shared_ptr< std::ostream > stream,
-                              std::string contentType ) throw ( libcmis::Exception );
+                              std::string contentType, std::string fileName ) throw ( libcmis::Exception );
     
     protected:
         virtual void extractInfos( xmlDocPtr doc );

@@ -64,6 +64,7 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* filename,
         libcmis_ErrorPtr error );
 
 libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,

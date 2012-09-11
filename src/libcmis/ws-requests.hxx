@@ -68,7 +68,7 @@ class CmisSoapFaultDetail : public SoapFaultDetail
 boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault );
 
 void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart,
-        boost::shared_ptr< std::ostream >, std::string& contentType );
+        boost::shared_ptr< std::ostream >, std::string& contentType, std::string filename );
 
 /** getRepositories request.
   */
@@ -543,17 +543,20 @@ class CreateDocument : public SoapRequest
         std::string m_folderId;
         boost::shared_ptr< std::ostream > m_stream;
         std::string m_contentType;
+        std::string m_filename;
 
     public:
         CreateDocument( std::string repoId,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId, boost::shared_ptr< std::ostream > stream,
-                std::string contentType ) :
+                std::string contentType,
+                std::string filename ) :
             m_repositoryId( repoId ),
             m_properties( properties ),
             m_folderId( folderId ),
             m_stream( stream ),
-            m_contentType( contentType )
+            m_contentType( contentType ),
+            m_filename( filename )
         {
         }
 
@@ -571,6 +574,7 @@ class SetContentStream : public SoapRequest
         std::string m_changeToken;
         boost::shared_ptr< std::ostream > m_stream;
         std::string m_contentType;
+        std::string m_filename;
 
     public:
         SetContentStream( std::string repoId,
@@ -578,13 +582,15 @@ class SetContentStream : public SoapRequest
                 bool overwrite,
                 std::string changeToken,
                 boost::shared_ptr< std::ostream > stream,
-                std::string contentType ) :
+                std::string contentType,
+                std::string filename ) :
             m_repositoryId( repoId ),
             m_objectId( objectId ),
             m_overwrite( overwrite ),
             m_changeToken( changeToken ),
             m_stream( stream ),
-            m_contentType( contentType )
+            m_contentType( contentType ),
+            m_filename( filename )
         {
         }
 
@@ -658,6 +664,7 @@ class CheckIn : public SoapRequest
         const std::map< std::string, libcmis::PropertyPtr >& m_properties;
         boost::shared_ptr< std::ostream > m_stream;
         std::string m_contentType;
+        std::string m_fileName;
         std::string m_comment;
 
     public:
@@ -665,13 +672,14 @@ class CheckIn : public SoapRequest
                 std::string objectId, bool isMajor,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream,
-                std::string contentType, std::string comment ) :
+                std::string contentType, std::string fileName, std::string comment ) :
             m_repositoryId( repoId ),
             m_objectId( objectId ),
             m_isMajor( isMajor ),
             m_properties( properties ),
             m_stream( stream ),
             m_contentType( contentType ),
+            m_fileName( fileName ),
             m_comment( comment )
         {
         }

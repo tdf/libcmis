@@ -274,7 +274,7 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
     return response;
 }
 
-libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, string contentType ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, vector< string > headers ) throw ( CurlException )
 {
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
@@ -296,8 +296,8 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, s
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
 
     struct curl_slist *headers_slist = NULL;
-    string contentTypeHeader = string( "Content-Type:" ) + contentType;
-    headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
+    for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
+        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
     try

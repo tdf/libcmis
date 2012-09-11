@@ -471,8 +471,9 @@ void SoapTest::writeCmismStreamTest( )
     RelatedMultipart multipart;
     string contentType( "text/plain" );
     string content( "Expected content" );
+    string filename( "name.txt" );
     boost::shared_ptr< ostream > os( new stringstream( content ) );
-    writeCmismStream( writer, multipart, os, contentType );
+    writeCmismStream( writer, multipart, os, contentType, filename );
 
     // Close the writer and check the results
     xmlTextWriterEndDocument( writer );
@@ -490,6 +491,7 @@ void SoapTest::writeCmismStreamTest( )
     expectedXml << "<?xml version=\"1.0\"?>\n"
                 << "<cmism:length>" << content.size( ) << "</cmism:length>"
                 << "<cmism:mimeType>" << contentType << "</cmism:mimeType>"
+                << "<cmism:filename>" << filename << "</cmism:filename>"
                 << "<cmism:stream>"
                 << "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << partId << "\"/>"
                 << "</cmism:stream>\n";

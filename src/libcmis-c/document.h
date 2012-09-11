@@ -52,6 +52,7 @@ void libcmis_document_setContentStream(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* filename,
         bool overwrite,
         libcmis_ErrorPtr );
 
@@ -76,6 +77,7 @@ libcmis_DocumentPtr libcmis_document_checkIn(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* filename,
         libcmis_ErrorPtr error );
 
 #ifdef __cplusplus

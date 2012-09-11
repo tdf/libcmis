@@ -89,12 +89,12 @@ void VersioningService::cancelCheckOut( string repoId, string documentId ) throw
 
 libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId, bool isMajor,
         const map< string, libcmis::PropertyPtr >& properties,
-        boost::shared_ptr< ostream > stream, string contentType,
+        boost::shared_ptr< ostream > stream, string contentType, string fileName,
         string comment ) throw ( libcmis::Exception )
 {
     libcmis::DocumentPtr newVersion;
 
-    CheckIn request( repoId, objectId, isMajor, properties, stream, contentType, comment );
+    CheckIn request( repoId, objectId, isMajor, properties, stream, contentType, fileName, comment );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

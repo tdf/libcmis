@@ -55,7 +55,7 @@ class VersioningService
         libcmis::DocumentPtr checkIn( std::string repoId, std::string objectId, bool isMajor,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream, std::string contentType,
-                std::string comment ) throw ( libcmis::Exception );
+                std::string fileName, std::string comment ) throw ( libcmis::Exception );
 };
 
 #endif

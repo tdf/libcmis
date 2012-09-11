@@ -293,8 +293,9 @@ void DocumentTest::setContentStreamTest( )
 
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
+    const char* filename = "name.txt";
     libcmis_document_setContentStream( tested, 
-            ( libcmis_readFn )fread, tmp, contentType, true, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, true, error );
     fclose( tmp );
 
     // Check
@@ -322,8 +323,9 @@ void DocumentTest::setContentStreamErrorTest( )
 
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
+    const char* filename = "name.txt";
     libcmis_document_setContentStream( tested, 
-            ( libcmis_readFn )fread, tmp, contentType, true, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, true, error );
     fclose( tmp );
 
     // Check
@@ -457,9 +459,10 @@ void DocumentTest::checkInTest( )
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
     const char* comment = "Version comment";
+    const char* filename = "filename.txt";
     libcmis_DocumentPtr newVersion = libcmis_document_checkIn(
             tested, true, comment, properties, 
-            ( libcmis_readFn )fread, tmp, contentType, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, error );
     fclose( tmp );
 
     // Check
@@ -514,9 +517,10 @@ void DocumentTest::checkInErrorTest( )
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
     const char* comment = "Version comment";
+    const char* filename = "filename.txt";
     libcmis_DocumentPtr newVersion = libcmis_document_checkIn(
             tested, true, comment, properties, 
-            ( libcmis_readFn )fread, tmp, contentType, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, error );
     fclose( tmp );
 
     // Check

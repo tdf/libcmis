@@ -74,13 +74,14 @@ class ObjectService
         boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
 
         void setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-                boost::shared_ptr< std::ostream > stream, std::string contentType ) throw ( libcmis::Exception );
+                boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName ) throw ( libcmis::Exception );
 
         libcmis::FolderPtr createFolder( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId ) throw ( libcmis::Exception );
 
         libcmis::DocumentPtr createDocument( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
-                std::string folderId, boost::shared_ptr< std::ostream > stream, std::string contentType ) throw ( libcmis::Exception );
+                std::string folderId, boost::shared_ptr< std::ostream > stream, std::string contentType,
+                std::string fileName ) throw ( libcmis::Exception );
 };
 
 #endif

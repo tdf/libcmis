@@ -55,11 +55,11 @@ boost::shared_ptr< istream > WSDocument::getContentStream( ) throw ( libcmis::Ex
 }
 
 void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType,
-                               bool overwrite ) throw ( libcmis::Exception )
+                               string fileName, bool overwrite ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     getSession( )->getObjectService( ).setContentStream( repoId, getId( ),
-            overwrite, getChangeToken( ), os, contentType );
+            overwrite, getChangeToken( ), os, contentType, fileName );
 
     refresh( );
 }
@@ -79,11 +79,40 @@ void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
 libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
                           const map< string, libcmis::PropertyPtr >& properties,
                           boost::shared_ptr< ostream > stream,
-                          string contentType ) throw ( libcmis::Exception )
+                          string contentType, string fileName ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
-    libcmis::DocumentPtr newVersion = getSession( )->getVersioningService( ).checkIn(
-            repoId, getId( ), isMajor, properties, stream, contentType, comment );
+    libcmis::DocumentPtr newVersion;
+
+    // Try the normal request first, but if we have a server error, we may want to resend it
+    // without the stream as SharePoint wants no stream in the request, but gets the one from
+    // the PWC see the following discussion:
+    // http://social.technet.microsoft.com/Forums/eu/sharepoint2010programming/thread/b30e4d82-5b7e-4ceb-b9ad-c6f0d4c59d11
+    bool tryNoStream = false;
+    try
+    {
+        newVersion = getSession( )->getVersioningService( ).checkIn( repoId, getId( ),
+                isMajor, properties, stream, contentType, fileName, comment );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string spError( "Object reference not set to an instance of an object" ); 
+        if ( string( e.what( ) ).find( spError ) != string::npos )
+            tryNoStream = true;
+        else
+            throw e;
+    }
+
+    if ( tryNoStream )
+    {
+        // Set the content stream first
+        setContentStream( stream, contentType, fileName );
+
+        // Then check-in
+        boost::shared_ptr< ostream > nostream;
+        newVersion = getSession( )->getVersioningService( ).checkIn( repoId, getId( ),
+                isMajor, properties, nostream, string( ), string( ), comment );
+    }
 
     if ( newVersion->getId( ) == getId( ) )
         refresh( );

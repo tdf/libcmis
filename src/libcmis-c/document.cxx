@@ -134,6 +134,7 @@ void libcmis_document_setContentStream(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* fileName,
         bool overwrite,
         libcmis_ErrorPtr error )
 {
@@ -152,7 +153,7 @@ void libcmis_document_setContentStream(
             } while ( read == bufSize );
             delete[] buf;
 
-            document->handle->setContentStream( stream, contentType, overwrite );
+            document->handle->setContentStream( stream, contentType, fileName, overwrite );
         }
         catch ( const libcmis::Exception& e )
         {
@@ -244,6 +245,7 @@ libcmis_DocumentPtr libcmis_document_checkIn(
         libcmis_readFn readFn,
         void* userData,
         const char* contentType,
+        const char* filename,
         libcmis_ErrorPtr error )
 {
     libcmis_DocumentPtr newVersion = NULL;
@@ -276,7 +278,8 @@ libcmis_DocumentPtr libcmis_document_checkIn(
                 }
             }
 
-            libcmis::DocumentPtr handle = document->handle->checkIn( isMajor, comment, propertiesMap, stream, contentType );
+            libcmis::DocumentPtr handle = document->handle->checkIn( isMajor, comment, propertiesMap,
+                    stream, contentType, filename );
             newVersion = new libcmis_document( );
             newVersion->handle = handle;
         }

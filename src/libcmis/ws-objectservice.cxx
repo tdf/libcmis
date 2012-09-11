@@ -165,9 +165,9 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
 }
 
 void ObjectService::setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-        boost::shared_ptr< std::ostream > stream, std::string contentType ) throw ( libcmis::Exception )
+        boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName ) throw ( libcmis::Exception )
 {
-    SetContentStream request( repoId, objectId, overwrite, changeToken, stream, contentType );
+    SetContentStream request( repoId, objectId, overwrite, changeToken, stream, contentType, fileName );
     m_session->soapRequest( m_url, request );
 }
 
@@ -193,11 +193,11 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string
 }
 
 libcmis::DocumentPtr ObjectService::createDocument( string repoId, const map< string, libcmis::PropertyPtr >& properties,
-        string folderId, boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
+        string folderId, boost::shared_ptr< ostream > stream, string contentType, string fileName ) throw ( libcmis::Exception )
 {
     libcmis::DocumentPtr document;
 
-    CreateDocument request( repoId, properties, folderId, stream, contentType );
+    CreateDocument request( repoId, properties, folderId, stream, contentType, fileName );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

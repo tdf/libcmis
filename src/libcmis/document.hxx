@@ -78,6 +78,7 @@ namespace libcmis
 
                 @param is the output stream containing the new data for the content stream
                 @param contentType the mime-type of the new content stream
+                @param filename the filename to set for the file
                 @param overwrite if set to false, don't overwrite the content stream if one is already set.
 
                 @throw Exception if anything happens during the upload like a wrong authentication, 
@@ -85,7 +86,7 @@ namespace libcmis
                                 capability.
               */
             virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
-                                           bool overwrite = true ) throw ( Exception ) = 0;
+                                           std::string filename, bool overwrite = true ) throw ( Exception ) = 0;
 
             /** Get the content mime type.
               */
@@ -128,7 +129,7 @@ namespace libcmis
             virtual boost::shared_ptr< Document > checkIn( bool isMajor, std::string comment,
                                   const std::map< std::string, PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
-                                  std::string contentType ) throw ( Exception ) = 0;
+                                  std::string contentType, std::string fileName ) throw ( Exception ) = 0;
 
             // virtual methods form Object
             virtual std::vector< std::string > getPaths( );

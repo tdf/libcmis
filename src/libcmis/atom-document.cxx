@@ -140,7 +140,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::
     return stream;
 }
 
-void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType, bool overwrite ) throw ( libcmis::Exception )
+void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType, string fileName, bool overwrite ) throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -202,7 +202,11 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
 
                 is.reset( encodedIn );
             }
-            getSession()->httpPutRequest( putUrl, *is, contentType );
+            vector< string > headers;
+            headers.push_back( string( "Content-Type: " ) + contentType );
+            if ( !fileName.empty( ) )
+                headers.push_back( string( "Content-Disposition: attachment; filename=" ) + fileName );
+            getSession()->httpPutRequest( putUrl, *is, headers );
 
             long httpStatus = getSession( )->getHttpStatus( );
             if ( httpStatus < 200 || httpStatus >= 300 )
@@ -304,7 +308,7 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
 
 libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
                             const map< string, libcmis::PropertyPtr >& properties,
-                            boost::shared_ptr< ostream > stream, string contentType ) throw ( libcmis::Exception )
+                            boost::shared_ptr< ostream > stream, string contentType, string ) throw ( libcmis::Exception )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckIn ) ) )
         throw libcmis::Exception( string( "CanCheckIn not allowed on document " ) + getId() );
@@ -350,7 +354,9 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     libcmis::HttpResponsePtr response;
     try
     {
-        response = getSession( )->httpPutRequest( checkInUrl, is, "application/atom+xml;type=entry" );
+        vector< string > headers;
+        headers.push_back( string( "Content-Type: application/atom+xml;type=entry" ) );
+        response = getSession( )->httpPutRequest( checkInUrl, is, headers );
     }
     catch ( const CurlException& e )
     {

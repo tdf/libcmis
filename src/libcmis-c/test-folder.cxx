@@ -322,8 +322,9 @@ void FolderTest::createDocumentTest( )
 
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
+    const char* filename = "name.txt";
     libcmis_DocumentPtr actual = libcmis_folder_createDocument( tested, properties, 
-            ( libcmis_readFn )fread, tmp, contentType, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, error );
     fclose( tmp );
 
     // Check
@@ -373,8 +374,9 @@ void FolderTest::createDocumentErrorTest( )
 
     // get the content into a temporary file (tested method)
     const char* contentType = "content/type";
+    const char* filename = "name.txt";
     libcmis_DocumentPtr actual = libcmis_folder_createDocument( tested, properties, 
-            ( libcmis_readFn )fread, tmp, contentType, error );
+            ( libcmis_readFn )fread, tmp, contentType, filename, error );
     fclose( tmp );
 
     // Check

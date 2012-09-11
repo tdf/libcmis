@@ -305,13 +305,16 @@ void CmisClient::execute( ) throw ( exception )
                     throw CommandException( "Missing --input-type" );
 
                 string type = m_vm["input-type"].as<string>();
-                string filename = m_vm["input-file"].as<string>();
-                ifstream is( filename.c_str(), ifstream::in );
+                string filename;
+                if ( m_vm.count( "input-name" ) > 0 )
+                    filename = m_vm["input-name"].as<string>();
+                string file = m_vm["input-file"].as<string>();
+                ifstream is( file.c_str(), ifstream::in );
                 boost::shared_ptr< ostream > os ( new ostream ( is.rdbuf( ) ) );
                 if ( is.fail( ) )
-                    throw CommandException( string( "Unable to open file " ) + filename );
+                    throw CommandException( string( "Unable to open file " ) + file );
 
-                document->setContentStream( os, type );
+                document->setContentStream( os, type, filename );
 
                 is.close( );
             }
@@ -440,9 +443,11 @@ void CmisClient::execute( ) throw ( exception )
             // Get the content type and stream
             boost::shared_ptr< ostream > contentStream;
             string contentType;
+            string filename;
             
             bool hasInputFile = m_vm.count( "input-file" ) != 0;
             bool hasInputType = m_vm.count( "input-type" ) != 0;
+            bool hasInputName = m_vm.count( "input-name" ) != 0;
 
             if ( hasInputType && !hasInputFile )
                 throw CommandException( "Missing --input-file" );
@@ -452,17 +457,20 @@ void CmisClient::execute( ) throw ( exception )
             if ( hasInputFile && hasInputType )
             {
                 contentType = m_vm["input-type"].as<string>();
-                string filename = m_vm["input-file"].as<string>();
-                fstream is( filename.c_str() );
+                string file = m_vm["input-file"].as<string>();
+                fstream is( file.c_str() );
                 if ( is.fail( ) )
-                    throw CommandException( string( "Unable to open file " ) + filename );
+                    throw CommandException( string( "Unable to open file " ) + file );
                 contentStream.reset( new ostringstream( ios_base::out | ios_base::in ) );
 
                 *contentStream << is.rdbuf();
             }
 
+            if ( hasInputName )
+                filename = m_vm[ "input-name" ].as< string >( );
+
             // Actually create the document
-            libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType );
+            libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType, filename );
 
             cout << "------------------------------------------------" << endl;
             cout << created->toString() << endl;
@@ -675,10 +683,6 @@ void CmisClient::execute( ) throw ( exception )
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
                 throw CommandException( "Please provide the node id to checkin as command args" );
-            if ( m_vm.count( "input-file" ) == 0 )
-                throw CommandException( "Missing --input-file" );
-            if ( m_vm.count( "input-type" ) == 0 )
-                throw CommandException( "Missing --input-type" );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
@@ -706,15 +710,29 @@ void CmisClient::execute( ) throw ( exception )
 
                 // Get the content stream if any
                 string contentType;
-                string filename = m_vm["input-file"].as<string>();
-                ifstream is( filename.c_str() );
-                boost::shared_ptr< ostream > stream ( new ostream ( is.rdbuf( ) ) );
-                if ( is.fail( ) )
-                    throw CommandException( string( "Unable to open file " ) + filename );
-                
-                if ( m_vm.count( "input-type" ) > 0 )
+                string filename;
+                boost::shared_ptr< ostream > stream;
+                if ( m_vm.count( "input-file" ) > 0 )
                 {
-                    contentType = m_vm["input-type"].as<string>();
+                    string file = m_vm["input-file"].as<string>();
+                    ifstream is( file.c_str(), ios_base::in );
+                    stringstream os;
+                    os << is.rdbuf( );
+                    if ( is.fail( ) )
+                        throw CommandException( string( "Unable to open file " ) + file );
+
+                    string content = os.str( );
+                    stream.reset( new stringstream( content ) );
+                    is.close( );
+                    
+                    if ( m_vm.count( "input-type" ) > 0 )
+                    {
+                        contentType = m_vm["input-type"].as<string>();
+                    }
+                    if ( m_vm.count( "input-name" ) > 0 )
+                    {
+                        filename = m_vm["input-name"].as<string>();
+                    }
                 }
 
                 bool major = false;
@@ -726,9 +744,7 @@ void CmisClient::execute( ) throw ( exception )
                     comment = m_vm["message"].as< string >( );
 
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
-                libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType );
-
-                is.close( );
+                libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType, filename );
 
                 cout << "------------------------------------------------" << endl;
                 cout << newDoc->toString() << endl;
@@ -770,6 +786,8 @@ options_description CmisClient::getOptionsDescription( )
     setcontentOpts.add_options( )
         ( "input-file", value< string >(), "File to push to the repository" )
         ( "input-type", value< string >(), "Mime type of the file to push to the repository" )
+        ( "input-name", value< string >(), "Name of the file to push to the repository"
+                                           "(may be different from the local name)" )
         ( "object-type", value< string >(), "CMIS type of the object to create" )
         ( "object-property", value< vector< string > >(), "under the form prop-id=prop-value, defines a property"
                                                 "to be set on the object" )

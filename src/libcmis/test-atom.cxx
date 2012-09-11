@@ -473,7 +473,8 @@ void AtomTest::setContentStreamTest( )
     try
     {
         boost::shared_ptr< ostream > os ( new stringstream ( TEST_SAMPLE_CONTENT ) );
-        document->setContentStream( os, TEST_DOCUMENT_TYPE );
+        string filename( "name.txt" );
+        document->setContentStream( os, TEST_DOCUMENT_TYPE, filename );
         
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
@@ -627,7 +628,8 @@ void AtomTest::createDocumentTest( )
     string contentStr = "Some content";
     boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
     string contentType = "text/plain";
-    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType );
+    string filename( "name.txt" );
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, filename );
 
     // Check that something came back
     CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
@@ -716,7 +718,8 @@ void AtomTest::checkOutTest( )
         string contentStr = "Some content";
         boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
         string contentType = "text/plain";
-        doc = parent->createDocument( props, os, contentType );
+        string filename( "name.txt" );
+        doc = parent->createDocument( props, os, contentType, filename );
     }
 
     CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
@@ -763,7 +766,8 @@ void AtomTest::cancelCheckOutTest( )
         string contentStr = "Some content";
         boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
         string contentType = "text/plain";
-        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType );
+        string filename( "name.txt" );
+        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType, filename );
     
         pwc = doc->checkOut( );
     }
@@ -817,7 +821,8 @@ void AtomTest::checkInTest( )
         string contentStr = "Some content";
         boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
         string contentType = "text/plain";
-        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType );
+        string filename( "name.txt" );
+        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType, filename );
     
         pwc = doc->checkOut( );
     }
@@ -830,7 +835,7 @@ void AtomTest::checkInTest( )
     map< string, libcmis::PropertyPtr > properties;
     string newContent = "Some New content to check in";
     boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
-    pwc->checkIn( isMajor, comment, properties, stream, "text/plain" );
+    pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
 
     map< string, libcmis::PropertyPtr > actualProperties = pwc->getProperties( );
 

@@ -46,7 +46,7 @@ class AtomFolder : public libcmis::Folder, public AtomObject
         virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties )
             throw ( libcmis::Exception );
         virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
-                                boost::shared_ptr< std::ostream > os, std::string contentType ) throw ( libcmis::Exception );
+                                boost::shared_ptr< std::ostream > os, std::string contentType, std::string fileName ) throw ( libcmis::Exception );
 
         virtual std::vector< std::string > removeTree( bool allVersion = true,
                                 libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
