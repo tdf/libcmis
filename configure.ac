@@ -140,6 +140,7 @@ AC_CONFIG_FILES([
 	Makefile
 	libcmis.pc
 	libcmis-c.pc
+    run-test.sh
 	src/Makefile
 	src/libcmis/Makefile
 	src/libcmis-c/Makefile

@@ -138,7 +138,7 @@ long_tests = \
 	test-ws
 endif
 
-TESTS_ENVIRONMENT = $(top_srcdir)/run-test.sh
+TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
 TESTS = test-nosrv-utils ${long_tests}
 
 endif
