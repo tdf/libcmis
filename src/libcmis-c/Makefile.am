@@ -65,7 +65,7 @@ test_api_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 
 test_api_LDADD = \
 	libcmis_c-@LIBCMIS_API_VERSION@.la \
-	$(top_srcdir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
@@ -78,7 +78,7 @@ test_c_build_CFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS)
 
 test_c_build_LDADD = \
 	libcmis_c-@LIBCMIS_API_VERSION@.la \
-	$(top_srcdir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \

@@ -34,6 +34,16 @@ EXTRA_DIST = \
 	src/libcmis/makefile.mk \
 	doc/cmis-client.xml
 
+distclean-local:
+	-rm -rf test-server
+	-rm chemistry-opencmis-*.tar.gz
+	-rm jetty-*.tar.gz
+
+DISTCLEANFILES = \
+	cmis-client.1 \
+	libcmis-@LIBCMIS_API_VERSION@.pc \
+	libcmis-c-@LIBCMIS_API_VERSION@.pc
+
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \
 	then \
