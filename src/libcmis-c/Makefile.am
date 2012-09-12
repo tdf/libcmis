@@ -16,7 +16,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	session-factory.h \
 	vectors.h
 
-lib_LTLIBRARIES = libcmis_c-@LIBCMIS_API_VERSION@.la
+lib_LTLIBRARIES = libcmis-c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	$(libcmis_c_headers_public) \
 	allowable-actions.cxx \
@@ -41,7 +41,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
-libcmis_c_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis_c-@LIBCMIS_API_VERSION@/libcmis-c
+libcmis_c_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-c-@LIBCMIS_API_VERSION@/libcmis-c
 
 if ENABLE_TESTS
 check_PROGRAMS = \
@@ -64,7 +64,7 @@ test_api_SOURCES = \
 test_api_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 
 test_api_LDADD = \
-	libcmis_c-@LIBCMIS_API_VERSION@.la \
+	libcmis-c-@LIBCMIS_API_VERSION@.la \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
@@ -77,7 +77,7 @@ test_c_build_SOURCES = \
 test_c_build_CFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS)
 
 test_c_build_LDADD = \
-	libcmis_c-@LIBCMIS_API_VERSION@.la \
+	libcmis-c-@LIBCMIS_API_VERSION@.la \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
