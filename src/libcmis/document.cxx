@@ -89,11 +89,17 @@ namespace libcmis
 
         buf << "Document Object:" << endl << endl;
         buf << Object::toString();
-        buf << "Parents ids: ";
-        vector< libcmis::FolderPtr > parents = getParents( );
-        for ( vector< libcmis::FolderPtr >::iterator it = parents.begin(); it != parents.end(); ++it )
-            buf << "'" << ( *it )->getId( ) << "' ";
-        buf << endl;
+        try
+        {
+            vector< libcmis::FolderPtr > parents = getParents( );
+            buf << "Parents ids: ";
+            for ( vector< libcmis::FolderPtr >::iterator it = parents.begin(); it != parents.end(); ++it )
+                buf << "'" << ( *it )->getId( ) << "' ";
+            buf << endl;
+        }
+        catch ( const libcmis::Exception& )
+        {
+        }
         buf << "Content Type: " << getContentType( ) << endl;
         buf << "Content Length: " << getContentLength( ) << endl;
         buf << "Content Filename: " << getContentFilename( ) << endl;

@@ -123,6 +123,7 @@
       <group choice="plain">
         <arg>checkout</arg>
         <arg>cancel-checkout</arg>
+        <arg>get-versions</arg>
       </group>
       <arg choice="plain">
         <replaceable>arg</replaceable>
@@ -405,6 +406,15 @@
         <listitem>
           <para>
             Cancel the Private Working Copy corresponding to the node id.
+					</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>get-versions <replaceable class="parameter">arg</replaceable></term>
+        <listitem>
+          <para>
+						Display the versions (if any) of all the CMIS object corresponding
+						to the provided id.
 					</para>
         </listitem>
       </varlistentry>

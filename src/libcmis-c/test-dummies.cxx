@@ -518,4 +518,19 @@ namespace dummies
 
         return libcmis::DocumentPtr( new Document( true, false ) );
     }
+
+    vector< libcmis::DocumentPtr > Document::getAllVersions( ) throw ( libcmis::Exception )
+    {
+        if ( m_triggersFaults )
+            throw libcmis::Exception( "Fault triggered" );
+
+        vector< libcmis::DocumentPtr > versions;
+
+        libcmis::DocumentPtr version1( new Document( true, false ) );
+        versions.push_back( version1 );
+        libcmis::DocumentPtr version2( new Document( true, false ) );
+        versions.push_back( version2 );
+
+        return versions;
+    }
 }

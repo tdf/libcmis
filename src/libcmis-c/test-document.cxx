@@ -89,6 +89,8 @@ class DocumentTest : public CppUnit::TestFixture
         void cancelCheckoutErrorTest( );
         void checkInTest( );
         void checkInErrorTest( );
+        void getAllVersionsTest( );
+        void getAllVersionsErrorTest( );
 
         CPPUNIT_TEST_SUITE( DocumentTest );
         CPPUNIT_TEST( objectCastTest );
@@ -110,6 +112,8 @@ class DocumentTest : public CppUnit::TestFixture
         CPPUNIT_TEST( cancelCheckoutErrorTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( checkInErrorTest );
+        CPPUNIT_TEST( getAllVersionsTest );
+        CPPUNIT_TEST( getAllVersionsErrorTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -542,6 +546,44 @@ void DocumentTest::checkInErrorTest( )
     libcmis_property_type_free( propertyType );
     libcmis_object_type_free( objectType );
     libcmis_vector_property_free( properties );
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getAllVersionsTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get all versions (tested method)
+    libcmis_vector_document_Ptr versions = libcmis_document_getAllVersions( tested, error );
+
+    // Check
+    CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_document_size( versions ) );
+    libcmis_DocumentPtr actualVersion = libcmis_vector_document_get( versions, 0 );
+    CPPUNIT_ASSERT( libcmis_object_getId( actualVersion ) != NULL );
+
+    // Free it all
+    libcmis_document_free( actualVersion );
+    libcmis_vector_document_free( versions );
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getAllVersionsErrorTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, true );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get all versions (tested method)
+    libcmis_vector_document_Ptr versions = libcmis_document_getAllVersions( tested, error );
+
+    // Check
+    CPPUNIT_ASSERT( NULL == versions );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+
+    // Free it all
+    libcmis_vector_document_free( versions );
     libcmis_error_free( error );
     libcmis_document_free( tested );
 }

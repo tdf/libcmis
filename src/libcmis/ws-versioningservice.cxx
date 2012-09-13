@@ -110,3 +110,22 @@ libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId,
 
     return newVersion;
 }
+
+vector< libcmis::DocumentPtr > VersioningService::getAllVersions( string repoId, string objectId ) throw ( libcmis::Exception )
+{
+    vector< libcmis::DocumentPtr > versions;
+
+    GetAllVersions request( repoId, objectId );
+    vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
+    if ( responses.size( ) == 1 )
+    {
+        SoapResponse* resp = responses.front( ).get( );
+        GetAllVersionsResponse* response = dynamic_cast< GetAllVersionsResponse* >( resp );
+        if ( response != NULL )
+        {
+            versions = response->getObjects( );
+        }
+    }
+
+    return versions;
+}

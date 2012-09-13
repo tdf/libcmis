@@ -34,6 +34,10 @@ extern "C" {
 
 #include "types.h"
 
+void libcmis_vector_document_free( libcmis_vector_document_Ptr vector );
+size_t libcmis_vector_document_size( libcmis_vector_document_Ptr vector );
+libcmis_DocumentPtr libcmis_vector_document_get( libcmis_vector_document_Ptr vector, size_t i );
+
 bool libcmis_is_document( libcmis_ObjectPtr object );
 libcmis_DocumentPtr libcmis_document_cast( libcmis_ObjectPtr object );
 
@@ -78,6 +82,10 @@ libcmis_DocumentPtr libcmis_document_checkIn(
         void* userData,
         const char* contentType,
         const char* filename,
+        libcmis_ErrorPtr error );
+
+libcmis_vector_document_Ptr libcmis_document_getAllVersions(
+        libcmis_DocumentPtr document,
         libcmis_ErrorPtr error );
 
 #ifdef __cplusplus

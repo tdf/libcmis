@@ -67,4 +67,36 @@ namespace test
 
         return str;
     }
+
+    libcmis::DocumentPtr createVersionableDocument( libcmis::Session* session, string docName )
+    {
+        libcmis::FolderPtr parent = session->getRootFolder( );
+
+        // Prepare the properties for the new object, object type is cmis:folder
+        map< string, libcmis::PropertyPtr > props;
+        libcmis::ObjectTypePtr type = session->getType( "VersionableType" );
+        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+        // Set the object name
+        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+        vector< string > nameValues;
+        nameValues.push_back( docName );
+        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+       
+        // set the object type 
+        it = propTypes.find( string( "cmis:objectTypeId" ) );
+        vector< string > typeValues;
+        typeValues.push_back( "VersionableType" );
+        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+        // Actually send the document creation request
+        string contentStr = "Some content";
+        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
+        string contentType = "text/plain";
+        string filename( "name.txt" );
+
+        return parent->createDocument( props, os, contentType, filename );
+    }
 }

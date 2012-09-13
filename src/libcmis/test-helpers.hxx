@@ -31,6 +31,8 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "document.hxx"
+#include "session.hxx"
 #include "xmlserializable.hxx"
 
 
@@ -40,4 +42,7 @@ namespace test
     xmlNodePtr getXmlNode( std::string str );
     const char* getXmlns( );
     std::string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
+
+    // Helper functions to populate the test repository
+    libcmis::DocumentPtr createVersionableDocument( libcmis::Session* session, std::string docName );
 }

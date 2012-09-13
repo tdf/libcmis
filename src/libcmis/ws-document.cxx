@@ -119,3 +119,17 @@ libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
 
     return newVersion;
 }
+
+vector< libcmis::DocumentPtr > WSDocument::getAllVersions( ) throw ( libcmis::Exception )
+{
+    vector< libcmis::DocumentPtr > versions;
+    string repoId = getSession( )->getRepositoryId( );
+    string versionSeries;
+    map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:versionSeriesId" ) );
+    if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+    {
+        versionSeries = it->second->getStrings( ).front( );
+        versions = getSession( )->getVersioningService( ).getAllVersions( repoId, versionSeries );
+    }
+    return versions;
+}

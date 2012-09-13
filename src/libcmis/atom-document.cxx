@@ -379,6 +379,70 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     return boost::dynamic_pointer_cast< libcmis::Document >( newVersion );
 }
 
+vector< libcmis::DocumentPtr > AtomDocument::getAllVersions( ) throw ( libcmis::Exception )
+{
+    if ( getAllowableActions( ).get() &&
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetAllVersions ) )
+        throw libcmis::Exception( string( "GetAllVersions not allowed on node " ) + getId() );
+
+    vector< libcmis::DocumentPtr > versions;
+    AtomLink* link = getLink( "version-history", string( ) );
+    if ( link != NULL )
+    {
+        string pageUrl = link->getHref( );
+
+        string buf;
+        try
+        {
+            buf = getSession()->httpGetRequest( pageUrl )->getStream( )->str( );
+        }
+        catch ( const CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
+
+        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), pageUrl.c_str(), NULL, 0 );
+        if ( NULL != doc )
+        {
+            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+            libcmis::registerNamespaces( xpathCtx );
+            if ( NULL != xpathCtx )
+            {
+                // Get the entries
+                const string& entriesReq( "//atom:entry" );
+                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
+
+                if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+                {
+                    int size = xpathObj->nodesetval->nodeNr;
+                    for ( int i = 0; i < size; i++ )
+                    {
+                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                        xmlDocPtr entryDoc = libcmis::wrapInDoc( node );
+                        libcmis::ObjectPtr cmisObject = getSession()->createObjectFromEntryDoc( entryDoc );
+                        libcmis::DocumentPtr cmisDoc = boost::dynamic_pointer_cast< libcmis::Document >( cmisObject );
+
+                        if ( cmisDoc.get() )
+                            versions.push_back( cmisDoc );
+                        xmlFreeDoc( entryDoc );
+                    }
+                }
+
+                xmlXPathFreeObject( xpathObj );
+            }
+
+            xmlXPathFreeContext( xpathCtx );
+        }
+        else
+        {
+            throw new libcmis::Exception( "Failed to parse versions infos" );
+        }
+        xmlFreeDoc( doc );
+
+    }
+    return versions;
+}
+
 void AtomDocument::extractInfos( xmlDocPtr doc )
 {
     AtomObject::extractInfos( doc );

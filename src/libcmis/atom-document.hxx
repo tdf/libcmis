@@ -55,6 +55,8 @@ class AtomDocument : public libcmis::Document, public AtomObject
                               const std::map< std::string, libcmis::PropertyPtr >& properties,
                               boost::shared_ptr< std::ostream > stream,
                               std::string contentType, std::string fileName ) throw ( libcmis::Exception );
+
+        virtual std::vector< libcmis::DocumentPtr > getAllVersions( ) throw ( libcmis::Exception );
     
     protected:
         virtual void extractInfos( xmlDocPtr doc );

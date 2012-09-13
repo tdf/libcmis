@@ -131,6 +131,8 @@ namespace libcmis
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType, std::string fileName ) throw ( Exception ) = 0;
 
+            virtual std::vector< boost::shared_ptr< Document > > getAllVersions( ) throw ( Exception ) = 0;
+
             // virtual methods form Object
             virtual std::vector< std::string > getPaths( );
 

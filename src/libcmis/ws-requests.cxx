@@ -799,3 +799,36 @@ SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, Soa
 
     return SoapResponsePtr( response );
 }
+
+void GetAllVersions::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getAllVersions" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetAllVersionsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+{
+    GetAllVersionsResponse* response = new GetAllVersionsResponse( );
+    WSSession* wsSession = dynamic_cast< WSSession* >( session );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "objects" ) ) )
+        {
+            WSObject tmp( wsSession, child );
+            if ( tmp.getBaseType( ) == "cmis:document" )
+            {
+                libcmis::DocumentPtr object( new WSDocument( tmp ) );
+                response->m_objects.push_back( object );
+            }
+        }
+    }
+
+    return SoapResponsePtr( response );
+}

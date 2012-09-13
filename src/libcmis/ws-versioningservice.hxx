@@ -56,6 +56,8 @@ class VersioningService
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream, std::string contentType,
                 std::string fileName, std::string comment ) throw ( libcmis::Exception );
+
+        std::vector< libcmis::DocumentPtr > getAllVersions( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
 };
 
 #endif

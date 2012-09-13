@@ -32,6 +32,33 @@
 using namespace std;
 
 
+void libcmis_vector_document_free( libcmis_vector_document_Ptr vector )
+{
+    delete vector;
+}
+
+
+size_t libcmis_vector_document_size( libcmis_vector_document_Ptr vector )
+{
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_DocumentPtr libcmis_vector_document_get( libcmis_vector_document_Ptr vector, size_t i )
+{
+    libcmis_DocumentPtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
+    {
+        libcmis::DocumentPtr handle = vector->handle[i];
+        item = new libcmis_document( );
+        item->setHandle( handle );
+    }
+    return item;
+}
+
 bool libcmis_is_document( libcmis_ObjectPtr object )
 {
     bool isDocument = false;
@@ -297,4 +324,27 @@ libcmis_DocumentPtr libcmis_document_checkIn(
         }
     }
     return newVersion;
+}
+
+libcmis_vector_document_Ptr libcmis_document_getAllVersions(
+        libcmis_DocumentPtr document,
+        libcmis_ErrorPtr error )
+{
+    libcmis_vector_document_Ptr result = NULL;
+    if ( document != NULL && document->handle.get( ) != NULL )
+    {
+        try
+        {
+            std::vector< libcmis::DocumentPtr > handles = document->handle->getAllVersions( );
+            result = new libcmis_vector_document( );
+            result->handle = handles;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            // Set the error handle
+            if ( error != NULL )
+                error->handle = new libcmis::Exception( e );
+        }
+    }
+    return result;
 }

@@ -213,4 +213,11 @@ struct libcmis_vector_folder
     libcmis_vector_folder( ) : handle( ) { }
 };
 
+struct libcmis_vector_document
+{
+    std::vector< libcmis::DocumentPtr > handle;
+
+    libcmis_vector_document( ) : handle( ) { }
+};
+
 #endif

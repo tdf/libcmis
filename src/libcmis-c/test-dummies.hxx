@@ -193,6 +193,8 @@ namespace dummies
                                   boost::shared_ptr< std::ostream > stream,
                                   std::string contentType, std::string filename ) throw ( libcmis::Exception );
 
+            virtual std::vector< libcmis::DocumentPtr > getAllVersions( ) throw ( libcmis::Exception );
+
             virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }
             virtual std::string toString( ) { return dummies::Object::toString( ); }
     };

@@ -754,6 +754,34 @@ void CmisClient::execute( ) throw ( exception )
 
             delete session;
         }
+        else if ( "get-versions" == command )
+        {
+            libcmis::Session* session = getSession( );
+
+            // Get the ids of the objects to fetch
+            if ( m_vm.count( "args" ) == 0 )
+                throw CommandException( "Please provide the node id to get versions from as command args" );
+
+            vector< string > objIds = m_vm["args"].as< vector< string > >( );
+
+            libcmis::ObjectPtr object = session->getObject( objIds.front() );
+            if ( object.get() )
+            {
+                libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
+                vector< libcmis::DocumentPtr > versions = doc->getAllVersions( );
+
+                for ( vector< libcmis::DocumentPtr >::iterator it = versions.begin( );
+                        it != versions.end( ); ++it )
+                {
+                    cout << "------------------------------------------------" << endl;
+                    cout << ( *it )->toString() << endl;
+                }
+            }
+            else
+                cout << "No such node: " << objIds.front() << endl;
+
+            delete session;
+        }
         else if ( "help" == command )
         {
             printHelp();
@@ -845,6 +873,8 @@ void CmisClient::printHelp( )
             "           The modification options may be needed to set the new\n"
             "           version properties and content stream if the repository\n"
             "           doesn't allow to change the private working copies." << endl;
+    cerr << "   get-versions <Object-Id>\n"
+            "           Show all the versions of a document." << endl;
     cerr << "   help\n"
             "           Prints this help message and exits (like --help option)." << endl;
 

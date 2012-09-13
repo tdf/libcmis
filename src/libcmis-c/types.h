@@ -82,6 +82,7 @@ typedef struct libcmis_document* libcmis_DocumentPtr;
 typedef size_t ( *libcmis_writeFn )( const void*, size_t, size_t, void* );
 typedef size_t ( *libcmis_readFn )( void*, size_t, size_t, void* );
 
+typedef struct libcmis_vector_document* libcmis_vector_document_Ptr;
 
 /* Error */
 

@@ -37,6 +37,7 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "document.hxx"
 #include "exception.hxx"
 #include "folder.hxx"
 #include "object.hxx"
@@ -705,6 +706,42 @@ class CheckInResponse : public SoapResponse
         static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
 
         std::string getObjectId( ) { return m_objectId; }
+};
+
+class GetAllVersions : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+
+    public:
+        GetAllVersions( std::string repoId, std::string objectId ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId )
+        {
+        }
+
+        ~GetAllVersions( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetAllVersionsResponse : public SoapResponse
+{
+    private:
+        std::vector< libcmis::DocumentPtr > m_objects;
+
+        GetAllVersionsResponse( ) : SoapResponse( ), m_objects( ) { }
+
+    public:
+
+        /** Parse cmism:getAllVersionsResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< libcmis::DocumentPtr > getObjects( ) { return m_objects; }
 };
 
 #endif

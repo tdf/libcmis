@@ -47,14 +47,14 @@ size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector )
 }
 
 
-libcmis_ObjectPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, size_t i )
+libcmis_FolderPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, size_t i )
 {
-    libcmis_ObjectPtr item = NULL;
+    libcmis_FolderPtr item = NULL;
     if ( vector != NULL && i < vector->handle.size( ) )
     {
-        libcmis::ObjectPtr type = vector->handle[i];
+        libcmis::FolderPtr handle = vector->handle[i];
         item = new libcmis_folder( );
-        item->handle = type;
+        item->setHandle( handle );
     }
     return item;
 }

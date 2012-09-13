@@ -33,6 +33,7 @@
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
+#include "test-helpers.hxx"
 
 // InMemory local test server data
 #define SERVER_ATOM_URL string( "http://localhost:8080/inmemory/atom" )
@@ -114,6 +115,7 @@ class AtomTest : public CppUnit::TestFixture
         void checkOutTest( );
         void cancelCheckOutTest( );
         void checkInTest( );
+        void getAllVersionsTest( );
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
@@ -144,6 +146,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -691,37 +694,7 @@ void AtomTest::checkOutTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
 
     // First create a document of type VersionableType
-    libcmis::DocumentPtr doc;
-    {
-        libcmis::FolderPtr parent = session.getRootFolder( );
-
-        // Prepare the properties for the new object, object type is cmis:folder
-        map< string, libcmis::PropertyPtr > props;
-        libcmis::ObjectTypePtr type = session.getType( "VersionableType" );
-        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-        // Set the object name
-        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-        vector< string > nameValues;
-        nameValues.push_back( "checkOutTest" );
-        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-       
-        // set the object type 
-        it = propTypes.find( string( "cmis:objectTypeId" ) );
-        vector< string > typeValues;
-        typeValues.push_back( "VersionableType" );
-        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-        // Actually send the document creation request
-        string contentStr = "Some content";
-        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
-        string contentType = "text/plain";
-        string filename( "name.txt" );
-        doc = parent->createDocument( props, os, contentType, filename );
-    }
-
+    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkOutTest" );
     CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
 
     libcmis::DocumentPtr pwc = doc->checkOut( );
@@ -739,38 +712,8 @@ void AtomTest::cancelCheckOutTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
 
     // First create a versionable document and check it out
-    libcmis::DocumentPtr pwc;
-    {
-        libcmis::FolderPtr parent = session.getRootFolder( );
-
-        // Prepare the properties for the new object, object type is cmis:folder
-        map< string, libcmis::PropertyPtr > props;
-        libcmis::ObjectTypePtr type = session.getType( "VersionableType" );
-        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-        // Set the object name
-        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-        vector< string > nameValues;
-        nameValues.push_back( "cancelCheckOutTest" );
-        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-       
-        // set the object type 
-        it = propTypes.find( string( "cmis:objectTypeId" ) );
-        vector< string > typeValues;
-        typeValues.push_back( "VersionableType" );
-        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-        // Actually send the document creation request
-        string contentStr = "Some content";
-        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
-        string contentType = "text/plain";
-        string filename( "name.txt" );
-        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType, filename );
-    
-        pwc = doc->checkOut( );
-    }
+    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "cancelCheckOutTest" );
+    libcmis::DocumentPtr pwc = doc->checkOut( );
 
     CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
 
@@ -794,38 +737,8 @@ void AtomTest::checkInTest( )
     AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
 
     // First create a versionable document and check it out
-    libcmis::DocumentPtr pwc;
-    {
-        libcmis::FolderPtr parent = session.getRootFolder( );
-
-        // Prepare the properties for the new object, object type is cmis:folder
-        map< string, libcmis::PropertyPtr > props;
-        libcmis::ObjectTypePtr type = session.getType( "VersionableType" );
-        map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-        // Set the object name
-        map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-        vector< string > nameValues;
-        nameValues.push_back( "checkInTest" );
-        libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-       
-        // set the object type 
-        it = propTypes.find( string( "cmis:objectTypeId" ) );
-        vector< string > typeValues;
-        typeValues.push_back( "VersionableType" );
-        libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-        props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-        // Actually send the document creation request
-        string contentStr = "Some content";
-        boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
-        string contentType = "text/plain";
-        string filename( "name.txt" );
-        libcmis::DocumentPtr doc = parent->createDocument( props, os, contentType, filename );
-    
-        pwc = doc->checkOut( );
-    }
+    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkInTest" );
+    libcmis::DocumentPtr pwc = doc->checkOut( );
 
     CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
 
@@ -853,6 +766,31 @@ void AtomTest::checkInTest( )
         map< string, libcmis::PropertyPtr >::iterator it = actualProperties.find( "cmis:checkinComment" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "cmis:checkinComment doesn't match", comment, it->second->getStrings().front( ) );
     }
+}
+
+void AtomTest::getAllVersionsTest( )
+{
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+
+    // First create a versionable document and check it out
+    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "getAllVersionsTest" );
+    libcmis::DocumentPtr pwc = doc->checkOut( );
+
+    CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
+
+    // Create a version
+    bool isMajor = true;
+    string comment( "Some check-in comment" );
+    map< string, libcmis::PropertyPtr > properties;
+    string newContent = "Some New content to check in";
+    boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
+    libcmis::DocumentPtr newVersion = pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
+
+    // Get all the versions (method to check)
+    vector< libcmis::DocumentPtr > versions = newVersion->getAllVersions( ); 
+
+    // Checks
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
 }
 
 void AtomTest::moveTest( )
