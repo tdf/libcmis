@@ -93,8 +93,8 @@ namespace libcmis
             xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:allowableActions" ), xpathCtx );
             if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
             {
-                xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
-                m_allowableActions.reset( new libcmis::AllowableActions( node ) );
+                xmlNodePtr actionsNode = xpathObj->nodesetval->nodeTab[0];
+                m_allowableActions.reset( new libcmis::AllowableActions( actionsNode ) );
             }
             xmlXPathFreeObject( xpathObj );
 
@@ -109,8 +109,8 @@ namespace libcmis
                 int size = xpathObj->nodesetval->nodeNr;
                 for ( int i = 0; i < size; i++ )
                 {
-                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                    libcmis::PropertyPtr property = libcmis::parseProperty( node, getTypeDescription( ) );
+                    xmlNodePtr propertyNode = xpathObj->nodesetval->nodeTab[i];
+                    libcmis::PropertyPtr property = libcmis::parseProperty( propertyNode, getTypeDescription( ) );
                     if ( property.get( ) )
                         m_properties[ property->getPropertyType( )->getId() ] = property;
                 }

@@ -349,7 +349,7 @@ void UpdateProperties::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
 {
     UpdatePropertiesResponse* response = new UpdatePropertiesResponse( );
 
@@ -425,7 +425,7 @@ void DeleteTree::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
 {
     DeleteTreeResponse* response = new DeleteTreeResponse( );
 
@@ -624,7 +624,7 @@ void CreateFolder::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
+SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
 {
     CreateFolderResponse* response = new CreateFolderResponse( );
 
