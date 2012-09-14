@@ -69,6 +69,7 @@ AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception )
 }
 
 AtomRepository::AtomRepository( const AtomRepository& rCopy ) :
+    Repository( rCopy ),
     m_collections( rCopy.m_collections ),
     m_uriTemplates( rCopy.m_uriTemplates )
 {

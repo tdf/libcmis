@@ -177,7 +177,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::Propert
 }
 
 libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::PropertyPtr >& properties,
-        boost::shared_ptr< ostream > os, string contentType, string fileName ) throw ( libcmis::Exception )
+        boost::shared_ptr< ostream > os, string contentType, string ) throw ( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 

@@ -443,7 +443,7 @@ const char* CurlException::what( ) const throw ()
     if ( !isCancelled( ) )
     {
         stringstream buf;
-        buf << "CURL error - " << m_code << ": ";
+        buf << "CURL error - " << ( unsigned int ) m_code << ": ";
         buf << m_message;
         m_errorMessage = buf.str( );
 
