@@ -34,9 +34,8 @@ using namespace std;
 
 NavigationService::NavigationService( WSSession* session ) :
     m_session( session ),
-    m_url( )
+    m_url( session->getServiceUrl( "NavigationService" ) )
 {
-    m_url = session->getServiceUrl( "NavigationService" );
 }
 
 NavigationService::NavigationService( const NavigationService& copy ) :

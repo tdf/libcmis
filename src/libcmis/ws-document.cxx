@@ -100,7 +100,7 @@ libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
         if ( string( e.what( ) ).find( spError ) != string::npos )
             tryNoStream = true;
         else
-            throw e;
+            throw;
     }
 
     if ( tryNoStream )

@@ -175,7 +175,7 @@ void CmisClient::execute( ) throw ( exception )
             list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( url, username, password, verbose );
         
             cout << "Repositories: name (id)" << endl;
-            for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); it++ )
+            for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
                 cout << "\t" << ( *it )->getName( ) << " (" << ( *it )->getId( ) << ")" << endl;
         }
         else if ( "show-root" == command )
@@ -202,7 +202,7 @@ void CmisClient::execute( ) throw ( exception )
             vector< string > ids = m_vm["args"].as< vector< string > >( );
 
 
-            for ( vector< string >::iterator it = ids.begin(); it != ids.end(); it++ )
+            for ( vector< string >::iterator it = ids.begin(); it != ids.end(); ++it )
             {
                 cout << "------------------------------------------------" << endl;
                 try
@@ -229,7 +229,7 @@ void CmisClient::execute( ) throw ( exception )
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
 
 
-            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); it++ )
+            for ( vector< string >::iterator it = objIds.begin(); it != objIds.end(); ++it )
             {
                 libcmis::ObjectPtr cmisObj = session->getObject( *it );
                 cout << "------------------------------------------------" << endl;
@@ -252,7 +252,7 @@ void CmisClient::execute( ) throw ( exception )
             vector< string > objPaths = m_vm["args"].as< vector< string > >( );
 
 
-            for ( vector< string >::iterator it = objPaths.begin(); it != objPaths.end(); it++ )
+            for ( vector< string >::iterator it = objPaths.begin(); it != objPaths.end(); ++it )
             {
                 libcmis::ObjectPtr cmisObj = session->getObjectByPath( *it );
                 cout << "------------------------------------------------" << endl;
@@ -269,7 +269,7 @@ void CmisClient::execute( ) throw ( exception )
             libcmis::Session* session = getSession( );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
-            if ( objIds.size() == 0 )
+            if ( objIds.empty( ) )
                 throw CommandException( "Please provide a content object Id" );
 
             libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
@@ -292,7 +292,7 @@ void CmisClient::execute( ) throw ( exception )
             libcmis::Session* session = getSession( );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
-            if ( objIds.size() ==0 )
+            if ( objIds.empty( ) )
                 throw CommandException( "Please provide a content object Id" );
 
             libcmis::ObjectPtr cmisObj = session->getObject( objIds.front() );
@@ -547,7 +547,7 @@ void CmisClient::execute( ) throw ( exception )
             catch ( const std::exception& e )
             {
                 delete session;
-                throw e;
+                throw;
             }
             delete session;
         }
@@ -905,7 +905,7 @@ int main ( int argc, char* argv[] )
     {
         client.execute( );
     }
-    catch ( CommandException e )
+    catch ( const CommandException& e )
     {
         cerr << "------------------------------------------------" << endl;
         cerr << "ERROR: " << e.what() << endl;

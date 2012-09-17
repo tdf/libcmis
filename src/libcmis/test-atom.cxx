@@ -414,7 +414,7 @@ void AtomTest::getChildrenTest( )
     int folderCount = 0;
     int documentCount = 0;
     for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-          it != children.end( ); it++ )
+          it != children.end( ); ++it )
     {
         if ( NULL != dynamic_cast< AtomFolder* >( it->get() ) )
             ++folderCount;

@@ -47,7 +47,7 @@ namespace libcmis
             catch ( const Exception& e )
             {
                 if ( e.getType( ) == "permissionDenied" )
-                    throw e;
+                    throw;
             }
             
             if ( session == NULL )
@@ -60,7 +60,7 @@ namespace libcmis
                 catch ( const Exception& e )
                 {
                     if ( e.getType( ) == "permissionDenied" )
-                        throw e;
+                        throw;
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace libcmis
             catch ( const Exception& e )
             {
                 if ( e.getType( ) == "permissionDenied" )
-                    throw e;
+                    throw;
             }
             
             if ( tryNext )
@@ -93,12 +93,11 @@ namespace libcmis
                 try
                 {
                     repos = WSSession::getRepositories( bindingUrl, username, password, verbose );
-                    tryNext = false;
                 }
                 catch ( const Exception& e )
                 {
                     if ( e.getType( ) == "permissionDenied" )
-                        throw e;
+                        throw;
                 }
             }
         }

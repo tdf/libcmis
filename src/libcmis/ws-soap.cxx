@@ -43,7 +43,8 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
     exception( ),
     m_faultcode( ),
     m_faultstring( ),
-    m_detail( )
+    m_detail( ),
+    m_message( )
 {
     for ( xmlNodePtr child = node->children; child; child = child->next )
     {
@@ -69,17 +70,18 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
             m_detail = factory->parseFaultDetail( child );
         }
     }
+    
+    m_message = getFaultcode() + ": " + getFaultstring();
+    for ( vector< SoapFaultDetailPtr >::const_iterator it = m_detail.begin( ); it != m_detail.end( ); ++it )
+    {
+        m_message += "\n" + ( *it )->toString( );
+    }
+
 }
 
 const char* SoapFault::what( ) const throw ( )
 {
-    string message( getFaultcode() + ": " + getFaultstring() );
-    for ( vector< SoapFaultDetailPtr >::const_iterator it = m_detail.begin( ); it != m_detail.end( ); ++it )
-    {
-        message += "\n" + ( *it )->toString( );
-    }
-
-    return message.c_str( );
+    return m_message.c_str( );
 }
 
 

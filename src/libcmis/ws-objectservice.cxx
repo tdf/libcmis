@@ -34,9 +34,8 @@ using namespace std;
 
 ObjectService::ObjectService( WSSession* session ) :
     m_session( session ),
-    m_url( )
+    m_url( session->getServiceUrl( "ObjectService" ) )
 {
-    m_url = session->getServiceUrl( "ObjectService" );
 }
 
 ObjectService::ObjectService( const ObjectService& copy ) :

@@ -85,6 +85,7 @@ class SoapFault : public std::exception
         std::string m_faultcode;
         std::string m_faultstring;
         std::vector< SoapFaultDetailPtr > m_detail;
+        std::string m_message;
 
     public:
         SoapFault( xmlNodePtr faultNode, SoapResponseFactory* factory );
