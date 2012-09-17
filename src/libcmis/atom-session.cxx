@@ -39,52 +39,6 @@
 
 using namespace std;
 
-namespace
-{
-    size_t lcl_bufferData( void* buffer, size_t size, size_t nmemb, void* data )
-    {
-        libcmis::EncodedData* encoded = static_cast< libcmis::EncodedData* >( data );
-        encoded->decode( buffer, size, nmemb );
-        return nmemb;
-    }
-
-    size_t lcl_readStream( void* buffer, size_t size, size_t nmemb, void* data )
-    {
-        istream& is = *( static_cast< istream* >( data ) );
-        char* out = ( char * ) buffer;
-        is.read( out, size * nmemb );
-
-        return is.gcount( ) / size;
-    }
-
-    curlioerr lcl_ioctlStream( CURL* /*handle*/, int cmd, void* data )
-    {
-        curlioerr errCode = CURLIOE_OK;
-
-        switch ( cmd )
-        {
-            case CURLIOCMD_RESTARTREAD:
-                {
-                    istream& is = *( static_cast< istream* >( data ) );
-                    is.clear( );
-                    is.seekg( 0, ios::beg );
-
-                    if ( !is.good() )
-                    {
-                        fprintf ( stderr, "rewind failed\n" );
-                        errCode = CURLIOE_FAILRESTART;
-                    }
-                }
-                break;
-            case CURLIOCMD_NOP:
-                break;
-            default:
-                errCode = CURLIOE_UNKNOWNCMD;
-        }
-        return errCode;
-    }
-}
-
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId, 
         string username, string password, bool verbose ) throw ( libcmis::Exception ) :
     BaseSession( atomPubUrl, repositoryId, username, password, verbose ),
@@ -168,7 +122,7 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
 
                             m_repositories.push_back( ws );
                         }
-                        catch ( const libcmis::Exception& e )
+                        catch ( const libcmis::Exception& )
                         {
                             // Invalid repository, don't take care of this
                         }
