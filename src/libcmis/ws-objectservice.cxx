@@ -118,7 +118,7 @@ libcmis::ObjectPtr ObjectService::updateProperties(
 
 void ObjectService::deleteObject( string repoId, string id, bool allVersions ) throw ( libcmis::Exception )
 {
-    DeleteObject request( repoId, id, allVersions );
+    class DeleteObject request( repoId, id, allVersions );
     m_session->soapRequest( m_url, request );
 }
         

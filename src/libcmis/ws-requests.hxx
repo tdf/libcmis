@@ -202,6 +202,7 @@ class GetTypeChildrenResponse : public SoapResponse
         std::vector< libcmis::ObjectTypePtr > getChildren( ) { return m_children; }
 };
 
+#undef GetObject
 class GetObject : public SoapRequest
 {
     private:
