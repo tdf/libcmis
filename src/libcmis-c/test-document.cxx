@@ -322,7 +322,7 @@ void DocumentTest::setContentStreamErrorTest( )
     // Prepare the content to set
     FILE* tmp = tmpfile( );
     string newContent( "New Content Stream" );
-    fwrite( expected.c_str( ), 1, expected.size( ), tmp );
+    fwrite( newContent.c_str( ), 1, newContent.size( ), tmp );
     rewind( tmp );
 
     // get the content into a temporary file (tested method)

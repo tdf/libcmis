@@ -61,28 +61,6 @@ namespace
         return nmemb;
     }
 
-    size_t lcl_getEncoding( void *ptr, size_t size, size_t nmemb, void *userdata )
-    {
-        libcmis::EncodedData* data = static_cast< libcmis::EncodedData* >( userdata );
-
-        string buf( ( const char* ) ptr, size * nmemb );
-
-        size_t sepPos = buf.find( ':' );
-        if ( sepPos != string::npos )
-        {
-            string name( buf, 0, sepPos );
-            if ( "Content-Transfer-Encoding" == name )
-            {
-                string encoding = buf.substr( sepPos + 1 );
-                encoding.erase( remove_if( encoding.begin(), encoding.end(), ptr_fun< int, int> ( isspace ) ), encoding.end() );
-
-                data->setEncoding( encoding );
-            }
-        }
-        
-        return nmemb;
-    }
-
     size_t lcl_bufferData( void* buffer, size_t size, size_t nmemb, void* data )
     {
         libcmis::EncodedData* encoded = static_cast< libcmis::EncodedData* >( data );
@@ -124,16 +102,6 @@ namespace
                 errCode = CURLIOE_UNKNOWNCMD;
         }
         return errCode;
-    }
-
-    string lcl_tolower( string sText )
-    {
-        string lower( sText );
-        for ( size_t i = 0; i < sText.size(); ++i )
-        {
-            lower[i] = ::tolower( sText[i] );
-        }
-        return lower;
     }
 }
 
@@ -268,7 +236,7 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
     }
     catch ( const CurlException& e )
     {
-        throw e;
+        throw;
     }
 
     return response;
@@ -308,7 +276,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     catch ( CurlException& e )
     {
         curl_slist_free_all( headers_slist );
-        throw e;
+        throw;
     }
 
     curl_slist_free_all( headers_slist );
@@ -350,7 +318,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istringstream
     catch ( const CurlException& e )
     {
         curl_slist_free_all( headers_slist );
-        throw e;
+        throw;
     }
 
     curl_slist_free_all( headers_slist );

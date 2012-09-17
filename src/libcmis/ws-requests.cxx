@@ -492,9 +492,6 @@ SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultip
                     xmlChar* content = xmlNodeGetContent( gdchild );
                     if ( content != NULL )
                     {
-                        string value( ( char* ) content );
-                        xmlFree( content );
-
                         // We can either have directly the base64 encoded data or
                         // an <xop:Include> pointing to another part of the multipart
                         response->m_stream = getStreamFromNode( gdchild, multipart );
@@ -755,7 +752,7 @@ void CheckIn::toXml( xmlTextWriterPtr writer )
         major = "true";
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:major" ), BAD_CAST( major.c_str( ) ) );
 
-    if ( m_properties.size( ) > 0 )
+    if ( m_properties.empty( ) )
     {
         xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
         for ( map< string, libcmis::PropertyPtr >::const_iterator it = m_properties.begin( );

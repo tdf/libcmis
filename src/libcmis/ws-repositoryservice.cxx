@@ -34,9 +34,8 @@ using namespace std;
 
 RepositoryService::RepositoryService( WSSession* session ) :
     m_session( session ),
-    m_url( )
+    m_url( session->getServiceUrl( "RepositoryService" ) )
 {
-    m_url = session->getServiceUrl( "RepositoryService" );
 }
 
 RepositoryService::RepositoryService( const RepositoryService& copy ) :

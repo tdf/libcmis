@@ -386,14 +386,11 @@ AtomLink* AtomObject::getLink( std::string rel, std::string type )
 }
 
 AtomLink::AtomLink( xmlNodePtr node ) throw ( libcmis::Exception ):
-    m_rel( ),
+    m_rel( libcmis::getXmlNodeAttributeValue( node, "rel" ) ),
     m_type( ),
     m_id( ),
-    m_href( )
+    m_href( libcmis::getXmlNodeAttributeValue( node, "href" ) )
 {
-    m_rel = libcmis::getXmlNodeAttributeValue( node, "rel" );
-    m_href = libcmis::getXmlNodeAttributeValue( node, "href" );
-    
     try
     {
         m_type = libcmis::getXmlNodeAttributeValue( node, "type" );

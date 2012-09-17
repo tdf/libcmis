@@ -86,7 +86,7 @@ namespace libcmis
 
         vector< libcmis::ObjectPtr > children = getChildren( );
         for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-                it != children.end(); it++ )
+                it != children.end(); ++it )
         {
             libcmis::ObjectPtr child = *it;
             buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;

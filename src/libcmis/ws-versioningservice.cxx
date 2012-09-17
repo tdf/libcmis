@@ -34,9 +34,8 @@ using namespace std;
 
 VersioningService::VersioningService( WSSession* session ) :
     m_session( session ),
-    m_url( )
+    m_url( session->getServiceUrl( "VersioningService" ) )
 {
-    m_url = session->getServiceUrl( "VersioningService" );
 }
 
 VersioningService::VersioningService( const VersioningService& copy ) :

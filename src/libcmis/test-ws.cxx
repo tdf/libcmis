@@ -257,7 +257,7 @@ void WSTest::getChildrenTest( )
     int folderCount = 0;
     int documentCount = 0;
     for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-          it != children.end( ); it++ )
+          it != children.end( ); ++it )
     {
         if ( boost::dynamic_pointer_cast< libcmis::Folder >( *it ).get( ) != NULL )
             ++folderCount;
