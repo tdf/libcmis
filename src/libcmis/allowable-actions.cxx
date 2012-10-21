@@ -185,4 +185,107 @@ namespace libcmis
         map< ObjectAction::Type, bool>::iterator it = m_states.find( action );
         return it != m_states.end();
     }
+
+    string AllowableActions::toString( )
+    {
+        stringstream buf;
+
+        for ( map< ObjectAction::Type, bool >::iterator it = m_states.begin( );
+                it != m_states.end( ); ++it )
+        {
+            switch ( it->first )
+            {
+                case ObjectAction::DeleteObject:
+                    buf << "canDeleteObject";
+                    break;
+                case ObjectAction::UpdateProperties:
+                    buf << "canUpdateProperties";
+                    break;
+                case ObjectAction::GetFolderTree:
+                    buf << "canGetFolderTree";
+                    break;
+                case ObjectAction::GetProperties:
+                    buf << "canGetProperties";
+                    break;
+                case ObjectAction::GetObjectRelationships:
+                    buf << "canGetObjectRelationships";
+                    break;
+                case ObjectAction::GetObjectParents:
+                    buf << "canGetObjectParents";
+                    break;
+                case ObjectAction::GetFolderParent:
+                    buf << "canGetFolderParent";
+                    break;
+                case ObjectAction::GetDescendants:
+                    buf << "canGetDescendants";
+                    break;
+                case ObjectAction::MoveObject:
+                    buf << "canMoveObject";
+                    break;
+                case ObjectAction::DeleteContentStream:
+                    buf << "canDeleteContentStream";
+                    break;
+                case ObjectAction::CheckOut:
+                    buf << "canCheckOut";
+                    break;
+                case ObjectAction::CancelCheckOut:
+                    buf << "canCancelCheckOut";
+                    break;
+                case ObjectAction::CheckIn:
+                    buf << "canCheckIn";
+                    break;
+                case ObjectAction::SetContentStream:
+                    buf << "canSetContentStream";
+                    break;
+                case ObjectAction::GetAllVersions:
+                    buf << "canGetAllVersions";
+                    break;
+                case ObjectAction::AddObjectToFolder:
+                    buf << "canAddObjectToFolder";
+                    break;
+                case ObjectAction::RemoveObjectFromFolder:
+                    buf << "canRemoveObjectFromFolder";
+                    break;
+                case ObjectAction::GetContentStream:
+                    buf << "canGetContentStream";
+                    break;
+                case ObjectAction::ApplyPolicy:
+                    buf << "canApplyPolicy";
+                    break;
+                case ObjectAction::GetAppliedPolicies:
+                    buf << "canGetAppliedPolicies";
+                    break;
+                case ObjectAction::RemovePolicy:
+                    buf << "canRemovePolicy";
+                    break;
+                case ObjectAction::GetChildren:
+                    buf << "canGetChildren";
+                    break;
+                case ObjectAction::CreateDocument:
+                    buf << "canCreateDocument";
+                    break;
+                case ObjectAction::CreateFolder:
+                    buf << "canCreateFolder";
+                    break;
+                case ObjectAction::CreateRelationship:
+                    buf << "canCreateRelationship";
+                    break;
+                case ObjectAction::DeleteTree:
+                    buf << "canDeleteTree";
+                    break;
+                case ObjectAction::GetRenditions:
+                    buf << "canGetRenditions";
+                    break;
+                case ObjectAction::GetACL:
+                    buf << "canGetACL";
+                    break;
+                case ObjectAction::ApplyACL:
+                    buf << "canApplyACL";
+                    break;
+            }
+            buf << ": " << it->second << endl;
+        }
+
+        return buf.str( );
+    }
 }

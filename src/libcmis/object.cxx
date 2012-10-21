@@ -249,6 +249,10 @@ namespace libcmis
             << " by " << getLastModifiedBy() << endl;
         buf << "Change token: " << getChangeToken() << endl;
 
+        // Write Allowable Actions
+        if ( getAllowableActions( ) )
+            buf << endl << getAllowableActions( )->toString( ) << endl;
+
         // Write remaining properties
         static const char* skippedProps[] = {
             "cmis:name", "cmis:baseTypeId", "cmis:objectTypeId", "cmis:createdBy",

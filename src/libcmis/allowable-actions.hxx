@@ -121,6 +121,8 @@ namespace libcmis
                 value is used.
               */
             bool isDefined( ObjectAction::Type action );
+
+            std::string toString( );
     };
     typedef boost::shared_ptr< AllowableActions > AllowableActionsPtr;
 }
