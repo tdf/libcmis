@@ -82,6 +82,8 @@ namespace libcmis
 
     void Object::initializeFromNode( xmlNodePtr node )
     {
+        // Even if node is NULL we'll have an empty doc, so no need
+        // to worry about it.
         xmlDocPtr doc = wrapInDoc( node );
         xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 
@@ -111,7 +113,7 @@ namespace libcmis
                 {
                     xmlNodePtr propertyNode = xpathObj->nodesetval->nodeTab[i];
                     libcmis::PropertyPtr property = libcmis::parseProperty( propertyNode, getTypeDescription( ) );
-                    if ( property.get( ) )
+                    if ( property != NULL )
                         m_properties[ property->getPropertyType( )->getId() ] = property;
                 }
             }
@@ -122,13 +124,13 @@ namespace libcmis
         xmlFreeDoc( doc );
 
         m_refreshTimestamp = time( NULL );
-    }
+    } 
 
     string Object::getId( )
     {
         string name;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:objectId" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             name = it->second->getStrings( ).front( );
         return name;
     }
@@ -137,7 +139,7 @@ namespace libcmis
     {
         string name;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:name" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             name = it->second->getStrings( ).front( );
         return name;
     }
@@ -151,7 +153,7 @@ namespace libcmis
     {
         string value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:baseTypeId" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
     }
@@ -160,7 +162,7 @@ namespace libcmis
     {
         string value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:objectTypeId" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
 
         if ( value.empty( ) )
@@ -172,7 +174,7 @@ namespace libcmis
     {
         string value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:createdBy" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
     }
@@ -181,7 +183,7 @@ namespace libcmis
     {
         boost::posix_time::ptime value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
     }
@@ -190,7 +192,7 @@ namespace libcmis
     {
         string value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:lastModifiedBy" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
     }
@@ -199,7 +201,7 @@ namespace libcmis
     {
         boost::posix_time::ptime value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getDateTimes( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
     }
@@ -208,7 +210,7 @@ namespace libcmis
     {
         bool value = false;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getBools( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getBools( ).empty( ) )
             value = it->second->getBools( ).front( );
         return value;
     }
@@ -217,7 +219,7 @@ namespace libcmis
     {
         string value;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:changeToken" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
             value = it->second->getStrings( ).front( );
         return value;
     }
@@ -229,7 +231,7 @@ namespace libcmis
 
     libcmis::ObjectTypePtr Object::getTypeDescription( )
     {
-        if ( !m_typeDescription.get( ) )
+        if ( !m_typeDescription.get( ) && m_session != NULL )
             m_typeDescription = m_session->getType( getType( ) );
 
         return m_typeDescription;
@@ -270,12 +272,15 @@ namespace libcmis
             if ( !toSkip )
             {
                 libcmis::PropertyPtr prop = it->second;
-                buf << prop->getPropertyType( )->getDisplayName( ) << "( " << prop->getPropertyType()->getId( ) << " ): " << endl;
-                vector< string > strValues = prop->getStrings( );
-                for ( vector< string >::iterator valueIt = strValues.begin( );
-                      valueIt != strValues.end( ); ++valueIt )
+                if ( prop != NULL )
                 {
-                    buf << "\t" << *valueIt << endl; 
+                    buf << prop->getPropertyType( )->getDisplayName( ) << "( " << prop->getPropertyType()->getId( ) << " ): " << endl;
+                    vector< string > strValues = prop->getStrings( );
+                    for ( vector< string >::iterator valueIt = strValues.begin( );
+                          valueIt != strValues.end( ); ++valueIt )
+                    {
+                        buf << "\t" << *valueIt << endl; 
+                    }
                 }
             }
         }

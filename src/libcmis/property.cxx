@@ -112,31 +112,34 @@ namespace libcmis
     {
         PropertyPtr property;
 
-        try
+        if ( node != NULL && objectType != NULL )
         {
-            string id = getXmlNodeAttributeValue( node, "propertyDefinitionId" );
-
-            // Find the value nodes
-            vector< string > values;
-            for ( xmlNodePtr child = node->children; child; child = child->next )
+            try
             {
-                if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
+                string id = getXmlNodeAttributeValue( node, "propertyDefinitionId" );
+
+                // Find the value nodes
+                vector< string > values;
+                for ( xmlNodePtr child = node->children; child; child = child->next )
                 {
-                    xmlChar* content = xmlNodeGetContent( child );
-                    values.push_back( string( ( char * ) content ) );
-                    xmlFree( content );
+                    if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
+                    {
+                        xmlChar* content = xmlNodeGetContent( child );
+                        values.push_back( string( ( char * ) content ) );
+                        xmlFree( content );
+                    }
+                }
+
+                map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
+                if ( it != objectType->getPropertiesTypes().end( ) )
+                {
+                    property.reset( new Property( it->second, values ) );
                 }
             }
-
-            map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
-            if ( it != objectType->getPropertiesTypes().end( ) )
+            catch ( const Exception& )
             {
-                property.reset( new Property( it->second, values ) );
+                // Ignore that non-property node
             }
-        }
-        catch ( const Exception& )
-        {
-            // Ignore that non-property node
         }
 
         return property;

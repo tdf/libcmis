@@ -132,65 +132,68 @@ namespace libcmis
 
     void ObjectType::initializeFromNode( xmlNodePtr typeNode )
     {
-        for ( xmlNodePtr child = typeNode->children; child; child = child->next )
+        if ( typeNode != NULL )
         {
-            xmlChar* content = xmlNodeGetContent( child );
-            if ( content != NULL )
+            for ( xmlNodePtr child = typeNode->children; child; child = child->next )
             {
-                string value( ( const char * ) content, xmlStrlen( content ) );
-                
-                if ( xmlStrEqual( child->name, BAD_CAST( "id" ) ) )
-                    m_id = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "localName" ) ) )
-                    m_localName = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "localNamespace" ) ) )
-                    m_localNamespace = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "displayName" ) ) )
-                    m_displayName = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "queryName" ) ) )
-                    m_queryName = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "description" ) ) )
-                    m_description = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "baseId" ) ) )
-                    m_baseTypeId = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "parentId" ) ) )
-                    m_parentTypeId = value;
-                else if ( xmlStrEqual( child->name, BAD_CAST( "creatable" ) ) )
-                    m_creatable = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "fileable" ) ) )
-                    m_fileable = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "queryable" ) ) )
-                    m_queryable = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "fulltextIndexed" ) ) )
-                    m_fulltextIndexed = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "includedInSupertypeQuery" ) ) )
-                    m_includedInSupertypeQuery = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "controllablePolicy" ) ) )
-                    m_controllablePolicy = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "controllableACL" ) ) )
-                    m_controllableAcl = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "versionable" ) ) )
-                    m_versionable = libcmis::parseBool( value );
-                else if ( xmlStrEqual( child->name, BAD_CAST( "contentStreamAllowed" ) ) )
+                xmlChar* content = xmlNodeGetContent( child );
+                if ( content != NULL )
                 {
-                    libcmis::ObjectType::ContentStreamAllowed streamAllowed = libcmis::ObjectType::Allowed;
-                    if ( value == "notallowed" )
-                        streamAllowed = libcmis::ObjectType::NotAllowed;
-                    else if ( value == "required" )
-                        streamAllowed = libcmis::ObjectType::Required;
+                    string value( ( const char * ) content, xmlStrlen( content ) );
+                    
+                    if ( xmlStrEqual( child->name, BAD_CAST( "id" ) ) )
+                        m_id = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "localName" ) ) )
+                        m_localName = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "localNamespace" ) ) )
+                        m_localNamespace = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "displayName" ) ) )
+                        m_displayName = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "queryName" ) ) )
+                        m_queryName = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "description" ) ) )
+                        m_description = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "baseId" ) ) )
+                        m_baseTypeId = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "parentId" ) ) )
+                        m_parentTypeId = value;
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "creatable" ) ) )
+                        m_creatable = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "fileable" ) ) )
+                        m_fileable = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "queryable" ) ) )
+                        m_queryable = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "fulltextIndexed" ) ) )
+                        m_fulltextIndexed = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "includedInSupertypeQuery" ) ) )
+                        m_includedInSupertypeQuery = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "controllablePolicy" ) ) )
+                        m_controllablePolicy = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "controllableACL" ) ) )
+                        m_controllableAcl = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "versionable" ) ) )
+                        m_versionable = libcmis::parseBool( value );
+                    else if ( xmlStrEqual( child->name, BAD_CAST( "contentStreamAllowed" ) ) )
+                    {
+                        libcmis::ObjectType::ContentStreamAllowed streamAllowed = libcmis::ObjectType::Allowed;
+                        if ( value == "notallowed" )
+                            streamAllowed = libcmis::ObjectType::NotAllowed;
+                        else if ( value == "required" )
+                            streamAllowed = libcmis::ObjectType::Required;
 
-                    m_contentStreamAllowed = streamAllowed;
-                }
-                else 
-                {
-                    libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );
-                    m_propertiesTypes[ type->getId() ] = type;
-                }
+                        m_contentStreamAllowed = streamAllowed;
+                    }
+                    else 
+                    {
+                        libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );
+                        m_propertiesTypes[ type->getId() ] = type;
+                    }
 
-                xmlFree( content );
+                    xmlFree( content );
+                }
             }
+            m_refreshTimestamp = time( NULL );
         }
-        m_refreshTimestamp = time( NULL );
     }
 
     void ObjectType::refresh( ) throw ( Exception )
