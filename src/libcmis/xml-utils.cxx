@@ -273,46 +273,58 @@ namespace libcmis
 
     void registerNamespaces( xmlXPathContextPtr xpathCtx )
     {
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "app" ), BAD_CAST( NS_APP_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "atom" ), BAD_CAST( NS_ATOM_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ), BAD_CAST( NS_CMIS_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), BAD_CAST( NS_CMISM_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
+        if ( xpathCtx != NULL )
+        {
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "app" ), BAD_CAST( NS_APP_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "atom" ), BAD_CAST( NS_ATOM_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ), BAD_CAST( NS_CMIS_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), BAD_CAST( NS_CMISM_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsi" ), BAD_CAST( "http://www.w3.org/2001/XMLSchema-instance" ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
+        }
     }
     
     void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx )
     {
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisw" ), BAD_CAST( NS_CMISW_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ), BAD_CAST( NS_CMIS_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), BAD_CAST( NS_CMISM_URL ) );
+        if ( xpathCtx != NULL )
+        {
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisw" ), BAD_CAST( NS_CMISW_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmis" ), BAD_CAST( NS_CMIS_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-        registerSoapNamespaces( xpathCtx );
+            registerSoapNamespaces( xpathCtx );
+        }
     }
     
     void registerSoapNamespaces( xmlXPathContextPtr xpathCtx )
     {
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap" ), BAD_CAST( NS_SOAP_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap-env" ), BAD_CAST( NS_SOAP_ENV_URL ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "wsdl" ), BAD_CAST ( "http://schemas.xmlsoap.org/wsdl/" ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "ns" ), BAD_CAST ( "http://schemas.xmlsoap.org/soap/encoding/" ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "jaxws" ), BAD_CAST( "http://java.sun.com/xml/ns/jaxws" ) );
-        xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsd" ), BAD_CAST ( "http://www.w3.org/2001/XMLSchema" ) );
+        if ( xpathCtx != NULL )
+        {
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap" ), BAD_CAST( NS_SOAP_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "soap-env" ), BAD_CAST( NS_SOAP_ENV_URL ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "wsdl" ), BAD_CAST ( "http://schemas.xmlsoap.org/wsdl/" ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "ns" ), BAD_CAST ( "http://schemas.xmlsoap.org/soap/encoding/" ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "jaxws" ), BAD_CAST( "http://java.sun.com/xml/ns/jaxws" ) );
+            xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsd" ), BAD_CAST ( "http://www.w3.org/2001/XMLSchema" ) );
+        }
     }
     
     string getXPathValue( xmlXPathContextPtr xpathCtx, string req )
     {
         string value;
-        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( req.c_str() ), xpathCtx );
-        if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
+        if ( xpathCtx != NULL )
         {
-            xmlChar* pContent = xmlNodeGetContent( xpathObj->nodesetval->nodeTab[0] );
-            value = string( ( char* )pContent );
-            xmlFree( pContent );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( req.c_str() ), xpathCtx );
+            if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
+            {
+                xmlChar* pContent = xmlNodeGetContent( xpathObj->nodesetval->nodeTab[0] );
+                value = string( ( char* )pContent );
+                xmlFree( pContent );
+            }
+            xmlXPathFreeObject( xpathObj );
         }
-        xmlXPathFreeObject( xpathObj );
 
         return value;
     }
@@ -320,9 +332,11 @@ namespace libcmis
     xmlDocPtr wrapInDoc( xmlNodePtr entryNd )
     {
         xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
-        xmlNodePtr entryCopy = xmlCopyNode( entryNd, 1 );
-
-        xmlDocSetRootElement( doc, entryCopy );
+        if ( entryNd != NULL )
+        {
+            xmlNodePtr entryCopy = xmlCopyNode( entryNd, 1 );
+            xmlDocSetRootElement( doc, entryCopy );
+        }
         return doc;
     }
 
