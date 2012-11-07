@@ -401,8 +401,8 @@ namespace dummies
         return created;
     }
 
-    vector< string > Folder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile,
-                            bool continueOnError ) throw ( libcmis::Exception )
+    vector< string > Folder::removeTree( bool, libcmis::UnfileObjects::Type,
+                            bool ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -449,7 +449,7 @@ namespace dummies
         return stream;
     }
 
-    void Document::setContentStream( boost::shared_ptr< ostream > os, string, string fileName, bool overwrite ) throw ( libcmis::Exception )
+    void Document::setContentStream( boost::shared_ptr< ostream > os, string, string, bool ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
