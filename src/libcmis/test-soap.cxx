@@ -98,7 +98,7 @@ class TestResponse : public SoapResponse
 
     public:
 
-        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
+        static SoapResponsePtr create( xmlNodePtr, RelatedMultipart&, SoapSession* )
         {
             SoapResponsePtr resp ( new TestResponse( ) );
             return resp;
@@ -108,14 +108,14 @@ class TestResponse : public SoapResponse
 class TestFaultDetail : public SoapFaultDetail
 {
     private:
-        TestFaultDetail( xmlNodePtr node ) : SoapFaultDetail( ) { };
+        TestFaultDetail( ) : SoapFaultDetail( ) { };
 
     public:
         ~TestFaultDetail( ) throw ( ) { };
 
-        static SoapFaultDetailPtr create( xmlNodePtr node )
+        static SoapFaultDetailPtr create( xmlNodePtr )
         {
-            return SoapFaultDetailPtr( new TestFaultDetail( node ) );
+            return SoapFaultDetailPtr( new TestFaultDetail( ) );
         }
 };
 

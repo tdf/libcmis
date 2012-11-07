@@ -88,8 +88,8 @@ AS_IF([test x"$enable_werror" != "xno"], [
 ])
 AS_IF([test x"$GCC" = xyes], [
 	# Be tough with warnings and produce less careless code
-	CFLAGS="$CFLAGS -Wall -pedantic -Wshadow -Wendif-labels -Wextra -Wsign-promo"
-	CXXFLAGS="$CXXFLAGS -Wall -pedantic -Weffc++ -Wshadow -Wendif-labels -Wextra -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor"
+	CFLAGS="$CFLAGS -Wall -pedantic -Wshadow -Wendif-labels -Wextra"
+	CXXFLAGS="$CXXFLAGS -Wall -pedantic -Weffc++ -Wshadow -Wendif-labels -Wextra -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo"
 ])
 
 # Check for curl

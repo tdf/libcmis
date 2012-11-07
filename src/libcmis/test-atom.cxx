@@ -202,7 +202,7 @@ class TestAuthProvider : public libcmis::AuthProvider
     public:
         TestAuthProvider( bool fail ) : m_fail( fail ) { }
 
-        bool authenticationQuery( std::string& username, std::string& password )
+        bool authenticationQuery( std::string&, std::string& password )
         {
             password = SERVER_PASSWORD;
             return !m_fail;
