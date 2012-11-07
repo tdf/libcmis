@@ -281,7 +281,7 @@ string SoapRequest::createEnvelope( string& username, string& password )
     boost::posix_time::ptime expires( created );
     expires = expires + boost::gregorian::days( 1 );
     string createdStr = libcmis::writeDateTime( created );
-    xmlChar* expiresStr = BAD_CAST( libcmis::writeDateTime( expires ).c_str( ) );
+    string expiresStr = libcmis::writeDateTime( expires );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
@@ -298,7 +298,7 @@ string SoapRequest::createEnvelope( string& username, string& password )
     xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Created
     xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Expires" ) );
-    xmlTextWriterWriteRaw( writer, expiresStr );
+    xmlTextWriterWriteRaw( writer, BAD_CAST( expiresStr.c_str( ) ) );
     xmlTextWriterEndElement( writer ); // End of Expires
     xmlTextWriterEndElement( writer ); // End of Timestamp
 
