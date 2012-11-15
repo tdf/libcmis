@@ -57,7 +57,12 @@ namespace libcmis
         {
             try
             {
-                switch ( getPropertyType( )->getType( ) )
+                // If no PropertyType was provided at construction time, use String
+                PropertyType::Type type = PropertyType::String;
+                if ( getPropertyType( ) != NULL )
+                    type = getPropertyType( )->getType( );
+
+                switch ( type )
                 {
                     case PropertyType::Integer:
                         m_longValues.push_back( parseInteger( *it ) );
@@ -86,26 +91,30 @@ namespace libcmis
 
     void Property::toXml( xmlTextWriterPtr writer )
     {
-        string xmlType = string( "cmis:property" ) + getPropertyType()->getXmlType( );
-        xmlTextWriterStartElement( writer, BAD_CAST( xmlType.c_str( ) ) );
-        
-        // Write the attributes
-        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "propertyDefinitionId" ),
-                "%s", BAD_CAST( getPropertyType()->getId( ).c_str( ) ) );
-        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "localName" ),
-                "%s", BAD_CAST( getPropertyType()->getLocalName( ).c_str( ) ) );
-        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "displayName" ),
-                "%s", BAD_CAST( getPropertyType()->getDisplayName( ).c_str( ) ) );
-        xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "queryName" ),
-                "%s", BAD_CAST( getPropertyType()->getQueryName( ).c_str( ) ) );
-        
-        // Write the values
-        for ( vector< string >::iterator it = m_strValues.begin( ); it != m_strValues.end( ); ++it )
+        // Don't write the property if we have no type for it.
+        if ( getPropertyType( ) != NULL )
         {
-            xmlTextWriterWriteElement( writer, BAD_CAST( "cmis:value" ), BAD_CAST( it->c_str( ) ) );
-        }
+            string xmlType = string( "cmis:property" ) + getPropertyType()->getXmlType( );
+            xmlTextWriterStartElement( writer, BAD_CAST( xmlType.c_str( ) ) );
+            
+            // Write the attributes
+            xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "propertyDefinitionId" ),
+                    "%s", BAD_CAST( getPropertyType()->getId( ).c_str( ) ) );
+            xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "localName" ),
+                    "%s", BAD_CAST( getPropertyType()->getLocalName( ).c_str( ) ) );
+            xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "displayName" ),
+                    "%s", BAD_CAST( getPropertyType()->getDisplayName( ).c_str( ) ) );
+            xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "queryName" ),
+                    "%s", BAD_CAST( getPropertyType()->getQueryName( ).c_str( ) ) );
+            
+            // Write the values
+            for ( vector< string >::iterator it = m_strValues.begin( ); it != m_strValues.end( ); ++it )
+            {
+                xmlTextWriterWriteElement( writer, BAD_CAST( "cmis:value" ), BAD_CAST( it->c_str( ) ) );
+            }
 
-        xmlTextWriterEndElement( writer );
+            xmlTextWriterEndElement( writer );
+        }
     }
     
     PropertyPtr parseProperty( xmlNodePtr node, ObjectTypePtr objectType )

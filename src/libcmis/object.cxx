@@ -276,7 +276,7 @@ namespace libcmis
             if ( !toSkip )
             {
                 libcmis::PropertyPtr prop = it->second;
-                if ( prop != NULL )
+                if ( prop != NULL && prop->getPropertyType( ) != NULL )
                 {
                     buf << prop->getPropertyType( )->getDisplayName( ) << "( " << prop->getPropertyType()->getId( ) << " ): " << endl;
                     vector< string > strValues = prop->getStrings( );
