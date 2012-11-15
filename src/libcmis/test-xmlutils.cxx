@@ -203,6 +203,12 @@ void XmlTest::parseDateTimeTest( )
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "+XX:XX time zone case failed", expected, t );
     }
+
+    // Error test
+    {
+        posix_time::ptime t = libcmis::parseDateTime( string( "Nothing interesting 9990" ) );
+        CPPUNIT_ASSERT_MESSAGE( "Error case failed", t.is_not_a_date_time( ) );
+    }
 }
 
 void XmlTest::parseBoolTest( )

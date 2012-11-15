@@ -391,16 +391,28 @@ namespace libcmis
             noTzStr.erase( pos, 1 );
             pos = noTzStr.find_first_of( ":-" );
         }
-        boost::posix_time::ptime t( boost::posix_time::from_iso_string( noTzStr.c_str( ) ) );
-        t = t + tzOffset;
+        boost::posix_time::ptime t( boost::date_time::not_a_date_time );
+        try
+        {
+            t = boost::posix_time::from_iso_string( noTzStr.c_str( ) );
+            t = t + tzOffset;
+        }
+        catch ( const std::exception& )
+        {
+            // Ignore boost parsing errors: will result in not_a_date_time
+        }
 
         return t;
     }
 
     string writeDateTime( boost::posix_time::ptime time )
     {
-        string str = boost::posix_time::to_iso_extended_string( time );
-        str += "Z";
+        string str;
+        if ( !time.is_special( ) )
+        {
+            str = boost::posix_time::to_iso_extended_string( time );
+            str += "Z";
+        }
         return str;
     }
 
