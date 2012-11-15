@@ -74,7 +74,11 @@ namespace libcmis
                         m_boolValues.push_back( parseBool( *it ) );
                         break;
                     case PropertyType::DateTime:
-                        m_dateTimeValues.push_back( parseDateTime( *it ) );
+                        {
+                            boost::posix_time::ptime time = parseDateTime( *it );
+                            if ( !time.is_not_a_date_time( ) )
+                                m_dateTimeValues.push_back( time );
+                        }
                         break;
                     default:
                     case PropertyType::String:
