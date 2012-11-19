@@ -185,24 +185,21 @@ libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::Pro
                 !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) ) )
         throw libcmis::Exception( string( "CreateDocument not allowed on folder " ) + getId() );
 
-    xmlBufferPtr buf = xmlBufferCreate( );
-    xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
+    stringstream ss;
+    xmlOutputBufferPtr buf = xmlOutputBufferCreateIO(libcmis::stringstream_write_callback, NULL, &ss, NULL);
+    xmlTextWriterPtr writer = xmlNewTextWriter(buf);
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     AtomObject::writeAtomEntry( writer, properties, os, contentType );
 
     xmlTextWriterEndDocument( writer );
-    string str( ( const char * )xmlBufferContent( buf ) );
-    istringstream is( str );
-
     xmlFreeTextWriter( writer );
-    xmlBufferFree( buf );
 
     libcmis::HttpResponsePtr response;
     try
     {
-        response = getSession( )->httpPostRequest( childrenLink->getHref( ), is, "application/atom+xml;type=entry" );
+        response = getSession( )->httpPostRequest( childrenLink->getHref( ), ss, "application/atom+xml;type=entry" );
     }
     catch ( const CurlException& e )
     {

@@ -284,7 +284,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     return response;
 }
 
-libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istringstream& is, string contentType ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, string contentType ) throw ( CurlException )
 {
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 

@@ -347,9 +347,9 @@ void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
     {
         xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:content" ) );
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( contentType.c_str() ) );
+        xmlTextWriterStartElement(writer, BAD_CAST( "cmisra:base64" ) );
 
-        ostringstream encodedStream;
-        libcmis::EncodedData encoder( &encodedStream );
+        libcmis::EncodedData encoder( writer );
         encoder.setEncoding( "base64" );
         istream is( os->rdbuf( ) );
         int bufLength = 1000;
@@ -362,7 +362,7 @@ void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
         } while ( !is.eof( ) && !is.fail( ) );
         delete[] buf;
         encoder.finish( );
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:base64" ), BAD_CAST( encodedStream.str().c_str() ) );
+        xmlTextWriterEndElement( writer ); // "cmisra:base64"
 
         xmlTextWriterEndElement( writer );
     }

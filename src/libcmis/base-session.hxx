@@ -134,7 +134,7 @@ class BaseSession : public libcmis::Session
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istream& is, std::string contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
         void httpRunRequest( std::string url ) throw ( CurlException );

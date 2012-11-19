@@ -36,6 +36,7 @@
 #include <boost/date_time.hpp>
 #include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
+#include <libxml/xmlwriter.h>
 
 #include "exception.hxx"
 
@@ -65,6 +66,7 @@ namespace libcmis
     class EncodedData
     {
         private:
+            xmlTextWriterPtr m_writer;
             FILE* m_stream;
             std::ostream* m_outStream;
 
@@ -78,6 +80,7 @@ namespace libcmis
             EncodedData( FILE* stream );
             EncodedData( std::ostream* stream );
             EncodedData( const EncodedData& rCopy );
+            EncodedData( xmlTextWriterPtr writer );
 
             EncodedData& operator=( const EncodedData& rCopy );
 
@@ -149,6 +152,8 @@ namespace libcmis
     std::string sha1( const std::string& str );
 
     std::string tolower( std::string sText );
+
+    int stringstream_write_callback(void * context, const char * s, int len);
 }
 
 #endif

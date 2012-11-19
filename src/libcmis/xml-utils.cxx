@@ -63,6 +63,7 @@ namespace
 namespace libcmis
 {
     EncodedData::EncodedData( FILE* stream ) :
+        m_writer( NULL ),
         m_stream( stream ),
         m_outStream( NULL ),
         m_encoding( ),
@@ -72,8 +73,9 @@ namespace libcmis
         m_missingBytes( 0 )
     {
     }
-    
+
     EncodedData::EncodedData( ostream* stream ) :
+        m_writer( NULL ),
         m_stream( NULL ),
         m_outStream( stream ),
         m_encoding( ),
@@ -84,7 +86,20 @@ namespace libcmis
     {
     }
 
+    EncodedData::EncodedData( xmlTextWriterPtr writer ) :
+        m_writer( writer ),
+        m_stream( NULL ),
+        m_outStream( NULL ),
+        m_encoding( ),
+        m_decode( false ),
+        m_pendingValue( 0 ),
+        m_pendingRank( 0 ),
+        m_missingBytes( 0 )
+    {
+    }
+
     EncodedData::EncodedData( const EncodedData& copy ) :
+        m_writer( copy.m_writer ),
         m_stream( copy.m_stream ),
         m_outStream( copy.m_outStream ),
         m_encoding( copy.m_encoding ),
@@ -99,6 +114,7 @@ namespace libcmis
     {
         if ( this != &copy )
         {
+            m_writer = copy.m_writer;
             m_stream = copy.m_stream;
             m_outStream = copy.m_outStream;
             m_encoding = copy.m_encoding;
@@ -112,7 +128,9 @@ namespace libcmis
 
     void EncodedData::write( void* buf, size_t size, size_t nmemb )
     {
-        if ( m_stream )
+        if ( m_writer )
+            xmlTextWriterWriteRawLen( m_writer, ( xmlChar* )buf, size * nmemb );
+        else if ( m_stream )
             fwrite( buf, size, nmemb, m_stream );
         else if ( m_outStream )
             m_outStream->write( ( const char* )buf, size * nmemb );
@@ -511,5 +529,16 @@ namespace libcmis
             lower[i] = ::tolower( sText[i] );
         }
         return lower;
+    }
+
+    int stringstream_write_callback( void * context, const char * s, int len )
+    {
+        stringstream * ss=static_cast< stringstream * >( context );
+        if ( ss )
+        {
+            ss->write( s, len );
+            return len;
+        }
+        return 0;
     }
 }
