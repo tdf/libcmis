@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = src qa
 ACLOCAL_AMFLAGS = -I m4
 
 libcmis-@LIBCMIS_API_VERSION@.pc: libcmis.pc

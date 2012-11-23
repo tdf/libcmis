@@ -144,6 +144,9 @@ AC_CONFIG_FILES([
 	src/Makefile
 	src/libcmis/Makefile
 	src/libcmis-c/Makefile
+    qa/Makefile
+    qa/libcmis/Makefile
+    qa/libcmis-c/Makefile
 ])
 AC_OUTPUT
 
