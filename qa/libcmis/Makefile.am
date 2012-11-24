@@ -15,7 +15,8 @@ if ENABLE_TESTS
 check_PROGRAMS = \
 	test-nosrv-utils \
 	test-atom \
-	test-ws
+	test-ws \
+	test-mockup
 
 test_nosrv_utils_SOURCES =	\
 	test-decoder.cxx \
@@ -58,6 +59,16 @@ test_ws_LDADD = \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
+test_mockup_SOURCES =	\
+	test-mockup.cxx \
+	test-main.cxx
+
+test_mockup_LDADD = \
+	$(top_builddir)/qa/libcmis-mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
 if ENABLE_LONG_TESTS
 long_tests = \
 	test-atom \
@@ -65,6 +76,6 @@ long_tests = \
 endif
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils ${long_tests}
+TESTS = test-nosrv-utils test-mockup ${long_tests}
 
 endif

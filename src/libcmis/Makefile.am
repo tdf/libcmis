@@ -15,8 +15,14 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	xml-utils.hxx \
 	xmlserializable.hxx
 
+noinst_LTLIBRARIES = libcmis.la
+
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
+
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
+	dummy.cxx
+
+libcmis_la_SOURCES = \
 	$(libcmis_headers_public) \
 	session-factory.cxx \
 	base-session.hxx \
@@ -70,6 +76,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 3:0:0
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
+	libcmis.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
