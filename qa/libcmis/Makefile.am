@@ -1,5 +1,3 @@
-AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS) -O0
-
 if ENABLE_TESTS
 #
 # Note that the test names are important here due to the environment test.
@@ -14,9 +12,9 @@ if ENABLE_TESTS
 #
 check_PROGRAMS = \
 	test-nosrv-utils \
+	test-nosrv-mockup \
 	test-atom \
-	test-ws \
-	test-mockup
+	test-ws
 
 test_nosrv_utils_SOURCES =	\
 	test-decoder.cxx \
@@ -26,10 +24,35 @@ test_nosrv_utils_SOURCES =	\
 	test-helpers.cxx \
 	test-main.cxx
 
+test_nosrv_utils_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0
+
 test_nosrv_utils_LDADD = \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+test_nosrv_mockup_SOURCES =	\
+	test-mockup.cxx \
+	test-main.cxx
+
+test_nosrv_mockup_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_builddir)/qa/libcmis-mockup \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0
+
+test_nosrv_mockup_LDADD = \
+	$(top_builddir)/qa/libcmis-mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
@@ -38,6 +61,13 @@ test_atom_SOURCES =	\
 	test-helpers.hxx \
 	test-helpers.cxx \
 	test-main.cxx
+
+test_atom_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0
 
 test_atom_LDADD = \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
@@ -52,20 +82,17 @@ test_ws_SOURCES =	\
 	test-helpers.cxx \
 	test-main.cxx
 
+test_ws_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0
+
 test_ws_LDADD = \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
-	$(CPPUNIT_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)
-
-test_mockup_SOURCES =	\
-	test-mockup.cxx \
-	test-main.cxx
-
-test_mockup_LDADD = \
-	$(top_builddir)/qa/libcmis-mockup/libcmis-mockup.la \
-	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
@@ -76,6 +103,6 @@ long_tests = \
 endif
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils test-mockup ${long_tests}
+TESTS = test-nosrv-utils test-nosrv-mockup ${long_tests}
 
 endif

@@ -26,35 +26,28 @@
  * instead of those above.
  */
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestAssert.h>
+#include <string>
 
-#define SERVER_URL string( "http://mockup/binding" )
-#define SERVER_USERNAME string( "tester" )
-#define SERVER_PASSWORD string( "somepass" )
+namespace mockup
+{
+    class Configuration
+    {
+        public:
+            Configuration( );
 
-#include <mockup-config.h>
-#include "atom-session.hxx"
+            std::string m_filepath;
+    };
+}
 
-using namespace std;
+typedef size_t ( *write_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
 
-class MockupTest : public CppUnit::TestFixture
+class CurlHandle
 {
     public:
-        void mockupTest( );
+        CurlHandle( );
 
-        CPPUNIT_TEST_SUITE( MockupTest );
-        CPPUNIT_TEST( mockupTest );
-        CPPUNIT_TEST_SUITE_END( );
+        write_callback m_writeFn;
+        void* m_writeData;
+       
+        void reset( ); 
 };
-
-CPPUNIT_TEST_SUITE_REGISTRATION( MockupTest );
-
-void MockupTest::mockupTest( )
-{
-    curl_mockup_setResponse( "data/atom-workspaces.xml" );
-
-    list< libcmis::RepositoryPtr > actual = AtomPubSession::getRepositories( SERVER_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
-}

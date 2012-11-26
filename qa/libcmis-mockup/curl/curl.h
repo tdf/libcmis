@@ -25,10 +25,14 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#ifndef _MOCKUP_CURL_CURL_H_
+#define _MOCKUP_CURL_CURL_H_
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+/* Curl used symbols to mockup */
 
 typedef void CURL;
 
@@ -125,4 +129,6 @@ CURLcode curl_easy_getinfo( CURL *curl, CURLINFO info, ... );
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

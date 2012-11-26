@@ -21,6 +21,7 @@ tags
 ChangeLog
 libcmis-*.*.*.tar.gz
 test-nosrv-utils
+test-nosrv-mockup
 test-atom
 test-ws
 test-api

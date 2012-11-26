@@ -26,9 +26,19 @@
  * instead of those above.
  */
 
+#include <stdarg.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "curl/curl.h"
+#include "internals.hxx"
+
+using namespace std;
+
+namespace mockup
+{
+    extern Configuration* config;
+}
 
 struct curl_slist *curl_slist_append( struct curl_slist *, const char * )
 {
@@ -53,17 +63,19 @@ CURLcode curl_global_init( long )
 
 CURL *curl_easy_init( void )
 {
-    return NULL;
+    return new CurlHandle();
 }
 
-void curl_easy_cleanup( CURL * )
+void curl_easy_cleanup( CURL * curl )
 {
+    CurlHandle* handle = ( CurlHandle* ) curl;
+    delete( handle );
 }
 
-CURLcode curl_easy_setopt( CURL *, CURLoption /*option*/, ... )
+void curl_easy_reset( CURL * curl )
 {
-    /* TODO Implement me */
-    return CURLE_OK;
+    CurlHandle* handle = ( CurlHandle * ) curl;
+    handle->reset( );
 }
 
 char *curl_easy_escape( CURL *, const char *string, int length )
@@ -81,17 +93,73 @@ char *curl_easy_unescape( CURL *, const char *string, int length, int * )
     return curl_unescape( string, length );
 }
 
-CURLcode curl_easy_perform( CURL * )
+CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
 {
+    CurlHandle* handle = ( CurlHandle * )curl;
+
+    va_list arg;
+    va_start( arg, option );
+    switch ( option )
+    {
+        /* TODO Add support for more options */
+        case CURLOPT_WRITEFUNCTION:
+        {
+            handle->m_writeFn = va_arg( arg, write_callback ); 
+            break;
+        }
+        case CURLOPT_WRITEDATA:
+        {
+            handle->m_writeData = va_arg( arg, void* );
+            break;
+        }
+        default:
+        {
+            // We surely don't want to break the test for that.
+            fprintf( stderr, "Unhandled CURL option: %d\n", option );
+        }
+    }
+    va_end( arg );
+
     return CURLE_OK;
 }
 
-void curl_easy_reset( CURL * )
+CURLcode curl_easy_perform( CURL * curl )
 {
+    CurlHandle* handle = ( CurlHandle * )curl;
+
+    FILE* fd = fopen( mockup::config->m_filepath.c_str( ), "r" );
+
+    size_t bufSize = 2046;
+    char* buf = new char[bufSize];
+
+    size_t read = 0;
+    size_t written = 0;
+    do
+    {
+        read = fread( buf, 1, bufSize, fd );
+        written = handle->m_writeFn( buf, 1, read, handle->m_writeData );
+    } while ( read == bufSize && written == read );
+
+    fclose( fd );
+    delete[] buf;
+
+    return CURLE_OK;
 }
 
 CURLcode curl_easy_getinfo( CURL *, CURLINFO /*info*/, ... )
 {
     /* TODO Implement me */
     return CURLE_OK;
+}
+
+CurlHandle::CurlHandle( ) :
+    m_writeFn( NULL ),
+    m_writeData( NULL )
+{
+}
+
+void CurlHandle::reset( )
+{
+    m_writeFn = NULL;
+    m_writeData = NULL;
 }

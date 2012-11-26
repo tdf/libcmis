@@ -1,3 +1,4 @@
+
 /* libcmis
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -26,35 +27,16 @@
  * instead of those above.
  */
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
-#include <cppunit/TestAssert.h>
+#ifdef  __cplusplus
+extern "C" {
+#endif
 
-#define SERVER_URL string( "http://mockup/binding" )
-#define SERVER_USERNAME string( "tester" )
-#define SERVER_PASSWORD string( "somepass" )
+/* Mockup behavior configuration functions */
 
-#include <mockup-config.h>
-#include "atom-session.hxx"
+/** Set the HTTP response the server is supposed to send.
+ */
+void curl_mockup_setResponse( const char* filepath );
 
-using namespace std;
-
-class MockupTest : public CppUnit::TestFixture
-{
-    public:
-        void mockupTest( );
-
-        CPPUNIT_TEST_SUITE( MockupTest );
-        CPPUNIT_TEST( mockupTest );
-        CPPUNIT_TEST_SUITE_END( );
-};
-
-CPPUNIT_TEST_SUITE_REGISTRATION( MockupTest );
-
-void MockupTest::mockupTest( )
-{
-    curl_mockup_setResponse( "data/atom-workspaces.xml" );
-
-    list< libcmis::RepositoryPtr > actual = AtomPubSession::getRepositories( SERVER_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
+#ifdef __cplusplus
 }
+#endif
