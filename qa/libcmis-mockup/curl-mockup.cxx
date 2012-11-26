@@ -115,7 +115,6 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         default:
         {
             // We surely don't want to break the test for that.
-            fprintf( stderr, "Unhandled CURL option: %d\n", option );
         }
     }
     va_end( arg );

@@ -39,7 +39,7 @@ test_nosrv_utils_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_nosrv_mockup_SOURCES =	\
-	test-mockup.cxx \
+	test-mock-atom.cxx \
 	test-main.cxx
 
 test_nosrv_mockup_CPPFLAGS = \
