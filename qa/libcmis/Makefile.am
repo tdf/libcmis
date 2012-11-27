@@ -44,14 +44,13 @@ test_nosrv_mockup_SOURCES =	\
 
 test_nosrv_mockup_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
-	-I$(top_builddir)/qa/libcmis-mockup \
+	-I$(top_builddir)/qa/mockup \
 	$(XML2_CFLAGS) \
-	$(CURL_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-O0
 
 test_nosrv_mockup_LDADD = \
-	$(top_builddir)/qa/libcmis-mockup/libcmis-mockup.la \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)

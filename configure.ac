@@ -145,7 +145,7 @@ AC_CONFIG_FILES([
 	src/libcmis/Makefile
 	src/libcmis-c/Makefile
     qa/Makefile
-    qa/libcmis-mockup/Makefile
+    qa/mockup/Makefile
     qa/libcmis/Makefile
     qa/libcmis-c/Makefile
 ])

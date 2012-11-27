@@ -1,1 +1,1 @@
-SUBDIRS = libcmis-mockup libcmis libcmis-c
+SUBDIRS = mockup libcmis libcmis-c
