@@ -112,6 +112,27 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
             handle->m_writeData = va_arg( arg, void* );
             break;
         }
+        case CURLOPT_USERNAME:
+        {
+            handle->m_username = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_PASSWORD:
+        {
+            handle->m_password = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_USERPWD:
+        {
+            string userpwd( va_arg( arg, char* ) );
+            size_t pos = userpwd.find( ':' );
+            if ( pos != string::npos )
+            {
+                handle->m_username = userpwd.substr( 0, pos );
+                handle->m_password = userpwd.substr( pos + 1 );
+            }
+            break;
+        }
         default:
         {
             // We surely don't want to break the test for that.
@@ -125,6 +146,16 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
 CURLcode curl_easy_perform( CURL * curl )
 {
     CurlHandle* handle = ( CurlHandle * )curl;
+
+    /* Check the credentials */
+    if ( mockup::config->hasCredentials( ) &&
+            ( handle->m_username != mockup::config->m_username ||
+              handle->m_password != mockup::config->m_password ) )
+    {
+        // Send HTTP 401
+        handle->m_httpError = 401;
+        return CURLE_HTTP_RETURNED_ERROR;
+    }
 
     FILE* fd = fopen( mockup::config->m_filepath.c_str( ), "r" );
 
@@ -145,16 +176,59 @@ CURLcode curl_easy_perform( CURL * curl )
     return CURLE_OK;
 }
 
-CURLcode curl_easy_getinfo( CURL *, CURLINFO /*info*/, ... )
+CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
 {
-    /* TODO Implement me */
+    CurlHandle* handle = ( CurlHandle * )curl;
+
+    va_list arg;
+    va_start( arg, info );
+    switch ( info )
+    {
+        case CURLINFO_RESPONSE_CODE:
+        {
+            long* buf = va_arg( arg, long* ); 
+            *buf = handle->m_httpError;
+            break;
+        }
+        default:
+        {
+            // We surely don't want to break the test for that.
+        }
+    }
+    va_end( arg );
+
     return CURLE_OK;
 }
 
 CurlHandle::CurlHandle( ) :
     m_writeFn( NULL ),
-    m_writeData( NULL )
+    m_writeData( NULL ),
+    m_username( ),
+    m_password( ),
+    m_httpError( 0 )
 {
+}
+
+CurlHandle::CurlHandle( const CurlHandle& copy ) :
+    m_writeFn( copy.m_writeFn ),
+    m_writeData( copy.m_writeData ),
+    m_username( copy.m_username ),
+    m_password( copy.m_password ),
+    m_httpError( copy.m_httpError )
+{
+}
+
+CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
+{
+    if ( this != &copy )
+    {
+        m_writeFn = copy.m_writeFn;
+        m_writeData = copy.m_writeData;
+        m_username = copy.m_username;
+        m_password = copy.m_password;
+        m_httpError = copy.m_httpError;
+    }
+    return *this;
 }
 
 void CurlHandle::reset( )

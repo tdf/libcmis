@@ -36,6 +36,7 @@ extern "C" {
 /** Set the HTTP response the server is supposed to send.
  */
 void curl_mockup_setResponse( const char* filepath );
+void curl_mockup_setCredentials( const char* username, const char* password );
 
 #ifdef __cplusplus
 }

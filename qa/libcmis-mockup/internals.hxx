@@ -35,7 +35,11 @@ namespace mockup
         public:
             Configuration( );
 
+            bool hasCredentials( );
+
             std::string m_filepath;
+            std::string m_username;
+            std::string m_password;
     };
 }
 
@@ -45,9 +49,16 @@ class CurlHandle
 {
     public:
         CurlHandle( );
+        CurlHandle( const CurlHandle& copy );
+        CurlHandle& operator=( const CurlHandle& copy );
 
         write_callback m_writeFn;
         void* m_writeData;
+
+        std::string m_username;
+        std::string m_password;
+
+        long m_httpError;
        
         void reset( ); 
 };

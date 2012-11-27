@@ -87,6 +87,7 @@ typedef enum
 typedef enum
 {
   CURLE_OK = 0,
+  CURLE_HTTP_RETURNED_ERROR = 22,
   /* TODO Add some more error codes from curl? */
   CURL_LAST
 } CURLcode;
