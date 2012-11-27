@@ -80,7 +80,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Generic sesssion factory tests
 
-        void getRepositoriesTest( );
         void sessionCreationTest( );
         void authCallbackTest( );
 
@@ -119,7 +118,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
@@ -150,13 +148,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getRepositoriesTest()
-{
-    list< libcmis::RepositoryPtr > repos = AtomPubSession::getRepositories( SERVER_ATOM_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "One repository should be found", SERVER_REPOSITORIES_COUNT, repos.size() );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, repos.front()->getId( ) );
-}
 
 void AtomTest::sessionCreationTest( )
 {
