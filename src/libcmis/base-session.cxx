@@ -144,20 +144,23 @@ BaseSession::BaseSession( const BaseSession& copy ) :
 
 BaseSession& BaseSession::operator=( const BaseSession& copy )
 {
-    m_authProvider = copy.m_authProvider;
-    m_curlHandle = NULL;
-    m_bindingUrl = copy.m_bindingUrl;
-    m_repositoryId = copy.m_repositoryId;
-    m_username = copy.m_username;
-    m_password = copy.m_password;
-    m_authProvided = copy.m_authProvided;
-    m_repositories = copy.m_repositories;
-    m_verbose = copy.m_verbose;
-    m_noHttpErrors = copy.m_noHttpErrors;
-    
-    // Not sure how sharing curl handles is safe.
-    curl_global_init( CURL_GLOBAL_ALL );
-    m_curlHandle = curl_easy_init( );
+    if ( this != &copy )
+    {
+        m_authProvider = copy.m_authProvider;
+        m_curlHandle = NULL;
+        m_bindingUrl = copy.m_bindingUrl;
+        m_repositoryId = copy.m_repositoryId;
+        m_username = copy.m_username;
+        m_password = copy.m_password;
+        m_authProvided = copy.m_authProvided;
+        m_repositories = copy.m_repositories;
+        m_verbose = copy.m_verbose;
+        m_noHttpErrors = copy.m_noHttpErrors;
+        
+        // Not sure how sharing curl handles is safe.
+        curl_global_init( CURL_GLOBAL_ALL );
+        m_curlHandle = curl_easy_init( );
+    }
 
     return *this;
 }
