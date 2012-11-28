@@ -79,8 +79,6 @@ class AtomTest : public CppUnit::TestFixture
     public:
 
         // Generic sesssion factory tests
-
-        void sessionCreationTest( );
         void authCallbackTest( );
 
         // Types fetching tests
@@ -118,7 +116,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
         CPPUNIT_TEST( getNormalTypeTest );
@@ -148,43 +145,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::sessionCreationTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
-
-    // Check for the mandatory collection URLs
-    CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
-            !session.getAtomRepository()->getCollectionUrl( Collection::Root ).empty() );
-    CPPUNIT_ASSERT_MESSAGE( "types collection URL missing",
-            !session.getAtomRepository()->getCollectionUrl( Collection::Types ).empty() );
-    CPPUNIT_ASSERT_MESSAGE( "query collection URL missing",
-            !session.getAtomRepository()->getCollectionUrl( Collection::Query ).empty() );
-
-    // The optional collection URLs are present on InMemory, so check them
-    CPPUNIT_ASSERT_MESSAGE( "checkedout collection URL missing",
-            !session.getAtomRepository()->getCollectionUrl( Collection::CheckedOut ).empty() );
-    CPPUNIT_ASSERT_MESSAGE( "unfiled collection URL missing",
-            !session.getAtomRepository()->getCollectionUrl( Collection::Unfiled ).empty() );
-
-    // Check for the mandatory URI template URLs
-    CPPUNIT_ASSERT_MESSAGE( "objectbyid URI template URL missing",
-            !session.getAtomRepository()->getUriTemplate( UriTemplate::ObjectById ).empty() );
-    CPPUNIT_ASSERT_MESSAGE( "objectbypath URI template URL missing",
-            !session.getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath ).empty() );
-    CPPUNIT_ASSERT_MESSAGE( "typebyid URI template URL missing",
-            !session.getAtomRepository()->getUriTemplate( UriTemplate::TypeById ).empty() );
-    
-    // The optional URI template URL is present on InMemory, so check it
-    CPPUNIT_ASSERT_MESSAGE( "query URI template URL missing",
-            !session.getAtomRepository()->getUriTemplate( UriTemplate::Query ).empty() );
-
-    // Check that the root id is defined
-    CPPUNIT_ASSERT_MESSAGE( "Root node ID is missing",
-            !session.getRootId().empty() );
-    CPPUNIT_ASSERT_MESSAGE( "Root folder isn't considering itself a root",
-            session.getRootFolder( )->isRootFolder() );
-}
 
 class TestAuthProvider : public libcmis::AuthProvider
 {
