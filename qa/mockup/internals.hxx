@@ -26,22 +26,8 @@
  * instead of those above.
  */
 
+#include <map>
 #include <string>
-
-namespace mockup
-{
-    class Configuration
-    {
-        public:
-            Configuration( );
-
-            bool hasCredentials( );
-
-            std::string m_filepath;
-            std::string m_username;
-            std::string m_password;
-    };
-}
 
 typedef size_t ( *write_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
 
@@ -51,6 +37,8 @@ class CurlHandle
         CurlHandle( );
         CurlHandle( const CurlHandle& copy );
         CurlHandle& operator=( const CurlHandle& copy );
+        
+        std::string m_url;
 
         write_callback m_writeFn;
         void* m_writeData;
@@ -62,3 +50,28 @@ class CurlHandle
        
         void reset( ); 
 };
+
+namespace mockup
+{
+    class Response
+    {
+        public:
+            Response( std::string filepath, std::string matchParam );
+
+            std::string m_filepath;
+            std::string m_matchParam;
+    };
+
+    class Configuration
+    {
+        public:
+            Configuration( );
+
+            bool hasCredentials( );
+            std::string getResponse( CurlHandle* handle );
+
+            std::map< std::string, Response > m_responses;
+            std::string m_username;
+            std::string m_password;
+    };
+}

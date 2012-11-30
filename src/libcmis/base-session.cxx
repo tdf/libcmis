@@ -141,6 +141,22 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_curlHandle = curl_easy_init( );
 }
 
+BaseSession::BaseSession( ) :
+    Session( ),
+    m_authProvider( ),
+    m_curlHandle( NULL ),
+    m_bindingUrl( ),
+    m_repositoryId( ),
+    m_username( ),
+    m_password( ),
+    m_authProvided( false ),
+    m_repositories( ),
+    m_verbose( false ),
+    m_noHttpErrors( false )
+{
+    curl_global_init( CURL_GLOBAL_ALL );
+    m_curlHandle = curl_easy_init( );
+}
 
 BaseSession& BaseSession::operator=( const BaseSession& copy )
 {

@@ -67,6 +67,11 @@ class AtomPubSession : public BaseSession
 
     private:
 
+        /** Defaults constructor shouldn't be used
+          */
+        AtomPubSession( ); 
+        void parseServiceDocument( const std::string& buf ) throw ( libcmis::Exception );
+
         void initialize( ) throw ( libcmis::Exception );
 };
 

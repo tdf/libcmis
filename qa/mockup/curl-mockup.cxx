@@ -102,6 +102,11 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
     switch ( option )
     {
         /* TODO Add support for more options */
+        case CURLOPT_URL:
+        {
+            handle->m_url = string( va_arg( arg, char* ) );
+            break;
+        }
         case CURLOPT_WRITEFUNCTION:
         {
             handle->m_writeFn = va_arg( arg, write_callback ); 
@@ -157,9 +162,14 @@ CURLcode curl_easy_perform( CURL * curl )
         return CURLE_HTTP_RETURNED_ERROR;
     }
 
-    FILE* fd = fopen( mockup::config->m_filepath.c_str( ), "r" );
+    string filepath = mockup::config->getResponse( handle );
+    if ( filepath.empty( ) && handle->m_httpError != 0 )
+    {
+        return CURLE_HTTP_RETURNED_ERROR;
+    }
+    FILE* fd = fopen( filepath.c_str( ), "r" );
 
-    size_t bufSize = 2046;
+    size_t bufSize = 2048;
     char* buf = new char[bufSize];
 
     size_t read = 0;
@@ -201,6 +211,7 @@ CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
 }
 
 CurlHandle::CurlHandle( ) :
+    m_url( ),
     m_writeFn( NULL ),
     m_writeData( NULL ),
     m_username( ),
@@ -210,6 +221,7 @@ CurlHandle::CurlHandle( ) :
 }
 
 CurlHandle::CurlHandle( const CurlHandle& copy ) :
+    m_url( copy.m_url ),
     m_writeFn( copy.m_writeFn ),
     m_writeData( copy.m_writeData ),
     m_username( copy.m_username ),
@@ -222,6 +234,7 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
 {
     if ( this != &copy )
     {
+        m_url = copy.m_url;
         m_writeFn = copy.m_writeFn;
         m_writeData = copy.m_writeData;
         m_username = copy.m_username;
@@ -233,6 +246,9 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
 
 void CurlHandle::reset( )
 {
+    m_url = string( );
     m_writeFn = NULL;
     m_writeData = NULL;
+    m_username = string( );
+    m_password = string( );
 }

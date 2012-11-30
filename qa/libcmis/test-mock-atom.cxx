@@ -35,6 +35,9 @@
 #define SERVER_USERNAME "tester"
 #define SERVER_PASSWORD "somepass"
 
+#define private public
+#define protected public
+
 #include <mockup-config.h>
 #include "atom-session.hxx"
 
@@ -47,13 +50,20 @@ class AtomTest : public CppUnit::TestFixture
         void getRepositoriesBadAuthTest( );
         void sessionCreationTest( );
         void sessionCreationBadAuthTest( );
+        void getTypeTest( );
+        void getObjectTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoriesBadAuthTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( sessionCreationBadAuthTest );
+        CPPUNIT_TEST( getTypeTest );
+        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
+
+        AtomPubSession getTestSession( string username = string( ), string password = string( ) );
+        void loadFromFile( const char* path, string& buf );
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
@@ -61,6 +71,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
 void AtomTest::getRepositoriesTest( )
 {
     // Response showing one mock repository
+    curl_mockup_reset( );
     curl_mockup_setResponse( "data/atom-workspaces.xml" );
 
     list< libcmis::RepositoryPtr > actual = AtomPubSession::getRepositories( SERVER_URL, SERVER_USERNAME, SERVER_PASSWORD );
@@ -71,6 +82,7 @@ void AtomTest::getRepositoriesTest( )
 void AtomTest::getRepositoriesBadAuthTest( )
 {
     // Response showing one mock repository
+    curl_mockup_reset( );
     curl_mockup_setResponse( "data/atom-workspaces.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
@@ -88,6 +100,7 @@ void AtomTest::getRepositoriesBadAuthTest( )
 void AtomTest::sessionCreationTest( )
 {
     // Response showing one mock repository
+    curl_mockup_reset( );
     curl_mockup_setResponse( "data/atom-workspaces.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
@@ -127,6 +140,7 @@ void AtomTest::sessionCreationTest( )
 void AtomTest::sessionCreationBadAuthTest( )
 {
     // Response showing one mock repository
+    curl_mockup_reset( );
     curl_mockup_setResponse( "data/atom-workspaces.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
@@ -139,4 +153,62 @@ void AtomTest::sessionCreationBadAuthTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "permissionDenied" ), e.getType( ) );
     }
+}
+
+void AtomTest::getTypeTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "cmis:folder" );
+    libcmis::ObjectTypePtr actual = session.getType( expectedId );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched type", expectedId, actual->getId( ) );
+}
+
+void AtomTest::getObjectTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "valid-object" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", expectedId, actual->getId( ) );
+}
+
+AtomPubSession AtomTest::getTestSession( string username, string password )
+{
+    AtomPubSession session;
+    string buf;
+    loadFromFile( "data/atom-workspaces.xml", buf );
+    session.parseServiceDocument( buf );
+    
+    session.m_username = username;
+    session.m_password = password;
+
+    return session;
+}
+
+void AtomTest::loadFromFile( const char* path, string& buf )
+{
+    ifstream in( path );
+
+    in.seekg( 0, ios::end );
+    int length = in.tellg( );
+    in.seekg( 0, ios::beg );
+
+    char* buffer = new char[length];
+    in.read( buffer, length );
+    in.close( );
+
+    buf = string( buffer, length );
+    delete[] buffer;
 }

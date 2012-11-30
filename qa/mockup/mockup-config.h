@@ -1,4 +1,3 @@
-
 /* libcmis
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -32,8 +31,11 @@ extern "C" {
 #endif
 
 /* Mockup behavior configuration functions */
+void curl_mockup_reset( );
+void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* filepath );
 
 /** Set the HTTP response the server is supposed to send.
+    This will reset all already defined responses.
  */
 void curl_mockup_setResponse( const char* filepath );
 void curl_mockup_setCredentials( const char* username, const char* password );

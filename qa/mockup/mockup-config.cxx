@@ -35,16 +35,14 @@ using namespace std;
 
 namespace mockup
 {
-#if 0
     Response::Response( string filepath, string matchParam ) :
         m_filepath( filepath ),
         m_matchParam( matchParam )
     {
     }
-#endif
 
     Configuration::Configuration( ) :
-        m_filepath( ),
+        m_responses( ),
         m_username( ),
         m_password( )
     {
@@ -55,9 +53,37 @@ namespace mockup
         return !m_username.empty( ) && !m_password.empty( );
     }
 
-    string Configuration::getResponse( const string& url )
+    string Configuration::getResponse( CurlHandle* handle )
     {
-        // TODO Search which one to use
+        string filepath;
+        const string& url = handle->m_url;
+
+        size_t pos = url.find( "?" );
+        string urlBase = url;
+        string params;
+        if ( pos != string::npos )
+        {
+            urlBase = url.substr( 0, pos );
+            params = url.substr( pos + 1 );
+        }
+
+        for ( map< string, Response >::iterator it = m_responses.begin( );
+                it != m_responses.end( ) && filepath.empty( ); ++it )
+        {
+            string& paramFind = it->second.m_matchParam;
+            bool matchBaseUrl = it->first.empty() || ( it->first.find( urlBase ) == 0 );
+            bool matchParams = paramFind.empty( ) || ( params.find( paramFind ) != string::npos );
+
+            if ( matchBaseUrl && matchParams )
+            {
+                filepath = it->second.m_filepath;
+            }
+            else if ( matchBaseUrl )
+            {
+                handle->m_httpError = 404;
+            }
+        }
+        return filepath;
     }
 
     Configuration* config = new Configuration( );
@@ -67,17 +93,20 @@ void curl_mockup_reset( )
 {
     if ( mockup::config != NULL )
         delete mockup::config;
-    mockup::config = new Configuration( );
+    mockup::config = new mockup::Configuration( );
 }
 
 void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* filepath )
 {
-    mockup::config->m_responses[ urlBase ] = mockup::Response( filepath, matchParam );
+    map< string, mockup::Response >::iterator it = mockup::config->m_responses.find( urlBase );
+    if ( it != mockup::config->m_responses.end( ) )
+        mockup::config->m_responses.erase( it );
+    mockup::config->m_responses.insert( pair< string, mockup::Response >( urlBase, mockup::Response( filepath, matchParam ) ) );
 }
 
 void curl_mockup_setResponse( const char* filepath )
 {
-    mockup::config->m_responses.clean( );
+    mockup::config->m_responses.clear( );
     curl_mockup_addResponse( "", "", filepath );
 }
 

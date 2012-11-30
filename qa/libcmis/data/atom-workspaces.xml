@@ -220,7 +220,7 @@
       <cmisra:mediatype>application/atom+xml;type=entry</cmisra:mediatype>
     </cmisra:uritemplate>
     <cmisra:uritemplate>
-      <cmisra:template>http://mockup//mock/path?path={path}&amp;filter={filter}&amp;includeAllowableActions={includeAllowableActions}&amp;includeACL={includeACL}&amp;includePolicyIds={includePolicyIds}&amp;includeRelationships={includeRelationships}&amp;renditionFilter={renditionFilter}</cmisra:template>
+      <cmisra:template>http://mockup/mock/path?path={path}&amp;filter={filter}&amp;includeAllowableActions={includeAllowableActions}&amp;includeACL={includeACL}&amp;includePolicyIds={includePolicyIds}&amp;includeRelationships={includeRelationships}&amp;renditionFilter={renditionFilter}</cmisra:template>
       <cmisra:type>objectbypath</cmisra:type>
       <cmisra:mediatype>application/atom+xml;type=entry</cmisra:mediatype>
     </cmisra:uritemplate>
