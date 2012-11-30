@@ -53,6 +53,11 @@ file_path=NEWS
 file_mime=`file --mime-type $file_path | cut -d ' ' -f 2`
 doc1_id=`cmis_client --object-type $versionable_type --input-file $file_path --input-type $file_mime create-document $test_folder_id doc_1 | grep '^Id:' | cut -d ' ' -f 2`
 
+# Checkout the document
+doc1_pwc=`cmis_client checkout $doc1_id | grep '^Id:' | cut -d ' ' -f 2`
+
+# TODO Checkin the document
+
 
 # Cleanup the test folder to remove all traces of the tests
 cmis_client delete $test_folder_id
