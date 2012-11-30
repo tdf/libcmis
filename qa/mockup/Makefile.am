@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libcmis-mockup.la
 
 libcmis_mockup_la_SOURCES = \
-	config.cxx \
+	mockup-config.cxx \
 	curl-mockup.cxx \
 	curl/curl.h \
 	internals.hxx
