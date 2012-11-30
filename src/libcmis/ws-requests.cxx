@@ -105,7 +105,7 @@ void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boo
     string content( buf, size );
     delete[ ] buf;
 
-    xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", content.size( ) );
+    xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", static_cast<long int>(content.size( )) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:mimeType" ), BAD_CAST( contentType.c_str( ) ) );
     if ( !filename.empty( ) )
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:filename" ), BAD_CAST( filename.c_str( ) ) );
