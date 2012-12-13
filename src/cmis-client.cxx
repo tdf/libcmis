@@ -639,14 +639,19 @@ void CmisClient::execute( ) throw ( exception )
             if ( cmisObj.get() )
             {
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                libcmis::DocumentPtr pwc = doc->checkOut( );
-                if ( pwc.get( ) )
+                if ( NULL != doc )
                 {
-                    cout << "------------------------------------------------" << endl;
-                    cout << pwc->toString() << endl;
+                    libcmis::DocumentPtr pwc = doc->checkOut( );
+                    if ( pwc.get( ) )
+                    {
+                        cout << "------------------------------------------------" << endl;
+                        cout << pwc->toString() << endl;
+                    }
+                    else
+                        cout << "No Private Working Copy returned?" << endl;
                 }
                 else
-                    cout << "No Private Working Copy returned?" << endl;
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
             }
             else
                 cout << "No such node: " << objIds.front() << endl;
@@ -668,8 +673,13 @@ void CmisClient::execute( ) throw ( exception )
             if ( cmisObj.get() )
             {
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( cmisObj.get() );
-                doc->cancelCheckout( );
-                cout << "Checkout cancelled" << endl;
+                if ( NULL != doc )
+                {
+                    doc->cancelCheckout( );
+                    cout << "Checkout cancelled" << endl;
+                }
+                else
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
             }
             else
                 cout << "No such node: " << objIds.front() << endl;
@@ -744,10 +754,15 @@ void CmisClient::execute( ) throw ( exception )
                     comment = m_vm["message"].as< string >( );
 
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
-                libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType, filename );
+                if ( NULL != doc )
+                {
+                    libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType, filename );
 
-                cout << "------------------------------------------------" << endl;
-                cout << newDoc->toString() << endl;
+                    cout << "------------------------------------------------" << endl;
+                    cout << newDoc->toString() << endl;
+                }
+                else
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
             }
             else
                 cout << "No such node: " << objIds.front() << endl;
@@ -768,14 +783,19 @@ void CmisClient::execute( ) throw ( exception )
             if ( object.get() )
             {
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
-                vector< libcmis::DocumentPtr > versions = doc->getAllVersions( );
-
-                for ( vector< libcmis::DocumentPtr >::iterator it = versions.begin( );
-                        it != versions.end( ); ++it )
+                if ( NULL != doc )
                 {
-                    cout << "------------------------------------------------" << endl;
-                    cout << ( *it )->toString() << endl;
+                    vector< libcmis::DocumentPtr > versions = doc->getAllVersions( );
+
+                    for ( vector< libcmis::DocumentPtr >::iterator it = versions.begin( );
+                            it != versions.end( ); ++it )
+                    {
+                        cout << "------------------------------------------------" << endl;
+                        cout << ( *it )->toString() << endl;
+                    }
                 }
+                else
+                    throw CommandException( string( "Not a document object id: " ) + objIds.front() );
             }
             else
                 cout << "No such node: " << objIds.front() << endl;
