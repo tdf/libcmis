@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <utility>
+
 #include "internals.hxx"
 #include "session.h"
 
@@ -33,6 +35,8 @@ using namespace std;
 
 namespace
 {
+    size_t const CRED_MAX_LEN = 1024;
+
     class WrapperAuthProvider : public libcmis::AuthProvider
     {
         private:
@@ -50,8 +54,25 @@ namespace
 
     bool WrapperAuthProvider::authenticationQuery( string& username, string& password )
     {
-        char* user = strdup( username.c_str( ) );
-        char* pass = strdup( password.c_str( ) );
+        /* NOTE: As I understand this, the callback is responsible for
+         * filling the correct username and password (possibly using
+         * the passed values as defaults in some dialog or so). But then
+         * there is no guarantee that the new username/password will
+         * not be longer than the present one, in which case it will
+         * not fit into the available space! For now, use a buffer size
+         * big enough for practical purposes.
+         *
+         * It might be a better idea to change the callback's signature
+         * to bool ( * )( char** username, char** password )
+         * and make it the callee's responsibility to reallocate the
+         * strings if it needs to.
+         */
+        char user[CRED_MAX_LEN];
+        strncpy(user, username.c_str( ), sizeof( user ) );
+        user[min( username.size( ), CRED_MAX_LEN )] = '\0';
+        char pass[CRED_MAX_LEN];
+        strncpy(pass, password.c_str( ), sizeof( pass ) );
+        pass[min( password.size( ), CRED_MAX_LEN )] = '\0';
 
         bool result = m_callback( user, pass );
 
@@ -61,9 +82,6 @@ namespace
 
         string newPass( pass );
         password.swap( newPass );
-
-        free( user );
-        free( pass );
 
         return result;
     }
