@@ -70,8 +70,9 @@ libcmis::ObjectPtr WSObject::updateProperties(
 void WSObject::refresh( ) throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object = m_session->getObject( getId( ) );
-    if ( object.get( ) != NULL )
-        *this = *dynamic_cast< WSObject* >( object.get( ) );
+    WSObject* const other = dynamic_cast< WSObject* >( object.get( ) );
+    if ( other != NULL )
+        *this = *other;
 }
 
 void WSObject::remove( bool allVersions ) throw ( libcmis::Exception )

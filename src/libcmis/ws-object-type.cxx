@@ -60,8 +60,9 @@ WSObjectType& WSObjectType::operator=( const WSObjectType& copy )
 void WSObjectType::refresh( ) throw ( libcmis::Exception )
 {
     libcmis::ObjectTypePtr type = m_session->getType( m_id );
-    if ( type.get( ) != NULL )
-        *this = *dynamic_cast< WSObjectType* >( type.get( ) );
+    WSObjectType* const other = dynamic_cast< WSObjectType* >( type.get( ) );
+    if ( other != NULL )
+        *this = *other;
 }
 
 libcmis::ObjectTypePtr WSObjectType::getParentType( ) throw ( libcmis::Exception )
