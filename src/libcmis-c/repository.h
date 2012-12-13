@@ -38,7 +38,7 @@ extern "C" {
 
 libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node );
 void libcmis_repository_free( libcmis_RepositoryPtr repository );
-void libcmis_repository_list_free( libcmis_RepositoryPtr* list );
+void libcmis_repository_list_free( libcmis_RepositoryPtr* list, long size );
 
 /** The resulting value needs to be freed.
   */
