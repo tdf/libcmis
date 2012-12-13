@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <string.h>
+
 #include "error.h"
 #include "internals.hxx"
 
@@ -45,6 +47,7 @@ void libcmis_error_free( libcmis_ErrorPtr error )
     {
         if ( error->handle != NULL )
             delete error->handle;
+        delete[] error->cached_type;
         delete error;
     }
 }
@@ -61,9 +64,20 @@ const char* libcmis_error_getType( libcmis_ErrorPtr error )
 {
     if ( error != NULL && error->handle != NULL )
     {
-        libcmis::Exception* cmisException = dynamic_cast< libcmis::Exception* >( error->handle );
-        if ( cmisException != NULL )
-            return cmisException->getType( ).c_str( );
+        if ( error->cached_type == NULL )
+        {
+            libcmis::Exception* cmisException = dynamic_cast< libcmis::Exception* >( error->handle );
+            if ( cmisException != NULL )
+            {
+                string const type = cmisException->getType( );
+                size_t const len = type.size( );
+                error->cached_type = new char[len + 1];
+                strncpy( error->cached_type, type.c_str( ), len );
+                error->cached_type[len] = '\0';
+            }
+
+            return error->cached_type;
+        }
         else return NULL;
     }
     else

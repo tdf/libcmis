@@ -42,8 +42,9 @@
 struct libcmis_error
 {
     std::exception* handle;
+    char* cached_type;
 
-    libcmis_error( ) : handle( NULL ) { }
+    libcmis_error( ) : handle( NULL ), cached_type( NULL ) { }
 };
 
 struct libcmis_session
