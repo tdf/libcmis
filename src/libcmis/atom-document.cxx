@@ -115,7 +115,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     }
     else
     {
-        throw new libcmis::Exception( "Failed to parse folder infos" );
+        throw libcmis::Exception( "Failed to parse folder infos" );
     }
     xmlFreeDoc( doc );
 
@@ -435,7 +435,7 @@ vector< libcmis::DocumentPtr > AtomDocument::getAllVersions( ) throw ( libcmis::
         }
         else
         {
-            throw new libcmis::Exception( "Failed to parse versions infos" );
+            throw libcmis::Exception( "Failed to parse versions infos" );
         }
         xmlFreeDoc( doc );
 

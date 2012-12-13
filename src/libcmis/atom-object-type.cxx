@@ -132,7 +132,7 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis:
     }
     else
     {
-        throw new libcmis::Exception( "Failed to parse type children infos" );
+        throw libcmis::Exception( "Failed to parse type children infos" );
     }
     xmlFreeDoc( doc );
 

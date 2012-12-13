@@ -118,7 +118,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
         }
         else
         {
-            throw new libcmis::Exception( "Failed to parse folder infos" );
+            throw libcmis::Exception( "Failed to parse folder infos" );
         }
         xmlFreeDoc( doc );
     }
