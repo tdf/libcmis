@@ -174,6 +174,7 @@ void libcmis_document_setContentStream(
             size_t bufSize = 2048;
             char* buf = new char[ bufSize ];
             size_t read = 0;
+            do
             {
                 read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
                 stream->write( buf, read );
@@ -287,6 +288,7 @@ libcmis_DocumentPtr libcmis_document_checkIn(
             size_t bufSize = 2048;
             char* buf = new char[ bufSize ];
             size_t read = 0;
+            do
             {
                 read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
                 stream->write( buf, read );
