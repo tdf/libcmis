@@ -303,7 +303,14 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
     if ( link )
         url = link->getHref( );
 
-    getSession( )->httpDeleteRequest( url );
+    try
+    {
+        getSession( )->httpDeleteRequest( url );
+    }
+    catch ( CurlException const& e )
+    {
+        throw e.getCmisException( );
+    }
 }
 
 libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
