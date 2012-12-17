@@ -12,7 +12,7 @@ function cmis_client ( )
     if test "z$REPO" != "z"; then
         repo_opt=" -r \"$REPO\""
     fi
-    src/cmis-client --url "$BINDING_URL" -u "$USER" -p "$PASS"$repo_opt $*
+    src/cmis-client --url "$BINDING_URL" -u "$USER" -p "$PASS"$repo_opt "$@"
 }
 
 function get_versionable_type ( )
