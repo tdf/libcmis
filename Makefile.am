@@ -13,7 +13,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 
 if WITH_LIBCMIS_MAN
 cmis-client.1: doc/cmis-client.xml
-	$(DOCBOOK2X) $<
+	$(DOCBOOK2MAN) $<
 
 install-man: cmis-client.1
 	mkdir -p $(DESTDIR)$(mandir)/man1/
