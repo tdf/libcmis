@@ -121,11 +121,32 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
             password = m_vm["password"].as< string >();
     }
 
+    // Look for proxy settings
+    string proxyUrl;
+    string proxyUser;
+    string proxyPass;
+    string noproxy;
+    if ( m_vm.count( "proxy" ) > 0 )
+    {
+        proxyUrl = m_vm["proxy"].as< string >();
+
+        if ( m_vm.count( "proxy-user" ) > 0 )
+            proxyUser = m_vm["proxy-user"].as< string >();
+        
+        if ( m_vm.count( "proxy-password" ) > 0 )
+            proxyPass = m_vm["proxy-password"].as< string >();
+
+        if ( m_vm.count( "noproxy" ) > 0 )
+            noproxy = m_vm["noproxy"].as< string >();
+
+        libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
+    }
 
     bool verbose = m_vm.count( "verbose" ) > 0;
 
     string repoId;
-    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory:: getRepositories( url, username, password, verbose );
+    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory::getRepositories(
+            url, username, password, verbose );
     if ( repositories.size( ) == 1 )
         repoId = repositories.front( )->getId( );
     else
@@ -169,10 +190,31 @@ void CmisClient::execute( ) throw ( exception )
                     password = m_vm["password"].as< string >();
             }
 
+            // Look for proxy settings
+            string proxyUrl;
+            string proxyUser;
+            string proxyPass;
+            string noproxy;
+            if ( m_vm.count( "proxy" ) > 0 )
+            {
+                proxyUrl = m_vm["proxy"].as< string >();
+
+                if ( m_vm.count( "proxy-user" ) > 0 )
+                    proxyUser = m_vm["proxy-user"].as< string >();
+                
+                if ( m_vm.count( "proxy-password" ) > 0 )
+                    proxyPass = m_vm["proxy-password"].as< string >();
+
+                if ( m_vm.count( "noproxy" ) > 0 )
+                    noproxy = m_vm["noproxy"].as< string >();
+
+                libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
+            }
 
             bool verbose = m_vm.count( "verbose" ) > 0;
 
-            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( url, username, password, verbose );
+            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
+                    url, username, password, verbose );
         
             cout << "Repositories: name (id)" << endl;
             for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
@@ -828,6 +870,11 @@ options_description CmisClient::getOptionsDescription( )
         ( "repository,r", value< string >(), "Name of the repository to use" )
         ( "username,u", value< string >(), "Username used to authenticate to the repository" )
         ( "password,p", value< string >(), "Password used to authenticate to the repository" )
+        ( "proxy", value< string >(), "HTTP proxy url to override the system settings" )
+        ( "noproxy", value< string >(), "Coma separated list if host and domain names not going"
+                                        "through the proxy" )
+        ( "proxy-username", value< string >(), "Username to authenticate on the proxy" )
+        ( "proxy-password", value< string >(), "Password to authenticate on the proxy" )
     ;
 
     options_description setcontentOpts( "modification operations options" );

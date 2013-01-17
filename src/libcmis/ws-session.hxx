@@ -52,7 +52,7 @@ class WSSession : public BaseSession, public SoapSession
     public:
         WSSession( std::string bindingUrl, std::string repositoryId,
                    std::string username, std::string password,
-                   bool verbose ) throw ( libcmis::Exception );
+                   bool verbose = false ) throw ( libcmis::Exception );
         WSSession( const WSSession& copy );
         ~WSSession( );
 

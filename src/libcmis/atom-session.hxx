@@ -39,7 +39,7 @@ class AtomPubSession : public BaseSession
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         std::string username, std::string password,
-                        bool verbose ) throw ( libcmis::Exception );
+                        bool verbose =false ) throw ( libcmis::Exception );
         AtomPubSession( const AtomPubSession& copy );
         ~AtomPubSession( );
 

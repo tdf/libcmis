@@ -34,6 +34,17 @@ extern "C" {
 
 #include "types.h"
 
+void libcmis_setProxySettings(
+        char* proxy,
+        char* noProxy,
+        char* proxyUser,
+        char* proxyPass );
+
+const char* libcmis_getProxy( );
+const char* libcmis_getNoProxy( );
+const char* libcmis_getProxyUser( );
+const char* libcmis_getProxyPass( );
+
 libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
         char* repositoryId,

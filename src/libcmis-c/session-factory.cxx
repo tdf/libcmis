@@ -37,6 +37,33 @@
 
 using namespace std;
 
+void libcmis_setProxySettings( char* proxy, char* noProxy,
+        char* proxyUser, char* proxyPass )
+{
+    libcmis::SessionFactory::setProxySettings( string( proxy ), string( noProxy ),
+            string( proxyUser ), string( proxyPass ) );
+}
+
+const char* libcmis_getProxy( )
+{
+    return libcmis::SessionFactory::getProxy( ).c_str();
+}
+
+const char* libcmis_getNoProxy( )
+{
+    return libcmis::SessionFactory::getNoProxy( ).c_str();
+}
+
+const char* libcmis_getProxyUser( )
+{
+    return libcmis::SessionFactory::getProxyUser( ).c_str();
+}
+
+const char* libcmis_getProxyPass( )
+{
+    return libcmis::SessionFactory::getProxyPass( ).c_str();
+}
+
 libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
         char* repositoryId,
@@ -49,7 +76,8 @@ libcmis_SessionPtr libcmis_createSession(
 
     try
     {
-        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username, password, repositoryId, verbose );
+        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username,
+                password, repositoryId, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }

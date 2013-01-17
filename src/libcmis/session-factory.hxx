@@ -40,7 +40,23 @@ namespace libcmis
 {
     class SessionFactory
     {
+        private:
+            static std::string s_proxy;
+            static std::string s_noProxy;
+            static std::string s_proxyUser;
+            static std::string s_proxyPass;
+
         public:
+
+            static void setProxySettings( std::string proxy,
+                    std::string noProxy,
+                    std::string proxyUser,
+                    std::string proxyPass );
+
+            static const std::string& getProxy() { return s_proxy; }
+            static const std::string& getNoProxy() { return s_noProxy; }
+            static const std::string& getProxyUser() { return s_proxyUser; }
+            static const std::string& getProxyPass() { return s_proxyPass; }
 
             /** Create a session from the given parameters. The binding type is automatically
                 detected based on the provided URL.

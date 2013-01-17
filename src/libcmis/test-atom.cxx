@@ -211,7 +211,7 @@ class TestAuthProvider : public libcmis::AuthProvider
 
 void AtomTest::authCallbackTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ), false);
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
 
     // Test cancelled authentication
     {
@@ -239,7 +239,7 @@ void AtomTest::authCallbackTest( )
 
 void AtomTest::getUnexistantTypeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     
     try
     {
@@ -254,7 +254,7 @@ void AtomTest::getUnexistantTypeTest( )
 
 void AtomTest::getNormalTypeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     
     libcmis::ObjectTypePtr type = session.getType( TEST_TYPE_ID );
 
@@ -265,7 +265,7 @@ void AtomTest::getNormalTypeTest( )
 
 void AtomTest::getTypeChildrenTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     
     libcmis::ObjectTypePtr type = session.getType( CHILDREN_TEST_TYPE_ID );
     vector< libcmis::ObjectTypePtr > children = type->getChildren( );
@@ -275,7 +275,7 @@ void AtomTest::getTypeChildrenTest( )
 
 void AtomTest::getUnexistantFolderTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     try
     {
@@ -290,7 +290,7 @@ void AtomTest::getUnexistantFolderTest( )
 
 void AtomTest::getUnexistantObjectTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     
     try
     {
@@ -305,7 +305,7 @@ void AtomTest::getUnexistantObjectTest( )
 
 void AtomTest::getFolderFromOtherNodeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getFolder( TEST_DOCUMENT_ID );
 
     CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: not a folder",
@@ -314,7 +314,7 @@ void AtomTest::getFolderFromOtherNodeTest( )
 
 void AtomTest::getFolderCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
 
     AtomFolder* atomFolder = dynamic_cast< AtomFolder* >( folder.get( ) );
@@ -336,7 +336,7 @@ void AtomTest::getFolderCreationFromUrlTest( )
 
 void AtomTest::getDocumentCreationFromUrlTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
 
     AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
@@ -359,7 +359,7 @@ void AtomTest::getDocumentCreationFromUrlTest( )
 
 void AtomTest::getByPathValidTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     try
     {
         libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_VALID );
@@ -376,7 +376,7 @@ void AtomTest::getByPathValidTest( )
 
 void AtomTest::getByPathInvalidTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     try
     {
         libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_INVALID );
@@ -391,7 +391,7 @@ void AtomTest::getByPathInvalidTest( )
         
 void AtomTest::getAllowableActionsTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
     boost::shared_ptr< libcmis::AllowableActions > toCheck = folder->getAllowableActions( );
@@ -405,7 +405,7 @@ void AtomTest::getAllowableActionsTest( )
 
 void AtomTest::getChildrenTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
     vector< libcmis::ObjectPtr > children = folder->getChildren( );
@@ -429,7 +429,7 @@ void AtomTest::getChildrenTest( )
 
 void AtomTest::getObjectParentsTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -445,7 +445,7 @@ void AtomTest::getObjectParentsTest( )
 
 void AtomTest::getContentStreamTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -467,7 +467,7 @@ void AtomTest::getContentStreamTest( )
 
 void AtomTest::setContentStreamTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -503,7 +503,7 @@ void AtomTest::setContentStreamTest( )
 
 void AtomTest::updatePropertiesTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // Values for the test
     libcmis::ObjectPtr object = session.getObject( "114" );
@@ -530,7 +530,7 @@ void AtomTest::updatePropertiesTest( )
 
 void AtomTest::createFolderTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
@@ -564,7 +564,7 @@ void AtomTest::createFolderTest( )
 
 void AtomTest::createFolderBadTypeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:document to trigger the exception
@@ -603,7 +603,7 @@ void AtomTest::createFolderBadTypeTest( )
 
 void AtomTest::createDocumentTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
@@ -647,7 +647,7 @@ void AtomTest::createDocumentTest( )
 
 void AtomTest::deleteDocumentTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     string id( "130" );
     libcmis::ObjectPtr object = session.getObject( id );
@@ -669,7 +669,7 @@ void AtomTest::deleteDocumentTest( )
 
 void AtomTest::deleteTreeTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     string id( "117" );
     libcmis::ObjectPtr object = session.getObject( id );
@@ -691,7 +691,7 @@ void AtomTest::deleteTreeTest( )
 
 void AtomTest::checkOutTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a document of type VersionableType
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkOutTest" );
@@ -709,7 +709,7 @@ void AtomTest::checkOutTest( )
 
 void AtomTest::cancelCheckOutTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "cancelCheckOutTest" );
@@ -734,7 +734,7 @@ void AtomTest::cancelCheckOutTest( )
 
 void AtomTest::checkInTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkInTest" );
@@ -770,7 +770,7 @@ void AtomTest::checkInTest( )
 
 void AtomTest::getAllVersionsTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "getAllVersionsTest" );
@@ -795,7 +795,7 @@ void AtomTest::getAllVersionsTest( )
 
 void AtomTest::moveTest( )
 {
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
     
     string id( "135" );
     libcmis::ObjectPtr object = session.getObject( id );

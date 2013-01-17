@@ -110,7 +110,7 @@ class BaseSession : public libcmis::Session
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
                         std::string username, std::string password,
-                        bool verbose ) throw ( libcmis::Exception );
+                        bool verbose = false ) throw ( libcmis::Exception );
         BaseSession( const BaseSession& copy );
         ~BaseSession( );
 
@@ -137,8 +137,6 @@ class BaseSession : public libcmis::Session
         libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istringstream& is, std::string contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
-        void httpRunRequest( std::string url ) throw ( CurlException );
-
         long getHttpStatus( );
 
         // Session methods
@@ -148,6 +146,8 @@ class BaseSession : public libcmis::Session
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
         virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
+    private:
+        void httpRunRequest( std::string url ) throw ( CurlException );
 };
 
 #endif

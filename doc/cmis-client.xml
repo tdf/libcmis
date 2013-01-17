@@ -213,6 +213,41 @@
 						</para>
           </listitem>
         </varlistentry>
+        <varlistentry>
+          <term>--proxy <replaceable class="parameter">url</replaceable></term>
+          <listitem>
+            <para>
+                Use <replaceable class="parameter">url</replaceable> as the HTTP proxy.
+                Setting this value will override the system proxy settings.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--proxy-username <replaceable class="parameter">login</replaceable></term>
+          <listitem>
+            <para>
+							Use <replaceable class="parameter">login</replaceable> to authenticate on the HTTP proxy.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--proxy-password <replaceable class="parameter">secret</replaceable></term>
+          <listitem>
+            <para>
+							Use <replaceable class="parameter">secret</replaceable> to authenticate on the HTTP proxy.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--noproxy <replaceable class="parameter">list</replaceable></term>
+          <listitem>
+            <para>
+                Proxy settings won't apply to hostnames and domain names listed 
+                in <replaceable class="parameter">list</replaceable>.
+                This value is a coma separated list.
+						</para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>
     <refsect2>
