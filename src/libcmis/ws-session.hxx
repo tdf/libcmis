@@ -52,7 +52,9 @@ class WSSession : public BaseSession, public SoapSession
     public:
         WSSession( std::string bindingUrl, std::string repositoryId,
                    std::string username, std::string password,
-                   bool verbose ) throw ( libcmis::Exception );
+                   std::string proxyUrl = std::string(), std::string proxyUser = std::string(),
+                   std::string proxyPass = std::string(), std::string noproxy = std::string(),
+                   bool verbose = false ) throw ( libcmis::Exception );
         WSSession( const WSSession& copy );
         ~WSSession( );
 
@@ -60,6 +62,8 @@ class WSSession : public BaseSession, public SoapSession
 
         static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
                         std::string username, std::string password,
+                        std::string proxyUrl = std::string(), std::string proxyUser = std::string(),
+                        std::string proxyPass = std::string(), std::string noproxy = std::string(),
                         bool verbose = false ) throw ( libcmis::Exception );
 
         // Utility methods

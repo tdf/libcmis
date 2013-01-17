@@ -51,11 +51,19 @@ namespace libcmis
                     std::string username = std::string( ),
                     std::string password = std::string( ),
                     std::string repositoryId = std::string( ),
+                    std::string proxyUrl = std::string(),
+                    std::string proxyUsername = std::string(),
+                    std::string proxyPassword = std::string(),
+                    std::string noproxy = std::string(),
                     bool verbose = false ) throw ( Exception );
 
             static std::list< RepositoryPtr > getRepositories( std::string bindingUrl,
                     std::string username = std::string( ),
                     std::string password = std::string( ),
+                    std::string proxyUrl = std::string(),
+                    std::string proxyUsername = std::string(),
+                    std::string proxyPassword = std::string(),
+                    std::string noproxy = std::string(),
                     bool verbose = false ) throw ( Exception );
     };
 }

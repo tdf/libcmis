@@ -136,19 +136,19 @@ void WSTest::getRepositoriesTest()
 
 void WSTest::sessionCreationTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD );
     CPPUNIT_ASSERT_MESSAGE( "No RepositoryService URL", !session.getServiceUrl( "RepositoryService" ).empty( ) );
 }
 
 void WSTest::getRepositoryTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Repository info badly retrieved", string( "100" ), session.getRepository()->getRootId( ) );
 }
 
 void WSTest::getRepositoryBadTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD );
     try
     {
         session.getRepositoryService( ).getRepositoryInfo( "bad" );
@@ -164,7 +164,7 @@ void WSTest::getRepositoryBadTest( )
 
 void WSTest::getTypeDefinitionTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     string id( "ComplexType" ); 
     libcmis::ObjectTypePtr actual = session.getType( id );
 
@@ -175,7 +175,7 @@ void WSTest::getTypeDefinitionTest( )
 
 void WSTest::getTypeDefinitionErrorTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     
     string id( "bad_type" );
     try
@@ -192,7 +192,7 @@ void WSTest::getTypeDefinitionErrorTest( )
 
 void WSTest::getTypeChildrenTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectTypePtr actual = session.getType( "cmis:document" );
 
     vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
@@ -202,7 +202,7 @@ void WSTest::getTypeChildrenTest( )
 
 void WSTest::getObjectTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     string id( "101" ); 
     libcmis::ObjectPtr actual = session.getObject( id );
 
@@ -217,7 +217,7 @@ void WSTest::getObjectTest( )
 
 void WSTest::getObjectDocumentTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     string id( "114" ); 
     libcmis::ObjectPtr actual = session.getObject( id );
 
@@ -232,7 +232,7 @@ void WSTest::getObjectDocumentTest( )
 
 void WSTest::getObjectParentsTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -248,7 +248,7 @@ void WSTest::getObjectParentsTest( )
 
 void WSTest::getChildrenTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr folder = session.getRootFolder( );
 
     vector< libcmis::ObjectPtr > children = folder->getChildren( );
@@ -270,7 +270,7 @@ void WSTest::getChildrenTest( )
 
 void WSTest::getByPathValidTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     try
     {
         libcmis::ObjectPtr object = session.getObjectByPath( "/My_Folder-0-0/My_Document-1-2" );
@@ -287,7 +287,7 @@ void WSTest::getByPathValidTest( )
 
 void WSTest::getByPathInvalidTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     try
     {
         libcmis::ObjectPtr object = session.getObjectByPath( "/some/dummy/path" );
@@ -302,7 +302,7 @@ void WSTest::getByPathInvalidTest( )
 
 void WSTest::updatePropertiesTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     
     // Values for the test
     libcmis::ObjectPtr object = session.getObject( "114" );
@@ -329,7 +329,7 @@ void WSTest::updatePropertiesTest( )
 
 void WSTest::createFolderTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
@@ -363,7 +363,7 @@ void WSTest::createFolderTest( )
 
 void WSTest::createFolderBadTypeTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:document to trigger the exception
@@ -401,7 +401,7 @@ void WSTest::createFolderBadTypeTest( )
 
 void WSTest::createDocumentTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
@@ -444,7 +444,7 @@ void WSTest::createDocumentTest( )
 
 void WSTest::deleteObjectTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     // Get the object to remove
     string id( "130" );
@@ -467,7 +467,7 @@ void WSTest::deleteObjectTest( )
 
 void WSTest::deleteTreeTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     string id( "117" );
     libcmis::ObjectPtr object = session.getObject( id );
@@ -489,7 +489,7 @@ void WSTest::deleteTreeTest( )
 
 void WSTest::moveTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     
     string id( "135" );
     libcmis::ObjectPtr object = session.getObject( id );
@@ -508,7 +508,7 @@ void WSTest::moveTest( )
 
 void WSTest::getContentStreamTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -532,7 +532,7 @@ void WSTest::getContentStreamTest( )
 
 void WSTest::setContentStreamTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
     
@@ -570,7 +570,7 @@ void WSTest::setContentStreamTest( )
 
 void WSTest::checkOutTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a document of type VersionableType
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkOutTest" );
@@ -588,7 +588,7 @@ void WSTest::checkOutTest( )
 
 void WSTest::cancelCheckOutTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "cancelCheckOutTest" );
@@ -613,7 +613,7 @@ void WSTest::cancelCheckOutTest( )
 
 void WSTest::checkInTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkInTest" );
@@ -649,7 +649,7 @@ void WSTest::checkInTest( )
 
 void WSTest::getAllVersionsTest( )
 {
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD, false );
+    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
 
     // First create a versionable document and check it out
     libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "getAllVersionsTest" );

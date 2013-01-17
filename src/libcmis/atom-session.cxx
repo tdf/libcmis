@@ -39,9 +39,9 @@
 
 using namespace std;
 
-AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId, 
-        string username, string password, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( atomPubUrl, repositoryId, username, password, verbose ),
+AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId, string username, string password,
+        string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( atomPubUrl, repositoryId, username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose ),
     m_repository( )
 {
     initialize( );
@@ -153,9 +153,10 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
     }
 }
 
-list< libcmis::RepositoryPtr > AtomPubSession::getRepositories( string url, string username, string password, bool verbose ) throw ( libcmis::Exception )
+list< libcmis::RepositoryPtr > AtomPubSession::getRepositories( string url, string username, string password,
+        string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( libcmis::Exception )
 {
-    AtomPubSession session( url, string(), username, password, verbose );
+    AtomPubSession session( url, string(), username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose );
     return session.m_repositories;
 }
 

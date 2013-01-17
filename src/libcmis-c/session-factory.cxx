@@ -42,6 +42,10 @@ libcmis_SessionPtr libcmis_createSession(
         char* repositoryId,
         char* username,
         char* password,
+        char* proxyUrl,
+        char* proxyUser,
+        char* proxyPass,
+        char* noproxy,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
@@ -49,7 +53,8 @@ libcmis_SessionPtr libcmis_createSession(
 
     try
     {
-        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username, password, repositoryId, verbose );
+        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username, password, repositoryId,
+                proxyUrl, proxyUser, proxyPass, noproxy, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }
@@ -67,6 +72,10 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
         char* bindingUrl,
         char* username,
         char* password,
+        char* proxyUrl,
+        char* proxyUser,
+        char* proxyPass,
+        char* noproxy,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
@@ -74,7 +83,7 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
     try
     {
         list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
-               bindingUrl, username, password, verbose );
+               bindingUrl, username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose );
 
         repositories = new libcmis_RepositoryPtr[ repos.size() ];
         list< libcmis::RepositoryPtr >::iterator it = repos.begin( );

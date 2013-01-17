@@ -104,7 +104,7 @@ void AtomTest::sessionCreationTest( )
     curl_mockup_setResponse( "data/atom-workspaces.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD, false );
+    AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
 
     // Check for the mandatory collection URLs
     CPPUNIT_ASSERT_MESSAGE( "root collection URL missing",
@@ -146,7 +146,7 @@ void AtomTest::sessionCreationBadAuthTest( )
 
     try
     {
-        AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, "bad", "bad", false );
+        AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, "bad", "bad" );
         CPPUNIT_FAIL( "Exception should have been thrown" );
     }
     catch ( const libcmis::Exception& e )

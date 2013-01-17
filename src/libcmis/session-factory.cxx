@@ -34,7 +34,9 @@ using namespace std;
 namespace libcmis
 {
     Session* SessionFactory::createSession( string bindingUrl, string username,
-            string password, string repository, bool verbose ) throw ( Exception )
+            string password, string repository,
+            string proxyUrl, string proxyUser, string proxyPass, string noproxy,
+            bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
         
@@ -42,7 +44,8 @@ namespace libcmis
         {
             try
             {
-                session = new AtomPubSession( bindingUrl, repository, username, password, verbose );
+                session = new AtomPubSession( bindingUrl, repository, username, password,
+                                              proxyUrl, proxyUser, proxyPass, noproxy, verbose );
             }
             catch ( const Exception& e )
             {
@@ -55,7 +58,8 @@ namespace libcmis
                 // We couldn't get an AtomSession, we may have an URL for the WebService binding
                 try
                 {
-                    session = new WSSession( bindingUrl, repository, username, password, verbose );
+                    session = new WSSession( bindingUrl, repository, username, password,
+                                             proxyUrl, proxyUser, proxyPass, noproxy, verbose );
                 }
                 catch ( const Exception& e )
                 {
@@ -68,8 +72,8 @@ namespace libcmis
         return session;
     }
 
-    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl, string username,
-            string password, bool verbose ) throw ( Exception )
+    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl, string username, string password,
+            string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( Exception )
     {
         list< RepositoryPtr > repos;
 
@@ -78,7 +82,8 @@ namespace libcmis
             bool tryNext = true;
             try
             {
-                repos = AtomPubSession::getRepositories( bindingUrl, username, password, verbose );
+                repos = AtomPubSession::getRepositories( bindingUrl, username, password,
+                                                         proxyUrl, proxyUser, proxyPass, noproxy, verbose );
                 tryNext = false;
             }
             catch ( const Exception& e )
@@ -92,7 +97,8 @@ namespace libcmis
                 // It didn't work with AtomSession, we may have an URL for the WebService binding
                 try
                 {
-                    repos = WSSession::getRepositories( bindingUrl, username, password, verbose );
+                    repos = WSSession::getRepositories( bindingUrl, username, password,
+                                                        proxyUrl, proxyUser, proxyPass, noproxy, verbose );
                 }
                 catch ( const Exception& e )
                 {

@@ -105,8 +105,9 @@ namespace
     }
 }
 
-BaseSession::BaseSession( string atomPubUrl, string repositoryId, 
-        string username, string password, bool verbose ) throw ( libcmis::Exception ) :
+BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username, string password,
+        string proxyUrl, string proxyUser, string proxyPass, string noproxy,
+        bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_authProvider( ),
     m_curlHandle( NULL ),
@@ -115,6 +116,10 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId,
     m_username( username ),
     m_password( password ),
     m_authProvided( false ),
+    m_proxyUrl( proxyUrl ),
+    m_proxyUser( proxyUser ),
+    m_proxyPass( proxyPass ),
+    m_noproxy( noproxy ),
     m_repositories( ),
     m_verbose( verbose ),
     m_noHttpErrors( false )
@@ -132,6 +137,10 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
+    m_proxyUrl( copy.m_proxyUrl ),
+    m_proxyUser( copy.m_proxyUser ),
+    m_proxyPass( copy.m_proxyPass ),
+    m_noproxy( copy.m_noproxy ),
     m_repositories( copy.m_repositories ),
     m_verbose( copy.m_verbose ),
     m_noHttpErrors( copy.m_noHttpErrors )
@@ -150,6 +159,10 @@ BaseSession::BaseSession( ) :
     m_username( ),
     m_password( ),
     m_authProvided( false ),
+    m_proxyUrl( ),
+    m_proxyUser( ),
+    m_proxyPass( ),
+    m_noproxy( ),
     m_repositories( ),
     m_verbose( false ),
     m_noHttpErrors( false )
@@ -377,6 +390,26 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
         string userpwd = m_username + ":" + m_password;
         curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
 #endif
+    }
+
+    // Set the proxy configuration if any
+    if ( !m_proxyUrl.empty() )
+    {
+        curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, m_proxyUrl.c_str() );
+#if LIBCURL_VERSION_VALUE >= 0x071904
+        curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, m_noproxy.c_str() );
+#endif
+        if ( !m_proxyUser.empty( ) && !m_proxyPass.empty( ) )
+        {
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY ); 
+#if LIBCURL_VERSION_VALUE >= 0X071901
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, m_proxyUser.c_str( ) );
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, m_proxyPass.c_str( ) );
+#else
+            string userpwd = m_proxyUser + ":" + m_proxyPass;
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, userpwd.c_str( ) );
+#endif
+        }
     }
 
     // Get some feedback when something wrong happens
