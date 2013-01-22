@@ -50,3 +50,6 @@
   * Session factory automatically detects which binding to use
   * C wrapper API
   * Unit tests are now split between quick ones and the ones needing a CMIS server
+
+0.3.1
+  * Added support for proxy configuration
