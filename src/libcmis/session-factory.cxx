@@ -33,9 +33,22 @@ using namespace std;
 
 namespace libcmis
 {
+    string SessionFactory::s_proxy;
+    string SessionFactory::s_noProxy;
+    string SessionFactory::s_proxyUser;
+    string SessionFactory::s_proxyPass;
+
+    void SessionFactory::setProxySettings( string proxy, string noProxy,
+            string proxyUser, string proxyPass )
+    {
+        SessionFactory::s_proxy = proxy;
+        SessionFactory::s_noProxy = noProxy;
+        SessionFactory::s_proxyUser = proxyUser;
+        SessionFactory::s_proxyPass = proxyPass;
+    }
+
     Session* SessionFactory::createSession( string bindingUrl, string username,
             string password, string repository,
-            string proxyUrl, string proxyUser, string proxyPass, string noproxy,
             bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
@@ -44,8 +57,7 @@ namespace libcmis
         {
             try
             {
-                session = new AtomPubSession( bindingUrl, repository, username, password,
-                                              proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+                session = new AtomPubSession( bindingUrl, repository, username, password, verbose );
             }
             catch ( const Exception& e )
             {
@@ -58,8 +70,7 @@ namespace libcmis
                 // We couldn't get an AtomSession, we may have an URL for the WebService binding
                 try
                 {
-                    session = new WSSession( bindingUrl, repository, username, password,
-                                             proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+                    session = new WSSession( bindingUrl, repository, username, password, verbose );
                 }
                 catch ( const Exception& e )
                 {
@@ -72,8 +83,8 @@ namespace libcmis
         return session;
     }
 
-    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl, string username, string password,
-            string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( Exception )
+    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl,
+            string username, string password, bool verbose ) throw ( Exception )
     {
         list< RepositoryPtr > repos;
 
@@ -82,8 +93,7 @@ namespace libcmis
             bool tryNext = true;
             try
             {
-                repos = AtomPubSession::getRepositories( bindingUrl, username, password,
-                                                         proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+                repos = AtomPubSession::getRepositories( bindingUrl, username, password, verbose );
                 tryNext = false;
             }
             catch ( const Exception& e )
@@ -97,8 +107,7 @@ namespace libcmis
                 // It didn't work with AtomSession, we may have an URL for the WebService binding
                 try
                 {
-                    repos = WSSession::getRepositories( bindingUrl, username, password,
-                                                        proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+                    repos = WSSession::getRepositories( bindingUrl, username, password, verbose );
                 }
                 catch ( const Exception& e )
                 {

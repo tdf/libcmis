@@ -39,8 +39,6 @@ class AtomPubSession : public BaseSession
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         std::string username, std::string password,
-                        std::string proxyUrl = std::string(), std::string proxyUser = std::string(),
-                        std::string proxyPass = std::string(), std::string noproxy = std::string(),
                         bool verbose =false ) throw ( libcmis::Exception );
         AtomPubSession( const AtomPubSession& copy );
         ~AtomPubSession( );
@@ -49,8 +47,6 @@ class AtomPubSession : public BaseSession
 
         static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
                         std::string username, std::string password,
-                        std::string proxyUrl = std::string(), std::string proxyUser = std::string(),
-                        std::string proxyPass = std::string(), std::string noproxy = std::string(),
                         bool verbose = false ) throw ( libcmis::Exception );
 
         AtomRepositoryPtr getAtomRepository( ) throw ( libcmis::Exception );

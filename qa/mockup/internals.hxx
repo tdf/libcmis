@@ -45,6 +45,10 @@ class CurlHandle
 
         std::string m_username;
         std::string m_password;
+        std::string m_proxy;
+        std::string m_noProxy;
+        std::string m_proxyUser;
+        std::string m_proxyPass;
 
         long m_httpError;
        

@@ -138,13 +138,15 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
 
         if ( m_vm.count( "noproxy" ) > 0 )
             noproxy = m_vm["noproxy"].as< string >();
+
+        libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
     }
 
     bool verbose = m_vm.count( "verbose" ) > 0;
 
     string repoId;
-    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory::getRepositories( url, username, password,
-            proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory::getRepositories(
+            url, username, password, verbose );
     if ( repositories.size( ) == 1 )
         repoId = repositories.front( )->getId( );
     else
@@ -156,8 +158,7 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
         repoId = m_vm["repository"].as< string >();
     }
 
-    return libcmis::SessionFactory::createSession( url, username, password, repoId,
-            proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+    return libcmis::SessionFactory::createSession( url, username, password, repoId, verbose );
 }
 
 void CmisClient::execute( ) throw ( exception )
@@ -206,12 +207,14 @@ void CmisClient::execute( ) throw ( exception )
 
                 if ( m_vm.count( "noproxy" ) > 0 )
                     noproxy = m_vm["noproxy"].as< string >();
+
+                libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
             }
 
             bool verbose = m_vm.count( "verbose" ) > 0;
 
-            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories( url, username, password,
-                    proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
+                    url, username, password, verbose );
         
             cout << "Repositories: name (id)" << endl;
             for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )

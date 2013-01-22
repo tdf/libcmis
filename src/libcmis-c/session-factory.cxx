@@ -37,15 +37,38 @@
 
 using namespace std;
 
+void libcmis_setProxySettings( char* proxy, char* noProxy,
+        char* proxyUser, char* proxyPass )
+{
+    libcmis::SessionFactory::setProxySettings( string( proxy ), string( noProxy ),
+            string( proxyUser ), string( proxyPass ) );
+}
+
+const char* libcmis_getProxy( )
+{
+    return libcmis::SessionFactory::getProxy( ).c_str();
+}
+
+const char* libcmis_getNoProxy( )
+{
+    return libcmis::SessionFactory::getNoProxy( ).c_str();
+}
+
+const char* libcmis_getProxyUser( )
+{
+    return libcmis::SessionFactory::getProxyUser( ).c_str();
+}
+
+const char* libcmis_getProxyPass( )
+{
+    return libcmis::SessionFactory::getProxyPass( ).c_str();
+}
+
 libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
         char* repositoryId,
         char* username,
         char* password,
-        char* proxyUrl,
-        char* proxyUser,
-        char* proxyPass,
-        char* noproxy,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
@@ -53,8 +76,8 @@ libcmis_SessionPtr libcmis_createSession(
 
     try
     {
-        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username, password, repositoryId,
-                proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username,
+                password, repositoryId, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }
@@ -72,10 +95,6 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
         char* bindingUrl,
         char* username,
         char* password,
-        char* proxyUrl,
-        char* proxyUser,
-        char* proxyPass,
-        char* noproxy,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
@@ -83,7 +102,7 @@ libcmis_RepositoryPtr* libcmis_getRepositories(
     try
     {
         list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
-               bindingUrl, username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+               bindingUrl, username, password, verbose );
 
         repositories = new libcmis_RepositoryPtr[ repos.size() ];
         list< libcmis::RepositoryPtr >::iterator it = repos.begin( );

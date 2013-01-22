@@ -40,6 +40,7 @@
 
 #include <mockup-config.h>
 #include "atom-session.hxx"
+#include "session-factory.hxx"
 
 using namespace std;
 
@@ -50,6 +51,7 @@ class AtomTest : public CppUnit::TestFixture
         void getRepositoriesBadAuthTest( );
         void sessionCreationTest( );
         void sessionCreationBadAuthTest( );
+        void sessionCreationProxyTest( );
         void getTypeTest( );
         void getObjectTest( );
 
@@ -58,6 +60,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getRepositoriesBadAuthTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( sessionCreationBadAuthTest );
+        CPPUNIT_TEST( sessionCreationProxyTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -153,6 +156,28 @@ void AtomTest::sessionCreationBadAuthTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "permissionDenied" ), e.getType( ) );
     }
+}
+
+void AtomTest::sessionCreationProxyTest( )
+{
+    // Response showing one mock repository
+    curl_mockup_reset( );
+    curl_mockup_setResponse( "data/atom-workspaces.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string proxy( "proxy" );
+    string noProxy( "noProxy" );
+    string proxyUser( "proxyUser" );
+    string proxyPass( "proxyPass" );
+
+    libcmis::SessionFactory::setProxySettings( proxy, noProxy, proxyUser, proxyPass );
+
+    AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy not set", proxy, string( curl_mockup_getProxy( session.m_curlHandle ) ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "NoProxy not set", noProxy, string( curl_mockup_getNoProxy( session.m_curlHandle ) ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy User not set", proxyUser, string( curl_mockup_getProxyUser( session.m_curlHandle ) ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy Pass not set", proxyPass, string( curl_mockup_getProxyPass( session.m_curlHandle ) ) );
 }
 
 void AtomTest::getTypeTest( )

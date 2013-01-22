@@ -138,6 +138,38 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
             }
             break;
         }
+        case CURLOPT_PROXY:
+        {
+            // FIXME curl does some more complex things with port and type
+            handle->m_proxy = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_NOPROXY:
+        {
+            handle->m_noProxy = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_PROXYUSERNAME:
+        {
+            handle->m_proxyUser = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_PROXYPASSWORD:
+        {
+            handle->m_proxyPass = string( va_arg( arg, char* ) );
+            break;
+        }
+        case CURLOPT_PROXYUSERPWD:
+        {
+            string userpwd( va_arg( arg, char* ) );
+            size_t pos = userpwd.find( ':' );
+            if ( pos != string::npos )
+            {
+                handle->m_proxyUser = userpwd.substr( 0, pos );
+                handle->m_proxyPass = userpwd.substr( pos + 1 );
+            }
+            break;
+        }
         default:
         {
             // We surely don't want to break the test for that.
@@ -216,6 +248,10 @@ CurlHandle::CurlHandle( ) :
     m_writeData( NULL ),
     m_username( ),
     m_password( ),
+    m_proxy( ),
+    m_noProxy( ),
+    m_proxyUser( ),
+    m_proxyPass( ),
     m_httpError( 0 )
 {
 }
@@ -226,6 +262,10 @@ CurlHandle::CurlHandle( const CurlHandle& copy ) :
     m_writeData( copy.m_writeData ),
     m_username( copy.m_username ),
     m_password( copy.m_password ),
+    m_proxy( copy.m_proxy ),
+    m_noProxy( copy.m_noProxy ),
+    m_proxyUser( copy.m_proxyUser ),
+    m_proxyPass( copy.m_proxyPass ),
     m_httpError( copy.m_httpError )
 {
 }

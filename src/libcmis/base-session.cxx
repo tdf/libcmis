@@ -33,6 +33,7 @@
 #include <libxml/xpath.h>
 
 #include "base-session.hxx"
+#include "session-factory.hxx"
 #include "xml-utils.hxx"
 
 using namespace std;
@@ -105,9 +106,8 @@ namespace
     }
 }
 
-BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username, string password,
-        string proxyUrl, string proxyUser, string proxyPass, string noproxy,
-        bool verbose ) throw ( libcmis::Exception ) :
+BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username,
+        string password, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_authProvider( ),
     m_curlHandle( NULL ),
@@ -116,10 +116,6 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId, string usernam
     m_username( username ),
     m_password( password ),
     m_authProvided( false ),
-    m_proxyUrl( proxyUrl ),
-    m_proxyUser( proxyUser ),
-    m_proxyPass( proxyPass ),
-    m_noproxy( noproxy ),
     m_repositories( ),
     m_verbose( verbose ),
     m_noHttpErrors( false )
@@ -137,10 +133,6 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
-    m_proxyUrl( copy.m_proxyUrl ),
-    m_proxyUser( copy.m_proxyUser ),
-    m_proxyPass( copy.m_proxyPass ),
-    m_noproxy( copy.m_noproxy ),
     m_repositories( copy.m_repositories ),
     m_verbose( copy.m_verbose ),
     m_noHttpErrors( copy.m_noHttpErrors )
@@ -159,10 +151,6 @@ BaseSession::BaseSession( ) :
     m_username( ),
     m_password( ),
     m_authProvided( false ),
-    m_proxyUrl( ),
-    m_proxyUser( ),
-    m_proxyPass( ),
-    m_noproxy( ),
     m_repositories( ),
     m_verbose( false ),
     m_noHttpErrors( false )
@@ -218,7 +206,7 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
         if ( pos != string::npos )
         {
             // Escape the URL by chunks
-#if LIBCURL_VERSION_VALUE >= 0x071504
+#if LIBCURL_VERSION_VALUE >= 0x070F04
             char* escaped = curl_easy_escape( m_curlHandle, value.c_str(), value.length() );
 #else
             char* escaped = curl_escape( value.c_str(), value.length() );
@@ -247,6 +235,9 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
 
 libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlException )
 {
+    // Reset the handle for the request
+    curl_easy_reset( m_curlHandle );
+
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
@@ -276,6 +267,9 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
 
 libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, vector< string > headers ) throw ( CurlException )
 {
+    // Reset the handle for the request
+    curl_easy_reset( m_curlHandle );
+
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
@@ -318,6 +312,9 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
 
 libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, string contentType ) throw ( CurlException )
 {
+    // Reset the handle for the request
+    curl_easy_reset( m_curlHandle );
+
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
@@ -360,6 +357,9 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
 
 void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
 {
+    // Reset the handle for the request
+    curl_easy_reset( m_curlHandle );
+
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
     httpRunRequest( url );
 }
@@ -383,7 +383,7 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
 
-#if LIBCURL_VERSION_VALUE >= 0x071901
+#if LIBCURL_VERSION_VALUE >= 0x071301
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, m_username.c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, m_password.c_str() );
 #else
@@ -393,20 +393,22 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     }
 
     // Set the proxy configuration if any
-    if ( !m_proxyUrl.empty() )
+    if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
-        curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, m_proxyUrl.c_str() );
-#if LIBCURL_VERSION_VALUE >= 0x071904
-        curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, m_noproxy.c_str() );
+        curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
+#if LIBCURL_VERSION_VALUE >= 0x071304
+        curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
 #endif
-        if ( !m_proxyUser.empty( ) && !m_proxyPass.empty( ) )
+        const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
+        const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
+        if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY ); 
-#if LIBCURL_VERSION_VALUE >= 0X071901
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, m_proxyUser.c_str( ) );
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, m_proxyPass.c_str( ) );
+#if LIBCURL_VERSION_VALUE >= 0X071301
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
+            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
 #else
-            string userpwd = m_proxyUser + ":" + m_proxyPass;
+            string userpwd = proxyUser + ":" + proxyPass;
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, userpwd.c_str( ) );
 #endif
         }
@@ -426,9 +428,6 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
     
-    // Reset the handle for the next request
-    curl_easy_reset( m_curlHandle );
-
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {

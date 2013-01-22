@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <curl/curl.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -39,6 +41,11 @@ void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const
  */
 void curl_mockup_setResponse( const char* filepath );
 void curl_mockup_setCredentials( const char* username, const char* password );
+
+const char* curl_mockup_getProxy( CURL* handle );
+const char* curl_mockup_getNoProxy( CURL* handle );
+const char* curl_mockup_getProxyUser( CURL* handle );
+const char* curl_mockup_getProxyPass( CURL* handle );
 
 #ifdef __cplusplus
 }

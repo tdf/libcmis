@@ -115,3 +115,35 @@ void curl_mockup_setCredentials( const char* username, const char* password )
     mockup::config->m_username = string( username );
     mockup::config->m_password = string( password );
 }
+
+const char* curl_mockup_getProxy( CURL* curl )
+{
+    CurlHandle* handle = ( CurlHandle * )curl;
+    if ( NULL != handle )
+        return handle->m_proxy.c_str();
+    return NULL;
+}
+
+const char* curl_mockup_getNoProxy( CURL* curl )
+{
+    CurlHandle* handle = ( CurlHandle * )curl;
+    if ( NULL != handle )
+        return handle->m_noProxy.c_str();
+    return NULL;
+}
+
+const char* curl_mockup_getProxyUser( CURL* curl )
+{
+    CurlHandle* handle = ( CurlHandle * )curl;
+    if ( NULL != handle )
+        return handle->m_proxyUser.c_str();
+    return NULL;
+}
+
+const char* curl_mockup_getProxyPass( CURL* curl )
+{
+    CurlHandle* handle = ( CurlHandle * )curl;
+    if ( NULL != handle )
+        return handle->m_proxyPass.c_str();
+    return NULL;
+}

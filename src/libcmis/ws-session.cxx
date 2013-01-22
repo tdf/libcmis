@@ -39,9 +39,9 @@
 
 using namespace std;
 
-WSSession::WSSession( string bindingUrl, string repositoryId, string username, string password,
-       string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( bindingUrl, repositoryId, username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose ),
+WSSession::WSSession( string bindingUrl, string repositoryId, string username,
+        string password, bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( bindingUrl, repositoryId, username, password, verbose ),
     m_servicesUrls( ),
     m_navigationService( NULL ),
     m_objectService( NULL ),
@@ -336,10 +336,10 @@ VersioningService& WSSession::getVersioningService( )
     return *m_versioningService;
 }
 
-list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username, string password,
-        string proxyUrl, string proxyUser, string proxyPass, string noproxy, bool verbose ) throw ( libcmis::Exception )
+list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username,
+        string password, bool verbose ) throw ( libcmis::Exception )
 {
-    WSSession session( url, string(), username, password, proxyUrl, proxyUser, proxyPass, noproxy, verbose );
+    WSSession session( url, string(), username, password, verbose );
     return session.m_repositories;
 }
 

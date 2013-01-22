@@ -101,10 +101,6 @@ class BaseSession : public libcmis::Session
         std::string m_username;
         std::string m_password;
         bool m_authProvided;
-        std::string m_proxyUrl;
-        std::string m_proxyUser;
-        std::string m_proxyPass;
-        std::string m_noproxy;
 
         std::list< libcmis::RepositoryPtr > m_repositories;
 
@@ -114,8 +110,6 @@ class BaseSession : public libcmis::Session
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
                         std::string username, std::string password,
-                        std::string proxyUrl = std::string(), std::string proxyUser = std::string(),
-                        std::string proxyPass = std::string(), std::string noproxy = std::string(),
                         bool verbose = false ) throw ( libcmis::Exception );
         BaseSession( const BaseSession& copy );
         ~BaseSession( );
@@ -143,8 +137,6 @@ class BaseSession : public libcmis::Session
         libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istream& is, std::string contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
-        void httpRunRequest( std::string url ) throw ( CurlException );
-
         long getHttpStatus( );
 
         // Session methods
@@ -157,6 +149,9 @@ class BaseSession : public libcmis::Session
 
     protected:
         BaseSession( );
+
+    private:
+        void httpRunRequest( std::string url ) throw ( CurlException );
 };
 
 #endif
