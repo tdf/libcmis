@@ -298,6 +298,18 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     {
         httpRunRequest( url );
         response->getData( )->finish();
+
+        /** If we had a HTTP 417 response, this is likely to be due to some 
+            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+            header. Try to disable this header and try again.
+          */
+        if ( getHttpStatus() == 417 )
+        {
+            headers_slist = curl_slist_append( headers_slist, "Expect:" );
+            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+            httpRunRequest( url );
+            response->getData( )->finish();
+        }
     }
     catch ( CurlException& e )
     {
@@ -343,6 +355,18 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
     {
         httpRunRequest( url );
         response->getData( )->finish();
+
+        /** If we had a HTTP 417 response, this is likely to be due to some 
+            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+            header. Try to disable this header and try again.
+          */
+        if ( getHttpStatus() == 417 )
+        {
+            headers_slist = curl_slist_append( headers_slist, "Expect:" );
+            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+            httpRunRequest( url );
+            response->getData( )->finish();
+        }
     }
     catch ( const CurlException& e )
     {
@@ -427,7 +451,7 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
-    
+
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
