@@ -94,6 +94,7 @@ class BaseSession : public libcmis::Session
         libcmis::AuthProviderPtr m_authProvider;
 
         CURL* m_curlHandle;
+        bool  m_no100Continue;
 
     protected:
         std::string m_bindingUrl;
