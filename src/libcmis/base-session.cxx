@@ -111,6 +111,7 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId, string usernam
     Session( ),
     m_authProvider( ),
     m_curlHandle( NULL ),
+    m_no100Continue( false ),
     m_bindingUrl( atomPubUrl ),
     m_repositoryId( repositoryId ),
     m_username( username ),
@@ -128,6 +129,7 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     Session( ),
     m_authProvider( copy.m_authProvider ),
     m_curlHandle( NULL ),
+    m_no100Continue( copy.m_no100Continue ),
     m_bindingUrl( copy.m_bindingUrl ),
     m_repositoryId( copy.m_repositoryId ),
     m_username( copy.m_username ),
@@ -146,6 +148,7 @@ BaseSession::BaseSession( ) :
     Session( ),
     m_authProvider( ),
     m_curlHandle( NULL ),
+    m_no100Continue( false ),
     m_bindingUrl( ),
     m_repositoryId( ),
     m_username( ),
@@ -165,6 +168,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
     {
         m_authProvider = copy.m_authProvider;
         m_curlHandle = NULL;
+        m_no100Continue = copy.m_no100Continue;
         m_bindingUrl = copy.m_bindingUrl;
         m_repositoryId = copy.m_repositoryId;
         m_username = copy.m_username;
@@ -292,6 +296,11 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     struct curl_slist *headers_slist = NULL;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
         headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+
+    // If we know for sure that 100-Continue won't be accepted,
+    // don't even try with it to save one HTTP request.
+    if ( m_no100Continue )
+        headers_slist = curl_slist_append( headers_slist, "Expect:" );
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
     try
@@ -309,6 +318,9 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
             curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
             httpRunRequest( url );
             response->getData( )->finish();
+
+            // Remember that we don't want 100-Continue for the future requests
+            m_no100Continue = true;
         }
     }
     catch ( CurlException& e )
@@ -349,6 +361,11 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
     struct curl_slist *headers_slist = NULL;
     string contentTypeHeader = string( "Content-Type:" ) + contentType;
     headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
+
+    // If we know for sure that 100-Continue won't be accepted,
+    // don't even try with it to save one HTTP request.
+    if ( m_no100Continue )
+        headers_slist = curl_slist_append( headers_slist, "Expect:" );
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
     try
@@ -366,6 +383,9 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
             curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
             httpRunRequest( url );
             response->getData( )->finish();
+
+            // Remember that we don't want 100-Continue for the future requests
+            m_no100Continue = true;
         }
     }
     catch ( const CurlException& e )
