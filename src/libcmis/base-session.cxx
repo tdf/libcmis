@@ -109,7 +109,6 @@ namespace
 BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username,
         string password, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
-    m_authProvider( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
     m_bindingUrl( atomPubUrl ),
@@ -127,7 +126,6 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId, string usernam
 
 BaseSession::BaseSession( const BaseSession& copy ) :
     Session( ),
-    m_authProvider( copy.m_authProvider ),
     m_curlHandle( NULL ),
     m_no100Continue( copy.m_no100Continue ),
     m_bindingUrl( copy.m_bindingUrl ),
@@ -146,7 +144,6 @@ BaseSession::BaseSession( const BaseSession& copy ) :
 
 BaseSession::BaseSession( ) :
     Session( ),
-    m_authProvider( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
     m_bindingUrl( ),
@@ -166,7 +163,6 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
 {
     if ( this != &copy )
     {
-        m_authProvider = copy.m_authProvider;
         m_curlHandle = NULL;
         m_no100Continue = copy.m_no100Continue;
         m_bindingUrl = copy.m_bindingUrl;
@@ -414,9 +410,10 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the credentials
-    if ( m_authProvider.get() && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
+    libcmis::AuthProviderPtr authProvider = libcmis::SessionFactory::getAuthenticationProvider();
+    if ( authProvider && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
     {
-        m_authProvided = m_authProvider->authenticationQuery( m_username, m_password );
+        m_authProvided = authProvider->authenticationQuery( m_username, m_password );
         if ( !m_authProvided )
         {
             throw CurlException( "User cancelled authentication request" );

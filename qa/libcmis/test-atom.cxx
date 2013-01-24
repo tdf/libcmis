@@ -78,9 +78,6 @@ class AtomTest : public CppUnit::TestFixture
 {
     public:
 
-        // Generic sesssion factory tests
-        void authCallbackTest( );
-
         // Types fetching tests
         void getUnexistantTypeTest( );
         void getNormalTypeTest( );
@@ -116,7 +113,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
         CPPUNIT_TEST( getNormalTypeTest );
         CPPUNIT_TEST( getTypeChildrenTest );
@@ -145,48 +141,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-class TestAuthProvider : public libcmis::AuthProvider
-{
-    bool m_fail;
-
-    public:
-        TestAuthProvider( bool fail ) : m_fail( fail ) { }
-
-        bool authenticationQuery( std::string&, std::string& password )
-        {
-            password = SERVER_PASSWORD;
-            return !m_fail;
-        }
-};
-
-void AtomTest::authCallbackTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
-
-    // Test cancelled authentication
-    {
-        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( true ) );
-        session.setAuthenticationProvider( authProvider );
-        try
-        {
-            session.getRootFolder( );
-            CPPUNIT_FAIL( "Should raise an exception saying the user cancelled the authentication" );
-        }
-        catch ( const libcmis::Exception& e )
-        {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                    string( "User cancelled authentication request" ), string( e.what() ) );
-        }
-    }
-    
-    // Test provided authentication
-    {
-        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( false ) );
-        session.setAuthenticationProvider( authProvider );
-        session.getRootFolder( );
-    }
-}
 
 void AtomTest::getUnexistantTypeTest( )
 {

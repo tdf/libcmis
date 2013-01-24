@@ -64,10 +64,6 @@ libcmis_ObjectTypePtr libcmis_session_getType(
         char* id,
         libcmis_ErrorPtr error );
 
-void libcmis_session_setAuthenticationCallback(
-        libcmis_SessionPtr session,
-        libcmis_authenticationCallback callback );
-
 #ifdef __cplusplus
 }
 #endif

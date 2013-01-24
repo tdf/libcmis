@@ -91,8 +91,6 @@ class CurlException : public std::exception
 class BaseSession : public libcmis::Session
 {
     private:
-        libcmis::AuthProviderPtr m_authProvider;
-
         CURL* m_curlHandle;
         bool  m_no100Continue;
 
@@ -145,8 +143,6 @@ class BaseSession : public libcmis::Session
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
         
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
-
-        virtual void setAuthenticationProvider( libcmis::AuthProviderPtr provider ) { m_authProvider = provider; }
 
     protected:
         BaseSession( );

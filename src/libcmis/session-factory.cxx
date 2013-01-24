@@ -33,6 +33,8 @@ using namespace std;
 
 namespace libcmis
 {
+    AuthProviderPtr SessionFactory::s_authProvider;
+
     string SessionFactory::s_proxy;
     string SessionFactory::s_noProxy;
     string SessionFactory::s_proxyUser;

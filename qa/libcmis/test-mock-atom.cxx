@@ -52,6 +52,7 @@ class AtomTest : public CppUnit::TestFixture
         void sessionCreationTest( );
         void sessionCreationBadAuthTest( );
         void sessionCreationProxyTest( );
+        void authCallbackTest( );
         void getTypeTest( );
         void getObjectTest( );
 
@@ -61,12 +62,27 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( sessionCreationBadAuthTest );
         CPPUNIT_TEST( sessionCreationProxyTest );
+        CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
         void loadFromFile( const char* path, string& buf );
+};
+
+class TestAuthProvider : public libcmis::AuthProvider
+{
+    bool m_fail;
+
+    public:
+        TestAuthProvider( bool fail ) : m_fail( fail ) { }
+
+        bool authenticationQuery( std::string&, std::string& password )
+        {
+            password = SERVER_PASSWORD;
+            return !m_fail;
+        }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
@@ -178,6 +194,38 @@ void AtomTest::sessionCreationProxyTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "NoProxy not set", noProxy, string( curl_mockup_getNoProxy( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy User not set", proxyUser, string( curl_mockup_getProxyUser( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy Pass not set", proxyPass, string( curl_mockup_getProxyPass( session.m_curlHandle ) ) );
+}
+
+void AtomTest::authCallbackTest( )
+{
+    // Response showing one mock repository
+    curl_mockup_reset( );
+    curl_mockup_setResponse( "data/atom-workspaces.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+
+    // Test cancelled authentication
+    {
+        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( true ) );
+        libcmis::SessionFactory::setAuthenticationProvider( authProvider );
+        try
+        {
+            AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
+            CPPUNIT_FAIL( "Should raise an exception saying the user cancelled the authentication" );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                    string( "User cancelled authentication request" ), string( e.what() ) );
+        }
+    }
+    
+    // Test provided authentication
+    {
+        libcmis::AuthProviderPtr authProvider( new TestAuthProvider( false ) );
+        libcmis::SessionFactory::setAuthenticationProvider( authProvider );
+        AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
+    }
 }
 
 void AtomTest::getTypeTest( )

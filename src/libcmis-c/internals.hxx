@@ -38,6 +38,7 @@
 #include <libcmis/property.hxx>
 #include <libcmis/repository.hxx>
 #include <libcmis/session.hxx>
+#include <libcmis/session-factory.hxx>
 
 struct libcmis_error
 {

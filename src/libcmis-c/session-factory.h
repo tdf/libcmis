@@ -34,6 +34,8 @@ extern "C" {
 
 #include "types.h"
 
+void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+
 void libcmis_setProxySettings(
         char* proxy,
         char* noProxy,

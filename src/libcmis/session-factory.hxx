@@ -38,15 +38,34 @@
 
 namespace libcmis
 {
+    class AuthProvider 
+    {
+        public:
+            virtual ~AuthProvider() { };
+
+            /** The function implementing it needs to fill the username and password parameters
+                and return true. Returning false means that the user cancelled the authentication
+                and will fail the query.
+              */
+            virtual bool authenticationQuery( std::string& username, std::string& password ) = 0;
+    };
+    typedef ::boost::shared_ptr< AuthProvider > AuthProviderPtr;
+
     class SessionFactory
     {
         private:
+
+            static AuthProviderPtr s_authProvider;
+
             static std::string s_proxy;
             static std::string s_noProxy;
             static std::string s_proxyUser;
             static std::string s_proxyPass;
 
         public:
+
+            static void setAuthenticationProvider( AuthProviderPtr provider ) { s_authProvider = provider; }
+            static AuthProviderPtr getAuthenticationProvider( ) { return s_authProvider; }
 
             static void setProxySettings( std::string proxy,
                     std::string noProxy,
