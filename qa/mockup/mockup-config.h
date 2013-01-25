@@ -34,7 +34,7 @@ extern "C" {
 
 /* Mockup behavior configuration functions */
 void curl_mockup_reset( );
-void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* filepath );
+void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* filepath, unsigned int status = 0 );
 
 /** Set the HTTP response the server is supposed to send.
     This will reset all already defined responses.

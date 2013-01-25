@@ -216,9 +216,9 @@
     </cmis:propertyDateTimeDefinition>
   </cmisra:type>
   <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
-  <atom:link rel="self" href="http://mockup/mock/type?id=cmis%3Afolder" type="application/atom+xml;type=entry" cmisra:id="cmis:folder"/>
-  <atom:link rel="enclosure" href="http://mockup/mock/type?id=cmis%3Afolder" type="application/atom+xml;type=entry"/>
-  <atom:link rel="down" href="http://mockup/mock/types?typeId=cmis%3Afolder" type="application/atom+xml;type=feed"/>
-  <atom:link rel="down" href="http://mockup/mock/typedesc?typeId=cmis%3Afolder" type="application/cmistree+xml"/>
-  <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis%3Afolder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="self" href="http://mockup/mock/type?id=cmis:folder" type="application/atom+xml;type=entry" cmisra:id="cmis:folder"/>
+  <atom:link rel="enclosure" href="http://mockup/mock/type?id=cmis:folder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="down" href="http://mockup/mock/types?typeId=cmis:folder" type="application/atom+xml;type=feed"/>
+  <atom:link rel="down" href="http://mockup/mock/typedesc?typeId=cmis:folder" type="application/cmistree+xml"/>
+  <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis:folder" type="application/atom+xml;type=entry"/>
 </atom:entry>

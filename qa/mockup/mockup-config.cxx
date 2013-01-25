@@ -35,10 +35,28 @@ using namespace std;
 
 namespace mockup
 {
-    Response::Response( string filepath, string matchParam ) :
+    Response::Response( string filepath, unsigned int status ) :
         m_filepath( filepath ),
+        m_status( status )
+    {
+    }
+
+    RequestMatcher::RequestMatcher( string baseUrl, string matchParam ) :
+        m_baseUrl( baseUrl ),
         m_matchParam( matchParam )
     {
+    }
+
+    bool RequestMatcher::operator< ( const RequestMatcher& compare ) const
+    {
+        int cmpBaseUrl = m_baseUrl.compare( compare.m_baseUrl ) ;
+        bool result = cmpBaseUrl;
+        if ( cmpBaseUrl == 0 )
+        {
+            int cmpMatchParam = m_matchParam.compare( compare.m_matchParam );
+            result = cmpMatchParam < 0;
+        }
+        return result;
     }
 
     Configuration::Configuration( ) :
@@ -67,16 +85,18 @@ namespace mockup
             params = url.substr( pos + 1 );
         }
 
-        for ( map< string, Response >::iterator it = m_responses.begin( );
+        for ( map< RequestMatcher, Response >::iterator it = m_responses.begin( );
                 it != m_responses.end( ) && filepath.empty( ); ++it )
         {
-            string& paramFind = it->second.m_matchParam;
-            bool matchBaseUrl = it->first.empty() || ( it->first.find( urlBase ) == 0 );
+            RequestMatcher matcher = it->first;
+            string& paramFind = matcher.m_matchParam;
+            bool matchBaseUrl = matcher.m_baseUrl.empty() || ( matcher.m_baseUrl.find( urlBase ) == 0 );
             bool matchParams = paramFind.empty( ) || ( params.find( paramFind ) != string::npos );
 
             if ( matchBaseUrl && matchParams )
             {
                 filepath = it->second.m_filepath;
+                handle->m_httpError = it->second.m_status;
             }
             else if ( matchBaseUrl )
             {
@@ -96,12 +116,13 @@ void curl_mockup_reset( )
     mockup::config = new mockup::Configuration( );
 }
 
-void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* filepath )
+void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* filepath, unsigned int status )
 {
-    map< string, mockup::Response >::iterator it = mockup::config->m_responses.find( urlBase );
+    mockup::RequestMatcher matcher( urlBase, matchParam );
+    map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
-    mockup::config->m_responses.insert( pair< string, mockup::Response >( urlBase, mockup::Response( filepath, matchParam ) ) );
+    mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, mockup::Response( filepath, status ) ) );
 }
 
 void curl_mockup_setResponse( const char* filepath )

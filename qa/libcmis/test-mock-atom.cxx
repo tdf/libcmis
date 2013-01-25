@@ -54,6 +54,9 @@ class AtomTest : public CppUnit::TestFixture
         void sessionCreationProxyTest( );
         void authCallbackTest( );
         void getTypeTest( );
+        void getUnexistantTypeTest( );
+        void getTypeParentsTest( );
+        void getTypeChildrenTest( );
         void getObjectTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
@@ -64,6 +67,9 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionCreationProxyTest );
         CPPUNIT_TEST( authCallbackTest );
         CPPUNIT_TEST( getTypeTest );
+        CPPUNIT_TEST( getUnexistantTypeTest );
+        CPPUNIT_TEST( getTypeParentsTest );
+        CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 
@@ -240,6 +246,57 @@ void AtomTest::getTypeTest( )
     libcmis::ObjectTypePtr actual = session.getType( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched type", expectedId, actual->getId( ) );
+}
+
+void AtomTest::getUnexistantTypeTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "bad_type" );
+    try
+    {
+        session.getType( expectedId );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such type: bad_type" ), string( e.what() ) );
+    }
+}
+
+void AtomTest::getTypeParentsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "data/atom-type-docLevel1.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "data/atom-type-document.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectTypePtr actual = session.getType( "DocumentLevel2" );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Parent type", string( "DocumentLevel1" ), actual->getParentType( )->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Base type", string( "cmis:document" ), actual->getBaseType( )->getId( ) );
+}
+
+void AtomTest::getTypeChildrenTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "data/atom-type-docLevel1.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "data/atom-type-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/types", "typeId=cmis:document", "data/atom-typechildren-document.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectTypePtr actual = session.getType( "cmis:document" );
+    vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 1 ), children.size( ) );
 }
 
 void AtomTest::getObjectTest( )

@@ -60,9 +60,19 @@ namespace mockup
     class Response
     {
         public:
-            Response( std::string filepath, std::string matchParam );
+            Response( std::string filepath, unsigned int status );
 
             std::string m_filepath;
+            unsigned int m_status;
+    };
+
+    class RequestMatcher
+    {
+        public:
+            RequestMatcher( std::string baseUrl, std::string matchParam );
+            bool operator< ( const RequestMatcher& compare ) const;
+
+            std::string m_baseUrl;
             std::string m_matchParam;
     };
 
@@ -74,7 +84,7 @@ namespace mockup
             bool hasCredentials( );
             std::string getResponse( CurlHandle* handle );
 
-            std::map< std::string, Response > m_responses;
+            std::map< RequestMatcher, Response > m_responses;
             std::string m_username;
             std::string m_password;
     };

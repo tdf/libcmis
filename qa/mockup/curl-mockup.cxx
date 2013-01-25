@@ -195,8 +195,10 @@ CURLcode curl_easy_perform( CURL * curl )
     }
 
     string filepath = mockup::config->getResponse( handle );
-    if ( filepath.empty( ) && handle->m_httpError != 0 )
+    if ( filepath.empty( ) || handle->m_httpError != 0 )
     {
+        if ( filepath.empty( ) )
+            handle->m_httpError = 404;
         return CURLE_HTTP_RETURNED_ERROR;
     }
     FILE* fd = fopen( filepath.c_str( ), "r" );
