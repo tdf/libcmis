@@ -58,6 +58,7 @@ class AtomTest : public CppUnit::TestFixture
         void getTypeParentsTest( );
         void getTypeChildrenTest( );
         void getObjectTest( );
+        void getUnexistantObjectTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -71,6 +72,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeParentsTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getUnexistantObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -200,6 +202,9 @@ void AtomTest::sessionCreationProxyTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "NoProxy not set", noProxy, string( curl_mockup_getNoProxy( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy User not set", proxyUser, string( curl_mockup_getProxyUser( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy Pass not set", proxyPass, string( curl_mockup_getProxyPass( session.m_curlHandle ) ) );
+    
+    // Reset proxy settings to default for next tests
+    libcmis::SessionFactory::setProxySettings( string(), string(), string(), string() );
 }
 
 void AtomTest::authCallbackTest( )
@@ -312,6 +317,25 @@ void AtomTest::getObjectTest( )
     libcmis::ObjectPtr actual = session.getObject( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", expectedId, actual->getId( ) );
+}
+
+void AtomTest::getUnexistantObjectTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string id( "bad_object" );
+    try
+    {
+        session.getObject( id );
+        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
+    }
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

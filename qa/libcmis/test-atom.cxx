@@ -71,8 +71,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node fetching tests
         void getFolderCreationFromUrlTest( );
-        void getUnexistantFolderTest( );
-        void getUnexistantObjectTest( );
         void getFolderFromOtherNodeTest( );
         void getDocumentCreationFromUrlTest( );
         void getByPathValidTest( );
@@ -100,8 +98,6 @@ class AtomTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getFolderCreationFromUrlTest );
-        CPPUNIT_TEST( getUnexistantFolderTest );
-        CPPUNIT_TEST( getUnexistantObjectTest );
         CPPUNIT_TEST( getFolderFromOtherNodeTest );
         CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getByPathValidTest );
@@ -124,36 +120,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getUnexistantFolderTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-
-    try
-    {
-        session.getFolder( TEST_UNEXISTANT_NODE_ID );
-        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 99" ), string( e.what() ) );
-    }
-}
-
-void AtomTest::getUnexistantObjectTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    
-    try
-    {
-        session.getObject( TEST_UNEXISTANT_NODE_ID );
-        CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: 99" ), string( e.what() ) );
-    }
-}
 
 void AtomTest::getFolderFromOtherNodeTest( )
 {

@@ -231,7 +231,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     catch ( const CurlException& e )
     {
         if ( ( e.getErrorCode( ) == CURLE_HTTP_RETURNED_ERROR ) &&
-             ( string::npos != e.getErrorMessage( ).find( "404" ) ) )
+             ( e.getHttpStatus( ) == 404 ) )
         {
             string msg = "No such node: ";
             msg += id;
