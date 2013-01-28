@@ -42,14 +42,7 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
-#define TEST_UNEXISTANT_NODE_ID string( "99" )
-
-#define TEST_FOLDER_ID string( "101" )
-#define TEST_FOLDER_NAME string( "My_Folder-0-0" )
-#define TEST_FOLDER_PATH string( "/My_Folder-0-0" )
-
 #define TEST_DOCUMENT_ID string( "116" )
-#define TEST_DOCUMENT_NAME string( "My_Document-1-2" )
 #define TEST_DOCUMENT_TYPE string( "text/plain" )
 #define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
 #define TEST_DOCUMENT_PARENTS_COUNT vector< libcmis::FolderPtr >::size_type( 1 )
@@ -59,19 +52,12 @@
 #define TEST_CHILDREN_DOCUMENT_COUNT 3
 #define TEST_CHILDREN_COUNT vector<libcmis::ObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
-#define TEST_PATH_VALID string( "/My_Folder-0-0/My_Document-1-2" )
-#define TEST_PATH_INVALID string( "/some/dummy/path" )
-
 using boost::shared_ptr;
 using namespace std;
 
 class AtomTest : public CppUnit::TestFixture
 {
     public:
-
-        // Node fetching tests
-        void getByPathValidTest( );
-        void getByPathInvalidTest( );
 
         // Node operations tests
 
@@ -94,8 +80,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getByPathValidTest );
-        CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getObjectParentsTest );
@@ -114,38 +98,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getByPathValidTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    try
-    {
-        libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_VALID );
-
-        CPPUNIT_ASSERT_MESSAGE( "Missing return object", object.get() );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
-    }
-}
-
-void AtomTest::getByPathInvalidTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    try
-    {
-        libcmis::ObjectPtr object = session.getObjectByPath( TEST_PATH_INVALID );
-        CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                string( "No node corresponding to path: /some/dummy/path" ), string( e.what() ) );
-    }
-}
         
 void AtomTest::getAllowableActionsTest( )
 {

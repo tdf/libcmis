@@ -63,6 +63,8 @@ class AtomTest : public CppUnit::TestFixture
         void getUnexistantObjectTest( );
         void getFolderTest( );
         void getFolderBadTypeTest( );
+        void getByPathValidTest( );
+        void getByPathInvalidTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -80,6 +82,8 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getUnexistantObjectTest );
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getFolderBadTypeTest );
+        CPPUNIT_TEST( getByPathValidTest );
+        CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -416,6 +420,40 @@ void AtomTest::getUnexistantObjectTest( )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
     }
+}
+
+void AtomTest::getByPathValidTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/path", "path=/Valid Object", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectPtr actual = session.getObjectByPath( string( "/Valid Object" ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", string( "valid-object" ), actual->getId( ) );
+}
+
+void AtomTest::getByPathInvalidTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    try
+    {
+        session.getObjectByPath( string( "/some/invalid/path" ) );
+        CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                string( "No node corresponding to path: /some/invalid/path" ), string( e.what() ) );
+    }
+
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )
