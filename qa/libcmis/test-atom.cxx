@@ -70,9 +70,6 @@ class AtomTest : public CppUnit::TestFixture
     public:
 
         // Node fetching tests
-        void getFolderCreationFromUrlTest( );
-        void getFolderFromOtherNodeTest( );
-        void getDocumentCreationFromUrlTest( );
         void getByPathValidTest( );
         void getByPathInvalidTest( );
 
@@ -97,9 +94,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getFolderCreationFromUrlTest );
-        CPPUNIT_TEST( getFolderFromOtherNodeTest );
-        CPPUNIT_TEST( getDocumentCreationFromUrlTest );
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getAllowableActionsTest );
@@ -120,60 +114,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getFolderFromOtherNodeTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr folder = session.getFolder( TEST_DOCUMENT_ID );
-
-    CPPUNIT_ASSERT_MESSAGE( "Nothing should be returned: not a folder",
-            NULL == folder.get( ) );
-}
-
-void AtomTest::getFolderCreationFromUrlTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr folder = session.getFolder( TEST_FOLDER_ID );
-
-    AtomFolder* atomFolder = dynamic_cast< AtomFolder* >( folder.get( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Created folder should be an instance of AtomFolder",
-            NULL != atomFolder );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", TEST_FOLDER_ID, folder->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", TEST_FOLDER_NAME, folder->getName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", TEST_FOLDER_PATH, folder->getPath( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), atomFolder->getBaseType( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", atomFolder->getFolderParent( ).get( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !atomFolder->isRootFolder() );
-
-    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomFolder->getCreatedBy( ).empty( ) );
-    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomFolder->getCreationDate( ).is_not_a_date_time() );
-    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !atomFolder->getLastModifiedBy( ).empty( ) );
-    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !atomFolder->getLastModificationDate( ).is_not_a_date_time() );
-    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !atomFolder->getChangeToken( ).empty( ) );
-}
-
-void AtomTest::getDocumentCreationFromUrlTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
-
-    AtomDocument* atomDocument = dynamic_cast< AtomDocument* >( object.get( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of AtomDocument",
-            NULL != atomDocument );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", TEST_DOCUMENT_ID, atomDocument->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", TEST_DOCUMENT_NAME, atomDocument->getName( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", TEST_DOCUMENT_TYPE, atomDocument->getContentType( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), atomDocument->getBaseType( ) );
-
-    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !atomDocument->getCreatedBy( ).empty( ) );
-    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !atomDocument->getCreationDate( ).is_not_a_date_time() );
-    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !atomDocument->getLastModifiedBy( ).empty( ) );
-    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !atomDocument->getLastModificationDate( ).is_not_a_date_time() );
-    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !atomDocument->getChangeToken( ).empty( ) );
-
-    // Don't test the exact value... the content is changing at each restart of the InMemory server
-    CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 0 < atomDocument->getContentLength( ) );
-}
 
 void AtomTest::getByPathValidTest( )
 {

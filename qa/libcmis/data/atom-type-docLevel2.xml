@@ -391,6 +391,277 @@
       <cmis:orderable>true</cmis:orderable>
       <cmis:openChoice>false</cmis:openChoice>
     </cmis:propertyDateTimeDefinition>
+    <cmis:propertyHtmlDefinition>
+      <cmis:id>HtmlProp</cmis:id>
+      <cmis:localName>HtmlProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Html Property</cmis:displayName>
+      <cmis:queryName>HtmlProp</cmis:queryName>
+      <cmis:description>This is a Sample Html Property property.</cmis:description>
+      <cmis:propertyType>html</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyHtmlDefinition>
+    <cmis:propertyIdDefinition>
+      <cmis:id>IdProp</cmis:id>
+      <cmis:localName>IdProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Id Property</cmis:displayName>
+      <cmis:queryName>IdProp</cmis:queryName>
+      <cmis:description>This is a Sample Id Property property.</cmis:description>
+      <cmis:propertyType>id</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyIdDefinition>
+    <cmis:propertyDateTimeDefinition>
+      <cmis:id>DateTimePropMV</cmis:id>
+      <cmis:localName>DateTimePropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample DateTime multi-value Property</cmis:displayName>
+      <cmis:queryName>DateTimePropMV</cmis:queryName>
+      <cmis:description>This is a Sample DateTime multi-value Property property.</cmis:description>
+      <cmis:propertyType>datetime</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyDateTimeDefinition>
+    <cmis:propertyUriDefinition>
+      <cmis:id>UriProp</cmis:id>
+      <cmis:localName>UriProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Uri Property</cmis:displayName>
+      <cmis:queryName>UriProp</cmis:queryName>
+      <cmis:description>This is a Sample Uri Property property.</cmis:description>
+      <cmis:propertyType>uri</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyUriDefinition>
+    <cmis:propertyDecimalDefinition>
+      <cmis:id>DecimalProp</cmis:id>
+      <cmis:localName>DecimalProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Decimal Property</cmis:displayName>
+      <cmis:queryName>DecimalProp</cmis:queryName>
+      <cmis:description>This is a Sample Decimal Property property.</cmis:description>
+      <cmis:propertyType>decimal</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyDecimalDefinition>
+    <cmis:propertyUriDefinition>
+      <cmis:id>UriPropMV</cmis:id>
+      <cmis:localName>UriPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Uri multi-value Property</cmis:displayName>
+      <cmis:queryName>UriPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Uri multi-value Property property.</cmis:description>
+      <cmis:propertyType>uri</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyUriDefinition>
+    <cmis:propertyIdDefinition>
+      <cmis:id>IdPropMV</cmis:id>
+      <cmis:localName>IdPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Id Html multi-value Property</cmis:displayName>
+      <cmis:queryName>IdPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Id Html multi-value Property property.</cmis:description>
+      <cmis:propertyType>id</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyIdDefinition>
+    <cmis:propertyStringDefinition>
+      <cmis:id>PickListProp</cmis:id>
+      <cmis:localName>PickListProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Pick List Property</cmis:displayName>
+      <cmis:queryName>PickListProp</cmis:queryName>
+      <cmis:description>This is a Sample Pick List Property property.</cmis:description>
+      <cmis:propertyType>string</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+      <cmis:defaultValue propertyDefinitionId="PickListProp">
+        <cmis:value>blue</cmis:value>
+      </cmis:defaultValue>
+      <cmis:choice displayName="">
+        <cmis:value>red</cmis:value>
+      </cmis:choice>
+      <cmis:choice displayName="">
+        <cmis:value>green</cmis:value>
+      </cmis:choice>
+      <cmis:choice displayName="">
+        <cmis:value>blue</cmis:value>
+      </cmis:choice>
+      <cmis:choice displayName="">
+        <cmis:value>black</cmis:value>
+      </cmis:choice>
+    </cmis:propertyStringDefinition>
+    <cmis:propertyIntegerDefinition>
+      <cmis:id>IntProp</cmis:id>
+      <cmis:localName>IntProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Int Property</cmis:displayName>
+      <cmis:queryName>IntProp</cmis:queryName>
+      <cmis:description>This is a Sample Int Property property.</cmis:description>
+      <cmis:propertyType>integer</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyIntegerDefinition>
+    <cmis:propertyHtmlDefinition>
+      <cmis:id>HtmlPropMV</cmis:id>
+      <cmis:localName>HtmlPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Html multi-value Property</cmis:displayName>
+      <cmis:queryName>HtmlPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Html multi-value Property property.</cmis:description>
+      <cmis:propertyType>html</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyHtmlDefinition>
+    <cmis:propertyStringDefinition>
+      <cmis:id>StringProp</cmis:id>
+      <cmis:localName>StringProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample String Property</cmis:displayName>
+      <cmis:queryName>StringProp</cmis:queryName>
+      <cmis:description>This is a Sample String Property property.</cmis:description>
+      <cmis:propertyType>string</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyStringDefinition>
+    <cmis:propertyDecimalDefinition>
+      <cmis:id>DecimalPropMV</cmis:id>
+      <cmis:localName>DecimalPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Decimal multi-value Property</cmis:displayName>
+      <cmis:queryName>DecimalPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Decimal multi-value Property property.</cmis:description>
+      <cmis:propertyType>decimal</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyDecimalDefinition>
+    <cmis:propertyDateTimeDefinition>
+      <cmis:id>DateTimeProp</cmis:id>
+      <cmis:localName>DateTimeProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample DateTime Property</cmis:displayName>
+      <cmis:queryName>DateTimeProp</cmis:queryName>
+      <cmis:description>This is a Sample DateTime Property property.</cmis:description>
+      <cmis:propertyType>datetime</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyDateTimeDefinition>
+    <cmis:propertyBooleanDefinition>
+      <cmis:id>BooleanProp</cmis:id>
+      <cmis:localName>BooleanProp</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Boolean Property</cmis:displayName>
+      <cmis:queryName>BooleanProp</cmis:queryName>
+      <cmis:description>This is a Sample Boolean Property property.</cmis:description>
+      <cmis:propertyType>boolean</cmis:propertyType>
+      <cmis:cardinality>single</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyBooleanDefinition>
+    <cmis:propertyBooleanDefinition>
+      <cmis:id>BooleanPropMV</cmis:id>
+      <cmis:localName>BooleanPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Boolean multi-value Property</cmis:displayName>
+      <cmis:queryName>BooleanPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Boolean multi-value Property property.</cmis:description>
+      <cmis:propertyType>boolean</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyBooleanDefinition>
+    <cmis:propertyIntegerDefinition>
+      <cmis:id>IntPropMV</cmis:id>
+      <cmis:localName>IntPropMV</cmis:localName>
+      <cmis:localNamespace>local</cmis:localNamespace>
+      <cmis:displayName>Sample Int multi-value Property</cmis:displayName>
+      <cmis:queryName>IntPropMV</cmis:queryName>
+      <cmis:description>This is a Sample Int multi-value Property property.</cmis:description>
+      <cmis:propertyType>integer</cmis:propertyType>
+      <cmis:cardinality>multi</cmis:cardinality>
+      <cmis:updatability>readwrite</cmis:updatability>
+      <cmis:inherited>false</cmis:inherited>
+      <cmis:required>false</cmis:required>
+      <cmis:queryable>true</cmis:queryable>
+      <cmis:orderable>true</cmis:orderable>
+      <cmis:openChoice>false</cmis:openChoice>
+    </cmis:propertyIntegerDefinition>
     <cmis:versionable>false</cmis:versionable>
     <cmis:contentStreamAllowed>allowed</cmis:contentStreamAllowed>
   </cmisra:type>

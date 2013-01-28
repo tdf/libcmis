@@ -41,6 +41,7 @@
 #include <mockup-config.h>
 #include "atom-session.hxx"
 #include "session-factory.hxx"
+#include "document.hxx"
 
 using namespace std;
 
@@ -58,7 +59,10 @@ class AtomTest : public CppUnit::TestFixture
         void getTypeParentsTest( );
         void getTypeChildrenTest( );
         void getObjectTest( );
+        void getDocumentTest( );
         void getUnexistantObjectTest( );
+        void getFolderTest( );
+        void getFolderBadTypeTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -72,7 +76,10 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeParentsTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getUnexistantObjectTest );
+        CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getFolderBadTypeTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -317,6 +324,79 @@ void AtomTest::getObjectTest( )
     libcmis::ObjectPtr actual = session.getObject( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", expectedId, actual->getId( ) );
+}
+
+void AtomTest::getDocumentTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "test-document" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    // Do we have a document?
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( actual );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
+
+    // Test the document properties
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", expectedId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", string( "Test Document" ), document->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", string( "text/plain" ), document->getContentType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !document->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !document->getChangeToken( ).empty( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 12345 == document->getContentLength( ) );
+}
+
+void AtomTest::getFolderTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "valid-object" );
+    libcmis::FolderPtr actual = session.getFolder( expectedId );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", expectedId, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "Valid Object" ), actual->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", string( "/Valid Object" ), actual->getPath( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", actual->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !actual->isRootFolder() );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !actual->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !actual->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !actual->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !actual->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !actual->getChangeToken( ).empty( ) );
+}
+
+void AtomTest::getFolderBadTypeTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::FolderPtr actual = session.getFolder( "test-document" );
+
+    CPPUNIT_ASSERT_MESSAGE( "returned folder should be an empty pointer", NULL == actual );
 }
 
 void AtomTest::getUnexistantObjectTest( )

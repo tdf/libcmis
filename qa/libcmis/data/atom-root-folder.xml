@@ -5,7 +5,7 @@
   </atom:author>
   <atom:id>Some obscure Id</atom:id>
   <atom:published>2012-11-29T16:14:47Z</atom:published>
-  <atom:title>Valid Object</atom:title>
+  <atom:title>Root Folder</atom:title>
   <app:edited>2012-11-29T16:14:47Z</app:edited>
   <atom:updated>2012-11-29T16:14:47Z</atom:updated>
   <cmisra:object xmlns:ns3="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
@@ -14,7 +14,7 @@
         <cmis:value>*</cmis:value>
       </cmis:propertyId>
       <cmis:propertyString queryName="cmis:path" displayName="Path" localName="cmis:path" propertyDefinitionId="cmis:path">
-        <cmis:value>/Valid Object</cmis:value>
+        <cmis:value>/</cmis:value>
       </cmis:propertyString>
       <cmis:propertyString queryName="cmis:lastModifiedBy" displayName="Modified By" localName="cmis:lastModifiedBy" propertyDefinitionId="cmis:lastModifiedBy">
         <cmis:value>Admin</cmis:value>
@@ -40,27 +40,20 @@
       <cmis:propertyId queryName="cmis:baseTypeId" displayName="Base-Type-Id" localName="cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
         <cmis:value>cmis:folder</cmis:value>
       </cmis:propertyId>
-      <cmis:propertyId queryName="cmis:parentId" displayName="Parent Id" localName="cmis:parentId" propertyDefinitionId="cmis:parentId">
-        <cmis:value>root-folder</cmis:value>
-      </cmis:propertyId>
+      <cmis:propertyId queryName="cmis:parentId" displayName="Parent Id" localName="cmis:parentId" propertyDefinitionId="cmis:parentId"/>
       <cmis:propertyDateTime queryName="cmis:lastModificationDate" displayName="Modification Date" localName="cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
         <cmis:value>2012-11-29T16:14:47.020Z</cmis:value>
       </cmis:propertyDateTime>
     </cmis:properties>
-    <exampleExtension:exampleExtension xmlns="http://my/cmis/extension" xmlns:exampleExtension="http://my/cmis/extension">
-      <objectId xmlns:ns0="http://my/cmis/extension" ns0:type="cmis:folder">valid-object</objectId>
-      <name>Valid Object</name>
-    </exampleExtension:exampleExtension>
   </cmisra:object>
   <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
-  <atom:link rel="self" href="http://mockup/mock/id?id=valid-object" type="application/atom+xml;type=entry" cmisra:id="valid-object"/>
-  <atom:link rel="enclosure" href="http://mockup/mock/id?id=valid-object" type="application/atom+xml;type=entry"/>
-  <atom:link rel="edit" href="http://mockup/mock/id?id=valid-object" type="application/atom+xml;type=entry"/>
+  <atom:link rel="self" href="http://mockup/mock/id?id=root-folder" type="application/atom+xml;type=entry" cmisra:id="root-folder"/>
+  <atom:link rel="enclosure" href="http://mockup/mock/id?id=root-folder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="edit" href="http://mockup/mock/id?id=root-folder" type="application/atom+xml;type=entry"/>
   <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis%3Afolder" type="application/atom+xml;type=entry"/>
-  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=valid-object" type="application/cmisallowableactions+xml"/>
-  <atom:link rel="up" href="http://mockup/mock/parents?id=valid-object" type="application/atom+xml;type=feed"/>
-  <atom:link rel="down" href="http://mockup/mock/children?id=valid-object" type="application/atom+xml;type=feed"/>
-  <atom:link rel="down" href="http://mockup/mock/descendants?id=valid-object" type="application/cmistree+xml"/>
-  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://mockup/mock/foldertree?id=valid-object" type="application/cmistree+xml"/>
-  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=valid-object" type="application/cmisacl+xml"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=root-folder" type="application/cmisallowableactions+xml"/>
+  <atom:link rel="down" href="http://mockup/mock/children?id=root-folder" type="application/atom+xml;type=feed"/>
+  <atom:link rel="down" href="http://mockup/mock/descendants?id=root-folder" type="application/cmistree+xml"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://mockup/mock/foldertree?id=root-folder" type="application/cmistree+xml"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=root-folder" type="application/cmisacl+xml"/>
 </atom:entry>
