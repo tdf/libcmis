@@ -53,3 +53,5 @@
 
 0.3.1
   * Added support for proxy configuration
+  * Fixed man page generation
+  * Misc code cleanup / fixes
