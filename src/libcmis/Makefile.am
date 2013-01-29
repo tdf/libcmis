@@ -73,7 +73,7 @@ libcmis_la_SOURCES = \
 	ws-versioningservice.hxx \
 	ws-versioningservice.cxx
 
-libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 3:0:0
+libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	libcmis.la \
