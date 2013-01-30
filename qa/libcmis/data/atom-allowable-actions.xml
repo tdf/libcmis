@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:allowableActions xmlns="http://docs.oasis-open.org/ns/cmis/messaging/200908/" xmlns:ns2="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:ns3="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
+  <ns2:canDeleteObject>true</ns2:canDeleteObject>
+  <ns2:canUpdateProperties>true</ns2:canUpdateProperties>
+  <ns2:canGetFolderTree>true</ns2:canGetFolderTree>
+  <ns2:canGetProperties>true</ns2:canGetProperties>
+  <ns2:canGetObjectRelationships>false</ns2:canGetObjectRelationships>
+  <ns2:canGetObjectParents>true</ns2:canGetObjectParents>
+  <ns2:canGetFolderParent>true</ns2:canGetFolderParent>
+  <ns2:canGetDescendants>true</ns2:canGetDescendants>
+  <ns2:canMoveObject>true</ns2:canMoveObject>
+  <ns2:canDeleteContentStream>false</ns2:canDeleteContentStream>
+  <ns2:canCheckOut>false</ns2:canCheckOut>
+  <ns2:canCancelCheckOut>false</ns2:canCancelCheckOut>
+  <ns2:canCheckIn>false</ns2:canCheckIn>
+  <ns2:canSetContentStream>false</ns2:canSetContentStream>
+  <ns2:canGetAllVersions>false</ns2:canGetAllVersions>
+  <ns2:canAddObjectToFolder>false</ns2:canAddObjectToFolder>
+  <ns2:canRemoveObjectFromFolder>false</ns2:canRemoveObjectFromFolder>
+  <ns2:canGetContentStream>false</ns2:canGetContentStream>
+  <ns2:canApplyPolicy>false</ns2:canApplyPolicy>
+  <ns2:canGetAppliedPolicies>false</ns2:canGetAppliedPolicies>
+  <ns2:canRemovePolicy>false</ns2:canRemovePolicy>
+  <ns2:canGetChildren>true</ns2:canGetChildren>
+  <ns2:canCreateDocument>true</ns2:canCreateDocument>
+  <ns2:canCreateFolder>true</ns2:canCreateFolder>
+  <ns2:canCreateRelationship>false</ns2:canCreateRelationship>
+  <ns2:canDeleteTree>true</ns2:canDeleteTree>
+  <ns2:canGetRenditions>false</ns2:canGetRenditions>
+  <ns2:canGetACL>false</ns2:canGetACL>
+  <ns2:canApplyACL>false</ns2:canApplyACL>
+</ns2:allowableActions>

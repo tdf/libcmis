@@ -89,6 +89,37 @@
         <cmis:value>2013-01-28T14:10:06.736Z</cmis:value>
       </cmis:propertyDateTime>
     </cmis:properties>
+    <cmis:allowableActions>
+      <cmis:canDeleteObject>true</cmis:canDeleteObject>
+      <cmis:canUpdateProperties>true</cmis:canUpdateProperties>
+      <cmis:canGetFolderTree>false</cmis:canGetFolderTree>
+      <cmis:canGetProperties>true</cmis:canGetProperties>
+      <cmis:canGetObjectRelationships>false</cmis:canGetObjectRelationships>
+      <cmis:canGetObjectParents>true</cmis:canGetObjectParents>
+      <cmis:canGetFolderParent>false</cmis:canGetFolderParent>
+      <cmis:canGetDescendants>false</cmis:canGetDescendants>
+      <cmis:canMoveObject>true</cmis:canMoveObject>
+      <cmis:canDeleteContentStream>true</cmis:canDeleteContentStream>
+      <cmis:canCheckOut>false</cmis:canCheckOut>
+      <cmis:canCancelCheckOut>false</cmis:canCancelCheckOut>
+      <cmis:canCheckIn>false</cmis:canCheckIn>
+      <cmis:canSetContentStream>true</cmis:canSetContentStream>
+      <cmis:canGetAllVersions>false</cmis:canGetAllVersions>
+      <cmis:canAddObjectToFolder>true</cmis:canAddObjectToFolder>
+      <cmis:canRemoveObjectFromFolder>true</cmis:canRemoveObjectFromFolder>
+      <cmis:canGetContentStream>true</cmis:canGetContentStream>
+      <cmis:canApplyPolicy>false</cmis:canApplyPolicy>
+      <cmis:canGetAppliedPolicies>false</cmis:canGetAppliedPolicies>
+      <cmis:canRemovePolicy>false</cmis:canRemovePolicy>
+      <cmis:canGetChildren>false</cmis:canGetChildren>
+      <cmis:canCreateDocument>false</cmis:canCreateDocument>
+      <cmis:canCreateFolder>false</cmis:canCreateFolder>
+      <cmis:canCreateRelationship>false</cmis:canCreateRelationship>
+      <cmis:canDeleteTree>false</cmis:canDeleteTree>
+      <cmis:canGetRenditions>false</cmis:canGetRenditions>
+      <cmis:canGetACL>false</cmis:canGetACL>
+      <cmis:canApplyACL>false</cmis:canApplyACL>
+    </cmis:allowableActions>
     <exampleExtension:exampleExtension xmlns="http://mockup/cmis/extension" xmlns:exampleExtension="http://mockup/cmis/extension">
       <objectId xmlns:ns0="http://mockup/cmis/extension" ns0:type="DocumentLevel2">test-document</objectId>
       <name>Test Document</name>

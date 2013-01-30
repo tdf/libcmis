@@ -47,6 +47,37 @@
         <cmis:value>2012-11-29T16:14:47.020Z</cmis:value>
       </cmis:propertyDateTime>
     </cmis:properties>
+    <cmis:allowableActions>
+      <cmis:canDeleteObject>true</cmis:canDeleteObject>
+      <cmis:canUpdateProperties>true</cmis:canUpdateProperties>
+      <cmis:canGetFolderTree>true</cmis:canGetFolderTree>
+      <cmis:canGetProperties>true</cmis:canGetProperties>
+      <cmis:canGetObjectRelationships>false</cmis:canGetObjectRelationships>
+      <cmis:canGetObjectParents>true</cmis:canGetObjectParents>
+      <cmis:canGetFolderParent>true</cmis:canGetFolderParent>
+      <cmis:canGetDescendants>true</cmis:canGetDescendants>
+      <cmis:canMoveObject>true</cmis:canMoveObject>
+      <cmis:canDeleteContentStream>false</cmis:canDeleteContentStream>
+      <cmis:canCheckOut>false</cmis:canCheckOut>
+      <cmis:canCancelCheckOut>false</cmis:canCancelCheckOut>
+      <cmis:canCheckIn>false</cmis:canCheckIn>
+      <cmis:canSetContentStream>false</cmis:canSetContentStream>
+      <cmis:canGetAllVersions>false</cmis:canGetAllVersions>
+      <cmis:canAddObjectToFolder>false</cmis:canAddObjectToFolder>
+      <cmis:canRemoveObjectFromFolder>false</cmis:canRemoveObjectFromFolder>
+      <cmis:canGetContentStream>false</cmis:canGetContentStream>
+      <cmis:canApplyPolicy>false</cmis:canApplyPolicy>
+      <cmis:canGetAppliedPolicies>false</cmis:canGetAppliedPolicies>
+      <cmis:canRemovePolicy>false</cmis:canRemovePolicy>
+      <cmis:canGetChildren>true</cmis:canGetChildren>
+      <cmis:canCreateDocument>true</cmis:canCreateDocument>
+      <cmis:canCreateFolder>true</cmis:canCreateFolder>
+      <cmis:canCreateRelationship>false</cmis:canCreateRelationship>
+      <cmis:canDeleteTree>true</cmis:canDeleteTree>
+      <cmis:canGetRenditions>false</cmis:canGetRenditions>
+      <cmis:canGetACL>false</cmis:canGetACL>
+      <cmis:canApplyACL>false</cmis:canApplyACL>
+    </cmis:allowableActions>
     <exampleExtension:exampleExtension xmlns="http://my/cmis/extension" xmlns:exampleExtension="http://my/cmis/extension">
       <objectId xmlns:ns0="http://my/cmis/extension" ns0:type="cmis:folder">valid-object</objectId>
       <name>Valid Object</name>
