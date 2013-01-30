@@ -65,6 +65,7 @@ class AtomTest : public CppUnit::TestFixture
         void getFolderBadTypeTest( );
         void getByPathValidTest( );
         void getByPathInvalidTest( );
+        void getAllowableActionsTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -84,6 +85,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderBadTypeTest );
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
+        CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -454,6 +456,27 @@ void AtomTest::getByPathInvalidTest( )
                 string( "No node corresponding to path: /some/invalid/path" ), string( e.what() ) );
     }
 
+}
+
+void AtomTest::getAllowableActionsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "valid-object" );
+    libcmis::FolderPtr actual = session.getFolder( expectedId );
+
+    boost::shared_ptr< libcmis::AllowableActions > toCheck = actual->getAllowableActions( );
+    CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
+            toCheck->isDefined( libcmis::ObjectAction::ApplyACL ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetChildren allowable action should be true",
+            toCheck->isDefined( libcmis::ObjectAction::GetChildren ) &&
+            toCheck->isAllowed( libcmis::ObjectAction::GetChildren ) );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

@@ -61,7 +61,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void getAllowableActionsTest( );
         void getChildrenTest( );
         void getObjectParentsTest( );
         void getContentStreamTest( );
@@ -80,7 +79,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( getContentStreamTest );
@@ -98,20 +96,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-        
-void AtomTest::getAllowableActionsTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr folder = session.getRootFolder( );
-
-    boost::shared_ptr< libcmis::AllowableActions > toCheck = folder->getAllowableActions( );
-    CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
-            toCheck->isDefined( libcmis::ObjectAction::ApplyACL ) );
-
-    CPPUNIT_ASSERT_MESSAGE( "GetChildren allowable action should be true",
-            toCheck->isDefined( libcmis::ObjectAction::GetChildren ) &&
-            toCheck->isAllowed( libcmis::ObjectAction::GetChildren ) );
-}
 
 void AtomTest::getChildrenTest( )
 {
