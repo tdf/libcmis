@@ -35,7 +35,7 @@
       <cmis:vendorName>libcmis</cmis:vendorName>
       <cmis:productName>Libcmis mockup</cmis:productName>
       <cmis:productVersion>some-version</cmis:productVersion>
-      <cmis:rootFolderId>root</cmis:rootFolderId>
+      <cmis:rootFolderId>root-folder</cmis:rootFolderId>
       <cmis:latestChangeLogToken>0</cmis:latestChangeLogToken>
       <cmis:capabilities>
         <cmis:capabilityACL>manage</cmis:capabilityACL>

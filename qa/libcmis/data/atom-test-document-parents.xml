@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<atom:feed xmlns:atom="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/" xmlns:app="http://www.w3.org/2007/app">
+  <atom:author>
+    <atom:name>unknown</atom:name>
+  </atom:author>
+  <atom:id>Some Obscure Id</atom:id>
+  <atom:title>Test Document</atom:title>
+  <app:edited>2013-01-31T08:04:37Z</app:edited>
+  <atom:updated>2013-01-31T08:04:37Z</atom:updated>
+  <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
+  <atom:link rel="self" href="http://mockup/mock/parents?id=test-document" type="application/atom+xml;type=entry"/>
+  <atom:entry>
+    <atom:author>
+      <atom:name>Admin</atom:name>
+    </atom:author>
+    <atom:id>Some Obscure Id</atom:id>
+    <atom:published>2013-01-31T08:04:35Z</atom:published>
+    <atom:title>Parent 1</atom:title>
+    <app:edited>2013-01-31T08:04:35Z</app:edited>
+    <atom:updated>2013-01-31T08:04:35Z</atom:updated>
+    <cmisra:object xmlns:ns3="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+      <cmis:properties>
+        <cmis:propertyId queryName="cmis:allowedChildObjectTypeIds" displayName="Allowed Child Types" localName="cmis:allowedChildObjectTypeIds" propertyDefinitionId="cmis:allowedChildObjectTypeIds">
+          <cmis:value>*</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyString queryName="cmis:path" displayName="Path" localName="cmis:path" propertyDefinitionId="cmis:path">
+          <cmis:value>/Parent 1</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyString queryName="cmis:lastModifiedBy" displayName="Modified By" localName="cmis:lastModifiedBy" propertyDefinitionId="cmis:lastModifiedBy">
+          <cmis:value>Admin</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:objectTypeId" displayName="Type-Id" localName="cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
+          <cmis:value>cmis:folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyString queryName="cmis:createdBy" displayName="Created By" localName="cmis:createdBy" propertyDefinitionId="cmis:createdBy">
+          <cmis:value>Admin</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyString queryName="cmis:name" displayName="Name" localName="cmis:name" propertyDefinitionId="cmis:name">
+          <cmis:value>Parent 1</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:objectId" displayName="Object Id" localName="cmis:objectId" propertyDefinitionId="cmis:objectId">
+          <cmis:value>parent1</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyDateTime queryName="cmis:creationDate" displayName="Creation Date" localName="cmis:creationDate" propertyDefinitionId="cmis:creationDate">
+          <cmis:value>2013-01-31T08:04:35.866Z</cmis:value>
+        </cmis:propertyDateTime>
+        <cmis:propertyString queryName="cmis:changeToken" displayName="Change Token" localName="cmis:changeToken" propertyDefinitionId="cmis:changeToken">
+          <cmis:value>1359619475867</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:baseTypeId" displayName="Base-Type-Id" localName="cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
+          <cmis:value>cmis:folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyId queryName="cmis:parentId" displayName="Parent Id" localName="cmis:parentId" propertyDefinitionId="cmis:parentId">
+          <cmis:value>root-folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyDateTime queryName="cmis:lastModificationDate" displayName="Modification Date" localName="cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
+          <cmis:value>2013-01-31T08:04:35.867Z</cmis:value>
+        </cmis:propertyDateTime>
+      </cmis:properties>
+    </cmisra:object>
+    <cmisra:relativePathSegment>Test Document</cmisra:relativePathSegment>
+    <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
+    <atom:link rel="self" href="http://mockup/mock/entry?id=parent1" type="application/atom+xml;type=entry" cmisra:id="parent1"/>
+    <atom:link rel="enclosure" href="http://mockup/mock/entry?id=parent1" type="application/atom+xml;type=entry"/>
+    <atom:link rel="edit" href="http://mockup/mock/entry?id=parent1" type="application/atom+xml;type=entry"/>
+    <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis:folder" type="application/atom+xml;type=entry"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=parent1" type="application/cmisallowableactions+xml"/>
+    <atom:link rel="down" href="http://mockup/mock/children?id=parent1" type="application/atom+xml;type=feed"/>
+    <atom:link rel="down" href="http://mockup/mock/descendants?id=parent1" type="application/cmistree+xml"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://mockup/mock/foldertree?id=parent1" type="application/cmistree+xml"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=parent1" type="application/cmisacl+xml"/>
+  </atom:entry>
+  <atom:entry>
+    <atom:author>
+      <atom:name>Admin</atom:name>
+    </atom:author>
+    <atom:id>Some Obscure Id</atom:id>
+    <atom:published>2013-01-31T08:04:35Z</atom:published>
+    <atom:title>Parent 2</atom:title>
+    <app:edited>2013-01-31T08:04:35Z</app:edited>
+    <atom:updated>2013-01-31T08:04:35Z</atom:updated>
+    <cmisra:object xmlns:ns3="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+      <cmis:properties>
+        <cmis:propertyId queryName="cmis:allowedChildObjectTypeIds" displayName="Allowed Child Types" localName="cmis:allowedChildObjectTypeIds" propertyDefinitionId="cmis:allowedChildObjectTypeIds">
+          <cmis:value>*</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyString queryName="cmis:path" displayName="Path" localName="cmis:path" propertyDefinitionId="cmis:path">
+          <cmis:value>/Parent 2</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyString queryName="cmis:lastModifiedBy" displayName="Modified By" localName="cmis:lastModifiedBy" propertyDefinitionId="cmis:lastModifiedBy">
+          <cmis:value>Admin</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:objectTypeId" displayName="Type-Id" localName="cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
+          <cmis:value>cmis:folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyString queryName="cmis:createdBy" displayName="Created By" localName="cmis:createdBy" propertyDefinitionId="cmis:createdBy">
+          <cmis:value>Admin</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyString queryName="cmis:name" displayName="Name" localName="cmis:name" propertyDefinitionId="cmis:name">
+          <cmis:value>Parent 2</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:objectId" displayName="Object Id" localName="cmis:objectId" propertyDefinitionId="cmis:objectId">
+          <cmis:value>parent2</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyDateTime queryName="cmis:creationDate" displayName="Creation Date" localName="cmis:creationDate" propertyDefinitionId="cmis:creationDate">
+          <cmis:value>2013-01-31T08:04:35.866Z</cmis:value>
+        </cmis:propertyDateTime>
+        <cmis:propertyString queryName="cmis:changeToken" displayName="Change Token" localName="cmis:changeToken" propertyDefinitionId="cmis:changeToken">
+          <cmis:value>1359619475867</cmis:value>
+        </cmis:propertyString>
+        <cmis:propertyId queryName="cmis:baseTypeId" displayName="Base-Type-Id" localName="cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
+          <cmis:value>cmis:folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyId queryName="cmis:parentId" displayName="Parent Id" localName="cmis:parentId" propertyDefinitionId="cmis:parentId">
+          <cmis:value>root-folder</cmis:value>
+        </cmis:propertyId>
+        <cmis:propertyDateTime queryName="cmis:lastModificationDate" displayName="Modification Date" localName="cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
+          <cmis:value>2013-01-31T08:04:35.867Z</cmis:value>
+        </cmis:propertyDateTime>
+      </cmis:properties>
+    </cmisra:object>
+    <cmisra:relativePathSegment>Test Document</cmisra:relativePathSegment>
+    <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
+    <atom:link rel="self" href="http://mockup/mock/entry?id=parent2" type="application/atom+xml;type=entry" cmisra:id="parent2"/>
+    <atom:link rel="enclosure" href="http://mockup/mock/entry?id=parent2" type="application/atom+xml;type=entry"/>
+    <atom:link rel="edit" href="http://mockup/mock/entry?id=parent2" type="application/atom+xml;type=entry"/>
+    <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis:folder" type="application/atom+xml;type=entry"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=parent2" type="application/cmisallowableactions+xml"/>
+    <atom:link rel="down" href="http://mockup/mock/children?id=parent2" type="application/atom+xml;type=feed"/>
+    <atom:link rel="down" href="http://mockup/mock/descendants?id=parent2" type="application/cmistree+xml"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://mockup/mock/foldertree?id=parent2" type="application/cmistree+xml"/>
+    <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=parent2" type="application/cmisacl+xml"/>
+  </atom:entry>
+</atom:feed>

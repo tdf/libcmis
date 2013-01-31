@@ -66,6 +66,8 @@ class AtomTest : public CppUnit::TestFixture
         void getByPathValidTest( );
         void getByPathInvalidTest( );
         void getAllowableActionsTest( );
+        void getChildrenTest( );
+        void getDocumentParentsTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -86,6 +88,8 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getAllowableActionsTest );
+        CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -477,6 +481,54 @@ void AtomTest::getAllowableActionsTest( )
     CPPUNIT_ASSERT_MESSAGE( "GetChildren allowable action should be true",
             toCheck->isDefined( libcmis::ObjectAction::GetChildren ) &&
             toCheck->isAllowed( libcmis::ObjectAction::GetChildren ) );
+}
+
+void AtomTest::getChildrenTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "data/atom-root-children.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    vector< libcmis::ObjectPtr > children = session.getRootFolder()->getChildren( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 5 ), children.size() );
+
+    int folderCount = 0;
+    int documentCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); ++it )
+    {
+        if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
+            ++folderCount;
+        else if ( NULL != boost::dynamic_pointer_cast< libcmis::Document >( *it ) )
+            ++documentCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 2, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children", 3, documentCount );
+}
+
+void AtomTest::getDocumentParentsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/parents", "id=test-document", "data/atom-test-document-parents.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+    vector< libcmis::FolderPtr > actual = document->getParents( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 2 ), actual.size() );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

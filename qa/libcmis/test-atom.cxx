@@ -37,20 +37,14 @@
 
 // InMemory local test server data
 #define SERVER_ATOM_URL string( "http://localhost:8080/inmemory/atom" )
-#define SERVER_REPOSITORIES_COUNT list< string >::size_type( 1 )
 #define SERVER_REPOSITORY string( "A1" )
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
 #define TEST_DOCUMENT_ID string( "116" )
+
 #define TEST_DOCUMENT_TYPE string( "text/plain" )
 #define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
-#define TEST_DOCUMENT_PARENTS_COUNT vector< libcmis::FolderPtr >::size_type( 1 )
-#define TEST_DOCUMENT_PARENT string( "101" )
-
-#define TEST_CHILDREN_FOLDER_COUNT 2
-#define TEST_CHILDREN_DOCUMENT_COUNT 3
-#define TEST_CHILDREN_COUNT vector<libcmis::ObjectPtr>::size_type( TEST_CHILDREN_FOLDER_COUNT + TEST_CHILDREN_DOCUMENT_COUNT )
 
 using boost::shared_ptr;
 using namespace std;
@@ -61,8 +55,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void getChildrenTest( );
-        void getObjectParentsTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
         void updatePropertiesTest( );
@@ -79,8 +71,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getChildrenTest );
-        CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
@@ -96,46 +86,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getChildrenTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr folder = session.getRootFolder( );
-
-    vector< libcmis::ObjectPtr > children = folder->getChildren( );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", TEST_CHILDREN_COUNT, children.size() );
-
-    int folderCount = 0;
-    int documentCount = 0;
-    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-          it != children.end( ); ++it )
-    {
-        if ( NULL != dynamic_cast< AtomFolder* >( it->get() ) )
-            ++folderCount;
-        else if ( NULL != dynamic_cast< AtomDocument* >( it->get() ) )
-            ++documentCount;
-    }
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children",
-            TEST_CHILDREN_FOLDER_COUNT, folderCount );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children",
-            TEST_CHILDREN_DOCUMENT_COUNT, documentCount );
-}
-
-void AtomTest::getObjectParentsTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-    vector< libcmis::FolderPtr > actual = document->getParents( );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents",
-           TEST_DOCUMENT_PARENTS_COUNT, actual.size() );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent ID",
-            TEST_DOCUMENT_PARENT, actual.front( )->getId( ) );
-}
 
 void AtomTest::getContentStreamTest( )
 {
