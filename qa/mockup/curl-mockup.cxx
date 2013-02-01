@@ -194,30 +194,7 @@ CURLcode curl_easy_perform( CURL * curl )
         return CURLE_HTTP_RETURNED_ERROR;
     }
 
-    string filepath = mockup::config->getResponse( handle );
-    if ( filepath.empty( ) || handle->m_httpError != 0 )
-    {
-        if ( filepath.empty( ) )
-            handle->m_httpError = 404;
-        return CURLE_HTTP_RETURNED_ERROR;
-    }
-    FILE* fd = fopen( filepath.c_str( ), "r" );
-
-    size_t bufSize = 2048;
-    char* buf = new char[bufSize];
-
-    size_t read = 0;
-    size_t written = 0;
-    do
-    {
-        read = fread( buf, 1, bufSize, fd );
-        written = handle->m_writeFn( buf, 1, read, handle->m_writeData );
-    } while ( read == bufSize && written == read );
-
-    fclose( fd );
-    delete[] buf;
-
-    return CURLE_OK;
+    return mockup::config->writeResponse( handle );
 }
 
 CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )

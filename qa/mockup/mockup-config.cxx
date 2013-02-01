@@ -30,14 +30,16 @@
 #include "internals.hxx"
 
 #include <stdio.h>
+#include <string.h>
 
 using namespace std;
 
 namespace mockup
 {
-    Response::Response( string filepath, unsigned int status ) :
-        m_filepath( filepath ),
-        m_status( status )
+    Response::Response( string response, unsigned int status, bool isFilePath ) :
+        m_response( response ),
+        m_status( status ),
+        m_isFilePath( isFilePath )
     {
     }
 
@@ -71,9 +73,12 @@ namespace mockup
         return !m_username.empty( ) && !m_password.empty( );
     }
 
-    string Configuration::getResponse( CurlHandle* handle )
+    CURLcode Configuration::writeResponse( CurlHandle* handle )
     {
-        string filepath;
+        CURLcode code = CURLE_OK;
+
+        string response;
+        bool isFilePath = true;
         const string& url = handle->m_url;
 
         size_t pos = url.find( "?" );
@@ -86,7 +91,7 @@ namespace mockup
         }
 
         for ( map< RequestMatcher, Response >::iterator it = m_responses.begin( );
-                it != m_responses.end( ) && filepath.empty( ); ++it )
+                it != m_responses.end( ) && response.empty( ); ++it )
         {
             RequestMatcher matcher = it->first;
             string& paramFind = matcher.m_matchParam;
@@ -95,15 +100,52 @@ namespace mockup
 
             if ( matchBaseUrl && matchParams )
             {
-                filepath = it->second.m_filepath;
+                response = it->second.m_response;
                 handle->m_httpError = it->second.m_status;
+                isFilePath = it->second.m_isFilePath;
             }
             else if ( matchBaseUrl )
             {
                 handle->m_httpError = 404;
             }
         }
-        return filepath;
+
+        // If nothing matched, then send a 404 HTTP error instead
+        if ( response.empty( ) )
+            handle->m_httpError = 404;
+        else
+        {
+            if ( isFilePath )
+            {
+                FILE* fd = fopen( response.c_str( ), "r" );
+
+                size_t bufSize = 2048;
+                char* buf = new char[bufSize];
+
+                size_t read = 0;
+                size_t written = 0;
+                do
+                {
+                    read = fread( buf, 1, bufSize, fd );
+                    written = handle->m_writeFn( buf, 1, read, handle->m_writeData );
+                } while ( read == bufSize && written == read );
+
+                fclose( fd );
+                delete[] buf;
+            }
+            else
+            {
+               char* buf = strdup( response.c_str() );
+               handle->m_writeFn( buf, 1, response.size( ), handle->m_writeData );
+               delete( buf );
+            }
+        }
+
+        // What curl error code to give?
+        if ( handle->m_httpError != 0 )
+            code = CURLE_HTTP_RETURNED_ERROR;
+
+        return code;
     }
 
     Configuration* config = new Configuration( );
@@ -116,13 +158,13 @@ void curl_mockup_reset( )
     mockup::config = new mockup::Configuration( );
 }
 
-void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* filepath, unsigned int status )
+void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* response, unsigned int status, bool isFilePath )
 {
     mockup::RequestMatcher matcher( urlBase, matchParam );
     map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
-    mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, mockup::Response( filepath, status ) ) );
+    mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, mockup::Response( response, status, isFilePath ) ) );
 }
 
 void curl_mockup_setResponse( const char* filepath )

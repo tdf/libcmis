@@ -34,7 +34,26 @@ extern "C" {
 
 /* Mockup behavior configuration functions */
 void curl_mockup_reset( );
-void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* filepath, unsigned int status = 0 );
+
+/** Add a new HTTP response the server should send.
+
+    \param baseURL
+        the base URL of the request without parameters
+    \param matchParam
+        a string to find in the parameters part of the URL to match
+    \param response 
+        a string corresponding either to the file path of the request
+        body to send or directly the content to send. This value has
+        a different meaning depending on isFilePath parameter.
+    \param status
+        the HTTP status to return. 0 means HTTP OK (200).
+    \param isFilePath
+        if this value is true the response value is used as a file path,
+        otherwise, the response value is used as the body of the HTTP
+        response to send.
+  */
+void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* response,
+                              unsigned int status = 0, bool isFilePath = true );
 
 /** Set the HTTP response the server is supposed to send.
     This will reset all already defined responses.

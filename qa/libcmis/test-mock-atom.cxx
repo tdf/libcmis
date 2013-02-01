@@ -30,6 +30,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <sstream>
+
 #define SERVER_URL string( "http://mockup/binding" )
 #define SERVER_REPOSITORY string( "mock" )
 #define SERVER_USERNAME "tester"
@@ -68,6 +70,7 @@ class AtomTest : public CppUnit::TestFixture
         void getAllowableActionsTest( );
         void getChildrenTest( );
         void getDocumentParentsTest( );
+        void getContentStreamTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -90,6 +93,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getDocumentParentsTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -529,6 +533,37 @@ void AtomTest::getDocumentParentsTest( )
     vector< libcmis::FolderPtr > actual = document->getParents( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 2 ), actual.size() );
+}
+
+void AtomTest::getContentStreamTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+
+    string expectedContent( "Some content stream" );
+    curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", expectedContent.c_str( ), 0, false );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( );
+        ostringstream out;
+        out << is->rdbuf();
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

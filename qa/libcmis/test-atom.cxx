@@ -55,7 +55,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void getContentStreamTest( );
         void setContentStreamTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
@@ -71,7 +70,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
@@ -86,28 +84,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getContentStreamTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-
-    try
-    {
-        shared_ptr< istream >  is = document->getContentStream( );
-        CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
-        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", is->good() && !is->eof() );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
-    }
-}
 
 void AtomTest::setContentStreamTest( )
 {
