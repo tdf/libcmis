@@ -41,11 +41,6 @@
 #define SERVER_USERNAME string( "tester" )
 #define SERVER_PASSWORD string( "somepass" )
 
-#define TEST_DOCUMENT_ID string( "116" )
-
-#define TEST_DOCUMENT_TYPE string( "text/plain" )
-#define TEST_SAMPLE_CONTENT string( "Some sample text to upload" )
-
 using boost::shared_ptr;
 using namespace std;
 
@@ -55,7 +50,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void setContentStreamTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
@@ -70,7 +64,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
@@ -84,42 +77,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::setContentStreamTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( TEST_DOCUMENT_ID );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-
-    try
-    {
-        boost::shared_ptr< ostream > os ( new stringstream ( TEST_SAMPLE_CONTENT ) );
-        string filename( "name.txt" );
-        document->setContentStream( os, TEST_DOCUMENT_TYPE, filename );
-        
-        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
-
-        // Get the new content to check is has been properly uploaded
-        shared_ptr< istream > newIs = document->getContentStream( );
-        stringstream is;
-        is << newIs->rdbuf();
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
-                TEST_SAMPLE_CONTENT, is.str() );
-    
-        // Testing other values like LastModifiedBy or LastModificationTime
-        // is server dependent... don't do it. 
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
-                ( long )TEST_SAMPLE_CONTENT.size(), document->getContentLength() );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
-    }
-}
 
 void AtomTest::updatePropertiesTest( )
 {

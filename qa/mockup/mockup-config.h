@@ -45,6 +45,9 @@ void curl_mockup_reset( );
         a string corresponding either to the file path of the request
         body to send or directly the content to send. This value has
         a different meaning depending on isFilePath parameter.
+    \param method
+        HTTP method to match like PUT, GET, POST or DELETE. An empty
+        string matches any method.
     \param status
         the HTTP status to return. 0 means HTTP OK (200).
     \param isFilePath
@@ -52,14 +55,16 @@ void curl_mockup_reset( );
         otherwise, the response value is used as the body of the HTTP
         response to send.
   */
-void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* response,
-                              unsigned int status = 0, bool isFilePath = true );
+void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* method,
+                              const char* response, unsigned int status = 0, bool isFilePath = true );
 
 /** Set the HTTP response the server is supposed to send.
     This will reset all already defined responses.
  */
 void curl_mockup_setResponse( const char* filepath );
 void curl_mockup_setCredentials( const char* username, const char* password );
+
+const char* curl_mockup_getRequest( const char* baseUrl, const char* matchParam, const char* method );
 
 const char* curl_mockup_getProxy( CURL* handle );
 const char* curl_mockup_getNoProxy( CURL* handle );

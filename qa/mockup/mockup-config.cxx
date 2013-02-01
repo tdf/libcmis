@@ -34,6 +34,20 @@
 
 using namespace std;
 
+namespace
+{
+    void lcl_splitUrl( const string& url, string& urlBase, string& params )
+    {
+        size_t pos = url.find( "?" );
+        urlBase = url;
+        if ( pos != string::npos )
+        {
+            urlBase = url.substr( 0, pos );
+            params = url.substr( pos + 1 );
+        }
+    }
+}
+
 namespace mockup
 {
     Response::Response( string response, unsigned int status, bool isFilePath ) :
@@ -43,9 +57,17 @@ namespace mockup
     {
     }
 
-    RequestMatcher::RequestMatcher( string baseUrl, string matchParam ) :
+    Request::Request( string url, string method, string body ) :
+        m_url( url ),
+        m_method( method ),
+        m_body( body )
+    {
+    }
+
+    RequestMatcher::RequestMatcher( string baseUrl, string matchParam, string method ) :
         m_baseUrl( baseUrl ),
-        m_matchParam( matchParam )
+        m_matchParam( matchParam ),
+        m_method( method )
     {
     }
 
@@ -63,6 +85,7 @@ namespace mockup
 
     Configuration::Configuration( ) :
         m_responses( ),
+        m_requests( ),
         m_username( ),
         m_password( )
     {
@@ -81,32 +104,25 @@ namespace mockup
         bool isFilePath = true;
         const string& url = handle->m_url;
 
-        size_t pos = url.find( "?" );
         string urlBase = url;
         string params;
-        if ( pos != string::npos )
-        {
-            urlBase = url.substr( 0, pos );
-            params = url.substr( pos + 1 );
-        }
+        lcl_splitUrl( url, urlBase, params );
+        string method = handle->m_method;
 
         for ( map< RequestMatcher, Response >::iterator it = m_responses.begin( );
                 it != m_responses.end( ) && response.empty( ); ++it )
         {
             RequestMatcher matcher = it->first;
             string& paramFind = matcher.m_matchParam;
-            bool matchBaseUrl = matcher.m_baseUrl.empty() || ( matcher.m_baseUrl.find( urlBase ) == 0 );
+            bool matchBaseUrl = matcher.m_baseUrl.empty() || ( urlBase.find( matcher.m_baseUrl ) == 0 );
             bool matchParams = paramFind.empty( ) || ( params.find( paramFind ) != string::npos );
+            bool matchMethod = it->first.m_method.empty( ) || ( it->first.m_method == method );
 
-            if ( matchBaseUrl && matchParams )
+            if ( matchBaseUrl && matchParams && matchMethod )
             {
                 response = it->second.m_response;
                 handle->m_httpError = it->second.m_status;
                 isFilePath = it->second.m_isFilePath;
-            }
-            else if ( matchBaseUrl )
-            {
-                handle->m_httpError = 404;
             }
         }
 
@@ -144,6 +160,8 @@ namespace mockup
         // What curl error code to give?
         if ( handle->m_httpError != 0 )
             code = CURLE_HTTP_RETURNED_ERROR;
+        else
+            handle->m_httpError = 200;
 
         return code;
     }
@@ -158,9 +176,10 @@ void curl_mockup_reset( )
     mockup::config = new mockup::Configuration( );
 }
 
-void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* response, unsigned int status, bool isFilePath )
+void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* method,
+                              const char* response, unsigned int status, bool isFilePath )
 {
-    mockup::RequestMatcher matcher( urlBase, matchParam );
+    mockup::RequestMatcher matcher( urlBase, matchParam, method );
     map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
@@ -170,13 +189,42 @@ void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const
 void curl_mockup_setResponse( const char* filepath )
 {
     mockup::config->m_responses.clear( );
-    curl_mockup_addResponse( "", "", filepath );
+    curl_mockup_addResponse( "", "", "", filepath );
 }
 
 void curl_mockup_setCredentials( const char* username, const char* password )
 {
     mockup::config->m_username = string( username );
     mockup::config->m_password = string( password );
+}
+
+const char* curl_mockup_getRequest( const char* urlBase, const char* matchParam, const char* method )
+{
+    string request;
+
+    string urlBaseString( urlBase );
+    string matchParamString( matchParam );
+
+    for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
+            it != mockup::config->m_requests.end( ) && request.empty( ); ++it )
+    {
+        string url;
+        string params;
+        if ( it->m_method == string( method ) )
+        {
+            lcl_splitUrl( it->m_url, url, params );
+
+            bool matchBaseUrl = urlBaseString.empty() || ( url.find( urlBaseString ) == 0 );
+            bool matchParams = matchParamString.empty( ) || ( params.find( matchParamString ) != string::npos );
+
+            if ( matchBaseUrl && matchParams )
+            {
+                request = it->m_body;
+            }
+        }
+    }
+
+    return request.c_str( );
 }
 
 const char* curl_mockup_getProxy( CURL* curl )

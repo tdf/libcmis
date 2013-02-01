@@ -28,8 +28,10 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 typedef size_t ( *write_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
+typedef size_t ( *read_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
 
 class CurlHandle
 {
@@ -42,6 +44,9 @@ class CurlHandle
 
         write_callback m_writeFn;
         void* m_writeData;
+        read_callback m_readFn;
+        void* m_readData;
+        long m_readSize;
 
         std::string m_username;
         std::string m_password;
@@ -51,6 +56,7 @@ class CurlHandle
         std::string m_proxyPass;
 
         long m_httpError;
+        std::string m_method;
        
         void reset( ); 
 };
@@ -67,14 +73,25 @@ namespace mockup
             bool m_isFilePath;
     };
 
+    class Request
+    {
+        public:
+            Request( std::string url, std::string method, std::string body );
+
+            std::string m_url;
+            std::string m_method;
+            std::string m_body;
+    };
+
     class RequestMatcher
     {
         public:
-            RequestMatcher( std::string baseUrl, std::string matchParam );
+            RequestMatcher( std::string baseUrl, std::string matchParam, std::string method );
             bool operator< ( const RequestMatcher& compare ) const;
 
             std::string m_baseUrl;
             std::string m_matchParam;
+            std::string m_method;
     };
 
     class Configuration
@@ -86,6 +103,7 @@ namespace mockup
             CURLcode writeResponse( CurlHandle* handle );
 
             std::map< RequestMatcher, Response > m_responses;
+            std::vector< Request > m_requests;
             std::string m_username;
             std::string m_password;
     };

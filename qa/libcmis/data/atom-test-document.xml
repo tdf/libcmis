@@ -126,9 +126,9 @@
     </exampleExtension:exampleExtension>
   </cmisra:object>
   <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
-  <atom:link rel="self" href="http://mockup/mock/entry?id=test-document" type="application/atom+xml;type=entry" cmisra:id="test-document"/>
-  <atom:link rel="enclosure" href="http://mockup/mock/entry?id=test-document" type="application/atom+xml;type=entry"/>
-  <atom:link rel="edit" href="http://mockup/mock/entry?id=test-document" type="application/atom+xml;type=entry"/>
+  <atom:link rel="self" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry" cmisra:id="test-document"/>
+  <atom:link rel="enclosure" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry"/>
+  <atom:link rel="edit" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry"/>
   <atom:link rel="describedby" href="http://mockup/mock/type?id=ComplexType" type="application/atom+xml;type=entry"/>
   <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=test-document" type="application/cmisallowableactions+xml"/>
   <atom:link rel="up" href="http://mockup/mock/parents?id=test-document" type="application/atom+xml;type=feed"/>

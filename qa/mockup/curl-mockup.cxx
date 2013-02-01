@@ -29,6 +29,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 
 #include "curl/curl.h"
 #include "internals.hxx"
@@ -102,6 +103,21 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
     switch ( option )
     {
         /* TODO Add support for more options */
+        case CURLOPT_POST:
+        {
+            if ( va_arg( arg, long ) )
+                handle->m_method = string( "POST" );
+            break;
+        }
+        case CURLOPT_UPLOAD:
+        {
+            if ( 0 != va_arg( arg, long ) )
+                handle->m_method = string( "PUT" );
+            break;
+        }
+        case CURLOPT_CUSTOMREQUEST:
+            handle->m_method = string( va_arg( arg, char* ) );
+            break;
         case CURLOPT_URL:
         {
             handle->m_url = string( va_arg( arg, char* ) );
@@ -115,6 +131,21 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         case CURLOPT_WRITEDATA:
         {
             handle->m_writeData = va_arg( arg, void* );
+            break;
+        }
+        case CURLOPT_READFUNCTION:
+        {
+            handle->m_readFn = va_arg( arg, read_callback ); 
+            break;
+        }
+        case CURLOPT_READDATA:
+        {
+            handle->m_readData = va_arg( arg, void* );
+            break;
+        }
+        case CURLOPT_INFILESIZE:
+        {
+            handle->m_readSize = va_arg( arg, long );
             break;
         }
         case CURLOPT_USERNAME:
@@ -170,7 +201,7 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
             }
             break;
         }
-        default:
+       default:
         {
             // We surely don't want to break the test for that.
         }
@@ -193,6 +224,26 @@ CURLcode curl_easy_perform( CURL * curl )
         handle->m_httpError = 401;
         return CURLE_HTTP_RETURNED_ERROR;
     }
+    
+    // Store the requests for later verifications
+    stringstream body;
+
+    if ( handle->m_readFn && handle->m_readData )
+    {
+        size_t bufSize = 2048;
+        char* buf = new char[bufSize];
+
+        size_t read = 0;
+        do
+        {
+            read = handle->m_readFn( buf, 1, bufSize, handle->m_readData );
+            body.write( buf, read );
+        } while ( read == bufSize );
+
+        delete[] buf;
+    }
+    mockup::config->m_requests.push_back( mockup::Request( handle->m_url, handle->m_method, body.str( ) ) );
+    
 
     return mockup::config->writeResponse( handle );
 }
@@ -225,13 +276,17 @@ CurlHandle::CurlHandle( ) :
     m_url( ),
     m_writeFn( NULL ),
     m_writeData( NULL ),
+    m_readFn( NULL ),
+    m_readData( NULL ),
+    m_readSize( 0 ),
     m_username( ),
     m_password( ),
     m_proxy( ),
     m_noProxy( ),
     m_proxyUser( ),
     m_proxyPass( ),
-    m_httpError( 0 )
+    m_httpError( 0 ),
+    m_method( "GET" )
 {
 }
 
@@ -239,13 +294,17 @@ CurlHandle::CurlHandle( const CurlHandle& copy ) :
     m_url( copy.m_url ),
     m_writeFn( copy.m_writeFn ),
     m_writeData( copy.m_writeData ),
+    m_readFn( copy.m_readFn ),
+    m_readData( copy.m_readData ),
+    m_readSize( copy.m_readSize ),
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_proxy( copy.m_proxy ),
     m_noProxy( copy.m_noProxy ),
     m_proxyUser( copy.m_proxyUser ),
     m_proxyPass( copy.m_proxyPass ),
-    m_httpError( copy.m_httpError )
+    m_httpError( copy.m_httpError ),
+    m_method( copy.m_method )
 {
 }
 
@@ -256,9 +315,13 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
         m_url = copy.m_url;
         m_writeFn = copy.m_writeFn;
         m_writeData = copy.m_writeData;
+        m_readFn = copy.m_readFn;
+        m_readData = copy.m_readData;
+        m_readSize = copy.m_readSize;
         m_username = copy.m_username;
         m_password = copy.m_password;
         m_httpError = copy.m_httpError;
+        m_method = copy.m_method;
     }
     return *this;
 }
@@ -268,6 +331,10 @@ void CurlHandle::reset( )
     m_url = string( );
     m_writeFn = NULL;
     m_writeData = NULL;
+    m_readFn = NULL;
+    m_readData = NULL;
+    m_readSize = 0;
     m_username = string( );
     m_password = string( );
+    m_method = "GET";
 }

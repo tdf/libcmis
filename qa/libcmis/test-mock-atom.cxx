@@ -71,6 +71,7 @@ class AtomTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void getDocumentParentsTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -94,6 +95,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -263,7 +265,7 @@ void AtomTest::authCallbackTest( )
 void AtomTest::getTypeTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -296,9 +298,9 @@ void AtomTest::getUnexistantTypeTest( )
 void AtomTest::getTypeParentsTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "data/atom-type-docLevel1.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "data/atom-type-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "GET", "data/atom-type-docLevel1.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", "data/atom-type-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -312,9 +314,9 @@ void AtomTest::getTypeParentsTest( )
 void AtomTest::getTypeChildrenTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "data/atom-type-docLevel1.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "data/atom-type-document.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/types", "typeId=cmis:document", "data/atom-typechildren-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel1", "GET", "data/atom-type-docLevel1.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", "data/atom-type-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/types", "typeId=cmis:document", "GET", "data/atom-typechildren-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -328,8 +330,8 @@ void AtomTest::getTypeChildrenTest( )
 void AtomTest::getObjectTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "GET", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -343,8 +345,8 @@ void AtomTest::getObjectTest( )
 void AtomTest::getDocumentTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -375,9 +377,9 @@ void AtomTest::getDocumentTest( )
 void AtomTest::getFolderTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "data/atom-root-folder.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "GET", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "GET", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -402,8 +404,8 @@ void AtomTest::getFolderTest( )
 void AtomTest::getFolderBadTypeTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -435,8 +437,8 @@ void AtomTest::getUnexistantObjectTest( )
 void AtomTest::getByPathValidTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/path", "path=/Valid Object", "data/atom-valid-object.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/path", "path=/Valid Object", "GET", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -469,8 +471,8 @@ void AtomTest::getByPathInvalidTest( )
 void AtomTest::getAllowableActionsTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "data/atom-valid-object.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "GET", "data/atom-valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -490,10 +492,10 @@ void AtomTest::getAllowableActionsTest( )
 void AtomTest::getChildrenTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "data/atom-root-children.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "data/atom-root-folder.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "GET", "data/atom-root-children.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "GET", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -518,10 +520,10 @@ void AtomTest::getChildrenTest( )
 void AtomTest::getDocumentParentsTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/parents", "id=test-document", "data/atom-test-document-parents.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "data/atom-type-folder.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/parents", "id=test-document", "GET", "data/atom-test-document-parents.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -538,11 +540,11 @@ void AtomTest::getDocumentParentsTest( )
 void AtomTest::getContentStreamTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "data/atom-test-document.xml" );
-    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
 
     string expectedContent( "Some content stream" );
-    curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", expectedContent.c_str( ), 0, false );
+    curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "GET", expectedContent.c_str( ), 0, false );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
@@ -557,6 +559,40 @@ void AtomTest::getContentStreamTest( )
         out << is->rdbuf();
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void AtomTest::setContentStreamTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "PUT", "Updated", 0, false );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        string expectedContent( "Some content stream to set" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "name.txt" );
+        document->setContentStream( os, "text/plain", filename );
+        
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+
+        // Check the content has been properly uploaded
+        const char* content = curl_mockup_getRequest( "http://mockup/mock/content/", "id=test-document", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
     {
