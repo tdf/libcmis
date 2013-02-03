@@ -43,6 +43,8 @@ namespace test
     const char* getXmlns( );
     std::string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
 
+    std::string getXmlNodeAsString( const std::string& xmlDoc, const std::string& xpath );
+
     // Helper functions to populate the test repository
     libcmis::DocumentPtr createVersionableDocument( libcmis::Session* session, std::string docName );
 }

@@ -79,6 +79,11 @@ namespace mockup
         {
             int cmpMatchParam = m_matchParam.compare( compare.m_matchParam );
             result = cmpMatchParam < 0;
+            if ( cmpMatchParam == 0 )
+            {
+                int cmpMatchMethod = m_method.compare( compare.m_method );
+                result = cmpMatchMethod;
+            }
         }
         return result;
     }

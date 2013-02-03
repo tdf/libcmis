@@ -30,6 +30,7 @@
 #include <libxml/tree.h>
 
 #include "test-helpers.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -66,6 +67,46 @@ namespace test
         xmlBufferFree( buf );
 
         return str;
+    }
+
+    string getXmlNodeAsString( const string& xmlDoc, const string& xpath )
+    {
+        string result;
+        xmlDocPtr doc = xmlReadMemory( xmlDoc.c_str(), xmlDoc.size(), "", NULL, 0 );
+
+        if ( NULL != doc )
+        {
+            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+            libcmis::registerNamespaces( xpathCtx );
+
+            if ( NULL != xpathCtx )
+            {
+                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( xpath.c_str() ), xpathCtx );
+
+                if ( xpathObj != NULL )
+                {
+                    int nbResults = 0;
+                    if ( xpathObj->nodesetval )
+                        nbResults = xpathObj->nodesetval->nodeNr;
+
+                    if ( nbResults > 0 )
+                    {
+                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
+                        xmlBufferPtr buf = xmlBufferCreate( );
+                        xmlNodeDump( buf, doc, node, 0, 0 );
+                        result = string( ( char * )xmlBufferContent( buf ) );
+                        xmlBufferFree( buf );
+                    }
+                }
+            }
+            xmlXPathFreeContext( xpathCtx );
+        }
+        else
+            throw libcmis::Exception( "Failed to parse service document" );
+
+        xmlFreeDoc( doc );
+
+        return result;
     }
 
     libcmis::DocumentPtr createVersionableDocument( libcmis::Session* session, string docName )

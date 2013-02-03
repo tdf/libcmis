@@ -41,6 +41,7 @@
 #define protected public
 
 #include <mockup-config.h>
+#include "test-helpers.hxx"
 #include "atom-session.hxx"
 #include "session-factory.hxx"
 #include "document.hxx"
@@ -72,6 +73,7 @@ class AtomTest : public CppUnit::TestFixture
         void getDocumentParentsTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
+        void updatePropertiesTest( ); 
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -96,6 +98,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -600,6 +603,55 @@ void AtomTest::setContentStreamTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void AtomTest::updatePropertiesTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "PUT", "data/atom-test-document-updated.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    // Values for the test
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    string propertyName( "cmis:name" );
+    string expectedValue( "New name" );
+
+    // Fill the map of properties to change
+    map< string, libcmis::PropertyPtr > newProperties;
+
+    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
+    vector< string > values;
+    values.push_back( expectedValue );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
+
+    // Update the properties (method to test)
+    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
+
+    // Check that the proper request has been send
+    // In order to avoid to check changing strings (containing a timestamp),
+    // get the cmisra:object tree and compare it.
+    string request( curl_mockup_getRequest( "http://mockup/mock/id", "id=test-document", "PUT" ) );
+    string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
+
+    string expectedObject = "<cmisra:object>"
+                                "<cmis:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>New name</cmis:value>"
+                                    "</cmis:propertyString>"
+                                "</cmis:properties>"
+                            "</cmisra:object>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request content sent", expectedObject, actualObject );
+
+    // Check that the properties are updated after the call
+    map< string, libcmis::PropertyPtr >::iterator propIt = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

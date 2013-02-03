@@ -40,6 +40,7 @@ test_nosrv_utils_LDADD = \
 
 test_nosrv_mockup_SOURCES =	\
 	test-mock-atom.cxx \
+	test-helpers.cxx \
 	test-main.cxx
 
 test_nosrv_mockup_CPPFLAGS = \

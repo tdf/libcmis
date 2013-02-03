@@ -50,7 +50,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
         void dumpDocumentToXmlTest( );
@@ -64,7 +63,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
@@ -77,33 +75,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::updatePropertiesTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-
-    // Values for the test
-    libcmis::ObjectPtr object = session.getObject( "114" );
-    string propertyName( "cmis:name" );
-    string expectedValue( "New name" );
-
-    // Fill the map of properties to change
-    map< string, libcmis::PropertyPtr > newProperties;
-
-    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
-    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
-    vector< string > values;
-    values.push_back( expectedValue );
-    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
-    newProperties[ propertyName ] = property;
-
-    // Update the properties (method to test)
-    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
-
-    // Checks
-    map< string, libcmis::PropertyPtr >::iterator propIt = updated->getProperties( ).find( propertyName );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
-}
 
 void AtomTest::createFolderTest( )
 {
