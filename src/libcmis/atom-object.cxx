@@ -140,6 +140,34 @@ libcmis::ObjectPtr AtomObject::updateProperties( const map< string, libcmis::Pro
     return updated;
 }
 
+libcmis::AllowableActionsPtr AtomObject::getAllowableActions( )
+{
+    if ( !m_allowableActions )
+    {
+        // For some reason we had no allowable actions before, get them now.
+        AtomLink* link = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions", "application/cmisallowableactions+xml" );
+        if ( link )
+        {
+            try
+            {
+                libcmis::HttpResponsePtr response = getSession()->httpGetRequest( link->getHref() );
+                string buf = response->getStream()->str();
+                xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), link->getHref().c_str(), NULL, 0 );
+                xmlNodePtr actionsNode = xmlDocGetRootElement( doc );
+                if ( actionsNode )
+                    m_allowableActions.reset( new libcmis::AllowableActions( actionsNode ) );
+
+                xmlFreeDoc( doc );
+            }
+            catch ( libcmis::Exception& )
+            {
+            }
+        }
+    }
+
+    return libcmis::Object::getAllowableActions();
+}
+
 void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
 {
     bool createdDoc = ( NULL == doc );

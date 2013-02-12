@@ -69,6 +69,8 @@ class AtomObject : public virtual libcmis::Object
         virtual libcmis::ObjectPtr updateProperties(
                     const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
 
+        virtual libcmis::AllowableActionsPtr getAllowableActions( );
+
         /** Reload the data from the server.
               */
         virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }

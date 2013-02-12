@@ -69,6 +69,7 @@ class AtomTest : public CppUnit::TestFixture
         void getByPathValidTest( );
         void getByPathInvalidTest( );
         void getAllowableActionsTest( );
+        void getAllowableActionsNotIncludedTest( );
         void getChildrenTest( );
         void getDocumentParentsTest( );
         void getContentStreamTest( );
@@ -94,6 +95,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getAllowableActionsTest );
+        CPPUNIT_TEST( getAllowableActionsNotIncludedTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getContentStreamTest );
@@ -483,6 +485,30 @@ void AtomTest::getAllowableActionsTest( )
     string expectedId( "valid-object" );
     libcmis::FolderPtr actual = session.getFolder( expectedId );
 
+    boost::shared_ptr< libcmis::AllowableActions > toCheck = actual->getAllowableActions( );
+    CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
+            toCheck->isDefined( libcmis::ObjectAction::ApplyACL ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetChildren allowable action should be true",
+            toCheck->isDefined( libcmis::ObjectAction::GetChildren ) &&
+            toCheck->isAllowed( libcmis::ObjectAction::GetChildren ) );
+}
+
+void AtomTest::getAllowableActionsNotIncludedTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "GET", "data/atom-valid-object-noactions.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/allowableactions", "id=valid-object", "GET", "data/atom-allowable-actions.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "valid-object" );
+    libcmis::FolderPtr actual = session.getFolder( expectedId );
+
+    // In some cases (mostly when getting folder children), we may not have the allowable actions
+    // included in the object answer. Test that we are querying them when needed in those cases.
     boost::shared_ptr< libcmis::AllowableActions > toCheck = actual->getAllowableActions( );
     CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
             toCheck->isDefined( libcmis::ObjectAction::ApplyACL ) );
