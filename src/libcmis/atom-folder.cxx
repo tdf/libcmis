@@ -57,8 +57,11 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
+    // Some servers aren't giving the GetChildren properly... if not defined, we need to try
+    // as we may have the right to proceed.
     if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
-                !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetChildren ) ) )
+                ( !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetChildren ) &&
+                  getAllowableActions()->isDefined( libcmis::ObjectAction::GetChildren ) ) ) )
         throw libcmis::Exception( string( "GetChildren not allowed on node " ) + getId() );
 
     vector< libcmis::ObjectPtr > children;
