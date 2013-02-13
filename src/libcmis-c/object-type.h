@@ -77,6 +77,16 @@ libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
+/** The resulting value needs to be freed
+    \since libcmis 0.4
+  */
+char* libcmis_object_type_getParentTypeId( libcmis_ObjectTypePtr type );
+
+/** The resulting value needs to be freed
+    \since libcmis 0.4
+  */
+char* libcmis_object_type_getBaseTypeId( libcmis_ObjectTypePtr type );
+
 bool libcmis_object_type_isCreatable( libcmis_ObjectTypePtr type );
 bool libcmis_object_type_isFileable( libcmis_ObjectTypePtr type );
 bool libcmis_object_type_isQueryable( libcmis_ObjectTypePtr type );

@@ -107,6 +107,20 @@ namespace libcmis
             virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception );
             virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception );
             virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( ) throw ( Exception );
+
+            /** Get the parent type id without extracting the complete parent type from
+                the repository. This is mainly provided for performance reasons.
+
+                \since libcmis 0.4
+              */
+            std::string getParentTypeId( ) { return m_parentTypeId; }
+            
+            /** Get the base type id without extracting the complete base type from
+                the repository. This is mainly provided for performance reasons.
+
+                \since libcmis 0.4
+              */
+            std::string getBaseTypeId( ) { return m_baseTypeId; }
             
             bool isCreatable( ) { return m_creatable; }
             bool isFileable( ) { return m_fileable; }

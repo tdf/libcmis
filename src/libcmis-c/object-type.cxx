@@ -173,6 +173,30 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
 }
 
 
+char* libcmis_object_type_getParentTypeId( libcmis_ObjectTypePtr type )
+{
+    char* result = NULL;
+    if ( type != NULL && type->handle.get( ) != NULL )
+    {
+        result = strdup( type->handle->getParentTypeId( ).c_str() );
+    }
+
+    return result;
+}
+
+
+char* libcmis_object_type_getBaseTypeId( libcmis_ObjectTypePtr type )
+{
+    char* result = NULL;
+    if ( type != NULL && type->handle.get( ) != NULL )
+    {
+        result = strdup( type->handle->getBaseTypeId( ).c_str() );
+    }
+
+    return result;
+}
+
+
 libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type, libcmis_ErrorPtr error )
 {
