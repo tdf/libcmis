@@ -136,7 +136,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::Propert
 
     if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
                 !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateFolder ) ) )
-        throw libcmis::Exception( string( "CreateFolder not allowed on folder " ) + getId() );
+        throw libcmis::Exception( string( "CreateFolder not allowed on folder " ) + getId(), "permissionDenied" );
 
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
@@ -174,7 +174,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const map< string, libcmis::Propert
 
     libcmis::FolderPtr newFolder = boost::dynamic_pointer_cast< libcmis::Folder >( created );
     if ( !newFolder.get( ) )
-        throw libcmis::Exception( string( "Created object is not a folder: " ) + created->getId( ) );
+        throw libcmis::Exception( string( "Created object is not a folder: " ) + created->getId( ), "constraint" );
 
     return newFolder;
 }
