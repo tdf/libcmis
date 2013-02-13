@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/" xmlns:app="http://www.w3.org/2007/app">
+  <atom:author>
+    <atom:name>Admin</atom:name>
+  </atom:author>
+  <atom:id>Some obscure Id</atom:id>
+  <atom:published>2012-11-29T16:14:47Z</atom:published>
+  <atom:title>create folder</atom:title>
+  <app:edited>2012-11-29T16:14:47Z</app:edited>
+  <atom:updated>2012-11-29T16:14:47Z</atom:updated>
+  <cmisra:object xmlns:ns3="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+    <cmis:properties>
+      <cmis:propertyId queryName="cmis:allowedChildObjectTypeIds" displayName="Allowed Child Types" localName="cmis:allowedChildObjectTypeIds" propertyDefinitionId="cmis:allowedChildObjectTypeIds">
+        <cmis:value>*</cmis:value>
+      </cmis:propertyId>
+      <cmis:propertyString queryName="cmis:path" displayName="Path" localName="cmis:path" propertyDefinitionId="cmis:path">
+        <cmis:value>/create folder</cmis:value>
+      </cmis:propertyString>
+      <cmis:propertyString queryName="cmis:lastModifiedBy" displayName="Modified By" localName="cmis:lastModifiedBy" propertyDefinitionId="cmis:lastModifiedBy">
+        <cmis:value>Admin</cmis:value>
+      </cmis:propertyString>
+      <cmis:propertyId queryName="cmis:objectTypeId" displayName="Type-Id" localName="cmis:objectTypeId" propertyDefinitionId="cmis:objectTypeId">
+        <cmis:value>cmis:folder</cmis:value>
+      </cmis:propertyId>
+      <cmis:propertyString queryName="cmis:createdBy" displayName="Created By" localName="cmis:createdBy" propertyDefinitionId="cmis:createdBy">
+        <cmis:value>Admin</cmis:value>
+      </cmis:propertyString>
+      <cmis:propertyString queryName="cmis:name" displayName="Name" localName="cmis:name" propertyDefinitionId="cmis:name">
+        <cmis:value>create folder</cmis:value>
+      </cmis:propertyString>
+      <cmis:propertyId queryName="cmis:objectId" displayName="Object Id" localName="cmis:objectId" propertyDefinitionId="cmis:objectId">
+        <cmis:value>create-folder</cmis:value>
+      </cmis:propertyId>
+      <cmis:propertyDateTime queryName="cmis:creationDate" displayName="Creation Date" localName="cmis:creationDate" propertyDefinitionId="cmis:creationDate">
+        <cmis:value>2012-11-29T16:14:47.019Z</cmis:value>
+      </cmis:propertyDateTime>
+      <cmis:propertyString queryName="cmis:changeToken" displayName="Change Token" localName="cmis:changeToken" propertyDefinitionId="cmis:changeToken">
+        <cmis:value>1354205687020</cmis:value>
+      </cmis:propertyString>
+      <cmis:propertyId queryName="cmis:baseTypeId" displayName="Base-Type-Id" localName="cmis:baseTypeId" propertyDefinitionId="cmis:baseTypeId">
+        <cmis:value>cmis:folder</cmis:value>
+      </cmis:propertyId>
+      <cmis:propertyId queryName="cmis:parentId" displayName="Parent Id" localName="cmis:parentId" propertyDefinitionId="cmis:parentId">
+        <cmis:value>root-folder</cmis:value>
+      </cmis:propertyId>
+      <cmis:propertyDateTime queryName="cmis:lastModificationDate" displayName="Modification Date" localName="cmis:lastModificationDate" propertyDefinitionId="cmis:lastModificationDate">
+        <cmis:value>2012-11-29T16:14:47.020Z</cmis:value>
+      </cmis:propertyDateTime>
+    </cmis:properties>
+  </cmisra:object>
+  <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
+  <atom:link rel="self" href="http://mockup/mock/id?id=create-folder" type="application/atom+xml;type=entry" cmisra:id="create-folder"/>
+  <atom:link rel="enclosure" href="http://mockup/mock/id?id=create-folder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="edit" href="http://mockup/mock/id?id=create-folder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="describedby" href="http://mockup/mock/type?id=cmis%3Afolder" type="application/atom+xml;type=entry"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=create-folder" type="application/cmisallowableactions+xml"/>
+  <atom:link rel="up" href="http://mockup/mock/parents?id=create-folder" type="application/atom+xml;type=feed"/>
+  <atom:link rel="down" href="http://mockup/mock/children?id=create-folder" type="application/atom+xml;type=feed"/>
+  <atom:link rel="down" href="http://mockup/mock/descendants?id=create-folder" type="application/cmistree+xml"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/foldertree" href="http://mockup/mock/foldertree?id=create-folder" type="application/cmistree+xml"/>
+  <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=create-folder" type="application/cmisacl+xml"/>
+</atom:entry>

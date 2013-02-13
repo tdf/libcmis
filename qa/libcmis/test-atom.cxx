@@ -50,7 +50,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void createFolderTest( );
         void createFolderBadTypeTest( );
         void dumpDocumentToXmlTest( );
         void createDocumentTest( );
@@ -63,7 +62,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteDocumentTest );
@@ -76,39 +74,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 };
 
-void AtomTest::createFolderTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
-
-    // Prepare the properties for the new object, object type is cmis:folder
-    map< string, libcmis::PropertyPtr > props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
-    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-    // Set the object name
-    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
-    vector< string > nameValues;
-    nameValues.push_back( "createFolderTest" );
-    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
-    it = propTypes.find( string( "cmis:objectTypeId" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
-    vector< string > typeValues;
-    typeValues.push_back( "cmis:folder" );
-    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-    // Actually send the folder creation request
-    libcmis::FolderPtr created = parent->createFolder( props );
-
-    // Check that something came back
-    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
-            !created->getChangeToken( ).empty() );
-}
 
 void AtomTest::createFolderBadTypeTest( )
 {

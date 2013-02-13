@@ -74,7 +74,8 @@ class AtomTest : public CppUnit::TestFixture
         void getDocumentParentsTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
-        void updatePropertiesTest( ); 
+        void updatePropertiesTest( );
+        void createFolderTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -101,6 +102,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -681,6 +683,65 @@ void AtomTest::updatePropertiesTest( )
     // Check that the properties are updated after the call
     map< string, libcmis::PropertyPtr >::iterator propIt = updated->getProperties( ).find( propertyName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
+}
+
+void AtomTest::createFolderTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "POST", "data/atom-create-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "GET", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::FolderPtr parent = session.getRootFolder( );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    map< string, libcmis::PropertyPtr > props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    string expectedName( "create folder" );
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    vector< string > nameValues;
+    nameValues.push_back( expectedName );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+   
+    // set the object type 
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:folder" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Actually send the folder creation request
+    libcmis::FolderPtr created = parent->createFolder( props );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name", expectedName, created->getName( ) );
+
+    // Check that the proper request has been sent
+    string request( curl_mockup_getRequest( "http://mockup/mock/children", "id=root-folder", "POST" ) );
+    string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
+
+    string expectedObject = "<cmisra:object>"
+                                "<cmis:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>create folder</cmis:value>"
+                                    "</cmis:propertyString>"
+                                    "<cmis:propertyId propertyDefinitionId=\"cmis:objectTypeId\" localName=\"cmis:objectTypeId\""
+                                                          " displayName=\"Type-Id\" queryName=\"cmis:objectTypeId\">"
+                                        "<cmis:value>cmis:folder</cmis:value>"
+                                    "</cmis:propertyId>"
+                                "</cmis:properties>"
+                            "</cmisra:object>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request content sent", expectedObject, actualObject );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )
