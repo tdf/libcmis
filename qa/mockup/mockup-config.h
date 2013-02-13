@@ -54,9 +54,13 @@ void curl_mockup_reset( );
         if this value is true the response value is used as a file path,
         otherwise, the response value is used as the body of the HTTP
         response to send.
+    \param headers
+        the HTTP headers block to send with the response. By default
+        no header is sent.
   */
 void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* method,
-                              const char* response, unsigned int status = 0, bool isFilePath = true );
+                              const char* response, unsigned int status = 0, bool isFilePath = true,
+                              const char* headers = 0 );
 
 /** Set the HTTP response the server is supposed to send.
     This will reset all already defined responses.

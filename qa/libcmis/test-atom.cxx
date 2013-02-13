@@ -51,7 +51,6 @@ class AtomTest : public CppUnit::TestFixture
         // Node operations tests
 
         void dumpDocumentToXmlTest( );
-        void createDocumentTest( );
         void deleteDocumentTest( );
         void deleteTreeTest( );
         void checkOutTest( );
@@ -61,7 +60,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteTreeTest );
         CPPUNIT_TEST( checkOutTest );
@@ -71,50 +69,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::createDocumentTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
-
-    // Prepare the properties for the new object, object type is cmis:folder
-    map< string, libcmis::PropertyPtr > props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
-    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-    // Set the object name
-    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
-    vector< string > nameValues;
-    nameValues.push_back( "createDocumentTest" );
-    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
-    it = propTypes.find( string( "cmis:objectTypeId" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
-    vector< string > typeValues;
-    typeValues.push_back( "cmis:document" );
-    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-    // Actually send the document creation request
-    string contentStr = "Some content";
-    boost::shared_ptr< ostream > os ( new stringstream( contentStr ) );
-    string contentType = "text/plain";
-    string filename( "name.txt" );
-    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, filename );
-
-    // Check that something came back
-    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
-            !created->getChangeToken( ).empty() );
-
-    // Check that the content is properly set
-    shared_ptr< istream >  is = created->getContentStream( );
-    stringstream buf;
-    buf << is->rdbuf();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content set", contentStr, buf.str( ) );
-}
 
 void AtomTest::deleteDocumentTest( )
 {

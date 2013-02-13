@@ -129,7 +129,7 @@
   <atom:link rel="self" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry" cmisra:id="test-document"/>
   <atom:link rel="enclosure" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry"/>
   <atom:link rel="edit" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry"/>
-  <atom:link rel="describedby" href="http://mockup/mock/type?id=ComplexType" type="application/atom+xml;type=entry"/>
+  <atom:link rel="describedby" href="http://mockup/mock/type?id=DocumentLevel2" type="application/atom+xml;type=entry"/>
   <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/allowableactions" href="http://mockup/mock/allowableactions?id=test-document" type="application/cmisallowableactions+xml"/>
   <atom:link rel="up" href="http://mockup/mock/parents?id=test-document" type="application/atom+xml;type=feed"/>
   <atom:link rel="edit-media" href="http://mockup/mock/content?id=test-document" type="text/plain"/>

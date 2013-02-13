@@ -50,10 +50,11 @@ namespace
 
 namespace mockup
 {
-    Response::Response( string response, unsigned int status, bool isFilePath ) :
+    Response::Response( string response, unsigned int status, bool isFilePath, string headers ) :
         m_response( response ),
         m_status( status ),
-        m_isFilePath( isFilePath )
+        m_isFilePath( isFilePath ),
+        m_headers( headers )
     {
     }
 
@@ -105,6 +106,7 @@ namespace mockup
     {
         CURLcode code = CURLE_OK;
 
+        string headers;
         string response;
         bool isFilePath = true;
         const string& url = handle->m_url;
@@ -128,7 +130,16 @@ namespace mockup
                 response = it->second.m_response;
                 handle->m_httpError = it->second.m_status;
                 isFilePath = it->second.m_isFilePath;
+                headers = it->second.m_headers;
             }
+        }
+
+        // Output headers is any
+        if ( !headers.empty() )
+        {
+            char* buf = strdup( headers.c_str() );
+            handle->m_headersFn( buf, 1, headers.size( ), handle->m_headersData );
+            delete( buf );
         }
 
         // If nothing matched, then send a 404 HTTP error instead
@@ -163,10 +174,11 @@ namespace mockup
         }
 
         // What curl error code to give?
-        if ( handle->m_httpError != 0 )
-            code = CURLE_HTTP_RETURNED_ERROR;
-        else
+        if ( handle->m_httpError == 0 )
             handle->m_httpError = 200;
+
+        if ( handle->m_httpError < 200 || handle->m_httpError >= 300 )
+            code = CURLE_HTTP_RETURNED_ERROR;
 
         return code;
     }
@@ -182,13 +194,19 @@ void curl_mockup_reset( )
 }
 
 void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* method,
-                              const char* response, unsigned int status, bool isFilePath )
+                              const char* response, unsigned int status, bool isFilePath,
+                              const char* headers )
 {
     mockup::RequestMatcher matcher( urlBase, matchParam, method );
     map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
-    mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, mockup::Response( response, status, isFilePath ) ) );
+
+    string headersStr;
+    if ( headers != NULL )
+        headersStr = headers;
+    mockup::Response responseDesc( response, status, isFilePath, headersStr );
+    mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, responseDesc ) );
 }
 
 void curl_mockup_setResponse( const char* filepath )

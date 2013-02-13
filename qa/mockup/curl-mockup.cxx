@@ -148,6 +148,16 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
             handle->m_readSize = va_arg( arg, long );
             break;
         }
+        case CURLOPT_HEADERFUNCTION:
+        {
+            handle->m_headersFn = va_arg( arg, headers_callback ); 
+            break;
+        }
+        case CURLOPT_WRITEHEADER:
+        {
+            handle->m_headersData = va_arg( arg, void* );
+            break;
+        }
         case CURLOPT_USERNAME:
         {
             handle->m_username = string( va_arg( arg, char* ) );
@@ -279,6 +289,8 @@ CurlHandle::CurlHandle( ) :
     m_readFn( NULL ),
     m_readData( NULL ),
     m_readSize( 0 ),
+    m_headersFn( NULL ),
+    m_headersData( NULL ),
     m_username( ),
     m_password( ),
     m_proxy( ),
@@ -297,6 +309,8 @@ CurlHandle::CurlHandle( const CurlHandle& copy ) :
     m_readFn( copy.m_readFn ),
     m_readData( copy.m_readData ),
     m_readSize( copy.m_readSize ),
+    m_headersFn( copy.m_headersFn ),
+    m_headersData( copy.m_headersData ),
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_proxy( copy.m_proxy ),
@@ -318,6 +332,8 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
         m_readFn = copy.m_readFn;
         m_readData = copy.m_readData;
         m_readSize = copy.m_readSize;
+        m_headersFn = copy.m_headersFn;
+        m_headersData = copy.m_headersData;
         m_username = copy.m_username;
         m_password = copy.m_password;
         m_httpError = copy.m_httpError;

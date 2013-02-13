@@ -32,6 +32,7 @@
 
 typedef size_t ( *write_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
 typedef size_t ( *read_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
+typedef size_t ( *headers_callback )( char *ptr, size_t size, size_t nmemb, void *userdata );
 
 class CurlHandle
 {
@@ -47,6 +48,8 @@ class CurlHandle
         read_callback m_readFn;
         void* m_readData;
         long m_readSize;
+        headers_callback m_headersFn;
+        void* m_headersData;
 
         std::string m_username;
         std::string m_password;
@@ -66,11 +69,13 @@ namespace mockup
     class Response
     {
         public:
-            Response( std::string response, unsigned int status, bool isFilePath );
+            Response( std::string response, unsigned int status, bool isFilePath,
+                      std::string headers );
 
             std::string m_response;
             unsigned int m_status;
             bool m_isFilePath;
+            std::string m_headers;
     };
 
     class Request

@@ -185,7 +185,8 @@ libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::Pro
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
     if ( ( NULL == childrenLink ) || ( getAllowableActions( ).get() &&
-                !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) ) )
+                !getAllowableActions()->isAllowed( libcmis::ObjectAction::CreateDocument ) &&
+                getAllowableActions()->isDefined( libcmis::ObjectAction::CreateDocument ) ) )
         throw libcmis::Exception( string( "CreateDocument not allowed on folder " ) + getId() );
 
     stringstream ss;
@@ -210,9 +211,37 @@ libcmis::DocumentPtr AtomFolder::createDocument( const map< string, libcmis::Pro
     }
 
     string respBuf = response->getStream( )->str( );
-    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
+    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, XML_PARSE_NOERROR );
     if ( NULL == doc )
-        throw libcmis::Exception( "Failed to parse object infos" );
+    {
+        // We may not have the created document entry in the response body: this is
+        // the behaviour of some servers, but the standard says we need to look for
+        // the Location header.
+        map< string, string >& headers = response->getHeaders( );
+        map< string, string >::iterator it = headers.find( "Location" );
+
+        // Some servers like Lotus Live aren't sending Location header, but Content-Location
+        if ( it == headers.end( ) )
+            it = headers.find( "Content-Location" );
+
+        if ( it != headers.end() )
+        {
+            try
+            {
+                response = getSession( )->httpGetRequest( it->second );
+                respBuf = response->getStream( )->str( );
+                doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, XML_PARSE_NOERROR );
+            }
+            catch ( const CurlException& e )
+            {
+                throw e.getCmisException( );
+            }
+        }
+
+        // if doc is still NULL after that, then throw an exception
+        if ( NULL == doc )
+            throw libcmis::Exception( "Missing expected response from server" );
+    }
 
     libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
     xmlFreeDoc( doc );

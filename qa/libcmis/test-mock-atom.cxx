@@ -77,6 +77,7 @@ class AtomTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
+        void createDocumentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -105,6 +106,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -809,6 +811,81 @@ void AtomTest::createFolderBadTypeTest( )
                                 "</cmis:properties>"
                             "</cmisra:object>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request content sent", expectedObject, actualObject );
+}
+
+void AtomTest::createDocumentTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "POST", "Response body up to server", 201, false,
+           "Location: http://mockup/mock/id?id=create-document\r\n" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=create-document", "GET", "data/atom-create-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "GET", "data/atom-root-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", "data/atom-type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", "data/atom-type-document.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::FolderPtr parent = session.getRootFolder( );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    map< string, libcmis::PropertyPtr > props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    string expectedName( "create document" );
+
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    vector< string > nameValues;
+    nameValues.push_back( expectedName );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+   
+    // set the object type 
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:document" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Actually send the document creation request
+    string content = "Some content";
+    boost::shared_ptr< ostream > os ( new stringstream( content ) );
+    string contentType = "text/plain";
+    string filename( "name.txt" );
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, filename );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+
+    // Check that the name is ok
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name set", expectedName, created->getName( ) );
+
+    // Check that the request is the expected one
+    string request( curl_mockup_getRequest( "http://mockup/mock/children", "id=root-folder", "POST" ) );
+    string actualContent = test::getXmlNodeAsString( request, "/atom:entry/cmisra:content" );
+    string expectedContent = "<cmisra:content>"
+                                "<cmisra:mediatype>text/plain</cmisra:mediatype>"
+                                "<cmisra:base64>U29tZSBjb250ZW50</cmisra:base64>"
+                             "</cmisra:content>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request content sent", expectedContent, actualContent );
+
+    string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
+    string expectedObject = "<cmisra:object>"
+                                "<cmis:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>create document</cmis:value>"
+                                    "</cmis:propertyString>"
+                                    "<cmis:propertyId propertyDefinitionId=\"cmis:objectTypeId\" localName=\"cmis:objectTypeId\""
+                                                          " displayName=\"Type-Id\" queryName=\"cmis:objectTypeId\">"
+                                        "<cmis:value>cmis:document</cmis:value>"
+                                    "</cmis:propertyId>"
+                                "</cmis:properties>"
+                            "</cmisra:object>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request object sent", expectedObject, actualObject );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )
