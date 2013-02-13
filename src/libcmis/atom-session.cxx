@@ -235,7 +235,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
         {
             string msg = "No such node: ";
             msg += id;
-            throw libcmis::Exception( msg );
+            throw libcmis::Exception( msg, "objectNotFound" );
         }
         else
             throw e.getCmisException();
@@ -265,7 +265,7 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmi
         {
             string msg = "No node corresponding to path: ";
             msg += path;
-            throw libcmis::Exception( msg );
+            throw libcmis::Exception( msg, "objectNotFound" );
         }
         else
             throw e.getCmisException();

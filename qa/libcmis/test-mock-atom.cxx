@@ -296,6 +296,7 @@ void AtomTest::getUnexistantTypeTest( )
     }
     catch ( const libcmis::Exception& e )
     {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "objectNotFound" ), e.getType() );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such type: bad_type" ), string( e.what() ) );
     }
 }
@@ -435,6 +436,7 @@ void AtomTest::getUnexistantObjectTest( )
     }
     catch ( const libcmis::Exception& e )
     {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong CMIS exception type", string( "objectNotFound" ), e.getType() );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
     }
 }
@@ -467,6 +469,7 @@ void AtomTest::getByPathInvalidTest( )
     }
     catch ( const libcmis::Exception& e )
     {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "objectNotFound" ), e.getType() );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
                 string( "No node corresponding to path: /some/invalid/path" ), string( e.what() ) );
     }

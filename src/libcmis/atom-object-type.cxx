@@ -161,7 +161,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
             {
                 string msg = "No such type: ";
                 msg += getId( );
-                throw libcmis::Exception( msg );
+                throw libcmis::Exception( msg, "objectNotFound" );
             }
             else
                 throw e.getCmisException( );
