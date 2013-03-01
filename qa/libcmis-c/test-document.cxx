@@ -53,8 +53,8 @@ namespace
         rewind( file );
 
         char* buf = new char[size + 1];
-        fread( buf, 1, size, file );
-        buf[ size ] = '\0';
+        size_t readbytes = fread( buf, 1, size, file );
+        buf[ readbytes ] = '\0';
 
         string result( buf );
         delete[] buf;
