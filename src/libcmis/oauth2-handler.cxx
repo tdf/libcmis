@@ -130,7 +130,7 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
 string OAuth2Handler::getAuthURL( )
 {
     return m_data->getAuthUrl() + "?scope=" +
-            libcmis::escape( m_data->getScopes() ) + "+" +
+            libcmis::escape( m_data->getScope() ) + "+" +
             "&redirect_uri="+ m_data->getRedirectUri() +
             "&response_type=code"
             "&client_id="+ m_data->getClientId();

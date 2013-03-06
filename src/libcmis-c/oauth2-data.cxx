@@ -33,14 +33,14 @@ using namespace std;
 
 
 libcmis_OAuth2DataPtr libcmis_oauth2data_create(
-        char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,
+        char* authUrl, char* tokenUrl, char* scope, char* redirectUri,
         char* clientId, char* clientSecret,
         libcmis_OAuth2AuthCodeProvider authCodeProvider = NULL )
 {
     libcmis_OAuth2DataPtr data = new libcmis_oauth2data( );
 
     data->handle.reset( new libcmis::OAuth2Data(
-               authUrl, tokenUrl, scopes, redirectUri,
+               authUrl, tokenUrl, scope, redirectUri,
                clientId, clientSecret, authCodeProvider ) );
 
     return data;
@@ -94,10 +94,10 @@ const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 )
 }
 
 
-const char* libcmis_oauth2data_getScopes( libcmis_OAuth2DataPtr oauth2 )
+const char* libcmis_oauth2data_getScope( libcmis_OAuth2DataPtr oauth2 )
 {
     if ( oauth2 != NULL && oauth2->handle != NULL )
-        return oauth2->handle->getScopes().c_str();
+        return oauth2->handle->getScope().c_str();
     return NULL;
 }
 

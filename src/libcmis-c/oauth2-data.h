@@ -48,7 +48,7 @@ const char* libcmis_oauth2data_getAuthUrl( libcmis_OAuth2DataPtr oauth2 );
 const char* libcmis_oauth2data_getTokenUrl( libcmis_OAuth2DataPtr oauth2 );
 const char* libcmis_oauth2data_getClientId( libcmis_OAuth2DataPtr oauth2 );
 const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getScopes( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getScope( libcmis_OAuth2DataPtr oauth2 );
 const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 );
 
 libcmis_OAuth2AuthCodeProvider libcmis_oauth2data_getAuthCodeProvider( libcmis_OAuth2DataPtr oauth2 );

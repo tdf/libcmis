@@ -46,7 +46,7 @@ namespace libcmis
             std::string m_tokenUrl;
             std::string m_clientId;
             std::string m_clientSecret;
-            std::string m_scopes;
+            std::string m_scope;
             std::string m_redirectUri;
 
             OAuth2AuthCodeProvider m_authCodeProvider;
@@ -55,7 +55,7 @@ namespace libcmis
 
             OAuth2Data( );
             OAuth2Data( std::string authUrl, std::string tokenUrl,
-                           std::string scopes, std::string redirectUri,
+                           std::string scope, std::string redirectUri,
                            std::string clientId, std::string clientSecret,
                            OAuth2AuthCodeProvider authCodeProvider = NULL );
 
@@ -70,7 +70,7 @@ namespace libcmis
             std::string getTokenUrl() { return m_tokenUrl; }
             std::string getClientId() { return m_clientId; }
             std::string getClientSecret() { return m_clientSecret; }
-            std::string getScopes() { return m_scopes; }
+            std::string getScope() { return m_scope; }
             std::string getRedirectUri() { return m_redirectUri; }
 
             OAuth2AuthCodeProvider getAuthCodeProvider() { return m_authCodeProvider; }

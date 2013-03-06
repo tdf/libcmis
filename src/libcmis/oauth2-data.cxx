@@ -37,21 +37,21 @@ namespace libcmis
         m_tokenUrl( ),
         m_clientId( ),
         m_clientSecret( ),
-        m_scopes( ),
+        m_scope( ),
         m_redirectUri( ),
         m_authCodeProvider( NULL )
     {
     }
 
     OAuth2Data::OAuth2Data( string authUrl, string tokenUrl,
-                           string scopes, string redirectUri,
+                           string scope, string redirectUri,
                            string clientId, string clientSecret,
                            OAuth2AuthCodeProvider authCodeProvider ) :
         m_authUrl( authUrl ),
         m_tokenUrl( tokenUrl ),
         m_clientId( clientId ),
         m_clientSecret( clientSecret ),
-        m_scopes( scopes ),
+        m_scope( scope ),
         m_redirectUri( redirectUri ),
         m_authCodeProvider( authCodeProvider )
     {
@@ -62,7 +62,7 @@ namespace libcmis
         m_tokenUrl( copy.m_tokenUrl ),
         m_clientId( copy.m_clientId ),
         m_clientSecret( copy.m_clientSecret ),
-        m_scopes( copy.m_scopes ),
+        m_scope( copy.m_scope ),
         m_redirectUri( copy.m_redirectUri ),
         m_authCodeProvider( copy.m_authCodeProvider )
     {
@@ -80,7 +80,7 @@ namespace libcmis
             m_tokenUrl = copy.m_tokenUrl;
             m_clientId = copy.m_clientId;
             m_clientSecret = copy.m_clientSecret;
-            m_scopes = copy.m_scopes;
+            m_scope = copy.m_scope;
             m_redirectUri = copy.m_redirectUri;
             m_authCodeProvider = copy.m_authCodeProvider;
         }
@@ -94,7 +94,7 @@ namespace libcmis
                !m_tokenUrl.empty() &&
                !m_clientId.empty() &&
                !m_clientSecret.empty() &&
-               !m_scopes.empty() &&
+               !m_scope.empty() &&
                !m_redirectUri.empty();
     }
 }
