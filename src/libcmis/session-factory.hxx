@@ -33,6 +33,7 @@
 #include <string>
 
 #include "exception.hxx"
+#include "oauth2-data.hxx"
 #include "repository.hxx"
 #include "session.hxx"
 
@@ -50,7 +51,7 @@ namespace libcmis
             virtual bool authenticationQuery( std::string& username, std::string& password ) = 0;
     };
     typedef ::boost::shared_ptr< AuthProvider > AuthProviderPtr;
-
+    
     class SessionFactory
     {
         private:
@@ -62,10 +63,15 @@ namespace libcmis
             static std::string s_proxyUser;
             static std::string s_proxyPass;
 
+            static OAuth2AuthCodeProvider s_oauth2AuthCodeProvider;
+
         public:
 
             static void setAuthenticationProvider( AuthProviderPtr provider ) { s_authProvider = provider; }
             static AuthProviderPtr getAuthenticationProvider( ) { return s_authProvider; }
+            
+            static void setOAuth2AuthCodeProvider( OAuth2AuthCodeProvider provider ) { s_oauth2AuthCodeProvider = provider; }
+            static OAuth2AuthCodeProvider getOAuth2AuthCodeProvider( ) { return s_oauth2AuthCodeProvider; }
 
             static void setProxySettings( std::string proxy,
                     std::string noProxy,
@@ -86,8 +92,17 @@ namespace libcmis
                     std::string username = std::string( ),
                     std::string password = std::string( ),
                     std::string repositoryId = std::string( ),
-                    bool verbose = false ) throw ( Exception );
+                    OAuth2DataPtr oauth2 = OAuth2DataPtr(), bool verbose = false ) throw ( Exception );
 
+            /**
+                Gets the informations of the repositories on the server.
+
+                \deprecated
+                    Since libcmis 0.4.0, this helper function simply creates a session
+                    using the createSession function with no repository and then calls
+                    getRepositories on the resulting session.
+                    Kept only for backward API compatibility.
+              */
             static std::list< RepositoryPtr > getRepositories( std::string bindingUrl,
                     std::string username = std::string( ),
                     std::string password = std::string( ),

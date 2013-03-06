@@ -145,6 +145,13 @@ struct libcmis_document : public libcmis_object
     }
 };
 
+struct libcmis_oauth2data
+{
+    libcmis::OAuth2DataPtr handle;
+
+    libcmis_oauth2data( ) : handle( ) { }
+};
+
 struct libcmis_vector_bool
 {
     std::vector< bool > handle;

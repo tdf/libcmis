@@ -1,3 +1,4 @@
+
 /* libcmis
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -25,8 +26,8 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _SESSION_FACTORY_H_
-#define _SESSION_FACTORY_H_
+#ifndef _LIBCMIS_OAUTH2_DATA_H_
+#define _LIBCMIS_OAUTH2_DATA_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,34 +35,23 @@ extern "C" {
 
 #include "types.h"
 
-void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+libcmis_OAuth2DataPtr libcmis_oauth2data_create(
+        char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,
+        char* clientId, char* clientSecret,
+        libcmis_OAuth2AuthCodeProvider authCodeProvider = NULL );
 
-void libcmis_setProxySettings(
-        char* proxy,
-        char* noProxy,
-        char* proxyUser,
-        char* proxyPass );
+void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 );
 
-const char* libcmis_getProxy( );
-const char* libcmis_getNoProxy( );
-const char* libcmis_getProxyUser( );
-const char* libcmis_getProxyPass( );
+bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 );
 
-libcmis_SessionPtr libcmis_createSession(
-        char* bindingUrl,
-        char* repositoryId,
-        char* username,
-        char* password,
-        libcmis_OAuth2DataPtr oauth2,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+const char* libcmis_oauth2data_getAuthUrl( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getTokenUrl( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getClientId( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getScopes( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 );
 
-libcmis_RepositoryPtr* libcmis_getRepositories(
-        char* bindingUrl,
-        char* username,
-        char* password,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+libcmis_OAuth2AuthCodeProvider libcmis_oauth2data_getAuthCodeProvider( libcmis_OAuth2DataPtr oauth2 );
 
 #ifdef __cplusplus
 }

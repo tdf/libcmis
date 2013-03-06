@@ -168,6 +168,15 @@ typedef struct libcmis_session* libcmis_SessionPtr;
 typedef bool ( *libcmis_authenticationCallback )( char* username, char* password );
 
 
+/* OAuth2Data */
+
+
+typedef struct libcmis_oauth2data* libcmis_OAuth2DataPtr;
+
+typedef char* ( *libcmis_OAuth2AuthCodeProvider )( const char* authUrl,
+        const char* username, const char* password );
+
+
 /* Vectors of simple types */
 
 

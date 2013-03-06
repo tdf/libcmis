@@ -52,15 +52,12 @@ class WSSession : public BaseSession, public SoapSession
     public:
         WSSession( std::string bindingUrl, std::string repositoryId,
                    std::string username, std::string password,
+                   libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                    bool verbose = false ) throw ( libcmis::Exception );
         WSSession( const WSSession& copy );
         ~WSSession( );
 
         WSSession& operator=( const WSSession& copy );
-
-        static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
-                        std::string username, std::string password,
-                        bool verbose = false ) throw ( libcmis::Exception );
 
         // Utility methods
 

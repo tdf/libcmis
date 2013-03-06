@@ -154,6 +154,10 @@ namespace libcmis
     std::string tolower( std::string sText );
 
     int stringstream_write_callback(void * context, const char * s, int len);
+
+    std::string escape( std::string str );
+
+    std::string unescape( std::string str );
 }
 
 #endif

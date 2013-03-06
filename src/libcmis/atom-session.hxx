@@ -39,15 +39,12 @@ class AtomPubSession : public BaseSession
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         std::string username, std::string password,
+                        libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                         bool verbose =false ) throw ( libcmis::Exception );
         AtomPubSession( const AtomPubSession& copy );
         ~AtomPubSession( );
 
         AtomPubSession& operator=( const AtomPubSession& copy );
-
-        static std::list< libcmis::RepositoryPtr > getRepositories( std::string url,
-                        std::string username, std::string password,
-                        bool verbose = false ) throw ( libcmis::Exception );
 
         AtomRepositoryPtr getAtomRepository( ) throw ( libcmis::Exception );
 

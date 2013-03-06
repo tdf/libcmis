@@ -13,6 +13,7 @@ if ENABLE_TESTS
 check_PROGRAMS = \
 	test-nosrv-utils \
 	test-nosrv-mockup \
+	test-nosrv-gdrive \
 	test-atom \
 	test-ws
 
@@ -48,13 +49,35 @@ test_nosrv_mockup_CPPFLAGS = \
 	-I$(top_builddir)/qa/mockup \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
+	$(JSON_CPPFLAGS) \
 	-O0
 
 test_nosrv_mockup_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)
+	$(BOOST_DATE_TIME_LIBS)\
+	$(JSON_LIBS)
+
+test_nosrv_gdrive_SOURCES =	\
+	test-helpers.cxx \
+	test-main.cxx \
+	test-gdrive.cxx
+
+test_nosrv_gdrive_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_builddir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	$(JSON_CPPFLAGS) \
+	-O0
+
+test_nosrv_gdrive_LDADD = \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)\
+	$(JSON_LIBS)
 
 test_atom_SOURCES =	\
 	test-atom.cxx \
@@ -96,6 +119,8 @@ test_ws_LDADD = \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
+
+
 if ENABLE_LONG_TESTS
 long_tests = \
 	test-atom \
@@ -103,6 +128,6 @@ long_tests = \
 endif
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils test-nosrv-mockup ${long_tests}
+TESTS = test-nosrv-utils test-nosrv-mockup test-nosrv-gdrive ${long_tests}
 
 endif

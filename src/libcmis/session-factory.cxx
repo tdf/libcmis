@@ -34,6 +34,7 @@ using namespace std;
 namespace libcmis
 {
     AuthProviderPtr SessionFactory::s_authProvider;
+    OAuth2AuthCodeProvider SessionFactory::s_oauth2AuthCodeProvider;
 
     string SessionFactory::s_proxy;
     string SessionFactory::s_noProxy;
@@ -50,7 +51,7 @@ namespace libcmis
     }
 
     Session* SessionFactory::createSession( string bindingUrl, string username,
-            string password, string repository,
+            string password, string repository, libcmis::OAuth2DataPtr oauth2,
             bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
@@ -59,7 +60,8 @@ namespace libcmis
         {
             try
             {
-                session = new AtomPubSession( bindingUrl, repository, username, password, verbose );
+                session = new AtomPubSession( bindingUrl, repository, username, password,
+                                              oauth2, verbose );
             }
             catch ( const Exception& e )
             {
@@ -72,7 +74,8 @@ namespace libcmis
                 // We couldn't get an AtomSession, we may have an URL for the WebService binding
                 try
                 {
-                    session = new WSSession( bindingUrl, repository, username, password, verbose );
+                    session = new WSSession( bindingUrl, repository, username, password,
+                                             oauth2, verbose );
                 }
                 catch ( const Exception& e )
                 {
@@ -90,34 +93,10 @@ namespace libcmis
     {
         list< RepositoryPtr > repos;
 
-        if ( !bindingUrl.empty( ) )
-        {
-            bool tryNext = true;
-            try
-            {
-                repos = AtomPubSession::getRepositories( bindingUrl, username, password, verbose );
-                tryNext = false;
-            }
-            catch ( const Exception& e )
-            {
-                if ( e.getType( ) == "permissionDenied" )
-                    throw;
-            }
-            
-            if ( tryNext )
-            {
-                // It didn't work with AtomSession, we may have an URL for the WebService binding
-                try
-                {
-                    repos = WSSession::getRepositories( bindingUrl, username, password, verbose );
-                }
-                catch ( const Exception& e )
-                {
-                    if ( e.getType( ) == "permissionDenied" )
-                        throw;
-                }
-            }
-        }
+        Session* session = createSession( bindingUrl, username, password,
+                                          string(), OAuth2DataPtr(), verbose );
+        if ( session != NULL )
+            repos = session->getRepositories( );
 
         return repos;
     }

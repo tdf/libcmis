@@ -42,6 +42,19 @@
 using namespace std;
 using namespace ::boost::program_options;
 
+namespace
+{
+    char* lcl_queryAuthCode( const char* url, const char* /*username*/, const char* /*password*/ )
+    {
+        string code;
+        cout << "Copy the following link to your browser and take the code: " << endl << endl << url << endl << endl;
+        cout << "Enter the code:" << endl;
+        cin >> code;
+
+        return strdup( code.c_str( ) );
+    }
+}
+
 class CommandException : public exception
 {
     private:
@@ -69,7 +82,7 @@ class CmisClient
     public:
         CmisClient( variables_map& vm ) : m_vm( vm ) { }
 
-        libcmis::Session* getSession( ) throw ( CommandException, libcmis::Exception );
+        libcmis::Session* getSession( bool inGetRepositories = false ) throw ( CommandException, libcmis::Exception );
 
         void execute( ) throw ( exception );
 
@@ -103,7 +116,7 @@ map< string, string > CmisClient::getObjectProperties( )
     return result;
 }
 
-libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::Exception )
+libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( CommandException, libcmis::Exception )
 {
     if ( m_vm.count( "url" ) == 0 )
         throw CommandException( "Missing binding URL" );
@@ -145,20 +158,62 @@ libcmis::Session* CmisClient::getSession( ) throw ( CommandException, libcmis::E
     bool verbose = m_vm.count( "verbose" ) > 0;
 
     string repoId;
-    list< libcmis::RepositoryPtr > repositories = libcmis::SessionFactory::getRepositories(
-            url, username, password, verbose );
-    if ( repositories.size( ) == 1 )
-        repoId = repositories.front( )->getId( );
-    else
+    // The repository ID is needed to initiate a session
+    if ( m_vm.count( "repository" ) == 0 && !inGetRepositories )
     {
-        // The repository ID is needed to initiate a session
-        if ( m_vm.count( "repository" ) != 1 )
+        // Do we have a single repository on the server?
+        libcmis::Session* session = getSession( true );
+        if ( session != NULL )
+        {
+            list< libcmis::RepositoryPtr > repos = session->getRepositories();
+            if ( repos.size() == 1 )
+                repoId = repos.front( )->getId( );
+        }
+        delete session;
+
+        // We couldn't auto-guess the repository, then throw an error
+        if ( repoId.empty( ) )
             throw CommandException( "Missing repository ID" );
-        
+    }
+    else if ( m_vm.count( "repository" ) > 0 )
+    {
         repoId = m_vm["repository"].as< string >();
     }
 
-    return libcmis::SessionFactory::createSession( url, username, password, repoId, verbose );
+    // Should we use OAuth2?
+    string oauth2ClientId;
+    string oauth2ClientSecret;
+    string oauth2AuthUrl;
+    string oauth2TokenUrl;
+    string oauth2RedirectUri;
+    string oauth2Scope;
+    if ( m_vm.count( "oauth2-client-id" ) > 0 )
+        oauth2ClientId = m_vm["oauth2-client-id"].as< string >();
+    if ( m_vm.count( "oauth2-client-secret" ) > 0 )
+        oauth2ClientSecret = m_vm["oauth2-client-secret"].as< string >();
+    if ( m_vm.count( "oauth2-auth-url" ) > 0 )
+        oauth2AuthUrl = m_vm["oauth2-auth-url"].as< string >();
+    if ( m_vm.count( "oauth2-token-url" ) > 0 )
+        oauth2TokenUrl = m_vm["oauth2-token-url"].as< string >();
+    if ( m_vm.count( "oauth2-redirect-uri" ) > 0 )
+        oauth2RedirectUri = m_vm["oauth2-redirect-uri"].as< string >();
+    if ( m_vm.count( "oauth2-scope" ) > 0 )
+        oauth2Scope = m_vm["oauth2-scope"].as< string >();
+
+    libcmis::OAuth2DataPtr oauth2Data( new libcmis::OAuth2Data( oauth2AuthUrl, oauth2TokenUrl,
+                oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret ) );
+
+    if ( oauth2Data->isComplete( ) )
+    {
+        // Set the fallback AuthCode provider
+        libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_queryAuthCode );
+    }
+    else
+    {
+        oauth2Data.reset( );
+    }
+
+    return libcmis::SessionFactory::createSession( url, username, password, repoId, oauth2Data, verbose );
 }
 
 void CmisClient::execute( ) throw ( exception )
@@ -174,51 +229,19 @@ void CmisClient::execute( ) throw ( exception )
         string command = m_vm["command"].as<string>();
         if ( "list-repos" == command )
         {
-            if ( m_vm.count( "url" ) == 0 )
-                throw CommandException( "Missing binding URL" );
-            
-            string url = m_vm["url"].as<string>();
-
-            // Look for the credentials
-            string username;
-            string password;
-            if ( m_vm.count( "username" ) > 0 )
+            libcmis::Session* session = getSession( true );
+            if ( session != NULL )
             {
-                username = m_vm["username"].as< string >();
-
-                if ( m_vm.count( "password" ) > 0 )
-                    password = m_vm["password"].as< string >();
-            }
-
-            // Look for proxy settings
-            string proxyUrl;
-            string proxyUser;
-            string proxyPass;
-            string noproxy;
-            if ( m_vm.count( "proxy" ) > 0 )
-            {
-                proxyUrl = m_vm["proxy"].as< string >();
-
-                if ( m_vm.count( "proxy-user" ) > 0 )
-                    proxyUser = m_vm["proxy-user"].as< string >();
-                
-                if ( m_vm.count( "proxy-password" ) > 0 )
-                    proxyPass = m_vm["proxy-password"].as< string >();
-
-                if ( m_vm.count( "noproxy" ) > 0 )
-                    noproxy = m_vm["noproxy"].as< string >();
-
-                libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
-            }
-
-            bool verbose = m_vm.count( "verbose" ) > 0;
-
-            list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
-                    url, username, password, verbose );
+                list< libcmis::RepositoryPtr > repos = session->getRepositories();
         
-            cout << "Repositories: name (id)" << endl;
-            for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
-                cout << "\t" << ( *it )->getName( ) << " (" << ( *it )->getId( ) << ")" << endl;
+                cout << "Repositories: name (id)" << endl;
+                for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
+                    cout << "\t" << ( *it )->getName( ) << " (" << ( *it )->getId( ) << ")" << endl;
+            }
+            else
+            {
+                cerr << "Couldn't create a session for some reason" << endl;
+            }
         }
         else if ( "show-root" == command )
         {
@@ -875,6 +898,12 @@ options_description CmisClient::getOptionsDescription( )
                                         "through the proxy" )
         ( "proxy-username", value< string >(), "Username to authenticate on the proxy" )
         ( "proxy-password", value< string >(), "Password to authenticate on the proxy" )
+        ( "oauth2-client-id", value< string >(), "OAuth2 application client_id" )
+        ( "oauth2-client-secret", value< string >(), "OAuth2 application client_secret" )
+        ( "oauth2-auth-url", value< string >(), "URL to authenticate in the OAuth2 flow" )
+        ( "oauth2-token-url", value< string >(), "URL to convert code to tokens in the OAuth2 flow" )
+        ( "oauth2-redirect-uri", value< string >(), "redirect URI indicating that the authentication is finished in OAuth2 flow" )
+        ( "oauth2-scope", value< string >(), "The authentication scope in OAuth2" )
     ;
 
     options_description setcontentOpts( "modification operations options" );

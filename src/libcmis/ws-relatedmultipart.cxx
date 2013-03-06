@@ -299,13 +299,7 @@ boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipar
             {
                 id = href.substr( 4 );
                 // URL-decode the id
-#if LIBCURL_VERSION_VALUE >= 0x070F04
-                char* escaped = curl_easy_unescape( NULL, id.c_str(), id.length(), NULL );
-#else
-                char* escaped = curl_unescape( id.c_str(), id.length() );
-#endif
-                id = string( escaped );
-                curl_free( escaped );
+                id = libcmis::unescape( id );
             }
             RelatedPartPtr part = multipart.getPart( id );
             if ( part != NULL )

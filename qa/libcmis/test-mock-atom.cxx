@@ -51,12 +51,11 @@ using namespace std;
 class AtomTest : public CppUnit::TestFixture
 {
     public:
-        void getRepositoriesTest( );
-        void getRepositoriesBadAuthTest( );
         void sessionCreationTest( );
         void sessionCreationBadAuthTest( );
         void sessionCreationProxyTest( );
         void authCallbackTest( );
+        void getRepositoriesTest( );
         void getTypeTest( );
         void getUnexistantTypeTest( );
         void getTypeParentsTest( );
@@ -80,12 +79,11 @@ class AtomTest : public CppUnit::TestFixture
         void createDocumentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getRepositoriesTest );
-        CPPUNIT_TEST( getRepositoriesBadAuthTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( sessionCreationBadAuthTest );
         CPPUNIT_TEST( sessionCreationProxyTest );
         CPPUNIT_TEST( authCallbackTest );
+        CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
         CPPUNIT_TEST( getTypeParentsTest );
@@ -128,35 +126,6 @@ class TestAuthProvider : public libcmis::AuthProvider
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AtomTest );
-
-void AtomTest::getRepositoriesTest( )
-{
-    // Response showing one mock repository
-    curl_mockup_reset( );
-    curl_mockup_setResponse( "data/atom-workspaces.xml" );
-
-    list< libcmis::RepositoryPtr > actual = AtomPubSession::getRepositories( SERVER_URL, SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, actual.front()->getId( ) );
-}
-
-void AtomTest::getRepositoriesBadAuthTest( )
-{
-    // Response showing one mock repository
-    curl_mockup_reset( );
-    curl_mockup_setResponse( "data/atom-workspaces.xml" );
-    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-
-    try
-    {
-        AtomPubSession::getRepositories( SERVER_URL, "baduser", "badpass" );
-        CPPUNIT_FAIL( "Exception should have been thrown" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "permissionDenied" ), e.getType( ) );
-    }
-}
 
 void AtomTest::sessionCreationTest( )
 {
@@ -271,6 +240,19 @@ void AtomTest::authCallbackTest( )
         libcmis::SessionFactory::setAuthenticationProvider( authProvider );
         AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
     }
+}
+
+void AtomTest::getRepositoriesTest( )
+{
+    // Response showing one mock repository
+    curl_mockup_reset( );
+    curl_mockup_setResponse( "data/atom-workspaces.xml" );
+
+    AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+    list< libcmis::RepositoryPtr > actual = session.getRepositories( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, actual.front()->getId( ) );
 }
 
 void AtomTest::getTypeTest( )

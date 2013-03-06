@@ -39,8 +39,11 @@
 #include <libxml/xpath.h>
 
 #include "exception.hxx"
+#include "oauth2-data.hxx"
 #include "session.hxx"
 #include "xml-utils.hxx"
+
+class OAuth2Handler;
 
 class CurlException : public std::exception
 {
@@ -93,6 +96,7 @@ class BaseSession : public libcmis::Session
     private:
         CURL* m_curlHandle;
         bool  m_no100Continue;
+        OAuth2Handler* m_oauth2Handler;
 
     protected:
         std::string m_bindingUrl;
@@ -108,8 +112,10 @@ class BaseSession : public libcmis::Session
 
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
-                        std::string username, std::string password,
-                        bool verbose = false ) throw ( libcmis::Exception );
+                     std::string username, std::string password,
+                     libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false )
+            throw ( libcmis::Exception );
+
         BaseSession( const BaseSession& copy );
         ~BaseSession( );
 
@@ -124,9 +130,13 @@ class BaseSession : public libcmis::Session
         /** Don't throw the HTTP errors as CurlExceptions. 
           */
         void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }
+        
+        /** Set the OAuth2 data and get the access / refresh tokens.
+          */
+        void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception );
 
         // Utility methods
-        
+       
         std::string getRootId( ) throw ( libcmis::Exception ) { return getRepository()->getRootId( ); }
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
@@ -139,6 +149,8 @@ class BaseSession : public libcmis::Session
         long getHttpStatus( );
 
         // Session methods
+
+        virtual std::list< libcmis::RepositoryPtr > getRepositories( );
 
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
         

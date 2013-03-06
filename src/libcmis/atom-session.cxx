@@ -40,8 +40,9 @@
 using namespace std;
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
-        string username, string password, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( atomPubUrl, repositoryId, username, password, verbose ),
+        string username, string password, libcmis::OAuth2DataPtr oauth2,
+        bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( atomPubUrl, repositoryId, username, password, oauth2, verbose ),
     m_repository( )
 {
     initialize( );
@@ -151,13 +152,6 @@ void AtomPubSession::initialize( ) throw ( libcmis::Exception )
     
         parseServiceDocument( buf );   
     }
-}
-
-list< libcmis::RepositoryPtr > AtomPubSession::getRepositories( string url, string username,
-        string password, bool verbose ) throw ( libcmis::Exception )
-{
-    AtomPubSession session( url, string(), username, password, verbose );
-    return session.m_repositories;
 }
 
 AtomRepositoryPtr AtomPubSession::getAtomRepository( ) throw ( libcmis::Exception )

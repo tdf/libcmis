@@ -12,7 +12,7 @@
  * License.
  *
  * Major Contributor(s):
- * Copyright (C) 2011 SUSE <cbosdonnat@suse.com>
+ * Copyright (C) 2013 Cao Cuong Ngo <cao.cuong.ngo@gmail.com>
  *
  *
  * All Rights Reserved.
@@ -25,46 +25,33 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _SESSION_FACTORY_H_
-#define _SESSION_FACTORY_H_
+#ifndef GDRIVE_SESSION_HXX_
+#define GDRIVE_SESSION_HXX_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "base-session.hxx"
+#include "repository.hxx"
 
-#include "types.h"
+class GDriveSession : public BaseSession
+{
+    public:
+        GDriveSession( std::string clientId, std::string clientSecret,
+                std::string username, std::string password, bool verbose = false )
+            throw ( libcmis::Exception );
 
-void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+        ~GDriveSession ( );
 
-void libcmis_setProxySettings(
-        char* proxy,
-        char* noProxy,
-        char* proxyUser,
-        char* proxyPass );
+        virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
 
-const char* libcmis_getProxy( );
-const char* libcmis_getNoProxy( );
-const char* libcmis_getProxyUser( );
-const char* libcmis_getProxyPass( );
+        virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
 
-libcmis_SessionPtr libcmis_createSession(
-        char* bindingUrl,
-        char* repositoryId,
-        char* username,
-        char* password,
-        libcmis_OAuth2DataPtr oauth2,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
 
-libcmis_RepositoryPtr* libcmis_getRepositories(
-        char* bindingUrl,
-        char* username,
-        char* password,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+        virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 
-#ifdef __cplusplus
-}
-#endif
+    private:
+        GDriveSession();
 
-#endif
+        static char* authenticate( const char* url, const char* username, const char* password );
+};
+
+#endif /* GDRIVE_SESSION_HXX_ */

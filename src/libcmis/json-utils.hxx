@@ -12,7 +12,7 @@
  * License.
  *
  * Major Contributor(s):
- * Copyright (C) 2011 SUSE <cbosdonnat@suse.com>
+ * Copyright (C) 2013 Cao Cuong Ngo <cao.cuong.ngo@gmail.com>
  *
  *
  * All Rights Reserved.
@@ -25,46 +25,42 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _SESSION_FACTORY_H_
-#define _SESSION_FACTORY_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef _JSON_UTILS_HXX_
+#define _JSON_UTILS_HXX_
 
-#include "types.h"
+#include <string>
+#include <map>
+#include <vector>
 
-void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+using namespace std;
 
-void libcmis_setProxySettings(
-        char* proxy,
-        char* noProxy,
-        char* proxyUser,
-        char* proxyPass );
+class Json
+{
+    public :
+        template <typename T> explicit Json( const T& val ) ;
 
-const char* libcmis_getProxy( );
-const char* libcmis_getNoProxy( );
-const char* libcmis_getProxyUser( );
-const char* libcmis_getProxyPass( );
+        Json() ;
+        Json( const Json& copy ) ;
+        Json( const char *str ) ;
+        ~Json( ) ;
 
-libcmis_SessionPtr libcmis_createSession(
-        char* bindingUrl,
-        char* repositoryId,
-        char* username,
-        char* password,
-        libcmis_OAuth2DataPtr oauth2,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+        Json operator[]( string key ) const ;
+        Json operator[]( const std::size_t& idx ) const ;
+        Json& operator=( const Json& rhs ) ;
+        friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
 
-libcmis_RepositoryPtr* libcmis_getRepositories(
-        char* bindingUrl,
-        char* username,
-        char* password,
-        bool  verbose,
-        libcmis_ErrorPtr error );
+        void swap( Json& other ) ;
 
-#ifdef __cplusplus
-}
-#endif
+        void add( const Json& json);
 
-#endif
+        static Json parse( string str ) ;
+
+        string toString( );
+
+    private :
+        Json( struct json_object *json ) ;
+        struct json_object  *m_json ;
+} ;
+
+#endif /* _JSON_UTILS_HXX_ */

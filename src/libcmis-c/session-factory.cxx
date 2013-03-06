@@ -129,6 +129,7 @@ libcmis_SessionPtr libcmis_createSession(
         char* repositoryId,
         char* username,
         char* password,
+        libcmis_OAuth2DataPtr oauth2,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
@@ -136,8 +137,12 @@ libcmis_SessionPtr libcmis_createSession(
 
     try
     {
+        libcmis::OAuth2DataPtr oauth2Handle;
+        if ( oauth2 != NULL )
+            oauth2Handle = oauth2->handle;
+
         libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username,
-                password, repositoryId, verbose );
+                password, repositoryId, oauth2Handle, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }

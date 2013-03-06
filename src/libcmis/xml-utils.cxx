@@ -541,4 +541,30 @@ namespace libcmis
         }
         return 0;
     }
+
+    string escape( string str )
+    {
+#if LIBCURL_VERSION_VALUE >= 0x070F04
+        char* escaped = curl_easy_escape( NULL, str.c_str(), str.length() );
+#else
+        char* escaped = curl_escape( str.c_str(), str.length() );
+#endif
+        string result = escaped;
+        curl_free( escaped );
+
+        return result;
+    }
+
+    string unescape( string str )
+    {
+#if LIBCURL_VERSION_VALUE >= 0x070F04
+        char* unescaped = curl_easy_unescape( NULL, str.c_str(), str.length(), NULL );
+#else
+        char* unescaped = curl_unescape( str.c_str(), str.length() );
+#endif
+        string result = unescaped;
+        curl_free( unescaped );
+
+        return result;
+    }
 }

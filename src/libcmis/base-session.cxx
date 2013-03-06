@@ -33,6 +33,7 @@
 #include <libxml/xpath.h>
 
 #include "base-session.hxx"
+#include "oauth2-handler.hxx"
 #include "session-factory.hxx"
 #include "xml-utils.hxx"
 
@@ -107,10 +108,11 @@ namespace
 }
 
 BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username,
-        string password, bool verbose ) throw ( libcmis::Exception ) :
+        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
+    m_oauth2Handler( NULL ),
     m_bindingUrl( atomPubUrl ),
     m_repositoryId( repositoryId ),
     m_username( username ),
@@ -120,6 +122,9 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId, string usernam
     m_verbose( verbose ),
     m_noHttpErrors( false )
 {
+    if ( oauth2 && oauth2->isComplete() )
+        setOAuth2Data( oauth2 );
+
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
 }
@@ -128,6 +133,7 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( copy.m_no100Continue ),
+    m_oauth2Handler( copy.m_oauth2Handler ),
     m_bindingUrl( copy.m_bindingUrl ),
     m_repositoryId( copy.m_repositoryId ),
     m_username( copy.m_username ),
@@ -146,6 +152,7 @@ BaseSession::BaseSession( ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
+    m_oauth2Handler( NULL ),
     m_bindingUrl( ),
     m_repositoryId( ),
     m_username( ),
@@ -165,6 +172,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
     {
         m_curlHandle = NULL;
         m_no100Continue = copy.m_no100Continue;
+        m_oauth2Handler = copy.m_oauth2Handler;
         m_bindingUrl = copy.m_bindingUrl;
         m_repositoryId = copy.m_repositoryId;
         m_username = copy.m_username;
@@ -186,6 +194,7 @@ BaseSession::~BaseSession( )
 {
     if ( NULL != m_curlHandle )
         curl_easy_cleanup( m_curlHandle );
+    delete( m_oauth2Handler );
 }
 
 string BaseSession::createUrl( const string& pattern, map< string, string > variables )
@@ -206,13 +215,7 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
         if ( pos != string::npos )
         {
             // Escape the URL by chunks
-#if LIBCURL_VERSION_VALUE >= 0x070F04
-            char* escaped = curl_easy_escape( m_curlHandle, value.c_str(), value.length() );
-#else
-            char* escaped = curl_escape( value.c_str(), value.length() );
-#endif
-            url = url.replace( pos, name.size(), escaped );
-            curl_free( escaped );
+            url = url.replace( pos, name.size(), libcmis::escape( value ) );
         }
 
         ++it;
@@ -484,6 +487,34 @@ long BaseSession::getHttpStatus( )
     curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &status );
 
     return status;
+}
+
+void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
+{
+    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
+
+    // Try to get the authentication code using the given provider.
+    char* authCode = m_oauth2Handler->authenticate( getUsername(), getPassword() );
+
+    // If that didn't work, call the fallback provider from SessionFactory
+    if ( authCode == NULL )
+    {
+        libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
+        if ( fallbackProvider != NULL )
+            authCode = fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+    }
+
+    // If still no auth code, then raise an exception
+    if ( authCode == NULL )
+        throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
+
+    m_oauth2Handler->fetchTokens( string( authCode ) );
+    free( authCode );
+}
+
+list< libcmis::RepositoryPtr > BaseSession::getRepositories( )
+{
+    return m_repositories;
 }
 
 libcmis::FolderPtr BaseSession::getRootFolder() throw ( libcmis::Exception )

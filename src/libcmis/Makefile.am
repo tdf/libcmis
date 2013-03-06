@@ -5,6 +5,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	document.hxx \
 	exception.hxx \
 	folder.hxx \
+	oauth2-data.hxx \
 	object-type.hxx \
 	object.hxx \
 	property-type.hxx \
@@ -30,6 +31,7 @@ libcmis_la_SOURCES = \
 	allowable-actions.cxx \
 	document.cxx \
 	folder.cxx \
+	oauth2-data.cxx \
 	object.cxx \
 	object-type.cxx \
 	property.cxx \
@@ -71,7 +73,13 @@ libcmis_la_SOURCES = \
 	ws-session.hxx \
 	ws-session.cxx \
 	ws-versioningservice.hxx \
-	ws-versioningservice.cxx
+	ws-versioningservice.cxx \
+	gdrive-session.hxx \
+	gdrive-session.cxx \
+	json-utils.hxx \
+	json-utils.cxx \
+	oauth2-handler.hxx \
+	oauth2-handler.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 
@@ -80,6 +88,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)
+	$(BOOST_DATE_TIME_LIBS)\
+	$(JSON_LIBS)
 
 libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis

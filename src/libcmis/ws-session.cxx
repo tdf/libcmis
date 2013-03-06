@@ -40,8 +40,8 @@
 using namespace std;
 
 WSSession::WSSession( string bindingUrl, string repositoryId, string username,
-        string password, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( bindingUrl, repositoryId, username, password, verbose ),
+        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( bindingUrl, repositoryId, username, password, oauth2, verbose ),
     m_servicesUrls( ),
     m_navigationService( NULL ),
     m_objectService( NULL ),
@@ -334,13 +334,6 @@ VersioningService& WSSession::getVersioningService( )
     if ( m_versioningService == NULL )
         m_versioningService = new VersioningService( this );
     return *m_versioningService;
-}
-
-list< libcmis::RepositoryPtr > WSSession::getRepositories( string url, string username,
-        string password, bool verbose ) throw ( libcmis::Exception )
-{
-    WSSession session( url, string(), username, password, verbose );
-    return session.m_repositories;
 }
 
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )

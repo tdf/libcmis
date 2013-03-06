@@ -108,6 +108,13 @@ PKG_CHECK_MODULES(XML2,[
 AC_SUBST(XML2_CFLAGS)
 AC_SUBST(XML2_LIBS)
 
+# Check for libjson
+PKG_CHECK_MODULES(JSON,[
+	json
+])
+AC_SUBST(JSON_CFLAGS)
+AC_SUBST(JSON_LIBS)
+
 # Check for cppunit
 AS_IF([test "x$enable_tests" != "xno"], [
 	PKG_CHECK_MODULES(CPPUNIT, cppunit >= 1.12 )
