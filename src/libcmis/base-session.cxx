@@ -122,11 +122,13 @@ BaseSession::BaseSession( string atomPubUrl, string repositoryId, string usernam
     m_verbose( verbose ),
     m_noHttpErrors( false )
 {
-    if ( oauth2 && oauth2->isComplete() )
-        setOAuth2Data( oauth2 );
-
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
+
+    // Init OAuth2 after curl handle as this one will be needed
+    // to get the OAuth2 tokens    
+    if ( oauth2 && oauth2->isComplete() )
+        setOAuth2Data( oauth2 );
 }
 
 BaseSession::BaseSession( const BaseSession& copy ) :
