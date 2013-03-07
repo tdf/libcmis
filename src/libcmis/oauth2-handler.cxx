@@ -146,5 +146,8 @@ string OAuth2Handler::getAccessToken( ) throw ( libcmis::Exception )
 
 string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )
 {
-    return "Authorization: Bearer " + m_access ;
+    string header;
+    if ( !m_access.empty() )
+        header = "Authorization: Bearer " + m_access ;
+    return header;
 }

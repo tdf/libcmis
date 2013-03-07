@@ -390,9 +390,8 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
     struct curl_slist *headers_slist = NULL;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
         headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
-    // Set the credentials
+    // Check that we have the complete credentials
     libcmis::AuthProviderPtr authProvider = libcmis::SessionFactory::getAuthenticationProvider();
     if ( authProvider && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
     {
@@ -403,7 +402,13 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
         }
     }
 
-    if ( !m_username.empty() && !m_password.empty() )
+    // If we are using OAuth2, then add the proper header with token to authenticate
+    // Otherwise, just set the credentials normally using in libcurl options
+    if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
+    {
+        curl_slist_append( headers_slist, m_oauth2Handler->getHttpHeader( ).c_str( ) );
+    }
+    else if ( !m_username.empty() && !m_password.empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
 
@@ -415,6 +420,8 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
         curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
 #endif
     }
+    
+    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
@@ -475,25 +482,27 @@ long BaseSession::getHttpStatus( )
 
 void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
 {
-    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
+    OAuth2Handler oauth2Handler = new OAuth2Handler( this, oauth2 );
 
     // Try to get the authentication code using the given provider.
-    char* authCode = m_oauth2Handler->authenticate( getUsername(), getPassword() );
+    char* authCode = oauth2Handler->authenticate( getUsername(), getPassword() );
 
     // If that didn't work, call the fallback provider from SessionFactory
     if ( authCode == NULL )
     {
         libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
         if ( fallbackProvider != NULL )
-            authCode = fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+            authCode = fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
     }
 
     // If still no auth code, then raise an exception
     if ( authCode == NULL )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
-    m_oauth2Handler->fetchTokens( string( authCode ) );
+    oauth2Handler->fetchTokens( string( authCode ) );
     free( authCode );
+
+    m_oauth2Handler = oauth2Handler;
 }
 
 list< libcmis::RepositoryPtr > BaseSession::getRepositories( )
