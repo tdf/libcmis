@@ -160,7 +160,7 @@ class BaseSession : public libcmis::Session
         BaseSession( );
 
     private:
-        void httpRunRequest( std::string url ) throw ( CurlException );
+        void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ) ) throw ( CurlException );
 };
 
 #endif

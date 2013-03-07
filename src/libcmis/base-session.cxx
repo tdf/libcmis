@@ -294,43 +294,28 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
 
-    struct curl_slist *headers_slist = NULL;
-    for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
     if ( m_no100Continue )
-        headers_slist = curl_slist_append( headers_slist, "Expect:" );
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+        headers.push_back( "Expect:" );
 
-    try
+    httpRunRequest( url, headers );
+    response->getData( )->finish();
+
+    /** If we had a HTTP 417 response, this is likely to be due to some 
+        HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+        header. Try to disable this header and try again.
+      */
+    if ( getHttpStatus() == 417 )
     {
-        httpRunRequest( url );
+        headers.push_back( "Expect:" );
+        httpRunRequest( url, headers );
         response->getData( )->finish();
 
-        /** If we had a HTTP 417 response, this is likely to be due to some 
-            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
-            header. Try to disable this header and try again.
-          */
-        if ( getHttpStatus() == 417 )
-        {
-            headers_slist = curl_slist_append( headers_slist, "Expect:" );
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
-            httpRunRequest( url );
-            response->getData( )->finish();
-
-            // Remember that we don't want 100-Continue for the future requests
-            m_no100Continue = true;
-        }
+        // Remember that we don't want 100-Continue for the future requests
+        m_no100Continue = true;
     }
-    catch ( CurlException& e )
-    {
-        curl_slist_free_all( headers_slist );
-        throw;
-    }
-
-    curl_slist_free_all( headers_slist );
 
     return response;
 }
@@ -359,43 +344,30 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
 
-    struct curl_slist *headers_slist = NULL;
-    string contentTypeHeader = string( "Content-Type:" ) + contentType;
-    headers_slist = curl_slist_append( headers_slist, contentTypeHeader.c_str( ) );
+    vector< string > headers;
+    headers.push_back( string( "Content-Type:" ) + contentType );
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
     if ( m_no100Continue )
-        headers_slist = curl_slist_append( headers_slist, "Expect:" );
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+        headers.push_back( "Expect:" );
 
-    try
+    httpRunRequest( url, headers );
+    response->getData( )->finish();
+
+    /** If we had a HTTP 417 response, this is likely to be due to some 
+        HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+        header. Try to disable this header and try again.
+      */
+    if ( getHttpStatus() == 417 )
     {
-        httpRunRequest( url );
+        headers.push_back( "Expect:" );
+        httpRunRequest( url, headers );
         response->getData( )->finish();
 
-        /** If we had a HTTP 417 response, this is likely to be due to some 
-            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
-            header. Try to disable this header and try again.
-          */
-        if ( getHttpStatus() == 417 )
-        {
-            headers_slist = curl_slist_append( headers_slist, "Expect:" );
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
-            httpRunRequest( url );
-            response->getData( )->finish();
-
-            // Remember that we don't want 100-Continue for the future requests
-            m_no100Continue = true;
-        }
+        // Remember that we don't want 100-Continue for the future requests
+        m_no100Continue = true;
     }
-    catch ( const CurlException& e )
-    {
-        curl_slist_free_all( headers_slist );
-        throw;
-    }
-
-    curl_slist_free_all( headers_slist );
 
     return response;
 }
@@ -409,10 +381,16 @@ void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
     httpRunRequest( url );
 }
 
-void BaseSession::httpRunRequest( string url ) throw ( CurlException )
+void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
 {
     // Grab something from the web
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
+
+    // Set the headers
+    struct curl_slist *headers_slist = NULL;
+    for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
+        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
 
     // Set the credentials
     libcmis::AuthProviderPtr authProvider = libcmis::SessionFactory::getAuthenticationProvider();
@@ -473,7 +451,11 @@ void BaseSession::httpRunRequest( string url ) throw ( CurlException )
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
+    
+    // Free the headers list
+    curl_slist_free_all( headers_slist );
 
+    // Process the response
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
