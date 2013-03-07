@@ -81,13 +81,11 @@ OAuth2Handler::~OAuth2Handler( )
 char* OAuth2Handler::authenticate( const string& username, const string& password )
 {
     char* authCode = NULL;
-    cout << "HERE";
     if ( m_data->getAuthCodeProvider() != NULL )
     {
         string url = getAuthURL();
         authCode = m_data->getAuthCodeProvider()( url.c_str(), username.c_str(), password.c_str() );
     }
-    cout << "HERE2" << authCode;
     return authCode;
 }
 
