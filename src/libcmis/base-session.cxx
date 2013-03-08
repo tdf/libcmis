@@ -482,7 +482,7 @@ long BaseSession::getHttpStatus( )
 
 void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
 {
-    OAuth2Handler oauth2Handler = new OAuth2Handler( this, oauth2 );
+    OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
 
     // Try to get the authentication code using the given provider.
     char* authCode = oauth2Handler->authenticate( getUsername(), getPassword() );
