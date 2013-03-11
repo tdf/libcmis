@@ -55,4 +55,7 @@
 /** redirect URI **/
 #define DRIVE_REDIRECT_URI std::string("urn:ietf:wg:oauth:2.0:oob")
 
+/* login URL */
+#define GOOGLE_LOGIN_URL std::string("https://accounts.google.com/ServiceLoginAuth")
+
 #endif /* GDRIVE_COMMON_HXX_ */

@@ -143,7 +143,8 @@ class BaseSession : public libcmis::Session
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPostRequest( std::string url, std::istream& is, std::string contentType ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType,
+               const std::string& cookie = std::string( ), bool followLocation = false ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
         long getHttpStatus( );
@@ -155,6 +156,8 @@ class BaseSession : public libcmis::Session
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
         
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
+
+        virtual char* oauth2Authenticate(const char* url, const char* username,  const char* password);
 
     protected:
         BaseSession( );
