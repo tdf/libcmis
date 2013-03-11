@@ -519,8 +519,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     oauth2Handler->fetchTokens( string( authCode ) );
-    free( authCode );
-
+    //free( authCode );
 }
 
 list< libcmis::RepositoryPtr > BaseSession::getRepositories( )

@@ -51,12 +51,28 @@ GDriveSession::GDriveSession() :
 {
 }
 
-char* GDriveSession::oauth2Authenticate(const char* url, const char* username, const char* password){
-    char* authCode = NULL;
+string findStringBetween( string str, string str1, string str2)
+{
+
+    int start = str.find ( str1 ) ;
+
+    if ( start == (int) string::npos ) return string ( );
+    //find the closing \" of the Url
+    int end = str.find ( str2, start + str1.length( ) + 1  ) ;
+
+    start += str1.length( );
+
+    string result = str.substr( start, end - start );
+    return result;
+}
+
+char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password ) {
 
     //grab the visit cookie
     libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
-    string loginCookie = resp->getHeaders()["Set-Cookie"];
+    string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
+
+    if ( loginCookie.empty( ) ) return NULL;
 
     //only take the first cookie
     int pos = loginCookie.find(';');
@@ -65,10 +81,10 @@ char* GDriveSession::oauth2Authenticate(const char* url, const char* username, c
     string post =
         "continue=" +
         libcmis::escape( url) +
-        libcmis::escape("&from_login=1") + "&" +
-        firstCookie         +
-        "&Email="        + username +
-        "&Passwd="    + password;
+        libcmis::escape ( "&from_login=1" ) +
+        "&" + firstCookie    +
+        "&Email="            + username +
+        "&Passwd="           + password;
 
     istringstream is( post );
 
@@ -76,27 +92,43 @@ char* GDriveSession::oauth2Authenticate(const char* url, const char* username, c
             "application/x-www-form-urlencoded", firstCookie, true);
 
     //the login cookie
-    string authenticatedCookie = loginResp->getHeaders()["Set-Cookie"];
+    string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
+    if ( authenticatedCookie.empty( ) ) return NULL;
 
-    string res=loginResp->getStream( )->str( );
+    string loginRes = loginResp->getStream( )->str( );
 
-    //approve
+    //approve, parse stateWrapper, approveURL from login response page
 
-    //TODO parse stateWrapper, approveURL from res
+    //the approveUrl is found as the action link of the post form
+    string approveUrl = findStringBetween( loginRes, "form action=\"", "\"");
 
-    string stateWrapper, approveUrl;
+    //"remove "amp;" from the URL, it's only validated as HTML
+    string removeAmp = "amp;";
+    do
+    {
+        int firstPos =  approveUrl.find( removeAmp );
+        if ( firstPos == (int) string::npos ) break;
+        approveUrl.erase( firstPos, removeAmp.length( ) );
+    } while ( true );
+
+    //the state_wrapper parameter is found from the state_wrapper tag
+    string stateWrapper = findStringBetween (loginRes, "name=\"state_wrapper\" value=\"", "\"");
+
+    //submit allow access
     post = "state_wrapper=" +
-           stateWrapper+ "&" +
+            stateWrapper + "&" +
            "submit_access=true";
 
-    istringstream ppproveIs( post );
+    istringstream appproveIs( post );
 
-    //libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, is,
-     //          "application/x-www-form-urlencoded");
+    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, appproveIs,
+               "application/x-www-form-urlencoded", authenticatedCookie, true);
 
-    //TODO parse authCode from approveResp.
+    string approveRes = approveResp->getStream( )->str( );
 
-    return authCode;
+    string authCode = findStringBetween (approveRes, "\"readonly\" value=\"", "\"");
+
+    return (char*) authCode.c_str( );
 }
 
 libcmis::RepositoryPtr GDriveSession::getRepository( ) throw ( libcmis::Exception )
