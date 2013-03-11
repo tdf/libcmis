@@ -320,7 +320,8 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     return response;
 }
 
-libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, string contentType ) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, const string& contentType,
+        const string& cookie, bool followLocation) throw ( CurlException )
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
@@ -333,6 +334,14 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
     curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
+    curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEJAR, "");
+
+    //set cookie to send
+    if ( !cookie.empty( ) )
+    {
+        curl_easy_setopt( m_curlHandle, CURLOPT_COOKIE, cookie.c_str( ) );
+    }
+
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
@@ -344,8 +353,14 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( string url, istream& is, 
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
 
+    //Gdrive OAuth2 require follow location
+    if ( followLocation )
+        curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
+
     vector< string > headers;
     headers.push_back( string( "Content-Type:" ) + contentType );
+
+
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
@@ -484,9 +499,13 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 {
     OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
 
-    // Try to get the authentication code using the given provider.
-    char* authCode = oauth2Handler->authenticate( getUsername(), getPassword() );
 
+    // Try to get the authentication code using the given provider.
+    //char* authCode = oauth2Handler->authenticate( getUsername(), getPassword() );
+    char* authCode = oauth2Authenticate( oauth2Handler->getAuthURL( ).c_str( ),
+            getUsername( ).c_str( ), getPassword().c_str( ) );
+
+    m_oauth2Handler = oauth2Handler;
     // If that didn't work, call the fallback provider from SessionFactory
     if ( authCode == NULL )
     {
@@ -502,7 +521,6 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     oauth2Handler->fetchTokens( string( authCode ) );
     free( authCode );
 
-    m_oauth2Handler = oauth2Handler;
 }
 
 list< libcmis::RepositoryPtr > BaseSession::getRepositories( )
@@ -520,6 +538,11 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
     libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
+}
+
+char* BaseSession::oauth2Authenticate( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
+{
+    return NULL;
 }
 
 const char* CurlException::what( ) const throw ()

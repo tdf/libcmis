@@ -38,7 +38,7 @@ GDriveSession::GDriveSession ( string clientId, string clientSecret,
 {
     libcmis::OAuth2DataPtr data( new libcmis::OAuth2Data( DRIVE_AUTH_URL, DRIVE_TOKEN_URL,
                                         DRIVE_SCOPE_FULL, DRIVE_REDIRECT_URI,
-                                        clientId, clientSecret, &GDriveSession::authenticate ) );
+                                        clientId, clientSecret, NULL ) );
     setOAuth2Data( data );
 }
 
@@ -51,11 +51,50 @@ GDriveSession::GDriveSession() :
 {
 }
 
-char* GDriveSession::authenticate( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
-{
+char* GDriveSession::oauth2Authenticate(const char* url, const char* username, const char* password){
     char* authCode = NULL;
 
-    // TODO Try to run the authentication
+    //grab the visit cookie
+    libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
+    string loginCookie = resp->getHeaders()["Set-Cookie"];
+
+    //only take the first cookie
+    int pos = loginCookie.find(';');
+    string firstCookie = loginCookie.substr(0, pos);
+    //login
+    string post =
+        "continue=" +
+        libcmis::escape( url) +
+        libcmis::escape("&from_login=1") + "&" +
+        firstCookie         +
+        "&Email="        + username +
+        "&Passwd="    + password;
+
+    istringstream is( post );
+
+    libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
+            "application/x-www-form-urlencoded", firstCookie, true);
+
+    //the login cookie
+    string authenticatedCookie = loginResp->getHeaders()["Set-Cookie"];
+
+    string res=loginResp->getStream( )->str( );
+
+    //approve
+
+    //TODO parse stateWrapper, approveURL from res
+
+    string stateWrapper, approveUrl;
+    post = "state_wrapper=" +
+           stateWrapper+ "&" +
+           "submit_access=true";
+
+    istringstream ppproveIs( post );
+
+    //libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, is,
+     //          "application/x-www-form-urlencoded");
+
+    //TODO parse authCode from approveResp.
 
     return authCode;
 }

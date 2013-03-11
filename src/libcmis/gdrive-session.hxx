@@ -48,6 +48,8 @@ class GDriveSession : public BaseSession
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 
+        virtual char* oauth2Authenticate(const char* url, const char* username, const char* password);
+
     private:
         GDriveSession();
 
