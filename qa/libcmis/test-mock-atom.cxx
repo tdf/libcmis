@@ -77,6 +77,7 @@ class AtomTest : public CppUnit::TestFixture
         void createFolderTest( );
         void createFolderBadTypeTest( );
         void createDocumentTest( );
+        void deleteDocumentTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -105,6 +106,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -868,6 +870,26 @@ void AtomTest::createDocumentTest( )
                                 "</cmis:properties>"
                             "</cmisra:object>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request object sent", expectedObject, actualObject );
+}
+
+void AtomTest::deleteDocumentTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", "data/atom-test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom-type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "DELETE", "", 204, false );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+
+    document->remove( );
+
+    // Test the sent request
+    const char* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=test-document", "DELETE" );
+    CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

@@ -50,8 +50,6 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void dumpDocumentToXmlTest( );
-        void deleteDocumentTest( );
         void deleteTreeTest( );
         void checkOutTest( );
         void cancelCheckOutTest( );
@@ -60,7 +58,6 @@ class AtomTest : public CppUnit::TestFixture
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteTreeTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
@@ -70,27 +67,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 };
 
-void AtomTest::deleteDocumentTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-
-    string id( "130" );
-    libcmis::ObjectPtr object = session.getObject( id );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    CPPUNIT_ASSERT_MESSAGE( "Document to remove is missing", document != NULL );
-
-    document->remove( );
-
-    try
-    {
-        libcmis::ObjectPtr newObject = session.getObject( id );
-        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
-    }
-}
 
 void AtomTest::deleteTreeTest( )
 {

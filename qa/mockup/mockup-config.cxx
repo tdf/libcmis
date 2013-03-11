@@ -108,6 +108,7 @@ namespace mockup
 
         string headers;
         string response;
+        bool foundResponse = false;
         bool isFilePath = true;
         const string& url = handle->m_url;
 
@@ -127,6 +128,7 @@ namespace mockup
 
             if ( matchBaseUrl && matchParams && matchMethod )
             {
+                foundResponse = true;
                 response = it->second.m_response;
                 handle->m_httpError = it->second.m_status;
                 isFilePath = it->second.m_isFilePath;
@@ -143,7 +145,7 @@ namespace mockup
         }
 
         // If nothing matched, then send a 404 HTTP error instead
-        if ( response.empty( ) )
+        if ( !foundResponse || ( foundResponse && isFilePath && response.empty() ) )
             handle->m_httpError = 404;
         else
         {
@@ -167,9 +169,12 @@ namespace mockup
             }
             else
             {
-               char* buf = strdup( response.c_str() );
-               handle->m_writeFn( buf, 1, response.size( ), handle->m_writeData );
-               delete( buf );
+                if ( !response.empty() )
+                {
+                    char* buf = strdup( response.c_str() );
+                    handle->m_writeFn( buf, 1, response.size( ), handle->m_writeData );
+                    delete( buf );
+                }
             }
         }
 
