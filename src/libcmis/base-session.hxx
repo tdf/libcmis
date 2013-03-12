@@ -121,9 +121,9 @@ class BaseSession : public libcmis::Session
 
         BaseSession& operator=( const BaseSession& copy );
 
-        std::string& getUsername( ) { return m_username; }
+        std::string& getUsername( ) throw ( CurlException );
 
-        std::string& getPassword( ) { return m_password; }
+        std::string& getPassword( ) throw ( CurlException );
 
         std::string& getRepositoryId( ) { return m_repositoryId; }
 
@@ -181,6 +181,7 @@ class BaseSession : public libcmis::Session
         BaseSession( );
 
     private:
+        void checkCredentials( ) throw ( CurlException );
         void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ) ) throw ( CurlException );
 };
 

@@ -199,6 +199,18 @@ BaseSession::~BaseSession( )
     delete( m_oauth2Handler );
 }
 
+string& BaseSession::getUsername( ) throw ( CurlException )
+{
+    checkCredentials( );
+    return m_username;
+}
+
+string& BaseSession::getPassword( ) throw ( CurlException )
+{
+    checkCredentials( );
+    return m_password;
+}
+
 string BaseSession::createUrl( const string& pattern, map< string, string > variables )
 {
     string url( pattern );
@@ -396,16 +408,8 @@ void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
     httpRunRequest( url );
 }
 
-void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
+void BaseSession::checkCredentials( ) throw ( CurlException )
 {
-    // Grab something from the web
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
-
-    // Set the headers
-    struct curl_slist *headers_slist = NULL;
-    for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
-
     // Check that we have the complete credentials
     libcmis::AuthProviderPtr authProvider = libcmis::SessionFactory::getAuthenticationProvider();
     if ( authProvider && !m_authProvided && ( m_username.empty() || m_password.empty() ) )
@@ -416,6 +420,17 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
             throw CurlException( "User cancelled authentication request" );
         }
     }
+}
+
+void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
+{
+    // Grab something from the web
+    curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
+
+    // Set the headers
+    struct curl_slist *headers_slist = NULL;
+    for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
+        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
 
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
@@ -423,15 +438,15 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
     {
         curl_slist_append( headers_slist, m_oauth2Handler->getHttpHeader( ).c_str( ) );
     }
-    else if ( !m_username.empty() && !m_password.empty() )
+    else if ( !getUsername().empty() && !getPassword().empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
 
 #if LIBCURL_VERSION_VALUE >= 0x071301
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, m_username.c_str() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, m_password.c_str() );
+        curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
+        curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
 #else
-        string userpwd = m_username + ":" + m_password;
+        string userpwd = getUsername() + ":" + getPassword();
         curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
 #endif
     }
@@ -499,18 +514,28 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 {
     OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
 
-    // Try to get the authentication code using the given provider.
-    char* authCode = oauth2Authenticate( oauth2Handler->getAuthURL( ).c_str( ),
-            getUsername( ).c_str( ), getPassword().c_str( ) );
+    char* authCode = NULL;
 
-    m_oauth2Handler = oauth2Handler;
-
-    // If that didn't work, call the fallback provider from SessionFactory
-    if ( authCode == NULL )
+    try
     {
-        libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
-        if ( fallbackProvider != NULL )
-            authCode = fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+        // Try to get the authentication code using the given provider.
+        authCode = oauth2Authenticate( oauth2Handler->getAuthURL( ).c_str( ),
+                getUsername( ).c_str( ), getPassword().c_str( ) );
+
+        m_oauth2Handler = oauth2Handler;
+
+        // If that didn't work, call the fallback provider from SessionFactory
+        if ( authCode == NULL )
+        {
+            libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
+            if ( fallbackProvider != NULL )
+                authCode = fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+        }
+    }
+    catch ( const CurlException& e )
+    {
+        // Thrown by getUsername() and getPassword() if user cancels the credentials request
+        throw e.getCmisException( );
     }
 
     // If still no auth code, then raise an exception
