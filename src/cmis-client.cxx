@@ -53,6 +53,35 @@ namespace
 
         return strdup( code.c_str( ) );
     }
+
+    class CinAuthProvider : public libcmis::AuthProvider
+    {
+        public:
+            CinAuthProvider( ) { }
+            ~CinAuthProvider( ) { }
+
+            virtual bool authenticationQuery( string& username, string& password );
+    };
+
+    bool CinAuthProvider::authenticationQuery( string& username, string& password )
+    {
+        bool cancelled = true;
+        bool askUsername = username.empty();
+        if ( askUsername )
+        {
+            cout << "Username (empty to cancel): ";
+            getline( cin, username );
+            cancelled = username.empty();
+        }
+
+        if ( !cancelled && ( askUsername || password.empty( ) ) )
+        {
+            cout << "Password (empty to cancel): ";
+            getline( cin, password );
+            cancelled = password.empty();
+        }
+        return !cancelled;
+    }
 }
 
 class CommandException : public exception
@@ -120,6 +149,10 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
 {
     if ( m_vm.count( "url" ) == 0 )
         throw CommandException( "Missing binding URL" );
+    
+    // Setup the authentication provider in case we have missing credentials
+    libcmis::AuthProviderPtr provider( new CinAuthProvider( ) );
+    libcmis::SessionFactory::setAuthenticationProvider( provider );
     
     string url = m_vm["url"].as<string>();
 
