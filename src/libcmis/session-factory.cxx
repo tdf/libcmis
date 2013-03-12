@@ -26,6 +26,7 @@
  * instead of those above.
  */
 #include "atom-session.hxx"
+#include "gdrive-session.hxx"
 #include "session-factory.hxx"
 #include "ws-session.hxx"
 
@@ -58,29 +59,39 @@ namespace libcmis
         
         if ( !bindingUrl.empty( ) )
         {
-            try
+            // Try the special cases based on the binding URL
+            if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
             {
-                session = new AtomPubSession( bindingUrl, repository, username, password,
-                                              oauth2, verbose );
+                session = new GDriveSession( oauth2->getClientId(), oauth2->getClientSecret(),
+                                             username, password, verbose );
             }
-            catch ( const Exception& e )
+            else
             {
-                if ( e.getType( ) == "permissionDenied" )
-                    throw;
-            }
-            
-            if ( session == NULL )
-            {
-                // We couldn't get an AtomSession, we may have an URL for the WebService binding
+                // Try the CMIS cases: we need to autodetect the binding type
                 try
                 {
-                    session = new WSSession( bindingUrl, repository, username, password,
-                                             oauth2, verbose );
+                    session = new AtomPubSession( bindingUrl, repository, username, password,
+                                                  oauth2, verbose );
                 }
                 catch ( const Exception& e )
                 {
                     if ( e.getType( ) == "permissionDenied" )
                         throw;
+                }
+                
+                if ( session == NULL )
+                {
+                    // We couldn't get an AtomSession, we may have an URL for the WebService binding
+                    try
+                    {
+                        session = new WSSession( bindingUrl, repository, username, password,
+                                                 oauth2, verbose );
+                    }
+                    catch ( const Exception& e )
+                    {
+                        if ( e.getType( ) == "permissionDenied" )
+                            throw;
+                    }
                 }
             }
         }
