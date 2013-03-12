@@ -248,6 +248,56 @@
 						</para>
           </listitem>
         </varlistentry>
+        <varlistentry>
+          <term>--oauth2-client-id <replaceable class="parameter">client_id</replaceable></term>
+          <listitem>
+              <para>
+                  Application client id to use in the OAuth2 authentication flow.
+              </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--oauth2-client-secret <replaceable class="parameter">client_secret</replaceable></term>
+          <listitem>
+              <para>
+                  Application client secret to use in the OAuth2 authentication flow.
+              </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--oauth2-auth-url <replaceable class="parameter">url</replaceable></term>
+          <listitem>
+              <para>
+                  URL to authenticate the user in the OAuth2 authentication flow.
+              </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--oauth2-token-url <replaceable class="parameter">url</replaceable></term>
+          <listitem>
+              <para>
+                  URL to authenticate the application in the OAuth2 authentication flow.
+                  The access and refresh tokens are provided by this URL.
+              </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--oauth2-redirect-uri <replaceable class="parameter">uri</replaceable></term>
+          <listitem>
+              <para>
+                  URI where the OAuth2 authentication flow will redirect after a sucessful
+                  authentication.
+              </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>--oauth2-scope <replaceable class="parameter">scope</replaceable></term>
+          <listitem>
+              <para>
+                  Requested scope to access in the OAuth2 authentication flow.
+              </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>
     <refsect2>
