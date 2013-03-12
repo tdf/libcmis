@@ -77,22 +77,23 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     if ( loginCookie.empty( ) ) return NULL;
 
-    //only take the first cookie
-    int pos = loginCookie.find(';');
-    string firstCookie = loginCookie.substr(0, pos);
+    //take the GALX cookie
+    string galxCookie = findStringBetween ( loginCookie, "GALX", ";" );
+
+    galxCookie = "GALX=" + galxCookie;
     //login
     string post =
         "continue=" +
         libcmis::escape( url) +
         libcmis::escape ( "&from_login=1" ) +
-        "&" + firstCookie    +
+        "&" + galxCookie    +
         "&Email="            + username +
         "&Passwd="           + password;
 
     istringstream is( post );
 
     libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
-            "application/x-www-form-urlencoded", firstCookie, true);
+            "application/x-www-form-urlencoded", galxCookie, true);
 
     //the login cookie
     string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
