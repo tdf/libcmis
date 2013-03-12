@@ -38,7 +38,7 @@ GDriveSession::GDriveSession ( string clientId, string clientSecret,
 {
     libcmis::OAuth2DataPtr data( new libcmis::OAuth2Data( DRIVE_AUTH_URL, DRIVE_TOKEN_URL,
                                         DRIVE_SCOPE_FULL, DRIVE_REDIRECT_URI,
-                                        clientId, clientSecret, NULL ) );
+                                        clientId, clientSecret ) );
     setOAuth2Data( data );
 }
 

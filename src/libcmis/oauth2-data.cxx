@@ -38,22 +38,19 @@ namespace libcmis
         m_clientId( ),
         m_clientSecret( ),
         m_scope( ),
-        m_redirectUri( ),
-        m_authCodeProvider( NULL )
+        m_redirectUri( )
     {
     }
 
     OAuth2Data::OAuth2Data( string authUrl, string tokenUrl,
                            string scope, string redirectUri,
-                           string clientId, string clientSecret,
-                           OAuth2AuthCodeProvider authCodeProvider ) :
+                           string clientId, string clientSecret ):
         m_authUrl( authUrl ),
         m_tokenUrl( tokenUrl ),
         m_clientId( clientId ),
         m_clientSecret( clientSecret ),
         m_scope( scope ),
-        m_redirectUri( redirectUri ),
-        m_authCodeProvider( authCodeProvider )
+        m_redirectUri( redirectUri )
     {
     }
 
@@ -63,8 +60,7 @@ namespace libcmis
         m_clientId( copy.m_clientId ),
         m_clientSecret( copy.m_clientSecret ),
         m_scope( copy.m_scope ),
-        m_redirectUri( copy.m_redirectUri ),
-        m_authCodeProvider( copy.m_authCodeProvider )
+        m_redirectUri( copy.m_redirectUri )
     {
     }
 
@@ -82,7 +78,6 @@ namespace libcmis
             m_clientSecret = copy.m_clientSecret;
             m_scope = copy.m_scope;
             m_redirectUri = copy.m_redirectUri;
-            m_authCodeProvider = copy.m_authCodeProvider;
         }
 
         return *this;

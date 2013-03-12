@@ -62,23 +62,6 @@ class OAuth2Handler
         // adding HTTP auth header
         std::string getHttpHeader( ) throw ( libcmis::Exception ) ;
 
-        /** Get the authentication code given credentials.
-
-            This methods actually delegates the authentication task to the
-            OAuth2AuthCodeProvider function: this helps the user to either
-            try to parse the web forms or ask the user to open a browser at
-            the authentication URL.
-
-            \param username
-                the user to authenticate with
-            \param password
-                the password of the user to provide
-
-            \return
-                the authentication code to transform into access/refresh tokens.
-          */
-        char* authenticate( const std::string& username, const std::string& password );
-
         /** Exchange the previously obtained authentication code with the
             access/refresh tokens.
 

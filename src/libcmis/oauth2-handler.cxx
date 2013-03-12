@@ -78,17 +78,6 @@ OAuth2Handler::~OAuth2Handler( )
 {
 }
 
-char* OAuth2Handler::authenticate( const string& username, const string& password )
-{
-    char* authCode = NULL;
-    if ( m_data->getAuthCodeProvider() != NULL )
-    {
-        string url = getAuthURL();
-        authCode = m_data->getAuthCodeProvider()( url.c_str(), username.c_str(), password.c_str() );
-    }
-    return authCode;
-}
-
 void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 {
     string post =

@@ -157,6 +157,24 @@ class BaseSession : public libcmis::Session
         
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
 
+        /** Get the authentication code given credentials.
+
+            This method should be overridden to parse the authentication URL response,
+            authenticate using the form and get the token to avoid asking the user
+            to launch a web browser and do it himself.
+
+            \param url
+                the authentication URL to query in the first place
+            \param username
+                the user to authenticate with
+            \param password
+                the password of the user to provide
+
+            \return
+                the authentication code to transform into access/refresh tokens or NULL.
+                The resulting authentication code will need to be deleted by the client
+                code.
+          */
         virtual char* oauth2Authenticate(const char* url, const char* username,  const char* password);
 
     protected:

@@ -33,9 +33,6 @@
 
 namespace libcmis
 {
-    typedef char* ( *OAuth2AuthCodeProvider )( const char* authUrl,
-        const char* username, const char* password );
-
     /** Class storing the data needed for OAuth2 authentication.
       */
     class OAuth2Data
@@ -49,15 +46,12 @@ namespace libcmis
             std::string m_scope;
             std::string m_redirectUri;
 
-            OAuth2AuthCodeProvider m_authCodeProvider;
-
         public:
 
             OAuth2Data( );
             OAuth2Data( std::string authUrl, std::string tokenUrl,
                            std::string scope, std::string redirectUri,
-                           std::string clientId, std::string clientSecret,
-                           OAuth2AuthCodeProvider authCodeProvider = NULL );
+                           std::string clientId, std::string clientSecret );
 
             OAuth2Data( const OAuth2Data& copy );
             ~OAuth2Data( );
@@ -72,8 +66,6 @@ namespace libcmis
             std::string getClientSecret() { return m_clientSecret; }
             std::string getScope() { return m_scope; }
             std::string getRedirectUri() { return m_redirectUri; }
-
-            OAuth2AuthCodeProvider getAuthCodeProvider() { return m_authCodeProvider; }
     };
     typedef ::boost::shared_ptr< OAuth2Data > OAuth2DataPtr;
 }

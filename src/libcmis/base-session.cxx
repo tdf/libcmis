@@ -500,7 +500,6 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
 
     // Try to get the authentication code using the given provider.
-    //char* authCode = oauth2Handler->authenticate( getUsername(), getPassword() );
     char* authCode = oauth2Authenticate( oauth2Handler->getAuthURL( ).c_str( ),
             getUsername( ).c_str( ), getPassword().c_str( ) );
 
@@ -519,7 +518,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     oauth2Handler->fetchTokens( string( authCode ) );
-    free( authCode );
+    delete authCode;
 }
 
 list< libcmis::RepositoryPtr > BaseSession::getRepositories( )
