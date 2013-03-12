@@ -69,19 +69,19 @@ string findStringBetween( string str, string str1, string str2)
     return result;
 }
 
-char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password ) {
-
-    //grab the visit cookie
+char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
+{
+    // STEP 1: authenticate to grab the visit cookie
     libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
     string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
 
     if ( loginCookie.empty( ) ) return NULL;
 
-    //take the GALX cookie
+    // Take the GALX cookie
     string galxCookie = findStringBetween ( loginCookie, "GALX", ";" );
-
     galxCookie = "GALX=" + galxCookie;
-    //login
+
+    //Login
     string post =
         "continue=" +
         libcmis::escape( url) +
@@ -95,18 +95,21 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
     libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
             "application/x-www-form-urlencoded", galxCookie, true);
 
-    //the login cookie
+    // TODO Handle bad authentication: throw a libcmis::Exception with "permissionDenied" status
+
+    // The login cookie
     string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
     if ( authenticatedCookie.empty( ) ) return NULL;
 
     string loginRes = loginResp->getStream( )->str( );
 
-    //parse stateWrapper, approveURL from login response page to go to the approve page
+    // STEP 2: allow libcmis to access google drive
+    // Get stateWrapper and approveURL from login response page to go to the approve page
 
-    //the approve redirect Url is found as the action link of the post form
+    // The approve redirect Url is found as the action link of the post form
     string approveUrl = findStringBetween( loginRes, "form action=\"", "\"" );
 
-    //"remove "amp;" from the URL, it's only validated as HTML
+    // Remove "amp;" from the URL, it's only validated as HTML
     string removeAmp = "amp;";
     do
     {
@@ -115,10 +118,10 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
         approveUrl.erase( firstPos, removeAmp.length( ) );
     } while ( true );
 
-    //the state_wrapper parameter is found inside the state_wrapper tag
+    // The state_wrapper parameter is found inside the state_wrapper tag
     string stateWrapper = findStringBetween ( loginRes, "name=\"state_wrapper\" value=\"", "\"");
 
-    //submit allow access
+    // Submit allow access
     post = "state_wrapper=" +
             stateWrapper + "&" +
            "submit_access=true";
@@ -130,11 +133,10 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     string approveRes = approveResp->getStream( )->str( );
 
-    //take the authentication code from the text bar
+    // STEP 3: Take the authentication code from the text bar
     string code = findStringBetween (approveRes, "\"readonly\" value=\"", "\"");
 
     char* authCode = new char[ code.length( ) ];
-
     strcpy ( authCode, code.c_str( ) );
 
     return authCode;
