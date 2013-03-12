@@ -89,8 +89,17 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 
     istringstream is( post );
 
-    libcmis::HttpResponsePtr resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is,
-            "application/x-www-form-urlencoded" );
+    libcmis::HttpResponsePtr resp;
+
+    try
+    {
+        resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is, "application/x-www-form-urlencoded" );
+    }
+    catch ( const CurlException& e )
+    {
+        throw libcmis::Exception(" Application client sercet is incorrect ");
+        return;
+    }
 
     Json jresp = Json::parse( resp->getStream()->str() );
     m_access = jresp["access_token"].toString();

@@ -72,14 +72,22 @@ string findStringBetween( string str, string str1, string str2)
 char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
 {
     // STEP 1: authenticate to grab the visit cookie
-    libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
+    libcmis::HttpResponsePtr resp;
+    try
+    {
+        resp = this-> httpGetRequest( url );
+    }
+    catch ( const CurlException& e)
+    {
+        throw libcmis::Exception ( " Application Client ID is incorrect " );
+    }
     string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
 
     if ( loginCookie.empty( ) ) return NULL;
 
     // Take the GALX cookie
     string galxCookie = findStringBetween ( loginCookie, "GALX", ";" );
-    galxCookie = "GALX=" + galxCookie;
+    galxCookie = "GALX" + galxCookie;
 
     //Login
     string post =
@@ -94,8 +102,6 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
             "application/x-www-form-urlencoded", galxCookie, true);
-
-    // TODO Handle bad authentication: throw a libcmis::Exception with "permissionDenied" status
 
     // The login cookie
     string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
@@ -118,8 +124,14 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
         approveUrl.erase( firstPos, removeAmp.length( ) );
     } while ( true );
 
+    //bad authentication, or parser fails
+    if ( approveUrl.empty( ) ) return NULL;
+
     // The state_wrapper parameter is found inside the state_wrapper tag
     string stateWrapper = findStringBetween ( loginRes, "name=\"state_wrapper\" value=\"", "\"");
+
+    //bad authentication, or parser fails
+    if ( stateWrapper.empty( ) ) return NULL;
 
     // Submit allow access
     post = "state_wrapper=" +
