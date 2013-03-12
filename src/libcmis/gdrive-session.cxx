@@ -51,13 +51,16 @@ GDriveSession::GDriveSession() :
 {
 }
 
+/*
+ * Extract a sub string from str, between str1 and str2
+ */
 string findStringBetween( string str, string str1, string str2)
 {
 
     int start = str.find ( str1 ) ;
 
     if ( start == (int) string::npos ) return string ( );
-    //find the closing \" of the Url
+
     int end = str.find ( str2, start + str1.length( ) + 1  ) ;
 
     start += str1.length( );
@@ -97,10 +100,10 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     string loginRes = loginResp->getStream( )->str( );
 
-    //approve, parse stateWrapper, approveURL from login response page
+    //parse stateWrapper, approveURL from login response page to go to the approve page
 
-    //the approveUrl is found as the action link of the post form
-    string approveUrl = findStringBetween( loginRes, "form action=\"", "\"");
+    //the approve redirect Url is found as the action link of the post form
+    string approveUrl = findStringBetween( loginRes, "form action=\"", "\"" );
 
     //"remove "amp;" from the URL, it's only validated as HTML
     string removeAmp = "amp;";
@@ -111,8 +114,8 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
         approveUrl.erase( firstPos, removeAmp.length( ) );
     } while ( true );
 
-    //the state_wrapper parameter is found from the state_wrapper tag
-    string stateWrapper = findStringBetween (loginRes, "name=\"state_wrapper\" value=\"", "\"");
+    //the state_wrapper parameter is found inside the state_wrapper tag
+    string stateWrapper = findStringBetween ( loginRes, "name=\"state_wrapper\" value=\"", "\"");
 
     //submit allow access
     post = "state_wrapper=" +
@@ -126,9 +129,14 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     string approveRes = approveResp->getStream( )->str( );
 
-    string authCode = findStringBetween (approveRes, "\"readonly\" value=\"", "\"");
+    //take the authentication code from the text bar
+    string code = findStringBetween (approveRes, "\"readonly\" value=\"", "\"");
 
-    return (char*) authCode.c_str( );
+    char* authCode = new char[ code.length( ) ];
+
+    strcpy ( authCode, code.c_str( ) );
+
+    return authCode;
 }
 
 libcmis::RepositoryPtr GDriveSession::getRepository( ) throw ( libcmis::Exception )
