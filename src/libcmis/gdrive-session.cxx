@@ -70,17 +70,10 @@ string findStringBetween( string str, string str1, string str2)
 }
 
 char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
+    throw ( CurlException )
 {
     // STEP 1: authenticate to grab the visit cookie
-    libcmis::HttpResponsePtr resp;
-    try
-    {
-        resp = this-> httpGetRequest( url );
-    }
-    catch ( const CurlException& e)
-    {
-        throw libcmis::Exception ( " Application Client ID is incorrect " );
-    }
+    libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
     string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
 
     if ( loginCookie.empty( ) ) return NULL;
@@ -124,13 +117,13 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
         approveUrl.erase( firstPos, removeAmp.length( ) );
     } while ( true );
 
-    //bad authentication, or parser fails
+    // Bad authentication, or parser fails
     if ( approveUrl.empty( ) ) return NULL;
 
     // The state_wrapper parameter is found inside the state_wrapper tag
     string stateWrapper = findStringBetween ( loginRes, "name=\"state_wrapper\" value=\"", "\"");
 
-    //bad authentication, or parser fails
+    // Bad authentication, or parser fails
     if ( stateWrapper.empty( ) ) return NULL;
 
     // Submit allow access
@@ -138,9 +131,9 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
             stateWrapper + "&" +
            "submit_access=true";
 
-    istringstream appproveIs( post );
+    istringstream approveIs( post );
 
-    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, appproveIs,
+    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, approveIs,
                "application/x-www-form-urlencoded", authenticatedCookie, true);
 
     string approveRes = approveResp->getStream( )->str( );
