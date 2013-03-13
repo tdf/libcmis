@@ -61,17 +61,34 @@ class GDriveMockTest : public CppUnit::TestFixture
 
 void GDriveMockTest::sessionAuthenticationTest( )
 {
-    curl_mockup_reset( );
-    curl_mockup_setResponse( "data/json-response.json" );
+    const string username( "mock-user" );
+    const string password( "mock-password" );
 
-    const string username( "fake-google-username" );
-    const string password( "fake-password" );
+    curl_mockup_reset( );
+
+    //login responses
+    const string loginHeader ( "Set-Cookie: GALX=jvNnpnJZV8Q;Path=/;Secure" );
+
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", "scope=https://www.googleapis.com/auth/drive+&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=mock-id", "GET", "data/gdrive/login.html", 200, true, loginHeader.c_str( ) );
+
+    //authentication responses
+    
+    const string authenticateHeader ( "Set-Cookie: LSOSID=DQAAALkAAACKFqTOjkTLyL;Path=/" ); 
+
+    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", "", "POST", "data/gdrive/approve.html", 200, true, authenticateHeader.c_str( ) );
+
+    //approval responses
+
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/approval", "as=3051bd2d56da96f6&hl=en&xsrfsign=APsBz4gAAAAAUUEH0b136gUoiuPTOZc1HvmJDzFvM6r5", "POST", "data/gdrive/authcode.html", 200, true,"");
+
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/token", "", "POST", "data/gdrive/token-response.json", 200, true,"");
 
     // The authentication should happen automatically when creating the session
     GDriveSession session = createSession( username, password );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("wrong access token", string("mock-access-token"), session.m_oauth2Handler->getAccessToken( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("wrong refresh token", string("mock-refresh-token"), session.m_oauth2Handler->getRefreshToken( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong access token", string ("mock-access-token"), session.m_oauth2Handler->getAccessToken( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong refresh token", string ("mock-refresh-token"), session.m_oauth2Handler->getRefreshToken( ) );
+
 }
 
 GDriveSession GDriveMockTest::createSession( const string& username, const string& password )
