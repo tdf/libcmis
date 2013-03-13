@@ -535,6 +535,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     catch ( const CurlException& e )
     {
         // Thrown by getUsername() and getPassword() if user cancels the credentials request
+        // or by oauth2Authenticate() if anything wrong happened when getting the auth code
         throw e.getCmisException( );
     }
 
@@ -563,7 +564,7 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
     return folder;
 }
 
-char* BaseSession::oauth2Authenticate( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
+char* BaseSession::oauth2Authenticate( const char* /*url*/, const char* /*username*/, const char* /*password*/ ) throw ( CurlException )
 {
     return NULL;
 }

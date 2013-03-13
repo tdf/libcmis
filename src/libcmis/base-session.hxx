@@ -175,7 +175,7 @@ class BaseSession : public libcmis::Session
                 The resulting authentication code will need to be deleted by the client
                 code.
           */
-        virtual char* oauth2Authenticate(const char* url, const char* username,  const char* password);
+        virtual char* oauth2Authenticate( const char* url, const char* username,  const char* password ) throw ( CurlException );
 
     protected:
         BaseSession( );
