@@ -136,9 +136,6 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     // STEP 1: authenticate to grab the cookie
     libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
-    string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
-
-    if ( loginCookie.empty( ) ) return NULL;
     string res = resp->getStream()->str();
  
     map < string, string> inputs = getInputs ( res );
@@ -156,12 +153,7 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     istringstream is( post );
 
-    libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
-            CONTENT_TYPE, loginCookie);
-
-    // The authentication cookie
-    string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
-    if ( authenticatedCookie.empty( ) ) return NULL;
+    libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is, CONTENT_TYPE);
 
     string loginRes = loginResp->getStream( )->str( );
 
@@ -190,8 +182,7 @@ char* GDriveSession::oauth2Authenticate ( const char* url, const char* username,
 
     istringstream approveIs( approvePost );
 
-    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, approveIs,
-               CONTENT_TYPE, authenticatedCookie);
+    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, approveIs, CONTENT_TYPE);
 
     string approveRes = approveResp->getStream( )->str( );
 

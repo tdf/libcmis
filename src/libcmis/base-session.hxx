@@ -143,8 +143,7 @@ class BaseSession : public libcmis::Session
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType,
-               const std::string& cookie = std::string( )) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
 
         long getHttpStatus( );

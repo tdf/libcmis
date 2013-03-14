@@ -331,8 +331,8 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     return response;
 }
 
-libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, const string& contentType,
-        const string& cookie) throw ( CurlException )
+libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, 
+    const string& contentType) throw ( CurlException )
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
@@ -344,14 +344,6 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
     
     curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
-
-    curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEJAR, "");
-
-    //set cookie to send
-    if ( !cookie.empty( ) )
-    {
-        curl_easy_setopt( m_curlHandle, CURLOPT_COOKIE, cookie.c_str( ) );
-    }
 
     // Get the stream length
     is.seekg( 0, ios::end );
@@ -417,8 +409,11 @@ void BaseSession::checkCredentials( ) throw ( CurlException )
 
 void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
 {
-    //Always redirect
+    // Always redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
+    
+    // Activate the cookie engine
+    curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );
 
     // Grab something from the web
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );

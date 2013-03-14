@@ -67,15 +67,12 @@ void GDriveMockTest::sessionAuthenticationTest( )
     curl_mockup_reset( );
 
     //login responses
-    const string loginHeader ( "Set-Cookie: GALX=tDzdDJzzQwM;Path=/;Secure" );
 
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", "scope=https://www.googleapis.com/auth/drive+&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=mock-id", "GET", "data/gdrive/login.html", 200, true, loginHeader.c_str( ) );
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", "scope=https://www.googleapis.com/auth/drive+&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=mock-id", "GET", "data/gdrive/login.html", 200, true);
 
     //authentication responses
     
-    const string authenticateHeader ( "Set-Cookie: LSOSID=DQAAALkAAACKFqTOjkTLyL;Path=/" ); 
-
-    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", "", "POST", "data/gdrive/approve.html", 200, true, authenticateHeader.c_str( ) );
+    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", "", "POST", "data/gdrive/approve.html", 200, true);
 
     //approval responses
 
