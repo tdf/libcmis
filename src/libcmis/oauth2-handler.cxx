@@ -97,7 +97,7 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
     }
     catch ( const CurlException& e )
     {
-        throw libcmis::Exception(" Application client sercet is incorrect ");
+        throw libcmis::Exception(" Couldn't get tokens from the authorization code ");
         return;
     }
 

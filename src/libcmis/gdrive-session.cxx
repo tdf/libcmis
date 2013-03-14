@@ -54,92 +54,150 @@ GDriveSession::GDriveSession() :
 /*
  * Extract a sub string from str, between str1 and str2
  */
-string findStringBetween( string str, string str1, string str2)
+string findStringBetween( string str, string str1, string str2, int startPos = 0, int* resultPos = NULL)
 {
 
-    int start = str.find ( str1 ) ;
+    int start = str.find ( str1, startPos) ;
 
     if ( start == (int) string::npos ) return string ( );
 
-    int end = str.find ( str2, start + str1.length( ) + 1  ) ;
+    int end = str.find ( str2, start + str1.length( ) ) ;
+
+    if ( end == (int) string::npos) return string ( );
 
     start += str1.length( );
 
     string result = str.substr( start, end - start );
+    
+    if ( resultPos != NULL )
+        *resultPos = start;
+
+    return result;
+}
+
+/*
+ * Remove all sub string from a string
+ */
+
+string removeSubstr ( string str, string removeStr)
+{
+    string res = str;
+    do
+    {
+        int pos = res.find( removeStr );
+        if ( pos == (int) string::npos ) break;
+        res.erase( pos, removeStr.length( ) );
+    } while ( true );
+
+    return res;
+}
+
+/*
+ * Parse input values from response page
+ */
+
+map < string, string > getInputs ( string response )
+{
+
+    map < string, string > result;
+
+    int resultPos = 0;
+
+    int startPos;
+
+    do
+    {
+        startPos = resultPos + 1;
+        string input = findStringBetween ( response, "<input", ">" , startPos, &resultPos );
+        if ( input.empty ( ) ) break;
+        
+        string name = findStringBetween ( input, "name=\"", "\"", 0);
+
+        if ( name.empty ( ) ) continue;
+
+        string value = findStringBetween ( input, "value=\"", "\"", 0);
+
+        if ( value.empty ( ) ) continue;
+
+        //remove amp;, it's only validated as HTML, not post form
+        value = removeSubstr ( value, "amp;");
+
+        result [name] = value;
+
+    } while ( true );
+
     return result;
 }
 
 char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
     throw ( CurlException )
 {
-    // STEP 1: authenticate to grab the visit cookie
+    const string CONTENT_TYPE ( "application/x-www-form-urlencoded" );
+
+    // STEP 1: authenticate to grab the cookie
     libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
     string loginCookie = resp->getHeaders( )[ "Set-Cookie" ];
 
     if ( loginCookie.empty( ) ) return NULL;
+    string res = resp->getStream()->str();
+ 
+    map < string, string> inputs = getInputs ( res );
 
-    // Take the GALX cookie
-    string galxCookie = findStringBetween ( loginCookie, "GALX", ";" );
-    galxCookie = "GALX" + galxCookie;
+    // Parse login form to post
+    string post;
+    for ( map < string, string >::iterator it = inputs.begin( ); it != inputs.end( ); ++it)
+    {
+        if (it != inputs.begin( )) post += "&"; 
+        post += it->first + "=" + libcmis::escape( it->second ) ;
+    }    
 
-    //Login
-    string post =
-        "continue=" +
-        libcmis::escape( url) +
-        libcmis::escape ( "&from_login=1" ) +
-        "&" + galxCookie    +
-        "&Email="            + username +
-        "&Passwd="           + password;
+    post += string ("&Email=" )   + username    +
+            string ("&Passwd=")  + password;
 
     istringstream is( post );
 
     libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is,
-            "application/x-www-form-urlencoded", galxCookie, true);
+            CONTENT_TYPE, loginCookie);
 
-    // The login cookie
+    // The authentication cookie
     string authenticatedCookie = loginResp->getHeaders( )[ "Set-Cookie" ];
     if ( authenticatedCookie.empty( ) ) return NULL;
 
     string loginRes = loginResp->getStream( )->str( );
 
     // STEP 2: allow libcmis to access google drive
-    // Get stateWrapper and approveURL from login response page to go to the approve page
 
     // The approve redirect Url is found as the action link of the post form
     string approveUrl = findStringBetween( loginRes, "form action=\"", "\"" );
 
     // Remove "amp;" from the URL, it's only validated as HTML
-    string removeAmp = "amp;";
-    do
-    {
-        int firstPos =  approveUrl.find( removeAmp );
-        if ( firstPos == (int) string::npos ) break;
-        approveUrl.erase( firstPos, removeAmp.length( ) );
-    } while ( true );
-
+    approveUrl = removeSubstr( approveUrl, "amp;");
+    
     // Bad authentication, or parser fails
     if ( approveUrl.empty( ) ) return NULL;
 
-    // The state_wrapper parameter is found inside the state_wrapper tag
-    string stateWrapper = findStringBetween ( loginRes, "name=\"state_wrapper\" value=\"", "\"");
-
-    // Bad authentication, or parser fails
-    if ( stateWrapper.empty( ) ) return NULL;
+    // Parse input values from the approve response page
+    inputs = getInputs ( loginRes );
+    string approvePost;
+    for ( map < string, string >::iterator it = inputs.begin( ); it != inputs.end( ); ++it)
+    {
+        if (it != inputs.begin( )) approvePost += "&"; 
+        approvePost += it->first + "=" + libcmis::escape( it->second ) ;
+    }
 
     // Submit allow access
-    post = "state_wrapper=" +
-            stateWrapper + "&" +
-           "submit_access=true";
+    approvePost += "&submit_access=true";
 
-    istringstream approveIs( post );
+    istringstream approveIs( approvePost );
 
     libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, approveIs,
-               "application/x-www-form-urlencoded", authenticatedCookie, true);
+               CONTENT_TYPE, authenticatedCookie);
 
     string approveRes = approveResp->getStream( )->str( );
 
     // STEP 3: Take the authentication code from the text bar
-    string code = findStringBetween (approveRes, "\"readonly\" value=\"", "\"");
+    string inputString = findStringBetween ( approveRes, "<input", ">");
+    string code = findStringBetween ( inputString, " value=\"", "\"");
 
     char* authCode = new char[ code.length( ) ];
     strcpy ( authCode, code.c_str( ) );

@@ -266,7 +266,6 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
     // fix Cloudoku too many redirects error
     // note: though curl doc says -1 is the default for MAXREDIRS, the error i got
     // said it was 0
-    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 100);
 
     try
@@ -333,7 +332,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
 }
 
 libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, const string& contentType,
-        const string& cookie, bool followLocation) throw ( CurlException )
+        const string& cookie) throw ( CurlException )
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
@@ -365,14 +364,8 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
 
-    //Gdrive OAuth2 require follow location
-    if ( followLocation )
-        curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
-
     vector< string > headers;
     headers.push_back( string( "Content-Type:" ) + contentType );
-
-
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
@@ -424,6 +417,9 @@ void BaseSession::checkCredentials( ) throw ( CurlException )
 
 void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
 {
+    //Always redirect
+    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
+
     // Grab something from the web
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
