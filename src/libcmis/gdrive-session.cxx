@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <libxml/HTMLparser.h>
+
 #include "gdrive-session.hxx"
 #include "gdrive-common.hxx"
 
@@ -52,146 +54,122 @@ GDriveSession::GDriveSession() :
 }
 
 /*
- * Extract a sub string from str, between str1 and str2
+ * Parse XML nodes to find the redirect link and input form
  */
-string findStringBetween( string str, string str1, string str2, int startPos = 0, int* resultPos = NULL)
+void parse ( const xmlNodePtr node, string& post, string& link )
 {
+    xmlNodePtr current = NULL;
 
-    int start = str.find ( str1, startPos) ;
+    for ( current = node; current; current = current->next)
+    {
+        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "form" ))) )
+        {
+            char* actionLink  = (char*) xmlGetProp( current, ( const xmlChar*) "action");
+            if ( actionLink != NULL)
+                link = string( actionLink );
 
-    if ( start == (int) string::npos ) return string ( );
+            delete actionLink;
+        }
 
-    int end = str.find ( str2, start + str1.length( ) ) ;
+        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "input" ))) )
+        {
+            char* name  = (char*) xmlGetProp( current, ( const xmlChar*) "name");
+            char* value = (char*) xmlGetProp( current, ( const xmlChar*) "value");
 
-    if ( end == (int) string::npos) return string ( );
+            if ( name != NULL &&  value!= NULL)
+                if ( strlen(value) > 0)
+                post += string (name ) + string ("=") + 
+                    libcmis::escape(string (value)) + string ("&");
 
-    start += str1.length( );
-
-    string result = str.substr( start, end - start );
-    
-    if ( resultPos != NULL )
-        *resultPos = start;
-
-    return result;
+            delete name;
+            delete value;
+        }
+        parse ( current->children, post, link );
+    }     
 }
 
 /*
- * Remove all sub string from a string
+ * Parse input values and redirect link from response page
  */
 
-string removeSubstr ( string str, string removeStr)
+void parseResponse ( const char* response, string& post, string& link )
 {
-    string res = str;
-    do
-    {
-        int pos = res.find( removeStr );
-        if ( pos == (int) string::npos ) break;
-        res.erase( pos, removeStr.length( ) );
-    } while ( true );
+    xmlDoc *doc = htmlReadDoc ( ( const xmlChar* ) response, NULL, 0, 0);
+    xmlNodePtr root =   xmlDocGetRootElement ( doc );
+    parse( root, post, link );
+    xmlFreeDoc( doc );
+}
 
-    return res;
+void findCode ( const xmlNodePtr node, string& authCode)
+{
+    xmlNodePtr current = NULL;
+    for ( current = node; current; current = current->next)
+    {
+        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "input" ))) )
+        {
+            char* id  = (char*) xmlGetProp( current, ( const xmlChar*) "id");
+            if ( id != NULL )
+            if ( !strcmp (id, "code") )
+            {
+                char* code  = (char*) xmlGetProp( current, ( const xmlChar*) "value");
+                if ( code != NULL )
+                    authCode = string( code );
+                delete code;
+            }
+            delete id;
+        }
+        findCode ( current->children, authCode);
+    }
 }
 
 /*
- * Parse input values from response page
+ * Parse authorization code from the response page
  */
 
-map < string, string > getInputs ( string response )
+string parseCode ( const char* response)
 {
-
-    map < string, string > result;
-
-    int resultPos = 0;
-
-    int startPos;
-
-    do
-    {
-        startPos = resultPos + 1;
-        string input = findStringBetween ( response, "<input", ">" , startPos, &resultPos );
-        if ( input.empty ( ) ) break;
-        
-        string name = findStringBetween ( input, "name=\"", "\"", 0);
-
-        if ( name.empty ( ) ) continue;
-
-        string value = findStringBetween ( input, "value=\"", "\"", 0);
-
-        if ( value.empty ( ) ) continue;
-
-        //remove amp;, it's only validated as HTML, not post form
-        value = removeSubstr ( value, "amp;");
-
-        result [name] = value;
-
-    } while ( true );
-
-    return result;
+    xmlDoc *doc = htmlReadDoc ( ( const xmlChar* ) response, NULL, 0, 0);
+    xmlNodePtr root = xmlDocGetRootElement ( doc );
+    string code ;
+    findCode ( root, code);
+    xmlFreeDoc( doc );
+    return code;
 }
 
 char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
     throw ( CurlException )
 {
     const string CONTENT_TYPE ( "application/x-www-form-urlencoded" );
-
-    // STEP 1: authenticate to grab the cookie
-    libcmis::HttpResponsePtr resp = this-> httpGetRequest( url );
-    string res = resp->getStream()->str();
+    // STEP 1: Log in
+    string res = httpGetRequest( url )->getStream( )->str( );
  
-    map < string, string> inputs = getInputs ( res );
+    string loginPost, loginLink; 
+    
+    parseResponse ( res.c_str( ), loginPost, loginLink );
 
-    // Parse login form to post
-    string post;
-    for ( map < string, string >::iterator it = inputs.begin( ); it != inputs.end( ); ++it)
-    {
-        if (it != inputs.begin( )) post += "&"; 
-        post += it->first + "=" + libcmis::escape( it->second ) ;
-    }    
+    loginPost += "Email="  + string( username ) + "&Passwd=" + string( password );
 
-    post += string ("&Email=" )   + username    +
-            string ("&Passwd=")  + password;
+    istringstream is( loginPost );
 
-    istringstream is( post );
-
-    libcmis::HttpResponsePtr loginResp = this->httpPostRequest ( GOOGLE_LOGIN_URL, is, CONTENT_TYPE);
-
-    string loginRes = loginResp->getStream( )->str( );
+    string loginRes = httpPostRequest ( loginLink, is, CONTENT_TYPE)->getStream( ) ->str( );
 
     // STEP 2: allow libcmis to access google drive
-
-    // The approve redirect Url is found as the action link of the post form
-    string approveUrl = findStringBetween( loginRes, "form action=\"", "\"" );
-
-    // Remove "amp;" from the URL, it's only validated as HTML
-    approveUrl = removeSubstr( approveUrl, "amp;");
     
-    // Bad authentication, or parser fails
-    if ( approveUrl.empty( ) ) return NULL;
+    string approvalPost, approvalLink; 
+    parseResponse( loginRes.c_str( ), approvalPost, approvalLink);
 
-    // Parse input values from the approve response page
-    inputs = getInputs ( loginRes );
-    string approvePost;
-    for ( map < string, string >::iterator it = inputs.begin( ); it != inputs.end( ); ++it)
-    {
-        if (it != inputs.begin( )) approvePost += "&"; 
-        approvePost += it->first + "=" + libcmis::escape( it->second ) ;
-    }
+    approvalPost += "submit_access=true";
 
-    // Submit allow access
-    approvePost += "&submit_access=true";
+    istringstream approvalIs( approvalPost );
 
-    istringstream approveIs( approvePost );
-
-    libcmis::HttpResponsePtr approveResp = this->httpPostRequest ( approveUrl, approveIs, CONTENT_TYPE);
-
-    string approveRes = approveResp->getStream( )->str( );
+    string approvalRes = httpPostRequest ( approvalLink, approvalIs, CONTENT_TYPE) ->getStream( )->str( );
 
     // STEP 3: Take the authentication code from the text bar
-    string inputString = findStringBetween ( approveRes, "<input", ">");
-    string code = findStringBetween ( inputString, " value=\"", "\"");
 
-    char* authCode = new char[ code.length( ) ];
-    strcpy ( authCode, code.c_str( ) );
+    string code = parseCode ( approvalRes.c_str( ) );
+    if ( code.empty( )) return NULL;
+    char* authCode = new char [ code.length( )];
+    strcpy ( authCode, code.c_str( ));
 
     return authCode;
 }
