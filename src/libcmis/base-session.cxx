@@ -107,13 +107,13 @@ namespace
     }
 }
 
-BaseSession::BaseSession( string atomPubUrl, string repositoryId, string username,
+BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
         string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
     m_oauth2Handler( NULL ),
-    m_bindingUrl( atomPubUrl ),
+    m_bindingUrl( bindingUrl ),
     m_repositoryId( repositoryId ),
     m_username( username ),
     m_password( password ),
@@ -509,11 +509,10 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 
     try
     {
-        // Try to get the authentication code using the given provider.
-        authCode = oauth2Authenticate( oauth2Handler->getAuthURL( ).c_str( ),
-                getUsername( ).c_str( ), getPassword().c_str( ) );
-
         m_oauth2Handler = oauth2Handler;
+
+        // Try to get the authentication code using the given provider.
+        authCode = oauth2Authenticate( );
 
         // If that didn't work, call the fallback provider from SessionFactory
         if ( authCode == NULL )
@@ -555,7 +554,7 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
     return folder;
 }
 
-char* BaseSession::oauth2Authenticate( const char* /*url*/, const char* /*username*/, const char* /*password*/ ) throw ( CurlException )
+char* BaseSession::oauth2Authenticate( ) throw ( CurlException )
 {
     return NULL;
 }

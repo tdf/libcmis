@@ -62,16 +62,16 @@ namespace libcmis
             // Try the special cases based on the binding URL
             if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
             {
-                session = new GDriveSession( oauth2->getClientId(), oauth2->getClientSecret(),
-                                             username, password, verbose );
+                session = new GDriveSession( bindingUrl, username, 
+                                             password, oauth2, verbose );
             }
             else
             {
                 // Try the CMIS cases: we need to autodetect the binding type
                 try
                 {
-                    session = new AtomPubSession( bindingUrl, repository, username, password,
-                                                  oauth2, verbose );
+                    session = new AtomPubSession( bindingUrl, repository, 
+                                    username, password, oauth2, verbose );
                 }
                 catch ( const Exception& e )
                 {
@@ -84,8 +84,8 @@ namespace libcmis
                     // We couldn't get an AtomSession, we may have an URL for the WebService binding
                     try
                     {
-                        session = new WSSession( bindingUrl, repository, username, password,
-                                                 oauth2, verbose );
+                        session = new WSSession( bindingUrl, repository,
+                                      username, password, oauth2, verbose );
                     }
                     catch ( const Exception& e )
                     {

@@ -25,8 +25,8 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef GDRIVE_SESSION_HXX_
-#define GDRIVE_SESSION_HXX_
+#ifndef _GDRIVE_SESSION_HXX_
+#define _GDRIVE_SESSION_HXX_
 
 #include "base-session.hxx"
 #include "repository.hxx"
@@ -34,25 +34,26 @@
 class GDriveSession : public BaseSession
 {
     public:
-        GDriveSession( std::string clientId, std::string clientSecret,
-                std::string username, std::string password, bool verbose = false )
-            throw ( libcmis::Exception );
-
+        GDriveSession( std::string baseUrl,
+                       std::string username, 
+                       std::string password,
+                       libcmis::OAuth2DataPtr oauth2,            
+                       bool verbose = false )
+                   throw ( libcmis::Exception );
+        GDriveSession( const GDriveSession& copy );
         ~GDriveSession ( );
-
-        virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
-
-        virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
-
-        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
-
-        virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
-
-        virtual char* oauth2Authenticate( const char* url, const char* username, const char* password )
-            throw ( CurlException );
+        virtual libcmis::RepositoryPtr getRepository( ) 
+            throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObject( std::string id ) 
+            throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) 
+            throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getType( std::string id )             
+            throw ( libcmis::Exception );
+        virtual char* oauth2Authenticate( ) throw ( CurlException );
 
     private:
-        GDriveSession();
+        GDriveSession( );
 };
 
-#endif /* GDRIVE_SESSION_HXX_ */
+#endif /* _GDRIVE_SESSION_HXX_ */

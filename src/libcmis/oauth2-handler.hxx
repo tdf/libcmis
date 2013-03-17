@@ -25,8 +25,8 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef OAUTH2_HANDLER_HXX_
-#define OAUTH2_HANDLER_HXX_
+#ifndef _OAUTH2_HANDLER_HXX_
+#define _OAUTH2_HANDLER_HXX_
 
 #include <string>
 #include "base-session.hxx"
@@ -47,7 +47,8 @@ class OAuth2Handler
 
     public:
 
-        OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data ) throw ( libcmis::Exception );
+        OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data ) 
+            throw ( libcmis::Exception );
 
         OAuth2Handler( const OAuth2Handler& copy );
         ~OAuth2Handler( );
@@ -66,7 +67,8 @@ class OAuth2Handler
             access/refresh tokens.
 
             \param authCode
-                the authentication code normally obtained from authenticate method.
+               the authentication code normally obtained from authenticate 
+               method.
           */
         void fetchTokens( std::string authCode ) throw ( libcmis::Exception );
         void refresh( ) throw ( libcmis::Exception );
@@ -75,4 +77,4 @@ class OAuth2Handler
         OAuth2Handler( );
 };
 
-#endif /* OAUTH2_HANDLER_HXX_ */
+#endif /* _OAUTH2_HANDLER_HXX_ */

@@ -49,9 +49,12 @@ namespace libcmis
         public:
 
             OAuth2Data( );
-            OAuth2Data( std::string authUrl, std::string tokenUrl,
-                           std::string scope, std::string redirectUri,
-                           std::string clientId, std::string clientSecret );
+            OAuth2Data( const std::string& authUrl, 
+                        const std::string& tokenUrl,
+                        const std::string& scope, 
+                        const std::string& redirectUri,
+                        const std::string& clientId, 
+                        const std::string& clientSecret );
 
             OAuth2Data( const OAuth2Data& copy );
             ~OAuth2Data( );
@@ -70,4 +73,5 @@ namespace libcmis
     typedef ::boost::shared_ptr< OAuth2Data > OAuth2DataPtr;
 }
 
-#endif
+#endif //_LIBCMIS_OAUTH2_DATA_HXX_
+

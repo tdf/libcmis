@@ -40,12 +40,16 @@
 #include "gdrive-session.hxx"
 #include "oauth2-handler.hxx"
 
-using namespace std;
+using std::string;
 using namespace libcmis;
 
-#define CLIENT_ID string ("mock-id")
-#define CLIENT_SECRET string ("mock-secret")
-
+static const string clientId ( "mock-id" );
+static const string clientSecret ( "mock-secret" );
+static const string authUrl ( "https://accounts.google.com/o/oauth2/auth" );
+static const string tokenUrl ( "https://accounts.google.com/o/oauth2/token" );
+static const string scopeFull ( "https://www.googleapis.com/auth/drive" );
+static const string redirectUri ("urn:ietf:wg:oauth:2.0:oob" );
+static const string baseUrl ( "https://www.googleapis.com/drive/v2" );
 class GDriveMockTest : public CppUnit::TestFixture
 {
     public:
@@ -56,54 +60,104 @@ class GDriveMockTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 
     private:
-        GDriveSession createSession( const string& username, const string& password );
+        GDriveSession createSession( string username, string password );
 };
 
 void GDriveMockTest::sessionAuthenticationTest( )
 {
-    const string username( "mock-user" );
-    const string password( "mock-password" );
+    static const string username( "mock-user" );
+    static const string password( "mock-password" );
 
     curl_mockup_reset( );
+    //login response
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", 
+                              "scope=https://www.googleapis.com/auth/drive&"
+                              "redirect_uri=urn:ietf:wg:oauth:2.0:oob&response"
+                              "_type=code&client_id=mock-id", 
+                              "GET", "data/gdrive/login.html", 200, true);
 
-    //login responses
+    //authentication response
+    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", 
+                               "", "POST", "data/gdrive/approve.html", 
+                               200, true);
 
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", "scope=https://www.googleapis.com/auth/drive+&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=mock-id", "GET", "data/gdrive/login.html", 200, true);
+    //approval response
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/approval",
+                              "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAA"
+                              "AAAUUIKghwgPtjfu5KA_cPF2ich0o-kYdp3", 
+                               "POST", "data/gdrive/authcode.html", 200, true);
 
-    //authentication responses
-    
-    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", "", "POST", "data/gdrive/approve.html", 200, true);
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/token", 
+                              "", "POST", "data/gdrive/token-response.json", 
+                              200, true );
 
-    //approval responses
-
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/approval", "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAAAAAUUIKghwgPtjfu5KA_cPF2ich0o-kYdp3", "POST", "data/gdrive/authcode.html", 200, true,"");
-
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/token", "", "POST", "data/gdrive/token-response.json", 200, true,"");
-
-    // The authentication should happen automatically when creating the session
+    // The authentication should happen automatically when creating 
+    // the session
     GDriveSession session = createSession( username, password );
  
-    string authRequest( curl_mockup_getRequest( "https://accounts.google.com/ServiceLoginAuth", "", "POST" ) );
+    string authRequest( curl_mockup_getRequest( 
+                        "https://accounts.google.com/ServiceLoginAuth", 
+                        "", "POST" ) );
+           
+    string codeRequest( curl_mockup_getRequest( 
+                        "https://accounts.google.com/o/oauth2/approval", 
+                        "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAAAAAUUI"
+                        "KghwgPtjfu5KA_cPF2ich0o-kYdp3", 
+                        "POST" ) );
     
-       
-    string codeRequest( curl_mockup_getRequest( "https://accounts.google.com/o/oauth2/approval", "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAAAAAUUIKghwgPtjfu5KA_cPF2ich0o-kYdp3", "POST" ) );
+    string tokenRequest( curl_mockup_getRequest( "https://accounts.google.com/o"
+                                                 "/oauth2/token", "", "POST" ));
     
-    string tokenRequest( curl_mockup_getRequest( "https://accounts.google.com/o/oauth2/token", "", "POST" ) );
-    
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request", string ( "continue=https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&client_id=mock-id&hl=en-US&from_login=1&as=-7b1ae72178f10481&service=lso&dsh=3400322089026361568&ltmpl=embedded&shdf=CoEBCxIRdGhpcmRQYXJ0eUxvZ29VcmwaAAwLEhV0aGlyZFBhcnR5RGlzcGxheU5hbWUaC0dkcml2ZSBDTUlTDAsSBmRvbWFpbhoLR2RyaXZlIENNSVMMCxIVdGhpcmRQYXJ0eURpc3BsYXlUeXBlGhJOQVRJVkVfQVBQTElDQVRJT04MEgNsc28iFG67YENXm6ncjnKqhNGAhZwxkiE8KAEyFOp0y7E6l-eGKSqZSDe0c2j8_Pkf&scc=1&GALX=tDzdDJzzQwM&pstMsg=1&checkConnection=youtube:234:1&checkedDomains=youtube&_utf8=☃&bgresponse=js_disabled&signIn=Sign in&Email=mock-user&Passwd=mock-password" ), authRequest );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request", 
+        string ( "continue=https://accounts.google.com/o/oauth2/auth?response_"
+                 "type=code&scope=https://www.googleapis.com/auth/drive&redirec"
+                 "t_uri=urn:ietf:wg:oauth:2.0:oob&client_id=mock-id&hl=en-US&fr"
+                 "om_login=1&as=-7b1ae72178f10481&service=lso&dsh=3400322089026"
+                 "361568&ltmpl=embedded&shdf=CoEBCxIRdGhpcmRQYXJ0eUxvZ29VcmwaAA"
+                 "wLEhV0aGlyZFBhcnR5RGlzcGxheU5hbWUaC0dkcml2ZSBDTUlTDAsSBmRvbWF"
+                 "pbhoLR2RyaXZlIENNSVMMCxIVdGhpcmRQYXJ0eURpc3BsYXlUeXBlGhJOQVRJ"
+                 "VkVfQVBQTElDQVRJT04MEgNsc28iFG67YENXm6ncjnKqhNGAhZwxkiE8KAEyF"
+                 "Op0y7E6l-eGKSqZSDe0c2j8_Pkf&scc=1&GALX=tDzdDJzzQwM&pstMsg=1&c"
+                 "heckConnection=youtube:234:1&checkedDomains=youtube&_utf8=☃&b"
+                 "gresponse=js_disabled&signIn=Sign in&Email=mock-user&Passwd=m"
+                 "ock-password" ), 
+        authRequest );
  
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", string ( "_utf8=☃&state_wrapper=CoQCZnJvbV9sb2dpbj0xJnJlc3BvbnNlX3R5cGU9Y29kZSZyZWRpcmVjdF91cmk9dXJuOmlldGY6d2c6b2F1dGg6Mi4wOm9vYiZhcz0tN2IxYWU3MjE3OGYxMDQ4MSZobD1lbi1VUyZjbGllbnRfaWQ9MTIxMTkwNDgzNTY2LTdtZWFwMmtkM3RiMjE3YmwzYjZnZnA3NWcwdm8wYm1qLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tJmFjY2Vzc190eXBlPW9mZmxpbmUmc2NvcGU9aHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kcml2ZSZkaXNwbGF5PXBhZ2USFTEwNTYyODU0Njg5MzM0Njk2NzEyNw&submit_access=true"), codeRequest);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", 
+        string ( "_utf8=☃&state_wrapper=CoQCZnJvbV9sb2dpbj0xJnJlc3BvbnNlX3R5cGU"
+                 "9Y29kZSZyZWRpcmVjdF91cmk9dXJuOmlldGY6d2c6b2F1dGg6Mi4wOm9vYiZh"
+                 "cz0tN2IxYWU3MjE3OGYxMDQ4MSZobD1lbi1VUyZjbGllbnRfaWQ9MTIxMTkwN"
+                 "DgzNTY2LTdtZWFwMmtkM3RiMjE3YmwzYjZnZnA3NWcwdm8wYm1qLmFwcHMuZ2"
+                 "9vZ2xldXNlcmNvbnRlbnQuY29tJmFjY2Vzc190eXBlPW9mZmxpbmUmc2NvcGU"
+                 "9aHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kcml2ZSZkaXNwbGF5"
+                 "PXBhZ2USFTEwNTYyODU0Njg5MzM0Njk2NzEyNw&submit_access=true"), 
+        codeRequest);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request", string ( "code=4/0Bst4GNF1fZ54QufJglu0IeiJ9DD.8lT5e9eELwYeOl05ti8ZT3b5DPzLegI&client_id=mock-id&client_secret=mock-secret&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code" ), tokenRequest );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request", 
+        string ( "code=4/0Bst4GNF1fZ54QufJglu0IeiJ9DD.8lT5e9eELwYeOl05ti8ZT3b5D"
+                 "PzLegI&client_id=mock-id&client_secret=mock-secret&redirect_u"
+                 "ri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code"), 
+        tokenRequest );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong access token", string ("mock-access-token"), session.m_oauth2Handler->getAccessToken( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong refresh token", string ("mock-refresh-token"), session.m_oauth2Handler->getRefreshToken( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "Wrong access token", 
+         string ( "mock-access-token" ), 
+         session.m_oauth2Handler->getAccessToken( ));
 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( 
+        "Wrong refresh token", 
+        string ("mock-refresh-token"), 
+        session.m_oauth2Handler->getRefreshToken( ));
 }
 
-GDriveSession GDriveMockTest::createSession( const string& username, const string& password )
+GDriveSession GDriveMockTest::createSession( string username, 
+                                             string password )
 {
-    return GDriveSession( CLIENT_ID, CLIENT_SECRET, username, password );
+    libcmis::OAuth2DataPtr oauth2( 
+        new libcmis::OAuth2Data( authUrl, tokenUrl, scopeFull, 
+                                 redirectUri, clientId, clientSecret ));
+
+    return GDriveSession( baseUrl, username, password, oauth2, false );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveMockTest );

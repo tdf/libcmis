@@ -42,9 +42,9 @@ namespace libcmis
     {
     }
 
-    OAuth2Data::OAuth2Data( string authUrl, string tokenUrl,
-                           string scope, string redirectUri,
-                           string clientId, string clientSecret ):
+    OAuth2Data::OAuth2Data( const string& authUrl, const string& tokenUrl,
+                            const string& scope, const string& redirectUri,
+                            const string& clientId, const string& clientSecret ):
         m_authUrl( authUrl ),
         m_tokenUrl( tokenUrl ),
         m_clientId( clientId ),

@@ -33,7 +33,7 @@
 
 using namespace std;
 
-OAuth2Handler::OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data )
+OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
     throw ( libcmis::Exception ) :
         m_session( session ),
         m_data( data ),
@@ -93,11 +93,13 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 
     try
     {
-        resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is, "application/x-www-form-urlencoded" );
+        resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is, 
+                                        "application/x-www-form-urlencoded" );
     }
     catch ( const CurlException& e )
     {
-        throw libcmis::Exception(" Couldn't get tokens from the authorization code ");
+        throw libcmis::Exception(
+                "Couldn't get tokens from the authorization code ");
         return;
     }
 
@@ -116,7 +118,8 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
 
     istringstream is( post );
 
-    libcmis::HttpResponsePtr resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is,
+    libcmis::HttpResponsePtr resp = m_session->httpPostRequest ( 
+             m_data->getTokenUrl(), is,
             "application/x-www-form-urlencoded" );
 
     Json jresp = Json::parse( resp->getStream()->str() );
@@ -125,11 +128,11 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
 
 string OAuth2Handler::getAuthURL( )
 {
-    return m_data->getAuthUrl() + "?scope=" +
-            libcmis::escape( m_data->getScope() ) + "+" +
+    return m_data->getAuthUrl() + 
+            "?scope=" + libcmis::escape( m_data->getScope() ) +
             "&redirect_uri="+ m_data->getRedirectUri() +
-            "&response_type=code"
-            "&client_id="+ m_data->getClientId();
+            "&response_type=code" + 
+            "&client_id=" + m_data->getClientId();
 }
 
 string OAuth2Handler::getRefreshToken( ) throw ( libcmis::Exception )

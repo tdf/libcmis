@@ -96,9 +96,8 @@ class BaseSession : public libcmis::Session
     private:
         CURL* m_curlHandle;
         bool  m_no100Continue;
+    protected: 
         OAuth2Handler* m_oauth2Handler;
-
-    protected:
         std::string m_bindingUrl;
         std::string m_repositoryId;
         std::string m_username;
@@ -109,7 +108,6 @@ class BaseSession : public libcmis::Session
 
         bool m_verbose;
         bool m_noHttpErrors;
-
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
                      std::string username, std::string password,
@@ -145,7 +143,7 @@ class BaseSession : public libcmis::Session
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
-
+        
         long getHttpStatus( );
 
         // Session methods
@@ -162,19 +160,12 @@ class BaseSession : public libcmis::Session
             authenticate using the form and get the token to avoid asking the user
             to launch a web browser and do it himself.
 
-            \param url
-                the authentication URL to query in the first place
-            \param username
-                the user to authenticate with
-            \param password
-                the password of the user to provide
-
             \return
                 the authentication code to transform into access/refresh tokens or NULL.
                 The resulting authentication code will need to be deleted by the client
                 code.
           */
-        virtual char* oauth2Authenticate( const char* url, const char* username,  const char* password ) throw ( CurlException );
+        virtual char* oauth2Authenticate( ) throw ( CurlException );
 
     protected:
         BaseSession( );

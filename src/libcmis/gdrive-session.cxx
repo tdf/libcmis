@@ -27,172 +27,205 @@
  */
 
 #include <libxml/HTMLparser.h>
+#include <libxml/xmlreader.h>
 
+#include "oauth2-handler.hxx"
 #include "gdrive-session.hxx"
-#include "gdrive-common.hxx"
 
-using namespace std;
+using std::string;
+using std::istringstream;
 
-GDriveSession::GDriveSession ( string clientId, string clientSecret,
-        string username, string password, bool verbose )
-    throw ( libcmis::Exception ) :
-        BaseSession( "", "", username, password, libcmis::OAuth2DataPtr(), verbose )
+GDriveSession::GDriveSession ( string baseUrl, 
+                               string username, 
+                               string password, 
+                               libcmis::OAuth2DataPtr oauth2, 
+                               bool verbose )
+                                    throw ( libcmis::Exception ) :
+    BaseSession( baseUrl, string(), username, password, 
+                 libcmis::OAuth2DataPtr(), verbose )
+
 {
-    libcmis::OAuth2DataPtr data( new libcmis::OAuth2Data( DRIVE_AUTH_URL, DRIVE_TOKEN_URL,
-                                        DRIVE_SCOPE_FULL, DRIVE_REDIRECT_URI,
-                                        clientId, clientSecret ) );
-    setOAuth2Data( data );
+    if ( oauth2 && oauth2->isComplete( ) )
+         setOAuth2Data( oauth2 );
+}
+
+GDriveSession::GDriveSession( const GDriveSession& copy ) :
+    BaseSession( copy )
+{
+}
+
+GDriveSession::GDriveSession() :
+    BaseSession()
+{
 }
 
 GDriveSession::~GDriveSession()
 {
 }
 
-GDriveSession::GDriveSession() :
-        BaseSession()
-{
-}
-
 /*
- * Parse XML nodes to find the redirect link and input form
+ * Parse input values and redirect link from the response page
  */
-void parse ( const xmlNodePtr node, string& post, string& link )
+int parseResponse ( const char* response, string& post, string& link )
 {
-    xmlNodePtr current = NULL;
-
-    for ( current = node; current; current = current->next)
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0, 0);
+    if ( doc == NULL ) return 0;
+    xmlTextReaderPtr reader =   xmlReaderWalker( doc );
+    if ( reader == NULL ) return 0;
+    while ( true )
     {
-        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "form" ))) )
+        // Go to the next node, quit if not found
+        if ( xmlTextReaderRead ( reader ) != 1) break;
+        xmlChar* nodeName = xmlTextReaderName ( reader );
+        if ( nodeName == NULL ) continue;
+        // Find the redirect link
+        if ( xmlStrEqual( nodeName, BAD_CAST( "form" ) ) )
         {
-            char* actionLink  = (char*) xmlGetProp( current, ( const xmlChar*) "action");
-            if ( actionLink != NULL)
-                link = string( actionLink );
-
-            delete actionLink;
-        }
-
-        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "input" ))) )
-        {
-            char* name  = (char*) xmlGetProp( current, ( const xmlChar*) "name");
-            char* value = (char*) xmlGetProp( current, ( const xmlChar*) "value");
-
-            if ( name != NULL &&  value!= NULL)
-                if ( strlen(value) > 0)
-                post += string (name ) + string ("=") + 
-                    libcmis::escape(string (value)) + string ("&");
-
-            delete name;
-            delete value;
-        }
-        parse ( current->children, post, link );
-    }     
-}
-
-/*
- * Parse input values and redirect link from response page
- */
-
-void parseResponse ( const char* response, string& post, string& link )
-{
-    xmlDoc *doc = htmlReadDoc ( ( const xmlChar* ) response, NULL, 0, 0);
-    xmlNodePtr root =   xmlDocGetRootElement ( doc );
-    parse( root, post, link );
-    xmlFreeDoc( doc );
-}
-
-void findCode ( const xmlNodePtr node, string& authCode)
-{
-    xmlNodePtr current = NULL;
-    for ( current = node; current; current = current->next)
-    {
-        if ( ((!xmlStrcmp(current->name, ( const xmlChar* ) "input" ))) )
-        {
-            char* id  = (char*) xmlGetProp( current, ( const xmlChar*) "id");
-            if ( id != NULL )
-            if ( !strcmp (id, "code") )
+            xmlChar* action = xmlTextReaderGetAttribute( reader, 
+                                                         BAD_CAST( "action" ));
+            if ( action != NULL )
             {
-                char* code  = (char*) xmlGetProp( current, ( const xmlChar*) "value");
-                if ( code != NULL )
-                    authCode = string( code );
-                delete code;
+                if ( xmlStrlen(action) > 0)
+                    link = string ( (char*) action);
+                xmlFree (action);
             }
-            delete id;
         }
-        findCode ( current->children, authCode);
+        // Find input values
+        if ( !xmlStrcmp( nodeName, BAD_CAST( "input" ) ) )
+        {
+            xmlChar* name = xmlTextReaderGetAttribute( reader, 
+                                                       BAD_CAST( "name" ));
+            xmlChar* value = xmlTextReaderGetAttribute( reader, 
+                                                        BAD_CAST( "value" ));
+            if ( ( name != NULL ) && ( value!= NULL ) )
+            {
+                if ( ( xmlStrlen( name ) > 0) && ( xmlStrlen( value ) > 0) )
+                {
+                    post += libcmis::escape( ( char * ) name ); 
+                    post += string ( "=" ); 
+                    post += libcmis::escape( ( char * ) value ); 
+                    post += string ( "&" );
+                }
+            }
+            xmlFree( name );
+            xmlFree( value );
+        }
+        xmlFree( nodeName );
     }
+    xmlFreeTextReader( reader );              
+    xmlFreeDoc( doc );
+    if ( link.empty( ) || post.empty () ) 
+        return 0;
+    return 1;
 }
 
 /*
- * Parse authorization code from the response page
+ * Parse the authorization code from the response page
+ * in the input tag, with id = code
  */
-
-string parseCode ( const char* response)
+string parseCode ( const char* response )
 {
-    xmlDoc *doc = htmlReadDoc ( ( const xmlChar* ) response, NULL, 0, 0);
-    xmlNodePtr root = xmlDocGetRootElement ( doc );
-    string code ;
-    findCode ( root, code);
+    string authCode;
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0, 0);
+    if ( doc == NULL ) return authCode;
+    xmlTextReaderPtr reader = xmlReaderWalker( doc );
+    if ( reader == NULL ) return authCode;
+
+    while ( true )
+    {
+        // Go to the next node, quit if not found
+        if ( xmlTextReaderRead ( reader ) != 1) break;
+        xmlChar* nodeName = xmlTextReaderName ( reader );
+        if ( nodeName == NULL ) continue;
+        // Find the code 
+        if ( xmlStrEqual( nodeName, BAD_CAST ( "input" ) ) )
+        { 
+            xmlChar* id = xmlTextReaderGetAttribute( reader, BAD_CAST( "id" ));
+            if ( id != NULL )
+            {
+                if ( xmlStrEqual( id, BAD_CAST ( "code" ) ) )
+                {
+                    xmlChar* code = xmlTextReaderGetAttribute( 
+                        reader, BAD_CAST("value") );
+                    if ( code!= NULL )
+                    {
+                        authCode = string ( (char*) code );
+                        xmlFree( code );
+                    }
+                }
+                xmlFree ( id );
+            }
+        }
+        xmlFree( nodeName );
+    }
+    xmlFreeTextReader( reader );              
     xmlFreeDoc( doc );
-    return code;
-}
-
-char* GDriveSession::oauth2Authenticate ( const char* url, const char* username, const char* password )
-    throw ( CurlException )
-{
-    const string CONTENT_TYPE ( "application/x-www-form-urlencoded" );
-    // STEP 1: Log in
-    string res = httpGetRequest( url )->getStream( )->str( );
- 
-    string loginPost, loginLink; 
-    
-    parseResponse ( res.c_str( ), loginPost, loginLink );
-
-    loginPost += "Email="  + string( username ) + "&Passwd=" + string( password );
-
-    istringstream is( loginPost );
-
-    string loginRes = httpPostRequest ( loginLink, is, CONTENT_TYPE)->getStream( ) ->str( );
-
-    // STEP 2: allow libcmis to access google drive
-    
-    string approvalPost, approvalLink; 
-    parseResponse( loginRes.c_str( ), approvalPost, approvalLink);
-
-    approvalPost += "submit_access=true";
-
-    istringstream approvalIs( approvalPost );
-
-    string approvalRes = httpPostRequest ( approvalLink, approvalIs, CONTENT_TYPE) ->getStream( )->str( );
-
-    // STEP 3: Take the authentication code from the text bar
-
-    string code = parseCode ( approvalRes.c_str( ) );
-    if ( code.empty( )) return NULL;
-    char* authCode = new char [ code.length( )];
-    strcpy ( authCode, code.c_str( ));
 
     return authCode;
 }
 
-libcmis::RepositoryPtr GDriveSession::getRepository( ) throw ( libcmis::Exception )
+char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
+{
+    static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
+    // STEP 1: Log in
+    string res = httpGetRequest( m_oauth2Handler->getAuthURL( ) )
+                                ->getStream( )->str( );
+    string loginPost, loginLink; 
+    if ( !parseResponse ( res.c_str( ), loginPost, loginLink ) ) 
+        return NULL;
+    
+    loginPost += "Email=";  
+    loginPost += string( getUsername( ) );
+    loginPost += "&Passwd=";
+    loginPost += string( getPassword( ) );
+    
+    istringstream loginIs( loginPost );
+    string loginRes = httpPostRequest ( loginLink, loginIs, CONTENT_TYPE )
+                        ->getStream( )->str( );
+
+    // STEP 2: allow libcmis to access google drive
+    string approvalPost, approvalLink; 
+    if ( !parseResponse( loginRes.c_str( ), approvalPost, approvalLink) )
+        return NULL;
+    approvalPost += "submit_access=true";
+
+    istringstream approvalIs( approvalPost );
+    string approvalRes = httpPostRequest ( approvalLink, approvalIs, 
+                            CONTENT_TYPE) ->getStream( )->str( );
+
+    // STEP 3: Take the authentication code from the text bar
+    string code = parseCode ( approvalRes.c_str( ) );
+    if ( code.empty( )) 
+        return NULL;
+    char* authCode = new char [ code.length( ) ];
+    strcpy( authCode, code.c_str( ));
+
+    return authCode;
+}
+
+libcmis::RepositoryPtr GDriveSession::getRepository( ) 
+    throw ( libcmis::Exception )
 {
     libcmis::RepositoryPtr ptr;
     return ptr;
 }
 
-libcmis::ObjectPtr GDriveSession::getObject( string /*id*/ ) throw ( libcmis::Exception )
+libcmis::ObjectPtr GDriveSession::getObject( string /*id*/ ) 
+    throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
     return object;
 }
 
-libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ ) throw ( libcmis::Exception )
+libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ ) 
+    throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
     return object;
 }
 
-libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) 
+    throw ( libcmis::Exception )
 {
     libcmis::ObjectTypePtr ptr;
     return ptr;
