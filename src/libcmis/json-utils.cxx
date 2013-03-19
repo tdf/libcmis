@@ -29,7 +29,7 @@
 #include <json/json_tokener.h>
 #include <json/linkhash.h>
 
-#include <json-utils.hxx>
+#include "json-utils.hxx"
 
 template <>
 Json::Json( const std::vector<Json>& arr ) :
@@ -81,11 +81,11 @@ Json Json::operator[]( string key ) const
     return Json( j ) ;
 }
 
-Json Json::operator[]( const std::size_t& idx ) const
+Json Json::operator[]( const std::size_t& index ) const
 {
-    struct json_object *j = ::json_object_array_get_idx( m_json, idx ) ;
+    struct json_object *json = ::json_object_array_get_idx( m_json, index ) ;
 
-    return Json( j ) ;
+    return Json( json ) ;
 }
 
 std::ostream& operator<<( std::ostream& os, const Json& json )
@@ -105,7 +105,35 @@ Json Json::parse( string str )
     return Json( json) ;
 }
 
+Json::JsonObject Json::getObjects( )
+{
+    JsonObject objs;
+
+    
+    for(struct lh_entry *entry = json_object_get_object(m_json)->head; entry; entry = entry->next )
+    {
+        if ( entry ) 
+        {     
+            char* key = (char*)entry->k; 
+            struct json_object* val = (struct json_object*)entry->v; 
+            objs.insert( JsonObject::value_type(key, Json( val ) ) );
+        }
+        
+    }
+    return objs ;
+}
+Json::Type Json::getDataType() const
+{
+    return static_cast<Type>( ::json_object_get_type( m_json ) ) ;
+}
+
+int Json::getLength( ) const
+{
+    return ::json_object_array_length( m_json );
+}
+
 string Json::toString()
 {
+
     return ::json_object_get_string( m_json ) ;
 }

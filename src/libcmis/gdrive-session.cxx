@@ -30,8 +30,8 @@
 #include <libxml/xmlreader.h>
 
 #include "oauth2-handler.hxx"
-#include "gdrive-object.hxx"
 #include "gdrive-session.hxx"
+#include "gdrive-object.hxx"
 
 using std::string;
 using std::istringstream;
@@ -188,7 +188,7 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 
     // STEP 2: allow libcmis to access google drive
     string approvalPost, approvalLink; 
-    if ( !parseResponse( loginRes.c_str( ), approvalPost, approvalLink) )
+    if ( !parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
         return NULL;
     approvalPost += "submit_access=true";
 
@@ -213,13 +213,13 @@ libcmis::RepositoryPtr GDriveSession::getRepository( )
     return ptr;
 }
 
-libcmis::ObjectPtr GDriveSession::getObject( string /*id*/ ) 
+libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {
-    // TODO Run the request to get the Json object
+    string res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
+    Json jsonRes = Json::parse( res );
 
-    // TODO Create the GDriveObject from the Json object
-    libcmis::ObjectPtr object( new GDriveObject( this ) );
+    libcmis::ObjectPtr object( new GDriveObject( this, jsonRes ) );
 
     // TODO If we have a folder, then convert the object
     // into a GDriveFolder otherwise, convert it

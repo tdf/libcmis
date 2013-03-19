@@ -26,50 +26,28 @@
  * instead of those above.
  */
 
-#ifndef _JSON_UTILS_HXX_
-#define _JSON_UTILS_HXX_
+#ifndef _GDRIVE_DOCUMENT_HXX_
+#define _GDRIVE_DOCUMENT_HXX_
 
-#include <string>
-#include <map>
-#include <vector>
+#include "document.hxx"
+#include "folder.hxx"
+#include "gdrive-object.hxx"
 
-using namespace std;
-
-class Json
+class GDriveDocument : public libcmis::Document, public GDriveObject
 {
-    public :
-        typedef std::map<std::string, Json> JsonObject ;
-        template <typename T> explicit Json( const T& val ) ;
+    private:
+    
+    public:
+        GDriveDocument( GDriveSession* session );
+        ~GDriveDocument( );
+        
+        virtual std::vector< libcmis::FolderPtr > getParents( ) throw (libcmis::Exception );
+        
+        virtual boost::shared_ptr< std::istream > getContentStream( ) throw (libcmis::Exception );
+        
+        virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType, std::string fileName, bool overwrite = true ) throw ( libcmis::Exception );
+        
+        virtual std::vector< libcmis::DocumentPtr > getAllVersions( )throw (libcmis::Exception );
+};
 
-        Json() ;
-        Json( const Json& copy ) ;
-        Json( const char *str ) ;
-        ~Json( ) ;
-
-        Json operator[]( string key ) const ;
-        Json operator[]( const std::size_t& index ) const ;
-        Json& operator=( const Json& rhs ) ;
-        friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
-
-        void swap( Json& other ) ;
-
-        void add( const Json& json);
-
-        static Json parse( string str ) ;
-
-        string toString( );
-
-        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string } ;
-
-        Type getDataType( ) const ;
-
-        int getLength( ) const;
-
-        JsonObject getObjects();
-
-    private :
-        Json( struct json_object *json ) ;
-        struct json_object  *m_json ;
-} ;
-
-#endif /* _JSON_UTILS_HXX_ */
+#endif

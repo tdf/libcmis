@@ -1,0 +1,69 @@
+{
+ "kind": "drive#file",
+ "id": "mock-file-id",
+ "etag": "\"8yVRNucX3uV516c/MTNzUwNA\"",
+ "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3szV96IdXEwMGxaVUNFdklPdVE",
+ "alternateLink": "https://docs.google.com/spreadsheet/ccc?key=0ArFpOUVBd010dXEwMGxaVUNFdklPdVE",
+ "embedLink": "https://docs.google.com/spreadsheet/viewform?key=0Ar9E3szV96010dXEwMGxaVUNFdklPdVE",
+ "iconLink": "https://ssl.gstatic.com/docs/doclist/images/icon_11_form_list.png",
+ "thumbnailLink": "https://docs.google.com/feeds/vt?gd=true&id=0Ar9E3wFdklPdVE&v=191&s=AMedNnoAAAAAUUh8NJWbvSe5FvisRmnzZu77iX7WtMO6&sz=s220",
+ "title": "Mock title",
+ "mimeType": "application/vnd.google-apps.form",
+ "labels": {
+  "starred": false,
+  "hidden": false,
+  "trashed": false,
+  "restricted": false,
+  "viewed": true
+ },
+ "createdDate": "2010-04-28T14:53:23.141Z",
+ "modifiedDate": "2010-09-30T21:01:37.504Z",
+ "lastViewedByMeDate": "2013-02-26T15:40:30.404Z",
+ "parents": [
+  {
+   "kind": "drive#parentReference",
+   "id": "0AL9E3szV96I6Uk9PVA",
+   "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3szPdVE/parents/0AL9E3szV96I6Uk9PVA",
+   "parentLink": "https://www.googleapis.com/drive/v2/files/0AL9E3k9PVA",
+   "isRoot": true
+  }
+ ],
+ "exportLinks": {
+  "application/pdf": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar9E3szV96I6dFFpOUVBd010dXlPdVE&exportFormat=pdf",
+  "application/x-vnd.oasis.opendocument.spreadsheet": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar9E3sFFpOdXEwMGxaVUNFdklPdVE&exportFormat=ods",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar996I6dFFpOUVBd010dXEwMGxaVUNFdklPdVE&exportFormat=xlsx"
+ },
+ "userPermission": {
+  "kind": "drive#permission",
+  "etag": "\"8yVRNuccmqeFK9PVUh1X3uV516c/ZuBgGWqJIccTm6KVtij3r8aDWXs\"",
+  "id": "me",
+  "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3sVE/permissions/me",
+  "role": "owner",
+  "type": "user"
+ },
+ "quotaBytesUsed": "0",
+ "ownerNames": [
+  "Cao Cuong Ngo"
+ ],
+ "owners": [
+  {
+   "kind": "drive#user",
+   "displayName": "Mock file owrner",
+   "picture": {
+    "url": "https://lh6.googleusercontent.com/-9VC4o4Zu9gY/photo.jpg"
+   },
+   "isAuthenticatedUser": true,
+   "permissionId": "06866333235784026502"
+  }
+ ],
+ "lastModifyingUserName": "Mock user",
+ "lastModifyingUser": {
+  "kind": "drive#user",
+  "displayName": "User User name",
+  "isAuthenticatedUser": false,
+  "permissionId": "10705927213147188177"
+ },
+ "editable": true,
+ "writersCanShare": true,
+ "shared": true
+}

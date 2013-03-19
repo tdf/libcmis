@@ -157,4 +157,15 @@ namespace libcmis
 
         return property;
     }
+
+
+    PropertyPtr parseProperty( const string& key, Json json )
+    {
+        PropertyPtr property;
+        PropertyTypePtr propertyType( new PropertyType( key, json ) );
+        vector< string > values;
+        values.push_back( json.toString( ) );
+        property.reset( new Property( propertyType, values ) );
+        return property;
+    }
 }

@@ -41,7 +41,7 @@
     to map the main properties (like id, name, etc) to CMIS property
     ids (cmis:id, cmis:name, etc).
   */
-class GDriveObject : public libcmis::Object
+class GDriveObject : public virtual libcmis::Object
 {
     public:
         GDriveObject( GDriveSession* session );
@@ -51,15 +51,18 @@ class GDriveObject : public libcmis::Object
 
         GDriveObject& operator=( const GDriveObject& copy );
 
+        Json getExportLinks( );
+
         virtual std::vector< std::string > getPaths( );
 
         virtual boost::shared_ptr< Object > updateProperties(
-                    const std::map< std::string, libcmis::PropertyPtr >& properties )
-            throw ( libcmis::Exception );
+            const std::map< std::string, libcmis::PropertyPtr >& properties )
+                throw ( libcmis::Exception );
 
         virtual void refresh( ) throw ( libcmis::Exception );
 
-        virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+        virtual void remove( bool allVersions = true ) 
+            throw ( libcmis::Exception );
 
         virtual void move( boost::shared_ptr< libcmis::Folder > source,
                            boost::shared_ptr< libcmis::Folder > destination )

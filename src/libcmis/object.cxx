@@ -55,6 +55,17 @@ namespace libcmis
         initializeFromNode( node );
     }
 
+    Object::Object( Session* session, Json json ) :
+           m_session( session ),
+           m_typeDescription( ),
+           m_refreshTimestamp( 0 ),
+           m_typeId( ),
+           m_properties( ),
+           m_allowableActions( )
+   {
+       initializeFromJson( json );
+   }
+
     Object::Object( const Object& copy ) :
         m_session( copy.m_session ),
         m_typeDescription( copy.m_typeDescription ),
@@ -126,6 +137,20 @@ namespace libcmis
         m_refreshTimestamp = time( NULL );
     } 
 
+    void Object::initializeFromJson( Json json )
+    {
+        Json::JsonObject objs = json.getObjects( );
+        Json::JsonObject::iterator it;
+        for ( it = objs.begin( ); it != objs.end( ); it++)
+        {
+            libcmis::PropertyPtr property = libcmis::parseProperty( it->first, 
+                                                                    it->second);
+            if ( property != NULL )
+                m_properties[ property->getPropertyType( )->getId()] = property;
+        }
+        m_refreshTimestamp = time( NULL );
+    }
+
     string Object::getId( )
     {
         string name;
@@ -143,6 +168,15 @@ namespace libcmis
             name = it->second->getStrings( ).front( );
         return name;
     }
+
+    string Object::getStringProperty( const string& propertyName )
+   {
+       string name;
+       map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( propertyName ) );
+       if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
+           name = it->second->getStrings( ).front( );
+       return name;
+   }
 
     vector< string > Object::getPaths( )
     {

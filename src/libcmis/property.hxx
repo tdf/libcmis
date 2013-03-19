@@ -39,6 +39,7 @@
 
 #include "property-type.hxx"
 #include "xmlserializable.hxx"
+#include "json-utils.hxx"
 
 namespace libcmis
 {
@@ -77,6 +78,7 @@ namespace libcmis
     typedef ::boost::shared_ptr< Property > PropertyPtr;
     
     PropertyPtr parseProperty( xmlNodePtr node, boost::shared_ptr< ObjectType > objectType );
+    PropertyPtr parseProperty( const string& key, Json json );
 }
 
 #endif

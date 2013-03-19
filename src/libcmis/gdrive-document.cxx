@@ -26,50 +26,45 @@
  * instead of those above.
  */
 
-#ifndef _JSON_UTILS_HXX_
-#define _JSON_UTILS_HXX_
-
-#include <string>
-#include <map>
-#include <vector>
+#include "gdrive-document.hxx"
+#include "gdrive-session.hxx"
 
 using namespace std;
 
-class Json
+GDriveDocument::GDriveDocument( GDriveSession* session ) :
+    libcmis::Object( session),
+    libcmis::Document( session ),
+    GDriveObject( session )
 {
-    public :
-        typedef std::map<std::string, Json> JsonObject ;
-        template <typename T> explicit Json( const T& val ) ;
+}
 
-        Json() ;
-        Json( const Json& copy ) ;
-        Json( const char *str ) ;
-        ~Json( ) ;
+GDriveDocument::~GDriveDocument( )
+{
+}
 
-        Json operator[]( string key ) const ;
-        Json operator[]( const std::size_t& index ) const ;
-        Json& operator=( const Json& rhs ) ;
-        friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
 
-        void swap( Json& other ) ;
+vector< libcmis::FolderPtr > GDriveDocument::getParents( ) throw ( libcmis::Exception )
+{
+    //TODO implementation
+    vector< libcmis::FolderPtr > result;
+    return result;
+}
 
-        void add( const Json& json);
+boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis::Exception )
+{
+    //TODO implementation
+    boost::shared_ptr< istream > result;
+    return result;
+}
 
-        static Json parse( string str ) ;
+void GDriveDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, string /*contentType*/, string /*fileName*/, bool /*overwrite*/ ) throw ( libcmis::Exception )
+{
+    //TODO implemenetation
+}
 
-        string toString( );
-
-        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string } ;
-
-        Type getDataType( ) const ;
-
-        int getLength( ) const;
-
-        JsonObject getObjects();
-
-    private :
-        Json( struct json_object *json ) ;
-        struct json_object  *m_json ;
-} ;
-
-#endif /* _JSON_UTILS_HXX_ */
+vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) throw ( libcmis::Exception )
+{
+    //TODO implementation
+    vector< libcmis::DocumentPtr > result;
+    return result;
+}

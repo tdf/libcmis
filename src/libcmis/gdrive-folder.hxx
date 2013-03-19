@@ -26,50 +26,28 @@
  * instead of those above.
  */
 
-#ifndef _JSON_UTILS_HXX_
-#define _JSON_UTILS_HXX_
+#ifndef _GDRIVE_FOLDER_HXX_
+#define _GDRIVE_FOLDER_HXX_
 
-#include <string>
-#include <map>
-#include <vector>
+#include "document.hxx"
+#include "folder.hxx"
+#include "gdrive-object.hxx"
 
-using namespace std;
-
-class Json
+class GDriveFolder : public libcmis::Folder, public GDriveObject
 {
-    public :
-        typedef std::map<std::string, Json> JsonObject ;
-        template <typename T> explicit Json( const T& val ) ;
+    public:
+        GDriveFolder( GDriveSession* session );
+        ~GDriveFolder( );
+        
+        virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
+        
+        virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties )
+            throw ( libcmis::Exception );
+        virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties, boost::shared_ptr< std::ostream > os, std::string contentType, std::string fileName ) throw ( libcmis::Exception );
 
-        Json() ;
-        Json( const Json& copy ) ;
-        Json( const char *str ) ;
-        ~Json( ) ;
+        virtual std::vector< std::string > removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete, bool continueOnError = false ) throw ( libcmis::Exception );
+ 
+      
+};
 
-        Json operator[]( string key ) const ;
-        Json operator[]( const std::size_t& index ) const ;
-        Json& operator=( const Json& rhs ) ;
-        friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
-
-        void swap( Json& other ) ;
-
-        void add( const Json& json);
-
-        static Json parse( string str ) ;
-
-        string toString( );
-
-        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string } ;
-
-        Type getDataType( ) const ;
-
-        int getLength( ) const;
-
-        JsonObject getObjects();
-
-    private :
-        Json( struct json_object *json ) ;
-        struct json_object  *m_json ;
-} ;
-
-#endif /* _JSON_UTILS_HXX_ */
+#endif

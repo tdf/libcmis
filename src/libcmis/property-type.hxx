@@ -32,6 +32,7 @@
 #include <libxml/tree.h>
 
 #include <string>
+#include "json-utils.hxx"
 
 namespace libcmis
 {
@@ -70,6 +71,7 @@ namespace libcmis
             /// Default constructor, mostly present for testing.
             PropertyType( );
             PropertyType( xmlNodePtr node );
+            PropertyType( const std::string& key, Json jsonValue );
             PropertyType( const PropertyType& copy );
             virtual ~PropertyType( ) { };
 
@@ -105,6 +107,7 @@ namespace libcmis
             void setOpenChoice( bool openChoice ) { m_openChoice = openChoice; }
 
             void setTypeFromXml( std::string typeStr );
+            void setTypeFromJson( const Json json );
     };
     typedef ::boost::shared_ptr< PropertyType > PropertyTypePtr;
 }

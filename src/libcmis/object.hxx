@@ -45,6 +45,7 @@
 #include "object-type.hxx"
 #include "property.hxx"
 #include "xmlserializable.hxx"
+#include "json-utils.hxx"
 
 namespace libcmis
 {
@@ -68,11 +69,12 @@ namespace libcmis
             std::map< std::string, libcmis::PropertyPtr > m_properties;
             boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
             void initializeFromNode( xmlNodePtr node );
-
+            void initializeFromJson( Json json );
         public:
 
             Object( Session* session );
             Object( Session* session, xmlNodePtr node );
+            Object( Session* session, Json json );
             Object( const Object& copy );
             virtual ~Object( ) { }
 
@@ -80,6 +82,7 @@ namespace libcmis
 
             virtual std::string getId( );
             virtual std::string getName( );
+            virtual std::string getStringProperty( const std::string& propertyName );
 
             /** Computes the paths for the objects.
 

@@ -35,10 +35,9 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 {
 }
 
-GDriveObject::GDriveObject( GDriveSession* session, Json /*json*/ ) :
-    libcmis::Object( session )
+GDriveObject::GDriveObject( GDriveSession* session, Json json ) :
+    libcmis::Object( session, json )
 {
-    // TODO Use the json entry to populate the object properties
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -53,6 +52,18 @@ GDriveObject& GDriveObject::operator=( const GDriveObject& copy )
         libcmis::Object::operator=( copy );
     }
     return *this;
+}
+
+Json GDriveObject::getExportLinks ( )
+{
+    string exportLinks;
+    map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( )
+                                              .find( string( "exportLinks" ) );
+    if ( it != getProperties( ).end( ) && it->second != NULL && 
+            !it->second->getStrings( ).empty( ) )
+        exportLinks = it->second->getStrings( ).front( );
+    
+    return Json::parse( exportLinks );
 }
 
 vector< string > GDriveObject::getPaths( )

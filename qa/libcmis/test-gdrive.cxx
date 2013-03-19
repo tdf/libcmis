@@ -39,6 +39,7 @@
 
 #include "gdrive-session.hxx"
 #include "oauth2-handler.hxx"
+#include "gdrive-object.hxx"
 
 using std::string;
 using namespace libcmis;
@@ -54,46 +55,21 @@ class GDriveMockTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
+        void getObjectTest( );
 
         CPPUNIT_TEST_SUITE( GDriveMockTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
+        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
         GDriveSession createSession( string username, string password );
+        GDriveSession getTestSession ( );
 };
 
 void GDriveMockTest::sessionAuthenticationTest( )
 {
-    static const string username( "mock-user" );
-    static const string password( "mock-password" );
-
-    curl_mockup_reset( );
-    //login response
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth", 
-                              "scope=https://www.googleapis.com/auth/drive&"
-                              "redirect_uri=urn:ietf:wg:oauth:2.0:oob&response"
-                              "_type=code&client_id=mock-id", 
-                              "GET", "data/gdrive/login.html", 200, true);
-
-    //authentication response
-    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth", 
-                               "", "POST", "data/gdrive/approve.html", 
-                               200, true);
-
-    //approval response
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/approval",
-                              "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAA"
-                              "AAAUUIKghwgPtjfu5KA_cPF2ich0o-kYdp3", 
-                               "POST", "data/gdrive/authcode.html", 200, true);
-
-    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/token", 
-                              "", "POST", "data/gdrive/token-response.json", 
-                              200, true );
-
-    // The authentication should happen automatically when creating 
-    // the session
-    GDriveSession session = createSession( username, password );
+    GDriveSession session = getTestSession( );
  
     string authRequest( curl_mockup_getRequest( 
                         "https://accounts.google.com/ServiceLoginAuth", 
@@ -150,6 +126,42 @@ void GDriveMockTest::sessionAuthenticationTest( )
         session.m_oauth2Handler->getRefreshToken( ));
 }
 
+void GDriveMockTest::getObjectTest()
+{
+    static const string objectId ("/files/mock-file-id");
+    GDriveSession session = getTestSession( );
+
+    string url = baseUrl + objectId;
+    curl_mockup_addResponse ( url.c_str( ), "",
+                                  "GET", "data/gdrive/mock-file.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    boost::shared_ptr<GDriveObject> obj = boost::dynamic_pointer_cast
+                                            <GDriveObject>(object);
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", string ( "mock-file-id"), 
+                                                     obj->getId( ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object name", string ( "Mock title"), 
+                                                       obj->getName( ) );
+
+    string exportLinks("{ \"application\\/pdf\": \"https:\\/\\/docs.google.com"
+            "\\/feeds\\/download\\/spreadsheets\\/Export?key=0Ar9E3szV96I6dFFpO"
+            "UVBd010dXlPdVE&exportFormat=pdf\", \"application\\/x-vnd.oasis.ope"
+            "ndocument.spreadsheet\": \"https:\\/\\/docs.google.com\\/feeds\\/d"
+            "ownload\\/spreadsheets\\/Export?key=0Ar9E3sFFpOdXEwMGxaVUNFdklPdVE"
+            "&exportFormat=ods\", \"application\\/vnd.openxmlformats-officedocu"
+            "ment.spreadsheetml.sheet\": \"https:\\/\\/docs.google.com\\/feeds"
+            "\\/download\\/spreadsheets\\/Export?key=0Ar996I6dFFpOUVBd010dXEwMG"
+            "xaVUNFdklPdVE&exportFormat=xlsx\" }"); 
+    
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong export links", 
+                                  exportLinks,
+                                  obj->getExportLinks( ).toString( ) );
+                
+}
+
 GDriveSession GDriveMockTest::createSession( string username, 
                                              string password )
 {
@@ -159,5 +171,38 @@ GDriveSession GDriveMockTest::createSession( string username,
 
     return GDriveSession( baseUrl, username, password, oauth2, false );
 }
+
+GDriveSession GDriveMockTest::getTestSession( )
+{
+    static const string username( "mock-user" );
+    static const string password( "mock-password" );
+    curl_mockup_reset( );
+    //login response
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/auth",
+                            "scope=https://www.googleapis.com/auth/drive&"
+                            "redirect_uri=urn:ietf:wg:oauth:2.0:oob&response"
+                            "_type=code&client_id=mock-id",
+                            "GET", "data/gdrive/login.html", 200, true);
+
+    //authentication response
+    curl_mockup_addResponse ( "https://accounts.google.com/ServiceLoginAuth",
+                             "", "POST", "data/gdrive/approve.html",
+                             200, true);
+
+    //approval response
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/approval",
+                            "as=-7b1ae72178f10481&hl=en_US&xsrfsign=APsBz4gAA"
+                            "AAAUUIKghwgPtjfu5KA_cPF2ich0o-kYdp3",
+                             "POST", "data/gdrive/authcode.html", 200, true);
+
+    curl_mockup_addResponse ( "https://accounts.google.com/o/oauth2/token",
+                            "", "POST", "data/gdrive/token-response.json",
+                            200, true );
+
+    // The authentication should happen automatically when creating
+    // the session
+    return createSession( username, password );
+}
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveMockTest );
