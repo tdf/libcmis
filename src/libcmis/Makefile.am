@@ -74,6 +74,8 @@ libcmis_la_SOURCES = \
 	ws-session.cxx \
 	ws-versioningservice.hxx \
 	ws-versioningservice.cxx \
+	gdrive-object.hxx \
+	gdrive-object.cxx \
 	gdrive-session.hxx \
 	gdrive-session.cxx \
 	json-utils.hxx \

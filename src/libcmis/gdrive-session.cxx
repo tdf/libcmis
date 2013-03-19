@@ -30,6 +30,7 @@
 #include <libxml/xmlreader.h>
 
 #include "oauth2-handler.hxx"
+#include "gdrive-object.hxx"
 #include "gdrive-session.hxx"
 
 using std::string;
@@ -213,7 +214,15 @@ libcmis::RepositoryPtr GDriveSession::getRepository( )
 libcmis::ObjectPtr GDriveSession::getObject( string /*id*/ ) 
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectPtr object;
+    // TODO Run the request to get the Json object
+
+    // TODO Create the GDriveObject from the Json object
+    libcmis::ObjectPtr object( new GDriveObject( this ) );
+
+    // TODO If we have a folder, then convert the object
+    // into a GDriveFolder otherwise, convert it
+    // into a GDriveDocument
+
     return object;
 }
 
