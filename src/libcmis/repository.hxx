@@ -59,6 +59,7 @@ namespace libcmis
 
         public:
             Repository( xmlNodePtr node );
+            Repository( const std::string& dummy );
             virtual ~Repository( ) { };
 
             std::string getId( ) { return m_id; }

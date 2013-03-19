@@ -209,7 +209,8 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 libcmis::RepositoryPtr GDriveSession::getRepository( ) 
     throw ( libcmis::Exception )
 {
-    libcmis::RepositoryPtr ptr;
+    libcmis::RepositoryPtr ptr( new libcmis::Repository( 
+                "GDrive dummy repository" ));
     return ptr;
 }
 

@@ -62,13 +62,28 @@ namespace libcmis
     {
         initializeFromNode( node );
     }
+    
+    Repository::Repository( const string& dummy ) :
+        m_id( dummy),
+        m_name( dummy ),
+        m_description(dummy ),
+        m_vendorName( dummy ),
+        m_productName( dummy ),
+        m_productVersion( dummy  ),
+        m_rootId( dummy ),
+        m_cmisVersionSupported( dummy ),
+        m_thinClientUri( ),
+        m_principalAnonymous( ),
+        m_principalAnyone( )
+    {
+    }
+
 
     void Repository::initializeFromNode( xmlNodePtr node )
     {
         for ( xmlNodePtr child = node->children; child; child = child->next )
         {
             string localName( ( char* ) child->name );
-
             xmlChar* content = xmlNodeGetContent( child );
             string value( ( char* )content );
             xmlFree( content );
