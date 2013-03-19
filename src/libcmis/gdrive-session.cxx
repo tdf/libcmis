@@ -69,7 +69,8 @@ GDriveSession::~GDriveSession()
  */
 int parseResponse ( const char* response, string& post, string& link )
 {
-    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0, 0);
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0,
+            HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
     if ( doc == NULL ) return 0;
     xmlTextReaderPtr reader =   xmlReaderWalker( doc );
     if ( reader == NULL ) return 0;
@@ -127,7 +128,8 @@ int parseResponse ( const char* response, string& post, string& link )
 string parseCode ( const char* response )
 {
     string authCode;
-    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0, 0);
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0,
+            HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
     if ( doc == NULL ) return authCode;
     xmlTextReaderPtr reader = xmlReaderWalker( doc );
     if ( reader == NULL ) return authCode;
