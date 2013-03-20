@@ -209,13 +209,15 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 libcmis::RepositoryPtr GDriveSession::getRepository( ) 
     throw ( libcmis::Exception )
 {
-    libcmis::RepositoryPtr ptr( new libcmis::DummyRepository( "Google dummy" );
+    // Return a dummy repository since GDrive doesn't have that notion
+    libcmis::RepositoryPtr ptr( new libcmis::DummyRepository( "Google dummy" ));
     return ptr;
 }
 
 libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {
+    // Run the http request to get the properties definition
     string res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
     Json jsonRes = Json::parse( res );
 
