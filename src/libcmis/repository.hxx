@@ -59,7 +59,6 @@ namespace libcmis
 
         public:
             Repository( xmlNodePtr node );
-            Repository( const std::string& dummy );
             virtual ~Repository( ) { };
 
             std::string getId( ) { return m_id; }
@@ -75,6 +74,22 @@ namespace libcmis
             boost::shared_ptr< std::string > getPrincipalAnyone( ) { return m_principalAnyone; }
     };
     
+    class DummyRepository : public libcmis:: Repository
+    {
+        public :
+            DummyRepository ( const std::string& dummy) : Repository ( )
+            {
+                m_id = dummy;
+                m_name = dummy;
+                m_description = dummy;
+                m_productName = dummy;
+                m_productVersion = dummy;
+                m_rootId = dummy;
+                m_cmisVersionSupported = dummy;
+            }
+    };
+        
+
     typedef ::boost::shared_ptr< Repository > RepositoryPtr;
 }
 
