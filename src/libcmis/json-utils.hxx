@@ -59,7 +59,7 @@ class Json
 
         string toString( );
 
-        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string } ;
+        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string, json_datetime } ;
 
         Type getDataType( ) const ;
 

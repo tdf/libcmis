@@ -179,10 +179,9 @@ namespace libcmis
         else if ( jsonType == Json::json_int )
             m_type = Integer;
         else if ( jsonType == Json::json_string )
-        {
-            // TODO json_string also includes datetime type
             m_type = String;
-        }
+        else if ( jsonType == Json::json_datetime )
+            m_type = DateTime;
         else if ( jsonType == Json::json_object )
             m_type = String;
         else if ( jsonType == Json::json_array )

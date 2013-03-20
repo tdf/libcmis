@@ -370,6 +370,7 @@ namespace libcmis
 
     boost::posix_time::ptime parseDateTime( string dateTimeStr )
     {
+        boost::posix_time::ptime t( boost::date_time::not_a_date_time );
         // Get the time zone offset
         boost::posix_time::time_duration tzOffset( boost::posix_time::duration_from_string( "+00:00" ) );
 
@@ -395,7 +396,15 @@ namespace libcmis
                 
                 // Check the validity of the TZ value
                 string tzStr = timeStr.substr( tzPos );
-                tzOffset = boost::posix_time::time_duration( boost::posix_time::duration_from_string( tzStr.c_str() ) );
+                try
+                {
+                    tzOffset = boost::posix_time::time_duration( boost::posix_time::duration_from_string( tzStr.c_str() ) );
+                }
+                catch ( const std::exception& )
+                {
+                    // Error converting, not a datetime 
+                    return t;
+                }
 
             }
             else
@@ -409,7 +418,6 @@ namespace libcmis
             noTzStr.erase( pos, 1 );
             pos = noTzStr.find_first_of( ":-" );
         }
-        boost::posix_time::ptime t( boost::date_time::not_a_date_time );
         try
         {
             t = boost::posix_time::from_iso_string( noTzStr.c_str( ) );

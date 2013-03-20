@@ -26,18 +26,22 @@
  * instead of those above.
  */
 
+#include <cassert>
+
 #include <json/json_tokener.h>
 #include <json/linkhash.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "json-utils.hxx"
 #include "exception.hxx"
-#include <cassert>
+#include "xml-utils.hxx"
 
 template <>
 Json::Json( const std::vector<Json>& arr ) :
     m_json( ::json_object_new_array( ) )
 {
-    for ( std::vector<Json>::const_iterator i = arr.begin() ; i != arr.end() ; ++i )
+    for ( std::vector<Json>::const_iterator i = arr.begin() ; 
+                                        i != arr.end() ; ++i )
         add( *i ) ;
 }
 
@@ -45,7 +49,8 @@ Json::Json( const char *str ) :
     m_json( ::json_object_new_string( str ) )
 {
     if ( m_json == 0 )
-        throw libcmis::Exception(" Can not create json object from string + str::string(str) " );
+        throw libcmis::Exception(
+                " Can not create json object from string + str::string(str) " );
 }
 
 Json::Json( struct json_object *json ) :
@@ -83,7 +88,8 @@ void Json::swap( Json& other )
 Json Json::operator[]( string key ) const
 {
     struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
-    if ( j == 0 ) throw libcmis::Exception( "key: " + key + " is not found in Json object" );
+    if ( j == 0 ) throw libcmis::Exception( "key: " + key + 
+                                              " is not found in Json object" );
     return Json( j ) ;
 }
 
@@ -116,7 +122,8 @@ Json::JsonObject Json::getObjects( )
     JsonObject objs;
 
     
-    for(struct lh_entry *entry = json_object_get_object(m_json)->head; entry; entry = entry->next )
+    for(struct lh_entry *entry = json_object_get_object(m_json)->head; entry; 
+                                                        entry = entry->next )
     {
         if ( entry ) 
         {     
@@ -130,7 +137,15 @@ Json::JsonObject Json::getObjects( )
 }
 Json::Type Json::getDataType() const
 {
-    return static_cast<Type>( ::json_object_get_type( m_json ) ) ;
+    Type type =static_cast<Type>( ::json_object_get_type( m_json ) );
+    if ( type == json_string )
+    {
+        boost::posix_time::ptime time = libcmis::parseDateTime( 
+                                        json_object_get_string( m_json ) );
+        if ( !time.is_not_a_date_time( ) )
+            return json_datetime;
+    }
+    return type;
 }
 
 int Json::getLength( ) const
