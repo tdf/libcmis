@@ -31,11 +31,16 @@
 using std::string;
 using namespace libcmis;
 
+GDriveProperty::GDriveProperty( )
+{
+}
+
 GDriveProperty::~GDriveProperty( )
 {
 }
 
-GDriveProperty::GDriveProperty( const string& key, Json json )
+GDriveProperty::GDriveProperty( const string& key, Json json ):
+    Property( )
 {
     PropertyTypePtr propertyType( new PropertyType( ) );
     string convertedKey = convertToCmisKey( key );

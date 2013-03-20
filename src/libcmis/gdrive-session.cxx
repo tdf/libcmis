@@ -46,8 +46,10 @@ GDriveSession::GDriveSession ( string baseUrl,
                  libcmis::OAuth2DataPtr(), verbose )
 
 {
-    if ( oauth2 && oauth2->isComplete( ) )
+    if ( oauth2 && oauth2->isComplete( ) ){
          setOAuth2Data( oauth2 );
+        m_repositories.push_back( getRepository( ) );
+    }
 }
 
 GDriveSession::GDriveSession( const GDriveSession& copy ) :

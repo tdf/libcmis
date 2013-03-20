@@ -1,11 +1,9 @@
 {
  "kind": "drive#file",
  "id": "mock-file-id",
- "etag": "\"8yVRNucX3uV516c/MTNzUwNA\"",
- "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3szV96IdXEwMGxaVUNFdklPdVE",
- "alternateLink": "https://docs.google.com/spreadsheet/ccc?key=0ArFpOUVBd010dXEwMGxaVUNFdklPdVE",
- "embedLink": "https://docs.google.com/spreadsheet/viewform?key=0Ar9E3szV96010dXEwMGxaVUNFdklPdVE",
- "iconLink": "https://ssl.gstatic.com/docs/doclist/images/icon_11_form_list.png",
+ "etag": "\"an example tag\"",
+ "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9",
+ "alternateLink": "https://docs.google.com/spreadsheet/ccc?key=0A",
  "thumbnailLink": "https://docs.google.com",
  "title": "Mock title",
  "mimeType": "application/vnd.google-apps.form",
@@ -23,8 +21,8 @@
   {
    "kind": "drive#parentReference",
    "id": "0AL9E3szV96I6Uk9PVA",
-   "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3szPdVE/parents/0AL9E3szV96I6Uk9PVA",
-   "parentLink": "https://www.googleapis.com/drive/v2/files/0AL9E3k9PVA",
+   "selfLink": "https://www.googleapis.com/drive/v2/files/0ArPdVE/parents/0AL",
+   "parentLink": "https://www.googleapis.com/drive/v2/files/0AL",
    "isRoot": true
   }
  ],
@@ -35,25 +33,25 @@
  },
  "userPermission": {
   "kind": "drive#permission",
-  "etag": "\"8yVRNuccmqeFK9PVUh1X3uV516c/ZuBgGWqJIccTm6KVtij3r8aDWXs\"",
+  "etag": "\"8yVR\"",
   "id": "me",
-  "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9E3sVE/permissions/me",
+  "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar/permissions/me",
   "role": "owner",
   "type": "user"
  },
  "quotaBytesUsed": "0",
  "ownerNames": [
-  "Cao Cuong Ngo"
+  "Owner Real Name"
  ],
  "owners": [
   {
    "kind": "drive#user",
    "displayName": "Mock file owrner",
    "picture": {
-    "url": "https://lh6.googleusercontent.com/-9VC4o4Zu9gY/photo.jpg"
+    "url": "https://lh6.googleusercontent.com/-9VC4/photo.jpg"
    },
    "isAuthenticatedUser": true,
-   "permissionId": "06866333235784026502"
+   "permissionId": "06"
   }
  ],
  "lastModifyingUserName": "Mock user",
@@ -61,7 +59,7 @@
   "kind": "drive#user",
   "displayName": "User User name",
   "isAuthenticatedUser": false,
-  "permissionId": "10705927213147188177"
+  "permissionId": "107"
  },
  "editable": true,
  "writersCanShare": true,

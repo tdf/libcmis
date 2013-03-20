@@ -37,11 +37,16 @@ using namespace libcmis;
 class GDriveProperty : public virtual libcmis::Property
 {
     public :
+        // Create a GDrive Property from a Json property with its key
         GDriveProperty( const std::string& key, Json json);
         ~GDriveProperty( );    
         GDriveProperty( const GDriveProperty& copy);
         GDriveProperty& operator=( const GDriveProperty& copy );
 
+        // Convert a Google Drive property key to a CMIS binding key
         string convertToCmisKey( const string& key );    
+    private :
+        // Avoid calling default constructor
+        GDriveProperty( );
 };
 #endif /* _GDRIVE_PROPERTY_HXX_ */
