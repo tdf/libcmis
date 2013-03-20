@@ -133,7 +133,7 @@ void GDriveMockTest::getObjectTest()
 
     string url = baseUrl + objectId;
     curl_mockup_addResponse ( url.c_str( ), "",
-                                  "GET", "data/gdrive/mock-file.json", 200, true);
+                                  "GET", "data/gdrive/gdoc-file.json", 200, true);
 
     libcmis::ObjectPtr object = session.getObject( objectId );
 
@@ -146,19 +146,14 @@ void GDriveMockTest::getObjectTest()
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object name", string ( "Mock title"), 
                                                        obj->getName( ) );
 
-    string exportLinks("{ \"application\\/pdf\": \"https:\\/\\/docs.google.com"
-            "\\/feeds\\/download\\/spreadsheets\\/Export?key=0Ar9E3szV96I6dFFpO"
-            "UVBd010dXlPdVE&exportFormat=pdf\", \"application\\/x-vnd.oasis.ope"
-            "ndocument.spreadsheet\": \"https:\\/\\/docs.google.com\\/feeds\\/d"
-            "ownload\\/spreadsheets\\/Export?key=0Ar9E3sFFpOdXEwMGxaVUNFdklPdVE"
-            "&exportFormat=ods\", \"application\\/vnd.openxmlformats-officedocu"
-            "ment.spreadsheetml.sheet\": \"https:\\/\\/docs.google.com\\/feeds"
-            "\\/download\\/spreadsheets\\/Export?key=0Ar996I6dFFpOUVBd010dXEwMG"
-            "xaVUNFdklPdVE&exportFormat=xlsx\" }"); 
+    string exportLinks("{ \"application\\/pdf\": \"pdflink\", \"application\\/"
+                       "x-vnd.oasis.opendocument.spreadsheet\": \"opendocument"
+                       "links\", \"application\\/vnd.openxmlformats-officedocu"
+                       "ment.spreadsheetml.sheet\": \"xlslink\" }"); 
     
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong export links", 
                                   exportLinks,
-                                  obj->getExportLinks( ).toString( ) );
+                                  obj->getExportLinks( ));
                 
 }
 

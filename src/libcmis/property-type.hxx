@@ -71,7 +71,9 @@ namespace libcmis
             /// Default constructor, mostly present for testing.
             PropertyType( );
             PropertyType( xmlNodePtr node );
-            PropertyType( const std::string& key, Json jsonValue );
+            // Build a PropertyType from a Json object.
+            // Its key is converted to a CMIS key.
+            PropertyType( Json jsonProperty );
             PropertyType( const PropertyType& copy );
             virtual ~PropertyType( ) { };
 
@@ -107,7 +109,7 @@ namespace libcmis
             void setOpenChoice( bool openChoice ) { m_openChoice = openChoice; }
 
             void setTypeFromXml( std::string typeStr );
-            void setTypeFromJson( const Json json );
+            void setTypeFromJsonType( Json::Type jsonType );
     };
     typedef ::boost::shared_ptr< PropertyType > PropertyTypePtr;
 }

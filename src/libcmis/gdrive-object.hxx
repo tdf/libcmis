@@ -51,8 +51,9 @@ class GDriveObject : public virtual libcmis::Object
 
         GDriveObject& operator=( const GDriveObject& copy );
 
-        Json getExportLinks( );
-
+        void initializeFromJson( Json json );
+        std::string getExportLinks( );
+        
         virtual std::vector< std::string > getPaths( );
 
         virtual boost::shared_ptr< Object > updateProperties(

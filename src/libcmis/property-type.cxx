@@ -101,32 +101,7 @@ namespace libcmis
         }
     }
 
-    string gdriveToCmisKey ( const string& key )
-    {
-        string convertedKey;
-        if ( key == "id")
-           convertedKey = "cmis:objectId";
-       else if ( key == "title" )
-           convertedKey = "cmis:name";
-       else if ( key == "ownerNames" )
-           convertedKey = "cmis:createdBy";
-       else if ( key == "createdDate" )
-           convertedKey = "cmis:creationDate";
-       else if ( key == "lastModifyingUserName" )
-           convertedKey = "cmis:lastModifiedBy";
-       else if ( key == "modifiedDate" )
-           convertedKey = "cmis:lastModificationDate";
-       else if ( key == "modifiedDate" )
-            convertedKey = "cmis:lastModificationDate";
-       else if ( key == "modifiedDate" )
-            convertedKey = "cmis:lastModificationDate";
-       else if ( key == "mimeType" )
-            convertedKey = "cmis:contentStreamMimeType";
-       else convertedKey = key;
-       return convertedKey;
-    }
-
-    PropertyType::PropertyType( const string& key, Json jsonValue ) :
+    PropertyType::PropertyType( Json jsonProperty ) :
             m_id( ),
             m_localName( ),
             m_localNamespace( ),
@@ -142,14 +117,16 @@ namespace libcmis
             m_orderable( false ),
             m_openChoice( false )
         {
-
-            string convertedKey = gdriveToCmisKey ( key );
-            setId( convertedKey );
-            setLocalName( convertedKey );
-            setLocalNamespace( convertedKey );
-            setDisplayName( convertedKey );
-            setQueryName( convertedKey );
-            setTypeFromJson( jsonValue );
+            // From CMIS 1.1 specification
+            // TODO not completed
+            m_id = jsonProperty[ "id" ].toString( );
+            m_localName = jsonProperty[ "localName" ].toString( );
+            m_localNamespace = jsonProperty[ "localNamespace" ].toString( );
+            m_displayName = jsonProperty[ "displayName" ].toString( );
+            m_queryName = jsonProperty[ "queryName" ].toString( );
+            setTypeFromXml( jsonProperty[ "type" ].toString( ) );       
+            string cardinality = jsonProperty[ "cartinality" ].toString( );
+            m_multiValued = cardinality == "multi";
         }
 
     PropertyType::PropertyType( const PropertyType& copy ) :
@@ -193,31 +170,24 @@ namespace libcmis
         return *this;
     }
 
-    void PropertyType::setTypeFromJson( Json json )
+    void PropertyType::setTypeFromJsonType( Json::Type jsonType )
     {
-        Json::Type jsonType = json.getDataType( );
         if ( jsonType == Json::json_bool )
-        {
             m_type = Bool;
-        }
         else if ( jsonType == Json::json_double )
-        {
             m_type = Decimal;
-        }
         else if ( jsonType == Json::json_int )
-        {
             m_type = Integer;
-        }
         else if ( jsonType == Json::json_string )
         {
+            // TODO json_string also includes datetime type
             m_type = String;
         }
         else if ( jsonType == Json::json_object )
-        {
             m_type = String;
-        }
         else if ( jsonType == Json::json_array )
         {
+            // TODO multivalue
             m_type = String;
         }
         else m_type = String;

@@ -30,6 +30,8 @@
 #include <json/linkhash.h>
 
 #include "json-utils.hxx"
+#include "exception.hxx"
+#include <cassert>
 
 template <>
 Json::Json( const std::vector<Json>& arr ) :
@@ -42,6 +44,8 @@ Json::Json( const std::vector<Json>& arr ) :
 Json::Json( const char *str ) :
     m_json( ::json_object_new_string( str ) )
 {
+    if ( m_json == 0 )
+        throw libcmis::Exception(" Can not create json object from string + str::string(str) " );
 }
 
 Json::Json( struct json_object *json ) :
@@ -53,11 +57,13 @@ Json::Json( struct json_object *json ) :
 Json::Json( const Json& copy ) :
     m_json( copy.m_json )
 {
+    assert( m_json != 0 ) ;
     ::json_object_get( m_json ) ;
 }
 
 Json::~Json( )
 {
+    assert( m_json != 0 ) ;
     if ( m_json != 0 )
         ::json_object_put( m_json ) ;
 }
@@ -77,7 +83,7 @@ void Json::swap( Json& other )
 Json Json::operator[]( string key ) const
 {
     struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
-
+    if ( j == 0 ) throw libcmis::Exception( "key: " + key + " is not found in Json object" );
     return Json( j ) ;
 }
 
@@ -134,6 +140,5 @@ int Json::getLength( ) const
 
 string Json::toString()
 {
-
     return ::json_object_get_string( m_json ) ;
 }

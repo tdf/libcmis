@@ -27,8 +27,9 @@
  */
 
 #include "gdrive-object.hxx"
+#include "gdrive-property.hxx"
 
-using namespace std;
+using std::string;
 
 GDriveObject::GDriveObject( GDriveSession* session ) :
     libcmis::Object( session )
@@ -36,8 +37,9 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 }
 
 GDriveObject::GDriveObject( GDriveSession* session, Json json ) :
-    libcmis::Object( session, json )
+    libcmis::Object( session )
 {
+   initializeFromJson( json ); 
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -54,7 +56,20 @@ GDriveObject& GDriveObject::operator=( const GDriveObject& copy )
     return *this;
 }
 
-Json GDriveObject::getExportLinks ( )
+void GDriveObject::initializeFromJson ( Json json )
+{
+    Json::JsonObject objs = json.getObjects( );
+    Json::JsonObject::iterator it;
+    for ( it = objs.begin( ); it != objs.end( ); it++)
+    {
+        PropertyPtr property(new GDriveProperty( it->first,it->second) );
+        if ( property != NULL )
+            m_properties[ property->getPropertyType( )->getId()] = property;
+    }
+}
+
+
+string GDriveObject::getExportLinks ( )
 {
     string exportLinks;
     map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( )
@@ -63,7 +78,7 @@ Json GDriveObject::getExportLinks ( )
             !it->second->getStrings( ).empty( ) )
         exportLinks = it->second->getStrings( ).front( );
     
-    return Json::parse( exportLinks );
+    return exportLinks;
 }
 
 vector< string > GDriveObject::getPaths( )

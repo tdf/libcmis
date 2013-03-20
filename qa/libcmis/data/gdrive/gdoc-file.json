@@ -6,7 +6,7 @@
  "alternateLink": "https://docs.google.com/spreadsheet/ccc?key=0ArFpOUVBd010dXEwMGxaVUNFdklPdVE",
  "embedLink": "https://docs.google.com/spreadsheet/viewform?key=0Ar9E3szV96010dXEwMGxaVUNFdklPdVE",
  "iconLink": "https://ssl.gstatic.com/docs/doclist/images/icon_11_form_list.png",
- "thumbnailLink": "https://docs.google.com/feeds/vt?gd=true&id=0Ar9E3wFdklPdVE&v=191&s=AMedNnoAAAAAUUh8NJWbvSe5FvisRmnzZu77iX7WtMO6&sz=s220",
+ "thumbnailLink": "https://docs.google.com",
  "title": "Mock title",
  "mimeType": "application/vnd.google-apps.form",
  "labels": {
@@ -29,9 +29,9 @@
   }
  ],
  "exportLinks": {
-  "application/pdf": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar9E3szV96I6dFFpOUVBd010dXlPdVE&exportFormat=pdf",
-  "application/x-vnd.oasis.opendocument.spreadsheet": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar9E3sFFpOdXEwMGxaVUNFdklPdVE&exportFormat=ods",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "https://docs.google.com/feeds/download/spreadsheets/Export?key=0Ar996I6dFFpOUVBd010dXEwMGxaVUNFdklPdVE&exportFormat=xlsx"
+  "application/pdf": "pdflink",
+  "application/x-vnd.oasis.opendocument.spreadsheet": "opendocumentlinks",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlslink"
  },
  "userPermission": {
   "kind": "drive#permission",

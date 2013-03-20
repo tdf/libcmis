@@ -69,12 +69,10 @@ namespace libcmis
             std::map< std::string, libcmis::PropertyPtr > m_properties;
             boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
             void initializeFromNode( xmlNodePtr node );
-            void initializeFromJson( Json json );
         public:
 
             Object( Session* session );
             Object( Session* session, xmlNodePtr node );
-            Object( Session* session, Json json );
             Object( const Object& copy );
             virtual ~Object( ) { }
 

@@ -29,11 +29,22 @@
 #include "object-type.hxx"
 #include "property.hxx"
 #include "xml-utils.hxx"
+#include "gdrive-object.hxx"
 
 using namespace std;
 
 namespace libcmis
 {
+    Property::Property( ):
+        m_propertyType( ),
+        m_strValues( ),
+        m_boolValues( ),
+        m_longValues( ),
+        m_doubleValues( ),
+        m_dateTimeValues( )
+    {
+    }
+
     Property::Property( PropertyTypePtr propertyType, std::vector< std::string > strValues ) :
         m_propertyType( propertyType ),
         m_strValues( ),
@@ -93,6 +104,10 @@ namespace libcmis
         }
     }
 
+    void Property::setPropertyType( PropertyTypePtr propertyType)
+    {
+        m_propertyType = propertyType;
+    }
     void Property::toXml( xmlTextWriterPtr writer )
     {
         // Don't write the property if we have no type for it.
@@ -155,17 +170,6 @@ namespace libcmis
             }
         }
 
-        return property;
-    }
-
-
-    PropertyPtr parseProperty( const string& key, Json json )
-    {
-        PropertyPtr property;
-        PropertyTypePtr propertyType( new PropertyType( key, json ) );
-        vector< string > values;
-        values.push_back( json.toString( ) );
-        property.reset( new Property( propertyType, values ) );
         return property;
     }
 }
