@@ -427,7 +427,8 @@ void BaseSession::httpRunRequest( string url, vector< string > headers ) throw (
     // Otherwise, just set the credentials normally using in libcurl options
     if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
-        curl_slist_append( headers_slist, m_oauth2Handler->getHttpHeader( ).c_str( ) );
+        headers_slist = curl_slist_append( headers_slist, 
+                                  m_oauth2Handler->getHttpHeader( ).c_str( ) );
     }
     else if ( !getUsername().empty() && !getPassword().empty() )
     {
