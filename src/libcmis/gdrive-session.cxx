@@ -47,7 +47,8 @@ GDriveSession::GDriveSession ( string baseUrl,
 
 {
     if ( oauth2 && oauth2->isComplete( ) ){
-         setOAuth2Data( oauth2 );
+        setOAuth2Data( oauth2 );
+        // Add the dummy repository
         m_repositories.push_back( getRepository( ) );
     }
 }

@@ -86,12 +86,14 @@ string GDriveProperty::convertToCmisKey( const string& key )
         convertedKey = "cmis:lastModifiedBy";
     else if ( key == "modifiedDate" )
         convertedKey = "cmis:lastModificationDate";
-    else if ( key == "modifiedDate" )
-        convertedKey = "cmis:lastModificationDate";
-    else if ( key == "modifiedDate" )
-        convertedKey = "cmis:lastModificationDate";
     else if ( key == "mimeType" )
         convertedKey = "cmis:contentStreamMimeType";
+    else if ( key == "fileSize" )
+        convertedKey = "cmis:contentStreamLength";
+    else if ( key == "editable" )
+        convertedKey = "cmis:isImmutable";
+    else if ( key == "parents" )
+        convertedKey = "cmis:parentId";
     else convertedKey = key;
     return convertedKey;
 }
