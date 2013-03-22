@@ -76,8 +76,6 @@ string GDriveProperty::convertToCmisKey( const string& key )
     string convertedKey;
     if ( key == "id")
         convertedKey = "cmis:objectId";
-    else if ( key == "title" )
-        convertedKey = "cmis:name";
     else if ( key == "ownerNames" )
         convertedKey = "cmis:createdBy";
     else if ( key == "createdDate" )
@@ -86,6 +84,8 @@ string GDriveProperty::convertToCmisKey( const string& key )
         convertedKey = "cmis:lastModifiedBy";
     else if ( key == "modifiedDate" )
         convertedKey = "cmis:lastModificationDate";
+    else if ( key == "title" )
+        convertedKey = "cmis:contentStreamFileName";
     else if ( key == "mimeType" )
         convertedKey = "cmis:contentStreamMimeType";
     else if ( key == "fileSize" )

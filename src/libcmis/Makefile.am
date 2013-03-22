@@ -78,6 +78,10 @@ libcmis_la_SOURCES = \
     gdrive-property.cxx \
 	gdrive-object.hxx \
 	gdrive-object.cxx \
+    gdrive-document.hxx \
+    gdrive-document.cxx \
+    gdrive-folder.hxx \
+    gdrive-folder.cxx \
 	gdrive-session.hxx \
 	gdrive-session.cxx \
 	json-utils.hxx \

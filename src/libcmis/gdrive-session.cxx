@@ -31,7 +31,7 @@
 
 #include "oauth2-handler.hxx"
 #include "gdrive-session.hxx"
-#include "gdrive-object.hxx"
+#include "gdrive-document.hxx"
 
 using std::string;
 using std::istringstream;
@@ -224,7 +224,7 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     string res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
     Json jsonRes = Json::parse( res );
 
-    libcmis::ObjectPtr object( new GDriveObject( this, jsonRes ) );
+    libcmis::ObjectPtr object( new GDriveDocument( this, jsonRes ) );
 
     // TODO If we have a folder, then convert the object
     // into a GDriveFolder otherwise, convert it

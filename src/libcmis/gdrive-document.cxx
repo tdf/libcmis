@@ -38,6 +38,13 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
 {
 }
 
+GDriveDocument::GDriveDocument( GDriveSession* session, Json json ) :
+    libcmis::Object( session),
+    libcmis::Document( session ),
+    GDriveObject( session, json )
+{
+}
+
 GDriveDocument::~GDriveDocument( )
 {
 }
@@ -57,10 +64,41 @@ boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis
     return result;
 }
 
-void GDriveDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, string /*contentType*/, string /*fileName*/, bool /*overwrite*/ ) throw ( libcmis::Exception )
+void GDriveDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, 
+                                       string /*contentType*/, 
+                                       string /*fileName*/, 
+                                       bool /*overwrite*/ ) 
+                                            throw ( libcmis::Exception )
 {
     //TODO implemenetation
 }
+
+libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
+{
+    libcmis::DocumentPtr ptr;
+    // TODO implementation
+    return ptr;
+}
+
+void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
+{
+    
+}
+
+libcmis::DocumentPtr GDriveDocument::checkIn( bool /*isMajor*/, 
+                                              std::string /*comment*/,
+                                              const std::map< std::string, 
+                                                libcmis::PropertyPtr >& /*properties*/,
+                                              boost::shared_ptr< std::ostream > /*stream*/,
+                                              std::string /*contentType*/, 
+                                              std::string /*fileName*/ ) 
+                                                throw ( libcmis::Exception )
+{
+    libcmis::DocumentPtr ptr;
+    // TODO implementation
+    return ptr;
+}
+        
 
 vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) throw ( libcmis::Exception )
 {

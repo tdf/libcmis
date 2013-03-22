@@ -78,7 +78,7 @@ namespace libcmis
     {
         long contentLength = 0;
         map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:contentStreamLength" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
+        if ( it != getProperties( ).end( )  && it->second != NULL && !it->second->getLongs( ).empty( ) )
             contentLength = it->second->getLongs( ).front( );
         return contentLength;
     }

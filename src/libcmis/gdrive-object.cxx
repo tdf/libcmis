@@ -71,23 +71,7 @@ void GDriveObject::initializeFromJson ( Json json )
 
 string GDriveObject::getExportLinks ( )
 {
-    string exportLinks;
-    map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( )
-                                              .find( string( "exportLinks" ) );
-    if ( it != getProperties( ).end( ) && it->second != NULL && 
-            !it->second->getStrings( ).empty( ) )
-        exportLinks = it->second->getStrings( ).front( );
-    
-    return exportLinks;
-}
-
-vector< string > GDriveObject::getPaths( )
-{
-    vector< string > paths;
-
-    // TODO Implement me
-
-    return paths;
+    return getStringProperty( "exportLinks");
 }
 
 boost::shared_ptr< libcmis::Object > GDriveObject::updateProperties(
