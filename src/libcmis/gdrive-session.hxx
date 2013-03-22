@@ -42,6 +42,7 @@ class GDriveSession : public BaseSession
                    throw ( libcmis::Exception );
         GDriveSession( const GDriveSession& copy );
         ~GDriveSession ( );
+        std::string getBaseUrl( ) { return m_bindingUrl; }
         virtual libcmis::RepositoryPtr getRepository( ) 
             throw ( libcmis::Exception );
         virtual libcmis::ObjectPtr getObject( std::string id ) 

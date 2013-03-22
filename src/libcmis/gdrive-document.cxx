@@ -97,13 +97,102 @@ boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis
     return stream;
 }
 
-void GDriveDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, 
-                                       string /*contentType*/, 
-                                       string /*fileName*/, 
+void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
+                                       string contentType, 
+                                       string fileName, 
                                        bool /*overwrite*/ ) 
                                             throw ( libcmis::Exception )
 {
-    //TODO implemenetation
+    // Google define a specific URL to update media
+    static const string uploadBaseUrl = 
+        "https://www.googleapis.com/upload/drive/v2/files/";
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
+
+    string putUrl = uploadBaseUrl + getId( );
+    string metaUrl = getSession()->getBaseUrl() + "/files/" + getId( );
+
+    // If we downloaded a Google document, convert it back now
+    if ( m_isGoogleDoc )
+    {
+        putUrl  += "?convert=true";
+        metaUrl += "?convert=true";
+    }
+
+    // Upload properties
+   // if ( !contentType.empty( ) || !fileName.empty( ) )
+    {
+        string uploadStr;
+        uploadStr += "{\n";
+        //if ( !contentType.empty( ) )
+        //    uploadStr += "\"mimeType\": \"" + contentType + "\"";
+       // if ( !contentType.empty( ) && !fileName.empty( ) )
+       //     uploadStr +=",\n";
+        if ( !fileName.empty( ) )
+            uploadStr += "\"title\": \"" + fileName + "\"";
+        uploadStr += "\n}";
+
+        std::istringstream is( uploadStr );
+        vector<string> headers;
+        headers.push_back( string( "Content-Type: " ) + "application/json" );
+        getSession()->httpPutRequest( metaUrl, is, headers );
+    }
+
+    // Upload stream
+    bool tryBase64 = false;
+    do
+    {
+        try
+        {
+            boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+            if ( tryBase64 )
+            {
+                tryBase64 = false;
+
+                // Encode the content
+                stringstream* encodedIn = new stringstream( );
+                libcmis::EncodedData encoder( encodedIn );
+                encoder.setEncoding( "base64" );
+
+                int bufLength = 1000;
+                char* buf = new char[ bufLength ];
+                do
+                {
+                    is->read( buf, bufLength );
+                    int size = is->gcount( );
+                    encoder.encode( buf, 1, size );
+                } while ( !is->eof( ) && !is->fail( ) );
+                delete[] buf;
+                encoder.finish( );
+
+                encodedIn->seekg( 0, ios_base::beg );
+                encodedIn->clear( );
+
+                is.reset( encodedIn );
+            }
+            vector <string> headers;
+            headers.push_back( string( "Content-Type: " ) + contentType );
+
+            getSession()->httpPutRequest( putUrl, *is, headers );
+
+            long httpStatus = getSession( )->getHttpStatus( );
+            if ( httpStatus < 200 || httpStatus >= 300 )
+                throw libcmis::Exception( "Document content wasn't set for some reason" );
+            refresh( );
+        }
+        catch ( const CurlException& e )
+        {
+            // Try base64 encoded content.
+            if ( !tryBase64 && e.getHttpStatus() == 400 )
+                tryBase64 = true;
+            else
+                throw e.getCmisException( );
+        }
+    }
+    while ( tryBase64 );    
+
+    
+    
 }
 
 libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
