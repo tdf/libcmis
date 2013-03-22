@@ -218,8 +218,24 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
 
 vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) 
     throw ( libcmis::Exception )
-{
-    //TODO implementation
-    vector< libcmis::DocumentPtr > result;
-    return result;
+{   
+    vector< libcmis::DocumentPtr > revisions;
+    string versionUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
+                                                                "/revisions";    
+    
+    // Run the http request to get the properties definition
+    string res = getSession( )->httpGetRequest( versionUrl )->getStream()->str();
+    Json jsonRes = Json::parse( res );        
+
+    Json::JsonVector objs = jsonRes["items"].getList( );
+   
+    // Create document objects from Json objects
+    for(unsigned int i = 0; i < objs.size(); i++)
+	{
+    
+		libcmis::DocumentPtr revision( new GDriveDocument( getSession(), objs[i] ) );
+        revisions.push_back( revision );
+	}
+
+    return revisions;
 }

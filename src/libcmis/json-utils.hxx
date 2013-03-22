@@ -39,6 +39,7 @@ class Json
 {
     public :
         typedef std::map<std::string, Json> JsonObject ;
+        typedef std::vector<Json>			JsonVector ;
         template <typename T> explicit Json( const T& val ) ;
 
         Json() ;
@@ -66,6 +67,7 @@ class Json
         int getLength( ) const;
 
         JsonObject getObjects();
+        JsonVector getList();
 
     private :
         Json( struct json_object *json ) ;

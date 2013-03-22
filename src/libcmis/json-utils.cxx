@@ -105,6 +105,17 @@ std::ostream& operator<<( std::ostream& os, const Json& json )
     return os << ::json_object_to_json_string( json.m_json ) ;
 }
 
+Json::JsonVector Json::getList()
+{
+	std::size_t len = ::json_object_array_length( m_json ) ;
+	JsonVector list ;
+	
+	for ( std::size_t i = 0 ; i < len ; ++i )
+		list.push_back( Json( ::json_object_array_get_idx( m_json, i ) ) ) ;
+	
+	return list ;
+}
+
 void Json::add( const Json& json )
 {
     ::json_object_get( json.m_json ) ;
