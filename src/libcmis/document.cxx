@@ -58,20 +58,12 @@ namespace libcmis
 
     string Document::getContentType( )
     {
-        string contentType;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:contentStreamMimeType" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-            contentType = it->second->getStrings( ).front( );
-        return contentType;
+        return getStringProperty( "cmis:contentStreamMimeType" );
     }
 
     string Document::getContentFilename( )
     {
-        string contentFilename;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:contentStreamFileName" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-            contentFilename = it->second->getStrings( ).front( );
-        return contentFilename;
+        return getStringProperty( "cmis:contentStreamFileName" );
     }
 
     long Document::getContentLength( )

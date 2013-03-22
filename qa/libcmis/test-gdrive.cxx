@@ -142,18 +142,6 @@ void GDriveMockTest::getObjectTest()
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", string ( "mock-file-id"), 
                                                      obj->getId( ) );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object name", string ( "Mock title"), 
-                                                       obj->getName( ) );
-
-    string exportLinks("{ \"application\\/pdf\": \"pdflink\", \"application\\/"
-                       "x-vnd.oasis.opendocument.spreadsheet\": \"opendocument"
-                       "links\", \"application\\/vnd.openxmlformats-officedocu"
-                       "ment.spreadsheetml.sheet\": \"xlslink\" }"); 
-    
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong export links", 
-                                  exportLinks,
-                                  obj->getExportLinks( ));
                 
 }
 
