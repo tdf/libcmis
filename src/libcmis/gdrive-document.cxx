@@ -27,6 +27,7 @@
  */
 
 #include "gdrive-document.hxx"
+#include "gdrive-folder.hxx"
 #include "gdrive-session.hxx"
 
 using namespace std;
@@ -78,9 +79,24 @@ GDriveDocument::~GDriveDocument( )
 
 vector< libcmis::FolderPtr > GDriveDocument::getParents( ) throw ( libcmis::Exception )
 {
-    //TODO implementation
-    vector< libcmis::FolderPtr > result;
-    return result;
+    vector< libcmis::FolderPtr > parents;
+    string parentUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
+                                                                "/parents";    
+    
+    // Run the http request to get the properties definition
+    string res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
+    Json jsonRes = Json::parse( res );
+
+    Json::JsonVector objs = jsonRes["items"].getList( );
+   
+    // Create folder objects from Json objects
+    for(unsigned int i = 0; i < objs.size(); i++)
+	{
+		libcmis::FolderPtr parent( new GDriveFolder( getSession(), objs[i] ) );
+        parents.push_back( parent );
+	}
+
+    return parents;
 }
 
 boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis::Exception )
