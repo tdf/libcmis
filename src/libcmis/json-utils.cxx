@@ -68,7 +68,6 @@ Json::Json( const Json& copy ) :
 
 Json::~Json( )
 {
-    assert( m_json != 0 ) ;
     if ( m_json != 0 )
         ::json_object_put( m_json ) ;
 }
@@ -88,8 +87,9 @@ void Json::swap( Json& other )
 Json Json::operator[]( string key ) const
 {
     struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
-    if ( j == 0 ) throw libcmis::Exception( "key: " + key + 
-                                              " is not found in Json object" );
+    // Still return an empty object if we don't have the key
+    // if ( j == 0 ) throw libcmis::Exception( "key: " + key + 
+    //                                           " is not found in Json object" );
     return Json( j ) ;
 }
 

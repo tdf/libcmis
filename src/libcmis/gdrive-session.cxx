@@ -229,11 +229,16 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     // into a GDriveFolder otherwise, convert it
     // into a GDriveDocument
     libcmis::ObjectPtr object;
-    string mimeType = jsonRes["mimeType"].toString( );
-    if ( mimeType == "application/vnd.google-apps.folder" )
-        object.reset( new GDriveFolder( this, jsonRes ) );
-    else if ( !mimeType.empty( ) )
-        object.reset( new GDriveDocument( this, jsonRes ) );
+    string kind = jsonRes["kind"].toString( );
+    if ( kind == "drive#file" )
+    {
+        string mimeType = jsonRes["mimeType"].toString( );
+        // Folder is a file with a special mimeType
+        if ( mimeType == "application/vnd.google-apps.folder" )
+            object.reset( new GDriveFolder( this, jsonRes ) );
+        else 
+            object.reset( new GDriveDocument( this, jsonRes ) );
+    }
     else // not a folder nor file, maybe a permission or changes,...
         object.reset( new GDriveObject( this, jsonRes ) );
 
