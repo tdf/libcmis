@@ -68,10 +68,9 @@ void GDriveObject::initializeFromJson ( Json json )
     }
 }
 
-
-string GDriveObject::getExportLinks ( )
+GDriveSession* GDriveObject::getSession( )
 {
-    return getStringProperty( "exportLinks");
+    return dynamic_cast< GDriveSession* > ( m_session );
 }
 
 boost::shared_ptr< libcmis::Object > GDriveObject::updateProperties(

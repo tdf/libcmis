@@ -65,7 +65,11 @@ class GDriveObject : public virtual libcmis::Object
 
         virtual void move( boost::shared_ptr< libcmis::Folder > source,
                            boost::shared_ptr< libcmis::Folder > destination )
-            throw ( libcmis::Exception );
+            throw ( libcmis::Exception );   
+    
+    protected:
+        GDriveSession* getSession( );    
+
 };
 
 #endif

@@ -34,15 +34,41 @@ using namespace std;
 GDriveDocument::GDriveDocument( GDriveSession* session ) :
     libcmis::Object( session),
     libcmis::Document( session ),
-    GDriveObject( session )
+    GDriveObject( session ),
+    m_revisionId( ),
+    m_isGoogleDoc( false ),
+    m_downloadUrl( )
 {
 }
 
 GDriveDocument::GDriveDocument( GDriveSession* session, Json json ) :
     libcmis::Object( session),
     libcmis::Document( session ),
-    GDriveObject( session, json )
+    GDriveObject( session, json ),
+    m_revisionId( ),
+    m_isGoogleDoc( false ),
+    m_downloadUrl( )
 {
+    m_downloadUrl = json["downloadUrl"].toString( );
+    if ( m_downloadUrl.empty( ) )
+    {
+        // If it's a Google document, we download the export link and then 
+        // automatically convert when upload
+        Json exportLinks = json["exportLinks"];
+        Json::JsonObject objs = exportLinks.getObjects( );
+        Json::JsonObject::iterator it; 
+        for ( it = objs.begin( ); it != objs.end( ); it++)
+        { 
+            string link = it->first;
+            // We get the ODF link
+            if ( link.find( "opendocument" ) != string::npos )
+            {
+                m_downloadUrl = it->second.toString( );
+                break;
+            }
+        }
+        m_isGoogleDoc = true;
+    }
 }
 
 GDriveDocument::~GDriveDocument( )
@@ -59,9 +85,16 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( ) throw ( libcmis::Exce
 
 boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis::Exception )
 {
-    //TODO implementation
-    boost::shared_ptr< istream > result;
-    return result;
+    boost::shared_ptr< istream > stream;
+    try
+    {
+        stream = getSession( )->httpGetRequest( m_downloadUrl )->getStream( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    return stream;
 }
 
 void GDriveDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, 

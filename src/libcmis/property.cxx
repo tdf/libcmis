@@ -29,7 +29,6 @@
 #include "object-type.hxx"
 #include "property.hxx"
 #include "xml-utils.hxx"
-#include "gdrive-object.hxx"
 
 using namespace std;
 

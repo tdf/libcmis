@@ -35,8 +35,6 @@
 
 class GDriveDocument : public libcmis::Document, public GDriveObject
 {
-    private:
-    
     public:
         GDriveDocument( GDriveSession* session );
         GDriveDocument( GDriveSession* session, Json json );
@@ -57,6 +55,11 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
                               std::string contentType, std::string fileName ) throw ( libcmis::Exception );
         
         virtual std::vector< libcmis::DocumentPtr > getAllVersions( )throw (libcmis::Exception );
+
+    private:
+        std::string m_revisionId;
+        bool m_isGoogleDoc;
+        std::string m_downloadUrl;    
 };
 
 #endif
