@@ -38,6 +38,12 @@ GDriveFolder::GDriveFolder( GDriveSession* session ):
 {
 }
 
+GDriveFolder::GDriveFolder( GDriveSession* session, Json json ):
+    libcmis::Object( session ),
+    libcmis::Folder( session ),
+    GDriveObject( session, json )
+{
+}
 
 GDriveFolder::~GDriveFolder( )
 {

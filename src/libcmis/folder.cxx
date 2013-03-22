@@ -53,20 +53,12 @@ namespace libcmis
 
     string Folder::getParentId( )
     {
-        string parentId;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:parentId" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-            parentId = it->second->getStrings( ).front( );
-        return parentId;
+        return getStringProperty( "cmis:parentId" );
     }
 
     string Folder::getPath( )
     {
-        string path;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:path" ) );
-        if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
-            path = it->second->getStrings( ).front( );
-        return path;
+        return getStringProperty( "cmis:path" );
     }
 
     bool Folder::isRootFolder( )

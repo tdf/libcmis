@@ -155,5 +155,7 @@ int Json::getLength( ) const
 
 string Json::toString()
 {
+    // Return an empty string if the object doesn't exist
+    if ( m_json == NULL ) return string( );
     return ::json_object_get_string( m_json ) ;
 }
