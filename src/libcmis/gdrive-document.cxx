@@ -103,7 +103,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
                                        bool /*overwrite*/ ) 
                                             throw ( libcmis::Exception )
 {
-    // Google define a specific URL to update media
+    // Google defines a specific URL to update media
     static const string uploadBaseUrl = 
         "https://www.googleapis.com/upload/drive/v2/files/";
     if ( !os.get( ) )
@@ -112,24 +112,19 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     string putUrl = uploadBaseUrl + getId( );
     string metaUrl = getSession()->getBaseUrl() + "/files/" + getId( );
 
-    // If we downloaded a Google document, convert it back now
+    // If it's a Google document, convert it 
     if ( m_isGoogleDoc )
     {
         putUrl  += "?convert=true";
         metaUrl += "?convert=true";
     }
 
-    // Upload properties
-   // if ( !contentType.empty( ) || !fileName.empty( ) )
+    // Update file name meta information
+    if ( !fileName.empty( ) )
     {
         string uploadStr;
         uploadStr += "{\n";
-        //if ( !contentType.empty( ) )
-        //    uploadStr += "\"mimeType\": \"" + contentType + "\"";
-       // if ( !contentType.empty( ) && !fileName.empty( ) )
-       //     uploadStr +=",\n";
-        if ( !fileName.empty( ) )
-            uploadStr += "\"title\": \"" + fileName + "\"";
+        uploadStr += "\"title\": \"" + fileName + "\"";
         uploadStr += "\n}";
 
         std::istringstream is( uploadStr );
@@ -177,7 +172,8 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
 
             long httpStatus = getSession( )->getHttpStatus( );
             if ( httpStatus < 200 || httpStatus >= 300 )
-                throw libcmis::Exception( "Document content wasn't set for some reason" );
+                throw libcmis::Exception( "Document content wasn't set for"
+                        "some reason" );
             refresh( );
         }
         catch ( const CurlException& e )
@@ -190,9 +186,6 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         }
     }
     while ( tryBase64 );    
-
-    
-    
 }
 
 libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
@@ -207,14 +200,15 @@ void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
     
 }
 
-libcmis::DocumentPtr GDriveDocument::checkIn( bool /*isMajor*/, 
-                                              std::string /*comment*/,
-                                              const std::map< std::string, 
-                                                libcmis::PropertyPtr >& /*properties*/,
-                                              boost::shared_ptr< std::ostream > /*stream*/,
-                                              std::string /*contentType*/, 
-                                              std::string /*fileName*/ ) 
-                                                throw ( libcmis::Exception )
+libcmis::DocumentPtr GDriveDocument::checkIn( 
+    bool /*isMajor*/, 
+    std::string /*comment*/,
+    const std::map< std::string, 
+    libcmis::PropertyPtr >& /*properties*/,
+    boost::shared_ptr< std::ostream > /*stream*/,
+    std::string /*contentType*/, 
+    std::string /*fileName*/ ) 
+        throw ( libcmis::Exception )
 {
     libcmis::DocumentPtr ptr;
     // TODO implementation
@@ -222,7 +216,8 @@ libcmis::DocumentPtr GDriveDocument::checkIn( bool /*isMajor*/,
 }
         
 
-vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) throw ( libcmis::Exception )
+vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) 
+    throw ( libcmis::Exception )
 {
     //TODO implementation
     vector< libcmis::DocumentPtr > result;
