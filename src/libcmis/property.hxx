@@ -75,9 +75,12 @@ namespace libcmis
             void setValues( std::vector< std::string > strValues );
 
             void toXml( xmlTextWriterPtr writer );
+            // Write the property to a Json object
+            virtual Json toJson( ) { return Json ( "" ); }
+            std::string toString( );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;
-    typedef map< string, libcmis::PropertyPtr > PropertyListPtr;    
+    typedef std::map< string, libcmis::PropertyPtr > PropertyListPtr;    
    
     PropertyPtr parseProperty( xmlNodePtr node, boost::shared_ptr< ObjectType > objectType );
 }

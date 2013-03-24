@@ -111,7 +111,7 @@ namespace libcmis
 
                 \sa updateProperties to change properties on the server
               */
-            virtual std::map< std::string, PropertyPtr >& getProperties( );
+            virtual libcmis::PropertyListPtr& getProperties( );
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
             /** Update the object properties and return the updated object.
@@ -122,7 +122,7 @@ namespace libcmis
                     instances to ease memory handling.
               */
             virtual boost::shared_ptr< Object > updateProperties(
-                        const std::map< std::string, PropertyPtr >& properties ) throw ( Exception ) = 0;
+                        const libcmis::PropertyListPtr& properties ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( );
 

@@ -66,6 +66,19 @@ Json::Json( const Json& copy ) :
     ::json_object_get( m_json ) ;
 }
 
+template <>
+Json::Json( const JsonObject& obj ) :
+    m_json( ::json_object_new_object() )
+{
+    if ( m_json == 0 )
+        throw libcmis::Exception( string( "cannot create json object" ) ) ;
+
+    for ( JsonObject::const_iterator i = obj.begin() ; i != obj.end() ; ++i )
+        add( i->first, i->second ) ;
+}
+
+
+
 Json::~Json( )
 {
     if ( m_json != 0 )
@@ -87,11 +100,18 @@ void Json::swap( Json& other )
 Json Json::operator[]( string key ) const
 {
     struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
-    // Still return an empty object if we don't have the key
-    // if ( j == 0 ) throw libcmis::Exception( "key: " + key + 
-    //                                           " is not found in Json object" );
     return Json( j ) ;
 }
+
+void Json::add( const std::string& key, const Json& json )
+{
+    assert( m_json != 0 ) ; 
+    assert( json.m_json != 0 ) ; 
+
+    ::json_object_get( json.m_json ) ; 
+    ::json_object_object_add( m_json, key.c_str(), json.m_json ) ; 
+}
+
 
 Json Json::operator[]( const std::size_t& index ) const
 {

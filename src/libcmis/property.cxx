@@ -135,6 +135,20 @@ namespace libcmis
         }
     }
     
+    string Property::toString( )
+    {
+        string res;
+        if ( getPropertyType( ) != NULL )
+        {
+            for ( vector< string >::iterator it = m_strValues.begin( ); 
+                    it != m_strValues.end( ); ++it )
+            {
+                res.append( *it );
+            }
+        }
+        return res;
+    }
+    
     PropertyPtr parseProperty( xmlNodePtr node, ObjectTypePtr objectType )
     {
         PropertyPtr property;

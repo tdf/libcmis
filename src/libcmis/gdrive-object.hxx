@@ -52,10 +52,9 @@ class GDriveObject : public virtual libcmis::Object
         GDriveObject& operator=( const GDriveObject& copy );
 
         void initializeFromJson( Json json );
-        std::string getExportLinks( );
 
         virtual boost::shared_ptr< Object > updateProperties(
-            const std::map< std::string, libcmis::PropertyPtr >& properties )
+            const libcmis::PropertyListPtr& properties )
                 throw ( libcmis::Exception );
 
         virtual void refresh( ) throw ( libcmis::Exception );

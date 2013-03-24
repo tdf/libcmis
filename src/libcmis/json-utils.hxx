@@ -55,6 +55,8 @@ class Json
         void swap( Json& other ) ;
 
         void add( const Json& json);
+        
+        void add( const std::string& key, const Json& json);
 
         static Json parse( string str ) ;
 

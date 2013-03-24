@@ -43,8 +43,13 @@ class GDriveProperty : public virtual libcmis::Property
         GDriveProperty( const GDriveProperty& copy);
         GDriveProperty& operator=( const GDriveProperty& copy );
 
-        // Convert a Google Drive property key to a CMIS binding key
-        string convertToCmisKey( const string& key );    
+        // Convert a GDrive Property key to a CMIS key
+        std::string convertToCmisKey( const std::string& key );
+
+        // Convert a CMIS key to GDrive key
+        std::string convertToGDriveKey( const std::string& key );
+
+        virtual Json toJson( );
     private :
         // Avoid calling default constructor
         GDriveProperty( );

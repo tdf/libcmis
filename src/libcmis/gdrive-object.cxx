@@ -81,15 +81,52 @@ GDriveSession* GDriveObject::getSession( )
     return dynamic_cast< GDriveSession* > ( m_session );
 }
 
-boost::shared_ptr< libcmis::Object > GDriveObject::updateProperties(
-        const PropertyListPtr& /*properties*/ ) throw ( libcmis::Exception )
+Json propertiesToJson( const PropertyListPtr& properties )
 {
-    boost::shared_ptr< libcmis::Object > updatedObject;
-
-    // TODO Implement me
-
-    return updatedObject;
+    Json::JsonObject objs;
+    for ( PropertyListPtr::const_iterator it = properties.begin() ; 
+            it != properties.end() ; ++it )
+    {
+         objs.insert( pair< string, Json> (it->first, it->second->toJson( ) ) ) ;
+    }
+    Json json( objs );
+    return json;
 }
+
+void refreshImpl( Json /*json*/ )
+{
+    // TODO refresh properties
+}
+
+libcmis::ObjectPtr GDriveObject::updateProperties(
+        const PropertyListPtr& properties ) throw ( libcmis::Exception )
+{
+    Json json = propertiesToJson( properties );
+
+    istringstream is( json.toString( ));
+
+    libcmis::HttpResponsePtr response;
+    try 
+    {   
+        vector< string > headers;
+        headers.push_back( "Content-Type: application/json" );
+        response = getSession( )->httpPutRequest( getSession( )->getBaseUrl( ), is, headers );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    
+    string res = response->getStream( )->str( );
+    Json jsonRes = Json::parse( res );
+    libcmis::ObjectPtr updated( new GDriveObject ( getSession( ), jsonRes ) );
+
+     if ( updated->getId( ) == getId( ) )
+         refreshImpl( jsonRes );
+
+    return updated;
+}
+
 
 void GDriveObject::refresh( ) throw ( libcmis::Exception )
 {
@@ -106,3 +143,4 @@ void GDriveObject::move( boost::shared_ptr< libcmis::Folder > /*source*/,
 {
     // TODO Implement me
 }
+

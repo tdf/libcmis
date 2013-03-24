@@ -98,3 +98,36 @@ string GDriveProperty::convertToCmisKey( const string& key )
     return convertedKey;
 }
 
+string GDriveProperty::convertToGDriveKey( const string& key )
+{
+    string convertedKey;
+    if ( key == "cmis:objectId")
+        convertedKey = "id";
+    else if ( key == "cmis:createBy" )
+        convertedKey = "ownerNames";
+    else if ( key == "cmis:creationDate" )
+        convertedKey = "createdDate";
+    else if ( key == "cmis:lastModifiedBy" )
+        convertedKey = "lastModifyingUserNam";
+    else if ( key == "cmis:lastModificationDate" )
+        convertedKey = "modifiedDate";
+    else if ( key == "cmis:contentStreamFileName" )
+        convertedKey = "title";
+    else if ( key == "cmis:contentStreamMimeType" )
+        convertedKey = "mimeType";
+    else if ( key == "cmis:contentStreamLength" )
+        convertedKey = "fileSize";
+    else if ( key == "cmis:isImmutable" )
+        convertedKey = "editable";
+    else if ( key == "cmis:parentId" )
+        convertedKey = "parents";
+    else convertedKey = key;
+    return convertedKey;
+}
+
+Json GDriveProperty::toJson( )
+{
+    Json json = Json::parse( toString( ) );
+    return json;
+}
+
