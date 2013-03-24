@@ -49,31 +49,56 @@ GDriveFolder::~GDriveFolder( )
 {
 }
 
-vector< libcmis::ObjectPtr > GDriveFolder::getChildren( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectPtr > GDriveFolder::getChildren( ) 
+    throw ( libcmis::Exception )
 {
-    //TODO implementation
-    vector< libcmis::ObjectPtr > result;
-    return result;
+    vector< libcmis::ObjectPtr > children;
+    
+    string childrenUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
+                                                                "/children";    
+    
+    // Run the http request to get the properties definition
+    string res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
+    Json jsonRes = Json::parse( res );
+    Json::JsonVector objs = jsonRes["items"].getList( );
+    // Create children objects from Json objects
+    for(unsigned int i = 0; i < objs.size(); i++)
+    {   
+        libcmis::ObjectPtr child( new GDriveObject( getSession(), objs[i] ) );
+        children.push_back( child );
+    }   
+    
+    return children;
 }
 
-libcmis::FolderPtr GDriveFolder::createFolder( const map< string, libcmis::PropertyPtr >& /*properties*/ ) throw( libcmis::Exception )
+libcmis::FolderPtr GDriveFolder::createFolder( 
+    const map< string, libcmis::PropertyPtr >& /*properties*/ ) 
+        throw( libcmis::Exception )
 {
     //TODO implementation
-    libcmis::FolderPtr result;
-    return result;
+    libcmis::FolderPtr folderPtr;
+
+    return folderPtr;
 }
     
-libcmis::DocumentPtr GDriveFolder::createDocument( const map< string, libcmis::PropertyPtr >& /*properties*/, boost::shared_ptr< ostream > /*os*/, string /*contentType*/, string ) throw ( libcmis::Exception )
-
+libcmis::DocumentPtr GDriveFolder::createDocument( 
+    const map< string, libcmis::PropertyPtr >& /*properties*/, 
+    boost::shared_ptr< ostream > /*os*/, 
+    string /*contentType*/, string ) 
+    throw ( libcmis::Exception )
 {
     //TODO implementation
     libcmis::DocumentPtr result;
     return result;
 }
 
-vector< string > GDriveFolder::removeTree( bool /*allVersions*/, libcmis::UnfileObjects::Type /*unfile*/, bool /*continueOnError*/ ) throw ( libcmis::Exception )
+vector< string > GDriveFolder::removeTree( 
+    bool /*allVersions*/, 
+    libcmis::UnfileObjects::Type /*unfile*/, 
+    bool /*continueOnError*/ ) 
+        throw ( libcmis::Exception )
 {
     //TODO implementation
     vector< string > result;
     return result;
-}
+
