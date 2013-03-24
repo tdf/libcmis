@@ -63,9 +63,17 @@ void GDriveObject::initializeFromJson ( Json json )
     for ( it = objs.begin( ); it != objs.end( ); it++)
     {
         PropertyPtr property(new GDriveProperty( it->first,it->second) );
-        if ( property != NULL )
+        if ( property != NULL ){
             m_properties[ property->getPropertyType( )->getId()] = property;
+            // we map "title" to both "cmis:name" and "cmis:getContentStreamFileName
+            if ( it->first == "title" )
+            {
+                property.reset( new GDriveProperty( "cmis:name", it->second) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+            }
+        }
     }
+   // PropertyPtr property( new GDriveProperty( "cmis
 }
 
 GDriveSession* GDriveObject::getSession( )

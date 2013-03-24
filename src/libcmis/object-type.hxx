@@ -138,6 +138,23 @@ namespace libcmis
     };
 
     typedef ::boost::shared_ptr< ObjectType > ObjectTypePtr;
+    
+    class DummyObjectType: public ObjectType 
+    {
+        public :
+            DummyObjectType ( const std::string& dummy ) : ObjectType( )
+            {
+                m_id = dummy;
+                m_localName = dummy;            
+                m_localNamespace = dummy;
+                m_displayName = dummy;
+                m_queryName = dummy;
+                m_description = dummy;
+                m_parentTypeId = dummy;
+                m_baseTypeId = dummy;
+
+            }
+    };
 }
 
 #endif

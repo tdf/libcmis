@@ -33,6 +33,7 @@
 #include "gdrive-session.hxx"
 #include "gdrive-document.hxx"
 #include "gdrive-folder.hxx"
+#include "object-type.hxx"
 
 using std::string;
 using std::istringstream;
@@ -214,7 +215,7 @@ libcmis::RepositoryPtr GDriveSession::getRepository( )
     throw ( libcmis::Exception )
 {
     // Return a dummy repository since GDrive doesn't have that notion
-    libcmis::RepositoryPtr ptr( new libcmis::DummyRepository( "Google dummy" ));
+    libcmis::RepositoryPtr ptr( new libcmis::DummyRepository( "Google Drive repository", "/files/root" ));
     return ptr;
 }
 
@@ -238,6 +239,9 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
             object.reset( new GDriveFolder( this, jsonRes ) );
         else 
             object.reset( new GDriveDocument( this, jsonRes ) );
+    } else if ( kind == "drive#revision" ) // A revision is a document too
+    {
+        object.reset( new GDriveDocument( this, jsonRes ) );
     }
     else // not a folder nor file, maybe a permission or changes,...
         object.reset( new GDriveObject( this, jsonRes ) );
@@ -255,7 +259,6 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ )
 libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) 
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr ptr;
-    return ptr;
-
+    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType(" Google Drive object" ));
+    return type;
 }

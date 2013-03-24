@@ -77,14 +77,15 @@ namespace libcmis
     class DummyRepository : public libcmis:: Repository
     {
         public :
-            DummyRepository ( const std::string& dummy) : Repository ( )
+            DummyRepository ( const std::string& dummy,
+                              const std::string& rootId ) : Repository ( )
             {
                 m_id = dummy;
                 m_name = dummy;
                 m_description = dummy;
                 m_productName = dummy;
                 m_productVersion = dummy;
-                m_rootId = dummy;
+                m_rootId = rootId;
                 m_cmisVersionSupported = dummy;
             }
     };
