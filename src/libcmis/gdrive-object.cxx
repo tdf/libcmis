@@ -82,7 +82,7 @@ GDriveSession* GDriveObject::getSession( )
 }
 
 boost::shared_ptr< libcmis::Object > GDriveObject::updateProperties(
-        const map< string, libcmis::PropertyPtr >& /*properties*/ ) throw ( libcmis::Exception )
+        const PropertyListPtr& /*properties*/ ) throw ( libcmis::Exception )
 {
     boost::shared_ptr< libcmis::Object > updatedObject;
 

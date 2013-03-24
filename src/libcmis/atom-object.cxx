@@ -40,6 +40,7 @@
 #include "xml-utils.hxx"
 
 using namespace std;
+using libcmis::PropertyListPtr;
 
 namespace
 {
@@ -94,7 +95,7 @@ AtomObject::~AtomObject( )
 {
 }
 
-libcmis::ObjectPtr AtomObject::updateProperties( const map< string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomObject::updateProperties( const PropertyListPtr& properties ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
         throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
@@ -347,11 +348,11 @@ AtomPubSession* AtomObject::getSession( )
 }
 
 void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
-        const map< string, libcmis::PropertyPtr >& properties,
+        const PropertyListPtr& properties,
         boost::shared_ptr< ostream > os, string contentType )
 {
     AtomObject tmp( NULL );
-    map< string, libcmis::PropertyPtr > propertiesCopy( properties );
+    PropertyListPtr propertiesCopy( properties );
     tmp.m_properties.swap( propertiesCopy );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );

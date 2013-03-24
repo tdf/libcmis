@@ -30,7 +30,7 @@
 #include "internals.hxx"
 
 using namespace std;
-
+using libcmis::PropertyListPtr;
 
 void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector )
 {
@@ -170,7 +170,7 @@ libcmis_FolderPtr libcmis_folder_createFolder(
     {
         try
         {
-            map< string, libcmis::PropertyPtr > mappedProperties;
+            PropertyListPtr mappedProperties;
             if ( properties != NULL )
             {
                 size_t size = properties->handle.size( );
@@ -228,7 +228,7 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
             delete[] buf;
 
             // Create the property map
-            map< string, libcmis::PropertyPtr > propertiesMap;
+            PropertyListPtr propertiesMap;
             if ( properties != NULL )
             {
                 for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );

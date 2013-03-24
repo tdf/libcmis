@@ -30,6 +30,7 @@
 #include "folder.hxx"
 
 using namespace std;
+using libcmis::PropertyListPtr;
 
 namespace libcmis
 {
@@ -69,7 +70,7 @@ namespace libcmis
     long Document::getContentLength( )
     {
         long contentLength = 0;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:contentStreamLength" ) );
+        PropertyListPtr::const_iterator it = getProperties( ).find( string( "cmis:contentStreamLength" ) );
         if ( it != getProperties( ).end( )  && it->second != NULL && !it->second->getLongs( ).empty( ) )
             contentLength = it->second->getLongs( ).front( );
         return contentLength;

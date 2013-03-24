@@ -41,6 +41,7 @@
 
 using namespace std;
 using namespace ::boost::program_options;
+using libcmis::PropertyListPtr;
 
 namespace
 {
@@ -440,7 +441,7 @@ void CmisClient::execute( ) throw ( exception )
             if ( "cmis:folder" != type->getBaseType( )->getId( ) )
                 throw CommandException( string( "Not a folder type: " ) + folderType );
 
-            map< string, libcmis::PropertyPtr > properties;
+            PropertyListPtr properties;
             map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
 
             // Set the name
@@ -502,7 +503,7 @@ void CmisClient::execute( ) throw ( exception )
             if ( "cmis:document" != type->getBaseType( )->getId( ) )
                 throw CommandException( string( "Not a document type: " ) + documentType );
 
-            map< string, libcmis::PropertyPtr > properties;
+            PropertyListPtr properties;
             map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
 
             // Set the name
@@ -587,7 +588,7 @@ void CmisClient::execute( ) throw ( exception )
             libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
             map< string, libcmis::PropertyTypePtr >& propertiesTypes = type->getPropertiesTypes( );
 
-            map< string, libcmis::PropertyPtr > properties;
+            PropertyListPtr properties;
 
             // Checks for the properties to set if any
             map< string, string > propsToSet = getObjectProperties( );
@@ -798,7 +799,7 @@ void CmisClient::execute( ) throw ( exception )
             if ( object.get() )
             {
                 // Create the properties map
-                map< string, libcmis::PropertyPtr > properties;
+                PropertyListPtr properties;
                 map< string, string > propsToSet = getObjectProperties( );
                 libcmis::ObjectTypePtr type = session->getType( object->getType( ) );
                 map< string, libcmis::PropertyTypePtr > propertyTypes = type->getPropertiesTypes( );

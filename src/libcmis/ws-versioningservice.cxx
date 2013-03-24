@@ -31,6 +31,7 @@
 #include "ws-session.hxx"
 
 using namespace std;
+using libcmis::PropertyListPtr;
 
 VersioningService::VersioningService( WSSession* session ) :
     m_session( session ),
@@ -87,7 +88,7 @@ void VersioningService::cancelCheckOut( string repoId, string documentId ) throw
 }
 
 libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId, bool isMajor,
-        const map< string, libcmis::PropertyPtr >& properties,
+        const PropertyListPtr& properties,
         boost::shared_ptr< ostream > stream, string contentType, string fileName,
         string comment ) throw ( libcmis::Exception )
 {

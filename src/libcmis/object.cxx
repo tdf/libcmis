@@ -129,7 +129,7 @@ namespace libcmis
     string Object::getStringProperty( const string& propertyName )
     {
        string name;
-       map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( propertyName ) );
+       PropertyListPtr::const_iterator it = getProperties( ).find( string( propertyName ) );
        if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
            name = it->second->getStrings( ).front( );
        return name;
@@ -181,7 +181,7 @@ namespace libcmis
     boost::posix_time::ptime Object::getCreationDate( )
     {
         boost::posix_time::ptime value;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
+        PropertyListPtr::const_iterator it = getProperties( ).find( string( "cmis:creationDate" ) );
         if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
@@ -190,7 +190,7 @@ namespace libcmis
     boost::posix_time::ptime Object::getLastModificationDate( )
     {
         boost::posix_time::ptime value;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
+        PropertyListPtr::const_iterator it = getProperties( ).find( string( "cmis:lastModificationDate" ) );
         if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
@@ -199,13 +199,13 @@ namespace libcmis
     bool Object::isImmutable( )
     {
         bool value = false;
-        map< string, libcmis::PropertyPtr >::const_iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
+        PropertyListPtr::const_iterator it = getProperties( ).find( string( "cmis:isImmutable" ) );
         if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getBools( ).empty( ) )
             value = it->second->getBools( ).front( );
         return value;
     }
 
-    map< string, libcmis::PropertyPtr >& Object::getProperties( )
+    PropertyListPtr& Object::getProperties( )
     {
         return m_properties;
     }
@@ -244,7 +244,7 @@ namespace libcmis
         };
         int skippedCount = sizeof( skippedProps ) / sizeof( char* );
 
-        for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin();
+        for ( PropertyListPtr::iterator it = getProperties( ).begin();
                 it != getProperties( ).end( ); ++it )
         {
             string propId = it->first;
@@ -277,7 +277,7 @@ namespace libcmis
     {
         // Output the properties
         xmlTextWriterStartElement( writer, BAD_CAST( "cmis:properties" ) );
-        for ( map< string, libcmis::PropertyPtr >::iterator it = getProperties( ).begin( );
+        for ( PropertyListPtr::iterator it = getProperties( ).begin( );
                 it != getProperties( ).end( ); ++it )
         {
             it->second->toXml( writer );

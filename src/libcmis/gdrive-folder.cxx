@@ -30,6 +30,7 @@
 #include "gdrive-session.hxx"
 
 using namespace std;
+using libcmis::PropertyListPtr;
 
 GDriveFolder::GDriveFolder( GDriveSession* session ):
     libcmis::Object( session ),
@@ -81,18 +82,18 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 }
 
 libcmis::FolderPtr GDriveFolder::createFolder( 
-    const map< string, libcmis::PropertyPtr >& /*properties*/ ) 
+    const PropertyListPtr& /*properties*/ ) 
         throw( libcmis::Exception )
 {
     libcmis::FolderPtr folderPtr;
     string mimeType = "application/vnd.google-apps.folder";
-    
+       
 
     return folderPtr;
 }
     
 libcmis::DocumentPtr GDriveFolder::createDocument( 
-    const map< string, libcmis::PropertyPtr >& /*properties*/, 
+    const PropertyListPtr& /*properties*/, 
     boost::shared_ptr< ostream > /*os*/, 
     string /*contentType*/, string ) 
     throw ( libcmis::Exception )

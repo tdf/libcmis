@@ -138,8 +138,8 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         throw libcmis::Exception( "Missing stream" );
     
     if ( !isImmutable( ) )
-        throw libcmis::Exception( string ( "Document" + getId( )+ 
-                                    "is not editable" ) );
+        throw libcmis::Exception( string ( "Document " + getId( )+ 
+                                    " is not editable" ) );
 
     string putUrl = uploadBaseUrl + getId( );
     string metaUrl = getSession()->getBaseUrl() + "/files/" + getId( );

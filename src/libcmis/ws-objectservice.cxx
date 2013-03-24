@@ -31,6 +31,7 @@
 #include "ws-session.hxx"
 
 using namespace std;
+using libcmis::PropertyListPtr;
 
 ObjectService::ObjectService( WSSession* session ) :
     m_session( session ),
@@ -95,7 +96,7 @@ libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path ) 
 
 libcmis::ObjectPtr ObjectService::updateProperties(
         string repoId, string objectId,
-        const map< string, libcmis::PropertyPtr >& properties,
+        const PropertyListPtr& properties,
         string changeToken ) throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
@@ -170,7 +171,7 @@ void ObjectService::setContentStream( std::string repoId, std::string objectId, 
     m_session->soapRequest( m_url, request );
 }
 
-libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string, libcmis::PropertyPtr >& properties,
+libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyListPtr& properties,
         string folderId ) throw ( libcmis::Exception )
 {
     libcmis::FolderPtr folder;
@@ -191,7 +192,7 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const map< string
     return folder;
 }
 
-libcmis::DocumentPtr ObjectService::createDocument( string repoId, const map< string, libcmis::PropertyPtr >& properties,
+libcmis::DocumentPtr ObjectService::createDocument( string repoId, const PropertyListPtr& properties,
         string folderId, boost::shared_ptr< ostream > stream, string contentType, string fileName ) throw ( libcmis::Exception )
 {
     libcmis::DocumentPtr document;

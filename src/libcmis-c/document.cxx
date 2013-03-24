@@ -30,7 +30,7 @@
 #include "internals.hxx"
 
 using namespace std;
-
+using libcmis::PropertyListPtr;
 
 void libcmis_vector_document_free( libcmis_vector_document_Ptr vector )
 {
@@ -296,7 +296,7 @@ libcmis_DocumentPtr libcmis_document_checkIn(
             delete[] buf;
 
             // Create the property map
-            map< string, libcmis::PropertyPtr > propertiesMap;
+            PropertyListPtr propertiesMap;
             if ( properties != NULL )
             {
                 for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );

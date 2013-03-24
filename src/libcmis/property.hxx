@@ -77,7 +77,8 @@ namespace libcmis
             void toXml( xmlTextWriterPtr writer );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;
-    
+    typedef map< string, libcmis::PropertyPtr > PropertyListPtr;    
+   
     PropertyPtr parseProperty( xmlNodePtr node, boost::shared_ptr< ObjectType > objectType );
 }
 
