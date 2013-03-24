@@ -58,7 +58,16 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
                                                                 "/children";    
     
     // Run the http request to get the properties definition
-    string res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
+    string res;
+    try
+    {
+        res = getSession( )->httpGetRequest( childrenUrl )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
     Json jsonRes = Json::parse( res );
     Json::JsonVector objs = jsonRes["items"].getList( );
     // Create children objects from Json objects
@@ -75,8 +84,9 @@ libcmis::FolderPtr GDriveFolder::createFolder(
     const map< string, libcmis::PropertyPtr >& /*properties*/ ) 
         throw( libcmis::Exception )
 {
-    //TODO implementation
     libcmis::FolderPtr folderPtr;
+    string mimeType = "application/vnd.google-apps.folder";
+    
 
     return folderPtr;
 }
@@ -101,4 +111,5 @@ vector< string > GDriveFolder::removeTree(
     //TODO implementation
     vector< string > result;
     return result;
+}
 

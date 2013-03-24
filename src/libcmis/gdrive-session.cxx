@@ -176,8 +176,17 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 {
     static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
     // STEP 1: Log in
-    string res = httpGetRequest( m_oauth2Handler->getAuthURL( ) )
-                                ->getStream( )->str( );
+    string res;
+    try
+    {
+        res = httpGetRequest( m_oauth2Handler->getAuthURL( ) )
+                                    ->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
     string loginPost, loginLink; 
     if ( !parseResponse ( res.c_str( ), loginPost, loginLink ) ) 
         return NULL;
@@ -188,8 +197,16 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
     loginPost += string( getPassword( ) );
     
     istringstream loginIs( loginPost );
-    string loginRes = httpPostRequest ( loginLink, loginIs, CONTENT_TYPE )
+    string loginRes;
+    try 
+    {
+        loginRes = httpPostRequest ( loginLink, loginIs, CONTENT_TYPE )
                         ->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 
     // STEP 2: allow libcmis to access google drive
     string approvalPost, approvalLink; 
@@ -198,8 +215,16 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
     approvalPost += "submit_access=true";
 
     istringstream approvalIs( approvalPost );
-    string approvalRes = httpPostRequest ( approvalLink, approvalIs, 
+    string approvalRes;
+    try
+    {
+        approvalRes = httpPostRequest ( approvalLink, approvalIs, 
                             CONTENT_TYPE) ->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 
     // STEP 3: Take the authentication code from the text bar
     string code = parseCode ( approvalRes.c_str( ) );
@@ -223,7 +248,15 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {
     // Run the http request to get the properties definition
-    string res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
+    string res;
+    try
+    {
+        res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
     Json jsonRes = Json::parse( res );
 
     // If we have a folder, then convert the object
@@ -259,6 +292,7 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ )
 libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) 
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType(" Google Drive object" ));
+    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType(
+                                        " Google Drive object" ) );
     return type;
 }

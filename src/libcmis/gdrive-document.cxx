@@ -77,14 +77,25 @@ GDriveDocument::~GDriveDocument( )
 }
 
 
-vector< libcmis::FolderPtr > GDriveDocument::getParents( ) throw ( libcmis::Exception )
+vector< libcmis::FolderPtr > GDriveDocument::getParents( ) 
+    throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
     string parentUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
                                                                 "/parents";    
     
     // Run the http request to get the properties definition
-    string res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
+    
+    string res;
+    try
+    {
+        res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
     Json jsonRes = Json::parse( res );
 
     Json::JsonVector objs = jsonRes["items"].getList( );
@@ -99,7 +110,8 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( ) throw ( libcmis::Exce
     return parents;
 }
 
-boost::shared_ptr< istream > GDriveDocument::getContentStream( ) throw ( libcmis::Exception )
+boost::shared_ptr< istream > GDriveDocument::getContentStream( ) 
+    throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;
     try
@@ -124,6 +136,10 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         "https://www.googleapis.com/upload/drive/v2/files/";
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
+    
+    if ( !isImmutable( ) )
+        throw libcmis::Exception( string ( "Document" + getId( )+ 
+                                    "is not editable" ) );
 
     string putUrl = uploadBaseUrl + getId( );
     string metaUrl = getSession()->getBaseUrl() + "/files/" + getId( );
@@ -146,7 +162,14 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         std::istringstream is( uploadStr );
         vector<string> headers;
         headers.push_back( string( "Content-Type: " ) + "application/json" );
-        getSession()->httpPutRequest( metaUrl, is, headers );
+        try
+        {
+            getSession()->httpPutRequest( metaUrl, is, headers );
+        }
+        catch ( const CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
     }
 
     // Upload stream
@@ -237,10 +260,18 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
 {   
     vector< libcmis::DocumentPtr > revisions;
     string versionUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
-                                                                "/revisions";    
-    
+                                                            "revisions";
     // Run the http request to get the properties definition
-    string res = getSession( )->httpGetRequest( versionUrl )->getStream()->str();
+    string res;
+    try
+    {
+        res = getSession()->httpGetRequest( versionUrl )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
     Json jsonRes = Json::parse( res );        
 
     Json::JsonVector objs = jsonRes["items"].getList( );
@@ -249,9 +280,11 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     for(unsigned int i = 0; i < objs.size(); i++)
 	{
     
-		libcmis::DocumentPtr revision( new GDriveDocument( getSession(), objs[i] ) );
+		libcmis::DocumentPtr revision( 
+            new GDriveDocument( getSession(), objs[i] ) );
         revisions.push_back( revision );
 	}
 
     return revisions;
 }
+
