@@ -30,7 +30,7 @@
 #include "gdrive-session.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 GDriveFolder::GDriveFolder( GDriveSession* session ):
     libcmis::Object( session ),
@@ -80,7 +80,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 }
 
 libcmis::FolderPtr GDriveFolder::createFolder( 
-    const PropertyListPtr& /*properties*/ ) 
+    const PropertyPtrMap& /*properties*/ ) 
         throw( libcmis::Exception )
 {
     libcmis::FolderPtr folderPtr;
@@ -92,7 +92,7 @@ libcmis::FolderPtr GDriveFolder::createFolder(
 }
     
 libcmis::DocumentPtr GDriveFolder::createDocument( 
-    const PropertyListPtr& /*properties*/, 
+    const PropertyPtrMap& /*properties*/, 
     boost::shared_ptr< ostream > /*os*/, 
     string /*contentType*/, string ) 
     throw ( libcmis::Exception )

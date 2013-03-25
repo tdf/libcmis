@@ -29,7 +29,7 @@
 #include "ws-object.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 WSObject::WSObject( WSSession* session ) :
     libcmis::Object( session )
@@ -62,7 +62,7 @@ WSObject& WSObject::operator=( const WSObject& copy )
 }
 
 libcmis::ObjectPtr WSObject::updateProperties(
-        const PropertyListPtr& properties ) throw ( libcmis::Exception )
+        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).updateProperties( repoId, this->getId( ), properties, this->getChangeToken( ) );

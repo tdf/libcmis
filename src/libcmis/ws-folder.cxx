@@ -29,7 +29,7 @@
 #include "ws-folder.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 WSFolder::WSFolder( const WSObject& object ) :
     libcmis::Object( object ),
@@ -48,14 +48,14 @@ vector< libcmis::ObjectPtr > WSFolder::getChildren( ) throw ( libcmis::Exception
     return getSession( )->getNavigationService( ).getChildren( repoId, getId( ) );
 }
 
-libcmis::FolderPtr WSFolder::createFolder( const PropertyListPtr& properties )
+libcmis::FolderPtr WSFolder::createFolder( const PropertyPtrMap& properties )
     throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).createFolder( repoId, properties, getId( ) );
 }
 
-libcmis::DocumentPtr WSFolder::createDocument( const PropertyListPtr& properties,
+libcmis::DocumentPtr WSFolder::createDocument( const PropertyPtrMap& properties,
                         boost::shared_ptr< ostream > os, string contentType, string fileName ) throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );

@@ -237,8 +237,8 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Create a document with only the needed properties
-    PropertyListPtr props; 
-    PropertyListPtr::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
+    PropertyPtrMap props; 
+    PropertyPtrMap::iterator it = getProperties( ).find( string( "cmis:objectId" ) );
     if ( it != getProperties( ).end( ) )
     {
         props.insert( *it );
@@ -314,7 +314,7 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
 }
 
 libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
-                            const PropertyListPtr& properties,
+                            const PropertyPtrMap& properties,
                             boost::shared_ptr< ostream > stream, string contentType, string ) throw ( libcmis::Exception )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckIn ) ) )

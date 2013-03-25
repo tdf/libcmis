@@ -29,7 +29,7 @@
 #include "test-dummies.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 namespace dummies
 {
@@ -281,7 +281,7 @@ namespace dummies
     }
 
     libcmis::ObjectPtr Object::updateProperties(
-           const PropertyListPtr& ) throw ( libcmis::Exception )
+           const PropertyPtrMap& ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -377,7 +377,7 @@ namespace dummies
         return m_isRoot;
     }
 
-    libcmis::FolderPtr Folder::createFolder( const PropertyListPtr& ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Folder::createFolder( const PropertyPtrMap& ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -386,7 +386,7 @@ namespace dummies
         return created;
     }
 
-    libcmis::DocumentPtr Folder::createDocument( const PropertyListPtr& properties,
+    libcmis::DocumentPtr Folder::createDocument( const PropertyPtrMap& properties,
                             boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
@@ -394,7 +394,7 @@ namespace dummies
 
         dummies::Document* document = new dummies::Document( true, false );
 
-        PropertyListPtr propertiesCopy( properties );
+        PropertyPtrMap propertiesCopy( properties );
         document->getProperties( ).swap( propertiesCopy );
         document->setContentStream( os, contentType, filename );
 
@@ -507,7 +507,7 @@ namespace dummies
         time( &m_refreshTimestamp );
     }
 
-    libcmis::DocumentPtr Document::checkIn( bool, string, const PropertyListPtr& properties,
+    libcmis::DocumentPtr Document::checkIn( bool, string, const PropertyPtrMap& properties,
                   boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )

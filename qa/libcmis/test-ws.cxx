@@ -42,7 +42,7 @@
 #define SERVER_PASSWORD string( "somepass" )
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 namespace
 {
@@ -312,7 +312,7 @@ void WSTest::updatePropertiesTest( )
     string expectedValue( "New name" );
     
     // Fill the map of properties to change
-    PropertyListPtr newProperties;
+    PropertyPtrMap newProperties;
 
     libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
     map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
@@ -325,7 +325,7 @@ void WSTest::updatePropertiesTest( )
     libcmis::ObjectPtr updated = object->updateProperties( newProperties );
 
     // Checks
-    PropertyListPtr::iterator propIt = updated->getProperties( ).find( propertyName );
+    PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
@@ -335,7 +335,7 @@ void WSTest::createFolderTest( )
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
@@ -369,7 +369,7 @@ void WSTest::createFolderBadTypeTest( )
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:document to trigger the exception
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
@@ -407,7 +407,7 @@ void WSTest::createDocumentTest( )
     libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
 
     // Prepare the properties for the new object, object type is cmis:folder
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
@@ -582,7 +582,7 @@ void WSTest::checkOutTest( )
     
     CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
 
-    PropertyListPtr::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
+    PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut property is missing", it != pwc->getProperties( ).end( ) );
     vector< bool > values = it->second->getBools( );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
@@ -626,25 +626,25 @@ void WSTest::checkInTest( )
     // Do the checkin
     bool isMajor = true;
     string comment( "Some check-in comment" );
-    PropertyListPtr properties;
+    PropertyPtrMap properties;
     string newContent = "Some New content to check in";
     boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
     pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
 
-    PropertyListPtr actualProperties = pwc->getProperties( );
+    PropertyPtrMap actualProperties = pwc->getProperties( );
 
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:isLatestVersion" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isLatestVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isLatestVersion isn't true", it->second->getBools().front( ) );
     }
     
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:isMajorVersion" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isMajorVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isMajorVersion isn't true", it->second->getBools().front( ) );
     }
 
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:checkinComment" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:checkinComment" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "cmis:checkinComment doesn't match", comment, it->second->getStrings().front( ) );
     }
 }
@@ -662,7 +662,7 @@ void WSTest::getAllVersionsTest( )
     // Create a version
     bool isMajor = true;
     string comment( "Some check-in comment" );
-    PropertyListPtr properties;
+    PropertyPtrMap properties;
     string newContent = "Some New content to check in";
     boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
     libcmis::DocumentPtr newVersion = pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );

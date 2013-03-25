@@ -31,7 +31,7 @@
 #include "object.h"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 void libcmis_vector_object_free( libcmis_vector_object_Ptr vector )
 {
@@ -180,10 +180,10 @@ libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr obje
     libcmis_vector_property_Ptr properties = NULL;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
-        PropertyListPtr& handles = object->handle->getProperties( );
+        PropertyPtrMap& handles = object->handle->getProperties( );
         properties = new libcmis_vector_property( );
         int i = 0;
-        for ( PropertyListPtr::iterator it = handles.begin( );
+        for ( PropertyPtrMap::iterator it = handles.begin( );
                 it != handles.end( ); ++it, ++i )
         {
             properties->handle.push_back( it->second );
@@ -198,8 +198,8 @@ libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const 
     libcmis_PropertyPtr property = NULL;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
-        PropertyListPtr& handles = object->handle->getProperties( );
-        PropertyListPtr::iterator it = handles.find( string( name ) );
+        PropertyPtrMap& handles = object->handle->getProperties( );
+        PropertyPtrMap::iterator it = handles.find( string( name ) );
         if ( it != handles.end( ) )
         {
             property = new libcmis_property( );
@@ -221,7 +221,7 @@ libcmis_ObjectPtr libcmis_object_updateProperties(
         try
         {
             // Build the map of changed properties
-            PropertyListPtr propertiesMap;
+            PropertyPtrMap propertiesMap;
             for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
                     it != properties->handle.end( ); ++it )
             {

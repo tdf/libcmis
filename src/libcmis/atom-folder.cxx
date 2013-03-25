@@ -33,7 +33,7 @@
 #include "xml-utils.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 namespace
 {
@@ -130,7 +130,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
     return children;
 }
 
-libcmis::FolderPtr AtomFolder::createFolder( const PropertyListPtr& properties )
+libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
     throw( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
@@ -180,7 +180,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyListPtr& properties )
     return newFolder;
 }
 
-libcmis::DocumentPtr AtomFolder::createDocument( const PropertyListPtr& properties,
+libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& properties,
         boost::shared_ptr< ostream > os, string contentType, string ) throw ( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );

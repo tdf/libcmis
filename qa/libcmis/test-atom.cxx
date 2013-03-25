@@ -43,7 +43,7 @@
 
 using boost::shared_ptr;
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 class AtomTest : public CppUnit::TestFixture
 {
@@ -78,7 +78,7 @@ void AtomTest::checkOutTest( )
     
     CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
 
-    PropertyListPtr::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
+    PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut property is missing", it != pwc->getProperties( ).end( ) );
     vector< bool > values = it->second->getBools( );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
@@ -122,25 +122,25 @@ void AtomTest::checkInTest( )
     // Do the checkin
     bool isMajor = true;
     string comment( "Some check-in comment" );
-    PropertyListPtr properties;
+    PropertyPtrMap properties;
     string newContent = "Some New content to check in";
     boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
     pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
 
-    PropertyListPtr actualProperties = pwc->getProperties( );
+    PropertyPtrMap actualProperties = pwc->getProperties( );
 
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:isLatestVersion" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isLatestVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isLatestVersion isn't true", it->second->getBools().front( ) );
     }
     
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:isMajorVersion" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isMajorVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isMajorVersion isn't true", it->second->getBools().front( ) );
     }
 
     {
-        PropertyListPtr::iterator it = actualProperties.find( "cmis:checkinComment" );
+        PropertyPtrMap::iterator it = actualProperties.find( "cmis:checkinComment" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "cmis:checkinComment doesn't match", comment, it->second->getStrings().front( ) );
     }
 }
@@ -158,7 +158,7 @@ void AtomTest::getAllVersionsTest( )
     // Create a version
     bool isMajor = true;
     string comment( "Some check-in comment" );
-    PropertyListPtr properties;
+    PropertyPtrMap properties;
     string newContent = "Some New content to check in";
     boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
     libcmis::DocumentPtr newVersion = pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );

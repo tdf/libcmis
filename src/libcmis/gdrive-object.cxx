@@ -81,10 +81,10 @@ GDriveSession* GDriveObject::getSession( )
     return dynamic_cast< GDriveSession* > ( m_session );
 }
 
-Json propertiesToJson( const PropertyListPtr& properties )
+Json propertiesToJson( const PropertyPtrMap& properties )
 {
     Json::JsonObject objs;
-    for ( PropertyListPtr::const_iterator it = properties.begin() ; 
+    for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
             it != properties.end() ; ++it )
     {
          objs.insert( pair< string, Json> (it->first, it->second->toJson( ) ) ) ;
@@ -99,7 +99,7 @@ void refreshImpl( Json /*json*/ )
 }
 
 libcmis::ObjectPtr GDriveObject::updateProperties(
-        const PropertyListPtr& properties ) throw ( libcmis::Exception )
+        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {
     Json json = propertiesToJson( properties );
 

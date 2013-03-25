@@ -29,7 +29,7 @@
 #include "ws-document.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 WSDocument::WSDocument( const WSObject& object ) :
     libcmis::Object( object ),
@@ -77,7 +77,7 @@ void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
 }
 
 libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
-                          const PropertyListPtr& properties,
+                          const PropertyPtrMap& properties,
                           boost::shared_ptr< ostream > stream,
                           string contentType, string fileName ) throw ( libcmis::Exception )
 {
@@ -125,7 +125,7 @@ vector< libcmis::DocumentPtr > WSDocument::getAllVersions( ) throw ( libcmis::Ex
     vector< libcmis::DocumentPtr > versions;
     string repoId = getSession( )->getRepositoryId( );
     string versionSeries;
-    PropertyListPtr::const_iterator it = getProperties( ).find( string( "cmis:versionSeriesId" ) );
+    PropertyPtrMap::const_iterator it = getProperties( ).find( string( "cmis:versionSeriesId" ) );
     if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
     {
         versionSeries = it->second->getStrings( ).front( );

@@ -33,7 +33,7 @@
 #include "xml-utils.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 namespace test
 {
@@ -115,7 +115,7 @@ namespace test
         libcmis::FolderPtr parent = session->getRootFolder( );
 
         // Prepare the properties for the new object, object type is cmis:folder
-        PropertyListPtr props;
+        PropertyPtrMap props;
         libcmis::ObjectTypePtr type = session->getType( "VersionableType" );
         map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 

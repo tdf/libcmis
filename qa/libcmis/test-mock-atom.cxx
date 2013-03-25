@@ -47,7 +47,7 @@
 #include "document.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 class AtomTest : public CppUnit::TestFixture
 {
@@ -643,7 +643,7 @@ void AtomTest::updatePropertiesTest( )
     string expectedValue( "New name" );
 
     // Fill the map of properties to change
-    PropertyListPtr newProperties;
+    PropertyPtrMap newProperties;
 
     libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
     map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
@@ -672,7 +672,7 @@ void AtomTest::updatePropertiesTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request content sent", expectedObject, actualObject );
 
     // Check that the properties are updated after the call
-    PropertyListPtr::iterator propIt = updated->getProperties( ).find( propertyName );
+    PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
@@ -689,7 +689,7 @@ void AtomTest::createFolderTest( )
     libcmis::FolderPtr parent = session.getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
@@ -749,7 +749,7 @@ void AtomTest::createFolderBadTypeTest( )
     libcmis::FolderPtr parent = session.getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
@@ -816,7 +816,7 @@ void AtomTest::createDocumentTest( )
     libcmis::FolderPtr parent = session.getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
-    PropertyListPtr props;
+    PropertyPtrMap props;
     libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 

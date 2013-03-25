@@ -34,7 +34,7 @@
 #include "xml-utils.hxx"
 
 using namespace std;
-using libcmis::PropertyListPtr;
+using libcmis::PropertyPtrMap;
 
 CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
     SoapFaultDetail( ),
@@ -337,7 +337,7 @@ void UpdateProperties::toXml( xmlTextWriterPtr writer )
         xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-    for ( PropertyListPtr::const_iterator it = m_properties.begin( );
+    for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;
@@ -609,7 +609,7 @@ void CreateFolder::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-    for ( PropertyListPtr::const_iterator it = m_properties.begin( );
+    for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;
@@ -652,7 +652,7 @@ void CreateDocument::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
 
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-    for ( PropertyListPtr::const_iterator it = m_properties.begin( );
+    for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;
@@ -756,7 +756,7 @@ void CheckIn::toXml( xmlTextWriterPtr writer )
     if ( m_properties.empty( ) )
     {
         xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
-        for ( PropertyListPtr::const_iterator it = m_properties.begin( );
+        for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
                 it != m_properties.end( ); ++it )
         {
             libcmis::PropertyPtr property = it->second;
