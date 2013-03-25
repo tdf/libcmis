@@ -41,8 +41,8 @@ class GDriveFolder : public libcmis::Folder, public GDriveObject
         GDriveFolder( GDriveSession* session, Json json );
         ~GDriveFolder( );
 
-        std::string getType( ) { return std::string( "Google folder" );}
-        std::string getBaseType( ) { return std::string( "Google folder" );}        
+        std::string getType( ) { return std::string( "cmis:folder" );}
+        std::string getBaseType( ) { return std::string( "cmis:folder" );}        
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) 
             throw ( libcmis::Exception );
 

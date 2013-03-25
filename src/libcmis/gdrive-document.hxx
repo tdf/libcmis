@@ -40,8 +40,8 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
         GDriveDocument( GDriveSession* session, Json json );
         ~GDriveDocument( );
         
-        std::string getType( ) { return std::string( "Google document" );}
-        std::string getBaseType( ) { return std::string( "Google document" );} 
+        std::string getType( ) { return std::string( "cmis:document" );}
+        std::string getBaseType( ) { return std::string( "cmis:document" );} 
         virtual std::vector< libcmis::FolderPtr > getParents( ) 
                     throw (libcmis::Exception );
         virtual boost::shared_ptr< std::istream > getContentStream( ) 
