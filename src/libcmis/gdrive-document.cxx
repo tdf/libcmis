@@ -76,16 +76,13 @@ GDriveDocument::~GDriveDocument( )
 {
 }
 
-
 vector< libcmis::FolderPtr > GDriveDocument::getParents( ) 
     throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
     string parentUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
                                                                 "/parents";    
-    
     // Run the http request to get the properties definition
-    
     string res;
     try
     {
@@ -95,9 +92,7 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     {
         throw e.getCmisException( );
     }
-
     Json jsonRes = Json::parse( res );
-
     Json::JsonVector objs = jsonRes["items"].getList( );
    
     // Create folder objects from Json objects
@@ -106,7 +101,6 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
 		libcmis::FolderPtr parent( new GDriveFolder( getSession(), objs[i] ) );
         parents.push_back( parent );
 	}
-
     return parents;
 }
 
@@ -173,58 +167,22 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     }
 
     // Upload stream
-    bool tryBase64 = false;
-    do
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+    vector <string> headers;
+    headers.push_back( string( "Content-Type: " ) + contentType );
+    try
     {
-        try
-        {
-            boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-            if ( tryBase64 )
-            {
-                tryBase64 = false;
-
-                // Encode the content
-                stringstream* encodedIn = new stringstream( );
-                libcmis::EncodedData encoder( encodedIn );
-                encoder.setEncoding( "base64" );
-
-                int bufLength = 1000;
-                char* buf = new char[ bufLength ];
-                do
-                {
-                    is->read( buf, bufLength );
-                    int size = is->gcount( );
-                    encoder.encode( buf, 1, size );
-                } while ( !is->eof( ) && !is->fail( ) );
-                delete[] buf;
-                encoder.finish( );
-
-                encodedIn->seekg( 0, ios_base::beg );
-                encodedIn->clear( );
-
-                is.reset( encodedIn );
-            }
-            vector <string> headers;
-            headers.push_back( string( "Content-Type: " ) + contentType );
-
-            getSession()->httpPutRequest( putUrl, *is, headers );
-
-            long httpStatus = getSession( )->getHttpStatus( );
-            if ( httpStatus < 200 || httpStatus >= 300 )
-                throw libcmis::Exception( "Document content wasn't set for"
-                        "some reason" );
-            refresh( );
-        }
-        catch ( const CurlException& e )
-        {
-            // Try base64 encoded content.
-            if ( !tryBase64 && e.getHttpStatus() == 400 )
-                tryBase64 = true;
-            else
-                throw e.getCmisException( );
-        }
+        getSession()->httpPutRequest( putUrl, *is, headers );
     }
-    while ( tryBase64 );    
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    long httpStatus = getSession( )->getHttpStatus( );
+    if ( httpStatus < 200 || httpStatus >= 300 )
+        throw libcmis::Exception( "Document content wasn't set for"
+                "some reason" );
+    refresh( );
 }
 
 libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
@@ -236,7 +194,7 @@ libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
 
 void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
-    
+   // TODO implementation 
 }
 
 libcmis::DocumentPtr GDriveDocument::checkIn( 
@@ -271,20 +229,16 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     {
         throw e.getCmisException( );
     }
-
     Json jsonRes = Json::parse( res );        
-
     Json::JsonVector objs = jsonRes["items"].getList( );
    
     // Create document objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
 	{
-    
 		libcmis::DocumentPtr revision( 
             new GDriveDocument( getSession(), objs[i] ) );
         revisions.push_back( revision );
 	}
-
     return revisions;
 }
 

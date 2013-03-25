@@ -57,8 +57,6 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     
     string childrenUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
                                                                 "/children";    
-    
-    // Run the http request to get the properties definition
     string res;
     try
     {
@@ -87,7 +85,8 @@ libcmis::FolderPtr GDriveFolder::createFolder(
 {
     libcmis::FolderPtr folderPtr;
     string mimeType = "application/vnd.google-apps.folder";
-       
+
+    // TODO implementation   
 
     return folderPtr;
 }
