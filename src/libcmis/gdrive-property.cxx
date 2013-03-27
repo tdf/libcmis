@@ -125,9 +125,3 @@ string GDriveProperty::convertToGDriveKey( const string& key )
     return convertedKey;
 }
 
-Json GDriveProperty::toJson( )
-{
-    Json json = Json::parse( toString( ) );
-    return json;
-}
-

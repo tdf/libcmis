@@ -76,7 +76,7 @@ namespace libcmis
 
             void toXml( xmlTextWriterPtr writer );
             // Write the property to a Json object
-            virtual Json toJson( ) { return Json ( "" ); }
+            virtual Json toJson( );
             std::string toString( );
     };
     typedef ::boost::shared_ptr< Property > PropertyPtr;

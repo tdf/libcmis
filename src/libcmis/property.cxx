@@ -185,4 +185,10 @@ namespace libcmis
 
         return property;
     }
+    
+    Json Property::toJson( )
+    {
+        Json json = Json::parse( "\"" + toString( ) + "\"" );
+        return json;   
+    } 
 }

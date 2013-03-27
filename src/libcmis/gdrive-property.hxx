@@ -34,7 +34,7 @@
 
 using namespace libcmis;
 
-class GDriveProperty : public virtual libcmis::Property
+class GDriveProperty : public libcmis::Property
 {
     public :
         // Create a GDrive Property from a Json property with its key
@@ -48,8 +48,6 @@ class GDriveProperty : public virtual libcmis::Property
 
         // Convert a CMIS key to GDrive key
         std::string convertToGDriveKey( const std::string& key );
-
-        virtual Json toJson( );
     private :
         // Avoid calling default constructor
         GDriveProperty( );

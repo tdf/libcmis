@@ -249,9 +249,10 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
 {
     // Run the http request to get the properties definition
     string res;
+    string objectLink = m_bindingUrl + "/files/" + objectId;
     try
     {
-        res = httpGetRequest( m_bindingUrl + objectId )->getStream()->str();
+        res = httpGetRequest( objectLink )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -292,7 +293,8 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ )
 libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) 
     throw ( libcmis::Exception )
 {
+    // TODO it can be "cmis:document" or "cmis:folder" depend on object
     libcmis::ObjectTypePtr type( new libcmis::DummyObjectType(
-                                        " Google Drive object" ) );
+                                        "cmis:document" ) );
     return type;
 }
