@@ -590,7 +590,9 @@ void DocumentTest::getAllVersionsTest( )
     // Check
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), libcmis_vector_document_size( versions ) );
     libcmis_DocumentPtr actualVersion = libcmis_vector_document_get( versions, 0 );
-    CPPUNIT_ASSERT( libcmis_object_getId( actualVersion ) != NULL );
+    char* actualId = libcmis_object_getId( actualVersion );
+    CPPUNIT_ASSERT( actualId != NULL );
+    free( actualId );
 
     // Free it all
     libcmis_document_free( actualVersion );

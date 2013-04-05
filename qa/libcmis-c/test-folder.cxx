@@ -418,13 +418,15 @@ void FolderTest::removeTreeErrorTest( )
     libcmis_ErrorPtr error = libcmis_error_create( );
 
     // Remove the tree (method to test)
-    libcmis_folder_removeTree( tested, true, libcmis_Delete, true, error );
+    libcmis_vector_string_Ptr failed = libcmis_folder_removeTree(
+            tested, true, libcmis_Delete, true, error );
     
     // Check
     const char* actualMessage = libcmis_error_getMessage( error );
     CPPUNIT_ASSERT( !string( actualMessage ).empty( ) );
 
     // Free everything
+    libcmis_vector_string_free( failed );
     libcmis_error_free( error );
     libcmis_folder_free( tested );
 }

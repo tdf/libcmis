@@ -148,6 +148,7 @@ void libcmis_document_getContentStream(
         }
         catch ( const bad_alloc& e )
         {
+            cerr << "bad_alloc" << endl;
             if ( error != NULL )
                 error->badAlloc = true;
         }
