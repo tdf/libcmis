@@ -29,6 +29,34 @@
 #include "internals.hxx"
 #include "repository.h"
 
+void libcmis_vector_repository_free( libcmis_vector_Repository_Ptr vector )
+{
+    delete vector;
+}
+
+
+size_t libcmis_vector_repository_size( libcmis_vector_Repository_Ptr vector )
+{
+    size_t size = 0;
+    if ( vector != NULL )
+        size = vector->handle.size( );
+    return size;
+}
+
+
+libcmis_RepositoryPtr libcmis_vector_repository_get( libcmis_vector_Repository_Ptr vector, size_t i )
+{
+    libcmis_RepositoryPtr item = NULL;
+    if ( vector != NULL && i < vector->handle.size( ) )
+    {
+        libcmis::RepositoryPtr type = vector->handle[i];
+        item = new libcmis_repository( );
+        item->handle = type;
+    }
+    return item;
+}
+
+
 libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node )
 {
     libcmis_RepositoryPtr repository = new libcmis_repository( );
@@ -43,16 +71,6 @@ libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node )
 void libcmis_repository_free( libcmis_RepositoryPtr repository )
 {
     delete repository;
-}
-
-
-void libcmis_repository_list_free( libcmis_RepositoryPtr* list, long size )
-{
-    for ( int i = 0; i < size; ++i )
-    {
-        delete list[i];
-    }
-    delete[] list;
 }
 
 

@@ -254,7 +254,7 @@ void AtomTest::getRepositoriesTest( )
     curl_mockup_setResponse( "data/atom/workspaces.xml" );
 
     AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-    list< libcmis::RepositoryPtr > actual = session.getRepositories( );
+    vector< libcmis::RepositoryPtr > actual = session.getRepositories( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found", SERVER_REPOSITORY, actual.front()->getId( ) );

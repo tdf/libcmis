@@ -15,7 +15,8 @@ test_api_SOURCES = \
 	test-object-type.cxx \
 	test-property.cxx \
 	test-property-type.cxx \
-	test-repository.cxx
+	test-repository.cxx \
+	test-session.cxx
 
 test_api_CXXFLAGS = -I$(top_srcdir)/src/ -I$(top_srcdir)/src/libcmis-c/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
 

@@ -229,4 +229,11 @@ struct libcmis_vector_document
     libcmis_vector_document( ) : handle( ) { }
 };
 
+struct libcmis_vector_repository
+{
+    std::vector< libcmis::RepositoryPtr > handle;
+
+    libcmis_vector_repository( ) : handle( ) { }
+};
+
 #endif

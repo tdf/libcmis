@@ -67,6 +67,18 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
     return repository;
 }
 
+libcmis_vector_Repository_Ptr libcmis_session_getRepositories( libcmis_SessionPtr session )
+{
+    libcmis_vector_Repository_Ptr result = NULL;
+    if ( session != NULL && session->handle != NULL )
+    {
+        vector< libcmis::RepositoryPtr > handles = session->handle->getRepositories();
+        result = new libcmis_vector_repository( );
+        result->handle = handles;
+    }
+
+    return result;
+}
 
 libcmis_FolderPtr libcmis_session_getRootFolder(
         libcmis_SessionPtr session,

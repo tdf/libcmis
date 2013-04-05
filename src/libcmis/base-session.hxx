@@ -30,7 +30,7 @@
 
 #include <istream>
 #include <sstream>
-#include <list>
+#include <vector>
 #include <map>
 #include <string>
 
@@ -104,7 +104,7 @@ class BaseSession : public libcmis::Session
         std::string m_password;
         bool m_authProvided;
 
-        std::list< libcmis::RepositoryPtr > m_repositories;
+        std::vector< libcmis::RepositoryPtr > m_repositories;
 
         bool m_verbose;
         bool m_noHttpErrors;
@@ -148,7 +148,7 @@ class BaseSession : public libcmis::Session
 
         // Session methods
 
-        virtual std::list< libcmis::RepositoryPtr > getRepositories( );
+        virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
 
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
         

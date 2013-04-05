@@ -538,7 +538,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     delete authCode;
 }
 
-list< libcmis::RepositoryPtr > BaseSession::getRepositories( )
+vector< libcmis::RepositoryPtr > BaseSession::getRepositories( )
 {
     return m_repositories;
 }

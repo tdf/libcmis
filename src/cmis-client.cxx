@@ -199,7 +199,7 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
         libcmis::Session* session = getSession( true );
         if ( session != NULL )
         {
-            list< libcmis::RepositoryPtr > repos = session->getRepositories();
+            vector< libcmis::RepositoryPtr > repos = session->getRepositories();
             if ( repos.size() == 1 )
                 repoId = repos.front( )->getId( );
         }
@@ -266,10 +266,10 @@ void CmisClient::execute( ) throw ( exception )
             libcmis::Session* session = getSession( true );
             if ( session != NULL )
             {
-                list< libcmis::RepositoryPtr > repos = session->getRepositories();
+                vector< libcmis::RepositoryPtr > repos = session->getRepositories();
         
                 cout << "Repositories: name (id)" << endl;
-                for ( list< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
+                for ( vector< libcmis::RepositoryPtr >::iterator it = repos.begin(); it != repos.end(); ++it )
                     cout << "\t" << ( *it )->getName( ) << " (" << ( *it )->getId( ) << ")" << endl;
             }
             else

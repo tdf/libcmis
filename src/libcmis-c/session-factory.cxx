@@ -33,6 +33,7 @@
 #include <libcmis/session-factory.hxx>
 
 #include "internals.hxx"
+#include "session.h"
 #include "session-factory.h"
 
 using namespace std;
@@ -156,33 +157,16 @@ libcmis_SessionPtr libcmis_createSession(
     return session;
 }
 
-libcmis_RepositoryPtr* libcmis_getRepositories(
+libcmis_vector_Repository_Ptr libcmis_getRepositories(
         char* bindingUrl,
         char* username,
         char* password,
         bool  verbose,
         libcmis_ErrorPtr error )
 {
-    libcmis_RepositoryPtr* repositories = NULL;
-    try
-    {
-        list< libcmis::RepositoryPtr > repos = libcmis::SessionFactory::getRepositories(
-               bindingUrl, username, password, verbose );
-
-        repositories = new libcmis_RepositoryPtr[ repos.size() ];
-        list< libcmis::RepositoryPtr >::iterator it = repos.begin( );
-        for ( int i = 0; it != repos.end( ); ++it, ++i )
-        {
-            libcmis_RepositoryPtr repository = new libcmis_repository( );
-            repository->handle = *it;
-            repositories[i] = repository;
-        }
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        // Set the error handle
-        if ( error != NULL )
-            error->handle = new libcmis::Exception( e );
-    }
+    libcmis_SessionPtr session = libcmis_createSession(
+            bindingUrl, NULL, username, password, NULL, verbose, error );
+    libcmis_vector_Repository_Ptr repositories = libcmis_session_getRepositories( session );
+    libcmis_session_free( session );
     return repositories;
 }

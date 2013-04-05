@@ -28,7 +28,7 @@
 #ifndef _SESSION_HXX_
 #define _SESSION_HXX_
 
-#include <list>
+#include <vector>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
@@ -49,7 +49,7 @@ namespace libcmis
               */
             virtual RepositoryPtr getRepository( ) throw ( Exception ) = 0;
 
-            virtual std::list< RepositoryPtr > getRepositories( ) = 0;
+            virtual std::vector< RepositoryPtr > getRepositories( ) = 0;
 
             /** Get the Root folder of the repository
               */

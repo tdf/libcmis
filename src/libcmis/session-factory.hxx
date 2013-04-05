@@ -28,7 +28,7 @@
 #ifndef _SESSION_FACTORY_HXX_
 #define _SESSION_FACTORY_HXX_
 
-#include <list>
+#include <vector>
 #include <map>
 #include <string>
 
@@ -106,7 +106,7 @@ namespace libcmis
                     getRepositories on the resulting session.
                     Kept only for backward API compatibility.
               */
-            static std::list< RepositoryPtr > getRepositories( std::string bindingUrl,
+            static std::vector< RepositoryPtr > getRepositories( std::string bindingUrl,
                     std::string username = std::string( ),
                     std::string password = std::string( ),
                     bool verbose = false ) throw ( Exception );

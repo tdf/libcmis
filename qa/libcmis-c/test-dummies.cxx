@@ -33,6 +33,58 @@ using libcmis::PropertyPtrMap;
 
 namespace dummies
 {
+    Session::Session( )
+    {
+    }
+
+    Session::~Session( )
+    {
+    }
+
+    libcmis::RepositoryPtr Session::getRepository( ) throw ( libcmis::Exception )
+    {
+        libcmis::RepositoryPtr repo( new Repository( ) );
+        return repo;
+    }
+
+    vector< libcmis::RepositoryPtr > Session::getRepositories( )
+    {
+        vector< libcmis::RepositoryPtr > repos;
+        libcmis::RepositoryPtr repo1( new Repository( ) );
+        libcmis::RepositoryPtr repo2( new Repository( ) );
+        repos.push_back( repo1 );
+        repos.push_back( repo2 );
+        return repos;
+    }
+
+    libcmis::FolderPtr Session::getRootFolder() throw ( libcmis::Exception )
+    {
+        libcmis::FolderPtr root( new Folder( true, false ) );
+        return root;
+    }
+
+    libcmis::ObjectPtr Session::getObject( string id ) throw ( libcmis::Exception )
+    {
+        return getFolder( id );
+    }
+
+    libcmis::ObjectPtr Session::getObjectByPath( string path ) throw ( libcmis::Exception )
+    {
+        return getFolder( path );
+    }
+
+    libcmis::FolderPtr Session::getFolder( string ) throw ( libcmis::Exception )
+    {
+        libcmis::FolderPtr result( new Folder( false, false ) );
+        return result;
+    }
+
+    libcmis::ObjectTypePtr Session::getType( string ) throw ( libcmis::Exception )
+    {
+        libcmis::ObjectTypePtr type( new ObjectType( true, false ) );
+        return type;
+    }
+
     Repository::Repository( ) :
         libcmis::Repository( )
     {

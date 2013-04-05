@@ -190,6 +190,8 @@ typedef struct libcmis_vector_double* libcmis_vector_double_Ptr;
 
 typedef struct libcmis_vector_time* libcmis_vector_time_Ptr;
 
+typedef struct libcmis_vector_repository* libcmis_vector_Repository_Ptr;
+
 
 #ifdef __cplusplus
 }

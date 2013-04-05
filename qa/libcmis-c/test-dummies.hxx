@@ -36,12 +36,28 @@
 #include <libcmis/object-type.hxx>
 #include <libcmis/property-type.hxx>
 #include <libcmis/repository.hxx>
+#include <libcmis/session.hxx>
 
 /** This namespace contains dummy classes to simulate the libcmis layer
     in the libcmis-c unit tests.
   */
 namespace dummies
 {
+    class Session : public libcmis::Session
+    {
+        public:
+            Session( );
+            ~Session( );
+
+            virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
+            virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
+            virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
+            virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
+            virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
+            virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
+            virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
+    };
+
     class Repository : public libcmis::Repository
     {
         public:

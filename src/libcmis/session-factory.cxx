@@ -99,10 +99,10 @@ namespace libcmis
         return session;
     }
 
-    list< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl,
+    vector< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl,
             string username, string password, bool verbose ) throw ( Exception )
     {
-        list< RepositoryPtr > repos;
+        vector< RepositoryPtr > repos;
 
         Session* session = createSession( bindingUrl, username, password,
                                           string(), OAuth2DataPtr(), verbose );

@@ -56,7 +56,11 @@ libcmis_SessionPtr libcmis_createSession(
         bool  verbose,
         libcmis_ErrorPtr error );
 
-libcmis_RepositoryPtr* libcmis_getRepositories(
+/**
+    \deprecated
+        use libcmis_createSession and libcmis_session_getRepositories instead
+  */
+libcmis_vector_Repository_Ptr libcmis_getRepositories(
         char* bindingUrl,
         char* username,
         char* password,
