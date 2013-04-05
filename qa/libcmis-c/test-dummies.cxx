@@ -31,6 +31,19 @@
 using namespace std;
 using libcmis::PropertyPtrMap;
 
+bool isOutOfMemory = false;
+
+void * operator new ( size_t requestedSize ) throw ( bad_alloc )
+{
+    if ( isOutOfMemory )
+    {
+        throw bad_alloc( );
+    }
+
+    return malloc( requestedSize );
+}
+
+
 namespace dummies
 {
     Session::Session( )
@@ -498,7 +511,10 @@ namespace dummies
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
 
+        bool oldOutOfMem = isOutOfMemory;
+        isOutOfMemory = false;
         boost::shared_ptr< istream > stream( new stringstream( m_contentString ) );
+        isOutOfMemory = oldOutOfMem;
         return stream;
     }
 

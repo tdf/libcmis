@@ -146,11 +146,19 @@ void libcmis_document_getContentStream(
             if ( error != NULL )
                 error->handle = new libcmis::Exception( e );
         }
-        catch ( const ios_base::failure& e )
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+                error->badAlloc = true;
+        }
+        catch ( const exception& e )
         {
             // Set the error handle
             if ( error != NULL )
-                error->handle = new ios_base::failure( e );
+                error->handle = new exception( e );
+        }
+        catch ( ... )
+        {
         }
     }
 }

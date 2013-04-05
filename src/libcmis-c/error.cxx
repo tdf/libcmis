@@ -56,6 +56,8 @@ const char* libcmis_error_getMessage( libcmis_ErrorPtr error )
 {
     if ( error != NULL && error->handle != NULL )
         return error->handle->what( );
+    else if ( error->badAlloc )
+        return "Failed to allocate memory";
     else
         return "";
 }

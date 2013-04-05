@@ -43,6 +43,8 @@
 
 using namespace std;
 
+extern int isOutOfMemory;
+
 namespace
 {
     string lcl_readFile( FILE* file )
@@ -78,6 +80,7 @@ class DocumentTest : public CppUnit::TestFixture
         void getParentsErrorTest( );
         void getContentStreamTest( );
         void getContentStreamErrorTest( );
+        void getContentStreamBadAllocTest( );
         void setContentStreamTest( );
         void setContentStreamErrorTest( );
         void getContentTypeTest( );
@@ -101,6 +104,7 @@ class DocumentTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getParentsErrorTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( getContentStreamErrorTest );
+        CPPUNIT_TEST( getContentStreamBadAllocTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( setContentStreamErrorTest );
         CPPUNIT_TEST( getContentTypeTest );
@@ -121,6 +125,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( DocumentTest );
 
 libcmis_DocumentPtr DocumentTest::getTested( bool isFiled, bool triggersFaults )
 {
+    // Create the document
     libcmis_DocumentPtr result = new libcmis_document( );
     libcmis::DocumentPtr handle( new dummies::Document( isFiled, triggersFaults ) );
     result->setHandle( handle );
@@ -278,6 +283,30 @@ void DocumentTest::getContentStreamErrorTest( )
     fclose( tmp );
     CPPUNIT_ASSERT_EQUAL( string( ), actual );
     CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty( ) );
+
+    // Free it all
+    libcmis_error_free( error );
+    libcmis_document_free( tested );
+}
+
+void DocumentTest::getContentStreamBadAllocTest( )
+{
+    libcmis_DocumentPtr tested = getTested( true, false );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    // get the content into a temporary file (tested method)
+    FILE* tmp = tmpfile( );
+
+    isOutOfMemory= true;
+    libcmis_document_getContentStream( tested, 
+            ( libcmis_writeFn )fwrite, tmp, error );
+    isOutOfMemory = false;
+
+    // Check
+    string actual = lcl_readFile( tmp );
+    fclose( tmp );
+    CPPUNIT_ASSERT( !string( libcmis_error_getMessage( error ) ).empty() );
+    CPPUNIT_ASSERT_EQUAL( string( ), actual );
 
     // Free it all
     libcmis_error_free( error );

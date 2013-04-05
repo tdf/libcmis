@@ -44,8 +44,9 @@ struct libcmis_error
 {
     std::exception* handle;
     char* cached_type;
+    bool badAlloc;
 
-    libcmis_error( ) : handle( NULL ), cached_type( NULL ) { }
+    libcmis_error( ) : handle( NULL ), cached_type( NULL ), badAlloc( false ) { }
 };
 
 struct libcmis_session
