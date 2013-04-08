@@ -173,6 +173,7 @@ class BaseSession : public libcmis::Session
     private:
         void checkCredentials( ) throw ( CurlException );
         void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ) ) throw ( CurlException );
+        void initProtocols( );
 };
 
 #endif
