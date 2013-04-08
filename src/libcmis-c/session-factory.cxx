@@ -94,8 +94,9 @@ namespace
 
 void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback )
 {
-    libcmis::AuthProviderPtr provider( new WrapperAuthProvider( callback ) );
-    libcmis::SessionFactory::setAuthenticationProvider( provider );
+    libcmis::AuthProviderPtr provider( new ( nothrow ) WrapperAuthProvider( callback ) );
+    if ( provider )
+        libcmis::SessionFactory::setAuthenticationProvider( provider );
 }
 
 void libcmis_setProxySettings( char* proxy, char* noProxy,
@@ -149,9 +150,19 @@ libcmis_SessionPtr libcmis_createSession(
     }
     catch ( const libcmis::Exception& e )
     {
-        // Set the error handle
         if ( error != NULL )
-            error->handle = new libcmis::Exception( e );
+        {
+            error->message = strdup( e.what() );
+            error->type = strdup( e.getType().c_str() );
+        }
+    }
+    catch ( const bad_alloc& e )
+    {
+        if ( error != NULL )
+        {
+            error->message = strdup( e.what() );
+            error->badAlloc = true;
+        }
     }
 
     return session;

@@ -53,8 +53,9 @@ libcmis_FolderPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, s
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::FolderPtr handle = vector->handle[i];
-        item = new libcmis_folder( );
-        item->setHandle( handle );
+        item = new ( nothrow ) libcmis_folder( );
+        if ( item )
+            item->setHandle( handle );
     }
     return item;
 }
@@ -81,8 +82,9 @@ libcmis_FolderPtr libcmis_folder_cast( libcmis_ObjectPtr object )
         libcmis::FolderPtr handle = boost::dynamic_pointer_cast< libcmis::Folder >( object->handle );
         if ( handle.get( ) != NULL )
         {
-            folder = new libcmis_folder( );
-            folder->setHandle( handle );
+            folder = new ( nothrow ) libcmis_folder( );
+            if ( folder )
+                folder->setHandle( handle );
         }
     }
 
@@ -112,9 +114,19 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return parent;
@@ -134,9 +146,19 @@ libcmis_vector_object_Ptr libcmis_folder_getChildren( libcmis_FolderPtr folder, 
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return result;
@@ -191,9 +213,19 @@ libcmis_FolderPtr libcmis_folder_createFolder(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return result;
@@ -245,15 +277,24 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
-        catch ( const ios_base::failure& e )
+        catch ( const bad_alloc& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new ios_base::failure( e );
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+        catch ( const exception& e )
+        {
+            if ( error != NULL )
+                error->message = strdup( e.what() );
         }
     }
     return created;
@@ -266,20 +307,31 @@ libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,
         bool continueOnError,
         libcmis_ErrorPtr error )
 {
-    libcmis_vector_string_Ptr failed = new libcmis_vector_string( );
-    if ( folder != NULL && folder->handle.get( ) != NULL )
+    libcmis_vector_string_Ptr failed = NULL;
+    try
     {
-        try
+        failed = new libcmis_vector_string( );
+        if ( folder != NULL && folder->handle.get( ) != NULL )
         {
-            vector< string > handle = folder->handle->removeTree( allVersion,
-                    libcmis::UnfileObjects::Type( unfile ), continueOnError );
-            failed->handle = handle;
+                vector< string > handle = folder->handle->removeTree( allVersion,
+                        libcmis::UnfileObjects::Type( unfile ), continueOnError );
+                failed->handle = handle;
         }
-        catch ( const libcmis::Exception& e )
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        if ( error != NULL )
         {
-            // Set the error handle
-            if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            error->message = strdup( e.what() );
+            error->type = strdup( e.getType().c_str() );
+        }
+    }
+    catch ( const bad_alloc& e )
+    {
+        if ( error != NULL )
+        {
+            error->message = strdup( e.what() );
+            error->badAlloc = true;
         }
     }
     return failed;

@@ -37,12 +37,23 @@ libcmis_OAuth2DataPtr libcmis_oauth2data_create(
         char* clientId, char* clientSecret,
         libcmis_OAuth2AuthCodeProvider authCodeProvider = NULL )
 {
-    libcmis_OAuth2DataPtr data = new libcmis_oauth2data( );
+    libcmis_OAuth2DataPtr data = NULL;
+    try
+    {
+        data = libcmis_oauth2data( );
 
-    data->handle.reset( new libcmis::OAuth2Data(
-               authUrl, tokenUrl, scope, redirectUri,
-               clientId, clientSecret, authCodeProvider ) );
-
+        data->handle.reset( new libcmis::OAuth2Data(
+                   authUrl, tokenUrl, scope, redirectUri,
+                   clientId, clientSecret, authCodeProvider ) );
+    }
+    catch ( const bad_alloc& e )
+    {
+        if ( error != NULL )
+        {
+            error->message = strdup( e.what() );
+            error->badAlloc = true;
+        }
+    }
     return data;
 }
 

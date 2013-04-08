@@ -53,8 +53,9 @@ libcmis_ObjectTypePtr libcmis_vector_object_type_get( libcmis_vector_object_type
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::ObjectTypePtr type = vector->handle[i];
-        item = new libcmis_object_type( );
-        item->handle = type;
+        item = new ( nothrow ) libcmis_object_type( );
+        if ( item )
+            item->handle = type;
     }
     return item;
 }
@@ -138,9 +139,19 @@ libcmis_ObjectTypePtr libcmis_object_type_getParentType(
         }
         catch( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
 
@@ -163,9 +174,19 @@ libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
         }
         catch( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
 
@@ -211,9 +232,19 @@ libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         }
         catch( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
 
@@ -311,12 +342,15 @@ libcmis_vector_property_type_Ptr libcmis_object_type_getPropertiesTypes( libcmis
     if ( type != NULL && type->handle != NULL )
     {
         map< string, libcmis::PropertyTypePtr >& handles = type->handle->getPropertiesTypes( );
-        propertyTypes = new libcmis_vector_property_type( );
-        int i = 0;
-        for ( map< string, libcmis::PropertyTypePtr >::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
+        propertyTypes = new ( nothrow ) libcmis_vector_property_type( );
+        if ( propertyTypes )
         {
-            propertyTypes->handle.push_back( it->second );
+            int i = 0;
+            for ( map< string, libcmis::PropertyTypePtr >::iterator it = handles.begin( );
+                    it != handles.end( ); ++it, ++i )
+            {
+                propertyTypes->handle.push_back( it->second );
+            }
         }
     }
 
@@ -332,8 +366,9 @@ libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypeP
         map< string, libcmis::PropertyTypePtr >::iterator it = handles.find( string( id ) );
         if ( it != handles.end( ) )
         {
-            propertyType = new libcmis_property_type( );
-            propertyType->handle = it->second;
+            propertyType = new ( nothrow ) libcmis_property_type( );
+            if ( propertyType )
+                propertyType->handle = it->second;
         }
     }
 

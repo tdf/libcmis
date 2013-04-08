@@ -53,7 +53,7 @@ libcmis_DocumentPtr libcmis_vector_document_get( libcmis_vector_document_Ptr vec
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::DocumentPtr handle = vector->handle[i];
-        item = new libcmis_document( );
+        item = new( nothrow ) libcmis_document( );
         item->setHandle( handle );
     }
     return item;
@@ -80,7 +80,7 @@ libcmis_DocumentPtr libcmis_document_cast( libcmis_ObjectPtr object )
         libcmis::DocumentPtr handle = boost::dynamic_pointer_cast< libcmis::Document >( object->handle );
         if ( handle.get( ) != NULL )
         {
-            document = new libcmis_document( );
+            document = new ( nothrow ) libcmis_document( );
             document->setHandle( handle );
         }
     }
@@ -108,9 +108,19 @@ libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr docum
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return parents;
@@ -142,21 +152,24 @@ void libcmis_document_getContentStream(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
         catch ( const bad_alloc& e )
         {
-            cerr << "bad_alloc" << endl;
             if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
                 error->badAlloc = true;
+            }
         }
         catch ( const exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new exception( e );
+                error->message = strdup( e.what() );
         }
         catch ( ... )
         {
@@ -194,15 +207,24 @@ void libcmis_document_setContentStream(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
-        catch ( const ios_base::failure& e )
+        catch ( const bad_alloc& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new ios_base::failure( e );
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+        catch ( const exception& e )
+        {
+            if ( error != NULL )
+                error->message = strdup( e.what() );
         }
     }
 }
@@ -246,11 +268,18 @@ libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, lib
             pwc= new libcmis_document( );
             pwc->handle = handle;
         }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+                error->badAlloc = true;
+        }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
     return pwc;
@@ -267,9 +296,11 @@ void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_Erro
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
 }
@@ -295,7 +326,7 @@ libcmis_DocumentPtr libcmis_document_checkIn(
             boost::shared_ptr< std::ostream > stream( new stringstream( ) );
 
             size_t bufSize = 2048;
-            char* buf = new char[ bufSize ];
+            char * buf = new char[ bufSize ];
             size_t read = 0;
             do
             {
@@ -323,15 +354,24 @@ libcmis_DocumentPtr libcmis_document_checkIn(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
-        catch ( const ios_base::failure& e )
+        catch ( const bad_alloc& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new ios_base::failure( e );
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+        catch ( const exception& e )
+        {
+            if ( error != NULL )
+                error->message = strdup( e.what() );
         }
     }
     return newVersion;
@@ -352,9 +392,19 @@ libcmis_vector_document_Ptr libcmis_document_getAllVersions(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return result;

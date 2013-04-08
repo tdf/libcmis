@@ -35,8 +35,7 @@ using namespace std;
 
 libcmis_ErrorPtr libcmis_error_create( )
 {
-    libcmis_ErrorPtr error = new libcmis_error( );
-    error->handle = NULL;
+    libcmis_ErrorPtr error = new( nothrow ) libcmis_error( );
     return error;
 }
 
@@ -45,43 +44,29 @@ void libcmis_error_free( libcmis_ErrorPtr error )
 {
     if ( error != NULL )
     {
-        if ( error->handle != NULL )
-            delete error->handle;
-        delete[] error->cached_type;
+        delete[] error->message;
+        delete[] error->type;
         delete error;
     }
 }
 
 const char* libcmis_error_getMessage( libcmis_ErrorPtr error )
 {
-    if ( error != NULL && error->handle != NULL )
-        return error->handle->what( );
-    else if ( error->badAlloc )
-        return "Failed to allocate memory";
+    if ( error != NULL )
+    {
+        if ( error->badAlloc )
+            return "Failed to allocate memory";
+        else
+            return error->message;
+    }
     else
         return "";
 }
 
 const char* libcmis_error_getType( libcmis_ErrorPtr error )
 {
-    if ( error != NULL && error->handle != NULL )
-    {
-        if ( error->cached_type == NULL )
-        {
-            libcmis::Exception* cmisException = dynamic_cast< libcmis::Exception* >( error->handle );
-            if ( cmisException != NULL )
-            {
-                string const type = cmisException->getType( );
-                size_t const len = type.size( );
-                error->cached_type = new char[len + 1];
-                strncpy( error->cached_type, type.c_str( ), len );
-                error->cached_type[len] = '\0';
-            }
-
-            return error->cached_type;
-        }
-        else return NULL;
-    }
+    if ( error != NULL )
+        return error->type;
     else
         return NULL;
 }

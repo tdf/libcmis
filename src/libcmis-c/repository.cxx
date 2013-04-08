@@ -50,8 +50,9 @@ libcmis_RepositoryPtr libcmis_vector_repository_get( libcmis_vector_Repository_P
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::RepositoryPtr type = vector->handle[i];
-        item = new libcmis_repository( );
-        item->handle = type;
+        item = new ( nothrow ) libcmis_repository( );
+        if ( item )
+            item->handle = type;
     }
     return item;
 }
@@ -59,10 +60,13 @@ libcmis_RepositoryPtr libcmis_vector_repository_get( libcmis_vector_Repository_P
 
 libcmis_RepositoryPtr libcmis_repository_create( xmlNodePtr node )
 {
-    libcmis_RepositoryPtr repository = new libcmis_repository( );
+    libcmis_RepositoryPtr repository = new ( nothrow ) libcmis_repository( );
 
-    libcmis::RepositoryPtr handle( new libcmis::Repository( node ) );
-    repository->handle = handle;
+    if ( repository )
+    {
+        libcmis::RepositoryPtr handle( new ( nothrow ) libcmis::Repository( node ) );
+        repository->handle = handle;
+    }
 
     return repository;
 }

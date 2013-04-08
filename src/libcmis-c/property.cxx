@@ -34,7 +34,7 @@ using namespace std;
 
 libcmis_vector_property_Ptr libcmis_vector_property_create( )
 {
-    return new libcmis_vector_property( );
+    return new ( nothrow ) libcmis_vector_property( );
 }
 
 
@@ -59,8 +59,9 @@ libcmis_PropertyPtr libcmis_vector_property_get( libcmis_vector_property_Ptr vec
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::PropertyPtr type = vector->handle[i];
-        item = new libcmis_property( );
-        item->handle = type;
+        item = new ( nothrow ) libcmis_property( );
+        if ( item )
+            item->handle = type;
     }
     return item;
 }
@@ -81,12 +82,15 @@ libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const
     libcmis_PropertyPtr property = NULL;
     if ( type != NULL && type->handle.get( ) != NULL )
     {
-        property = new libcmis_property( );
-        vector< string > values;
-        for ( size_t i = 0; i < size; ++i )
-            values.push_back( string( strValues[i] ) );
-        libcmis::PropertyPtr prop( new libcmis::Property( type->handle, values ) );
-        property->handle = prop;
+        property = new ( nothrow ) libcmis_property( );
+        if ( property )
+        {
+            vector< string > values;
+            for ( size_t i = 0; i < size; ++i )
+                values.push_back( string( strValues[i] ) );
+            libcmis::PropertyPtr prop( new ( nothrow ) libcmis::Property( type->handle, values ) );
+            property->handle = prop;
+        }
     }
 
     return property;
@@ -105,8 +109,9 @@ libcmis_PropertyTypePtr libcmis_property_getPropertyType( libcmis_PropertyPtr pr
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         libcmis::PropertyTypePtr handle = property->handle->getPropertyType( );
-        type = new libcmis_property_type( );
-        type->handle = handle;
+        type = new ( nothrow ) libcmis_property_type( );
+        if ( type )
+            type->handle = handle;
     }
     return type;
 }
@@ -118,8 +123,9 @@ libcmis_vector_time_Ptr libcmis_property_getDateTimes( libcmis_PropertyPtr prope
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< boost::posix_time::ptime > handles = property->handle->getDateTimes( );
-        times = new libcmis_vector_time( );
-        times->handle = handles;
+        times = new ( nothrow ) libcmis_vector_time( );
+        if ( times )
+            times->handle = handles;
     }
    return times; 
 }
@@ -131,8 +137,9 @@ libcmis_vector_bool_Ptr libcmis_property_getBools( libcmis_PropertyPtr property 
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< bool > handles = property->handle->getBools( );
-        values = new libcmis_vector_bool( );
-        values->handle = handles;
+        values = new ( nothrow ) libcmis_vector_bool( );
+        if ( values )
+            values->handle = handles;
     }
     return values;
 }
@@ -144,8 +151,9 @@ libcmis_vector_string_Ptr libcmis_property_getStrings( libcmis_PropertyPtr prope
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< string > handles = property->handle->getStrings( );
-        values = new libcmis_vector_string( );
-        values->handle = handles;
+        values = new ( nothrow ) libcmis_vector_string( );
+        if ( values ) 
+            values->handle = handles;
     }
     return values;
 }
@@ -157,8 +165,9 @@ libcmis_vector_long_Ptr libcmis_property_getLongs( libcmis_PropertyPtr property 
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< long > handles = property->handle->getLongs( );
-        values = new libcmis_vector_long( );
-        values->handle = handles;
+        values = new ( nothrow ) libcmis_vector_long( );
+        if ( values )
+            values->handle = handles;
     }
     return values;
 }
@@ -170,8 +179,9 @@ libcmis_vector_double_Ptr libcmis_property_getDoubles( libcmis_PropertyPtr prope
     if ( property != NULL && property->handle.get( ) != NULL )
     {
         vector< double > handles = property->handle->getDoubles( );
-        values = new libcmis_vector_double( );
-        values->handle = handles;
+        values = new ( nothrow ) libcmis_vector_double( );
+        if ( values )
+            values->handle = handles;
     }
     return values;
 }

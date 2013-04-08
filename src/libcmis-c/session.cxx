@@ -53,14 +53,17 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
         try
         {
             libcmis::RepositoryPtr handle = session->handle->getRepository( );
-            repository = new libcmis_repository( );
-            repository->handle = handle;
+            repository = new ( nothrow ) libcmis_repository( );
+            if ( repository )
+                repository->handle = handle;
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
 
@@ -73,8 +76,9 @@ libcmis_vector_Repository_Ptr libcmis_session_getRepositories( libcmis_SessionPt
     if ( session != NULL && session->handle != NULL )
     {
         vector< libcmis::RepositoryPtr > handles = session->handle->getRepositories();
-        result = new libcmis_vector_repository( );
-        result->handle = handles;
+        result = new ( nothrow ) libcmis_vector_repository( );
+        if ( result )
+            result->handle = handles;
     }
 
     return result;
@@ -95,9 +99,19 @@ libcmis_FolderPtr libcmis_session_getRootFolder(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return folder;
@@ -120,9 +134,19 @@ libcmis_ObjectPtr libcmis_session_getObject(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return object;
@@ -145,9 +169,19 @@ libcmis_ObjectPtr libcmis_session_getObjectByPath(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return object;
@@ -170,9 +204,19 @@ libcmis_FolderPtr libcmis_session_getFolder(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return folder;
@@ -195,9 +239,19 @@ libcmis_ObjectTypePtr libcmis_session_getType(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return type;

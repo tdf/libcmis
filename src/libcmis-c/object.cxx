@@ -54,8 +54,9 @@ libcmis_ObjectPtr libcmis_vector_object_get( libcmis_vector_object_Ptr vector, s
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::ObjectPtr type = vector->handle[i];
-        item = new libcmis_object( );
-        item->handle = type;
+        item = new ( nothrow ) libcmis_object( );
+        if ( item )
+            item->handle = type;
     }
     return item;
 }
@@ -86,15 +87,15 @@ char* libcmis_object_getName( libcmis_ObjectPtr object )
 
 libcmis_vector_string_Ptr libcmis_object_getPaths( libcmis_ObjectPtr object )
 {
+    libcmis_vector_string_Ptr c_paths = NULL;
     if ( object != NULL && object->handle != NULL )
     {
         std::vector< std::string > paths = object->handle->getPaths( );
-        libcmis_vector_string_Ptr c_paths = new libcmis_vector_string( );
-        c_paths->handle = paths;
-        return c_paths;
+        c_paths = new ( nothrow ) libcmis_vector_string( );
+        if ( c_paths )
+            c_paths->handle = paths;
     }
-    else
-        return NULL;
+    return c_paths;
 }
 
 char* libcmis_object_getBaseType( libcmis_ObjectPtr object )
@@ -181,12 +182,15 @@ libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr obje
     if ( object != NULL && object->handle.get( ) != NULL )
     {
         PropertyPtrMap& handles = object->handle->getProperties( );
-        properties = new libcmis_vector_property( );
-        int i = 0;
-        for ( PropertyPtrMap::iterator it = handles.begin( );
-                it != handles.end( ); ++it, ++i )
+        properties = new ( nothrow ) libcmis_vector_property( );
+        if ( properties )
         {
-            properties->handle.push_back( it->second );
+            int i = 0;
+            for ( PropertyPtrMap::iterator it = handles.begin( );
+                    it != handles.end( ); ++it, ++i )
+            {
+                properties->handle.push_back( it->second );
+            }
         }
     }
     return properties;
@@ -202,8 +206,9 @@ libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const 
         PropertyPtrMap::iterator it = handles.find( string( name ) );
         if ( it != handles.end( ) )
         {
-            property = new libcmis_property( );
-            property->handle = it->second;
+            property = new ( nothrow ) libcmis_property( );
+            if ( property )
+                property->handle = it->second;
         }
     }
     return property;
@@ -235,9 +240,19 @@ libcmis_ObjectPtr libcmis_object_updateProperties(
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
         }
     }
     return result;
@@ -249,8 +264,9 @@ libcmis_ObjectTypePtr libcmis_object_getTypeDescription( libcmis_ObjectPtr objec
     libcmis_ObjectTypePtr result = NULL;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
-        result = new libcmis_object_type( );
-        result->handle = object->handle->getTypeDescription( );
+        result = new ( nothrow ) libcmis_object_type( );
+        if ( result )
+            result->handle = object->handle->getTypeDescription( );
     }
     return result;
 }
@@ -261,8 +277,9 @@ libcmis_AllowableActionsPtr libcmis_object_getAllowableActions( libcmis_ObjectPt
     libcmis_AllowableActionsPtr result = NULL;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
-        result = new libcmis_allowable_actions( );
-        result->handle = object->handle->getAllowableActions( );
+        result = new ( nothrow ) libcmis_allowable_actions( );
+        if ( result )
+            result->handle = object->handle->getAllowableActions( );
     }
     return result;
 }
@@ -278,9 +295,11 @@ void libcmis_object_refresh( libcmis_ObjectPtr object, libcmis_ErrorPtr error )
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
 }
@@ -305,9 +324,11 @@ void libcmis_object_remove( libcmis_ObjectPtr object, bool allVersions, libcmis_
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
 }
@@ -333,9 +354,11 @@ void libcmis_object_move( libcmis_ObjectPtr object,
         }
         catch ( const libcmis::Exception& e )
         {
-            // Set the error handle
             if ( error != NULL )
-                error->handle = new libcmis::Exception( e );
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
         }
     }
 }
