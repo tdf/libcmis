@@ -431,8 +431,16 @@ void XmlTest::propertyIntegerAsXmlTest( )
 
 void XmlTest::sha1Test( )
 {
-    string actual = libcmis::sha1( "Hello" );
-    CPPUNIT_ASSERT_EQUAL( string( "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0" ), actual );
+    {
+        string actual = libcmis::sha1( "Hello" );
+        CPPUNIT_ASSERT_EQUAL( string( "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0" ), actual );
+    }
+
+    {
+        // check correct width
+        string actual = libcmis::sha1( "35969137" );
+        CPPUNIT_ASSERT_EQUAL( string( "0d93546909cfeb5c00089202104df3980000ec9f" ), actual );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );

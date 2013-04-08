@@ -524,8 +524,12 @@ namespace libcmis
         sha1.get_digest( digest );
 
         stringstream out;
+        // Setup writing mode. Every number must produce eight
+        // hexadecimal digits, including possible leading 0s, or we get
+        // less than 40 digits as result.
+        out << hex << setfill('0') << right;
         for ( int i = 0; i < 5; ++i )
-            out << hex << digest[i];
+            out << setw(8) << digest[i];
         return out.str();
     }
 
