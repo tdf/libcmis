@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: libcmis
 Description: CMIS protocol C client library
 Version: @VERSION@
-Requires: libcmis libcurl libxml-2.0
+Requires: libcmis-@LIBCMIS_API_VERSION@ libcurl libxml-2.0
 Libs: -L${libdir} -lcmis-c-@LIBCMIS_API_VERSION@
 Cflags: -I${includedir}/libcmis-c-@LIBCMIS_API_VERSION@
 
