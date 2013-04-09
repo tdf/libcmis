@@ -40,6 +40,8 @@
 #include <libcmis/session.hxx>
 #include <libcmis/session-factory.hxx>
 
+std::string createString( char* str );
+
 struct libcmis_error
 {
     char* message;

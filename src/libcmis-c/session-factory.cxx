@@ -92,6 +92,14 @@ namespace
     }
 }
 
+std::string createString( char* str )
+{
+    if ( str )
+        return string( str );
+    else
+        return string( );
+}
+
 void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback )
 {
     libcmis::AuthProviderPtr provider( new ( nothrow ) WrapperAuthProvider( callback ) );
@@ -143,8 +151,11 @@ libcmis_SessionPtr libcmis_createSession(
         if ( oauth2 != NULL )
             oauth2Handle = oauth2->handle;
 
-        libcmis::Session* handle = libcmis::SessionFactory::createSession( bindingUrl, username,
-                password, repositoryId, oauth2Handle, verbose );
+        libcmis::Session* handle = libcmis::SessionFactory::createSession(
+                createString( bindingUrl ),
+                createString( username ),
+                createString( password ),
+                createString( repositoryId ), oauth2Handle, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }
