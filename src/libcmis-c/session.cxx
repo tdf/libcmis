@@ -53,9 +53,12 @@ libcmis_RepositoryPtr libcmis_session_getRepository(
         try
         {
             libcmis::RepositoryPtr handle = session->handle->getRepository( );
-            repository = new ( nothrow ) libcmis_repository( );
-            if ( repository )
-                repository->handle = handle;
+            if ( handle )
+            {
+                repository = new ( nothrow ) libcmis_repository( );
+                if ( repository )
+                    repository->handle = handle;
+            }
         }
         catch ( const libcmis::Exception& e )
         {
