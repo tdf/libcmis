@@ -329,7 +329,7 @@ void FolderTest::createDocumentTest( )
 
     // Check
     string actualStream = getDocumentImplementation( actual )->getContentString( );
-    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( NULL == libcmis_error_getMessage( error ) );
     CPPUNIT_ASSERT_EQUAL( expectedStream, actualStream );
 
     libcmis_PropertyPtr checkedProperty = libcmis_object_getProperty( actual, "Property1" );

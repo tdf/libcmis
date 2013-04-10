@@ -260,7 +260,7 @@ void DocumentTest::getContentStreamTest( )
     
     string actual = lcl_readFile( tmp );
     fclose( tmp );
-    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( NULL == libcmis_error_getMessage( error ) );
     CPPUNIT_ASSERT_EQUAL( expected, actual );
 
     // Free it all
@@ -333,7 +333,7 @@ void DocumentTest::setContentStreamTest( )
 
     // Check
     string actual = getTestedImplementation( tested )->getContentString( );
-    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( NULL == libcmis_error_getMessage( error ) );
     CPPUNIT_ASSERT_EQUAL( expected, actual );
 
     // Free it all
@@ -502,7 +502,7 @@ void DocumentTest::checkInTest( )
     CPPUNIT_ASSERT( NULL != newVersion );
     
     string actual = getTestedImplementation( tested )->getContentString( );
-    CPPUNIT_ASSERT_EQUAL( string( ), string( libcmis_error_getMessage( error ) ) );
+    CPPUNIT_ASSERT( NULL == libcmis_error_getMessage( error ) );
     CPPUNIT_ASSERT_EQUAL( expected, actual );
 
     libcmis_PropertyPtr checkedProperty = libcmis_object_getProperty( tested, "Property1" );
