@@ -128,10 +128,10 @@ void GDriveMockTest::sessionAuthenticationTest( )
 
 void GDriveMockTest::getObjectTest()
 {
-    static const string objectId ("/files/mock-file-id");
+    static const string objectId ("mock-file-id");
     GDriveSession session = getTestSession( );
 
-    string url = baseUrl + objectId;
+    string url = baseUrl + "/files/" + objectId;
     curl_mockup_addResponse ( url.c_str( ), "",
                                   "GET", "data/gdrive/gdoc-file.json", 200, true);
 
