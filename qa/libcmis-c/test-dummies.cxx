@@ -66,6 +66,12 @@ namespace dummies
         return repo;
     }
 
+    
+    bool Session::setRepository( std::string repositoryId )
+    {
+        return true;
+    }
+
     vector< libcmis::RepositoryPtr > Session::getRepositories( )
     {
         vector< libcmis::RepositoryPtr > repos;

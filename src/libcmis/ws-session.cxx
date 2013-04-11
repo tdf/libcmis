@@ -341,6 +341,22 @@ libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
     return getRepositoryService( ).getRepositoryInfo( m_repositoryId );
 }
 
+bool WSSession::setRepository( string repositoryId )
+{
+    bool success = false;
+    try
+    {
+        libcmis::RepositoryPtr repo = getRepositoryService( ).getRepositoryInfo( m_repositoryId );
+        if (repo && repo->getId( ) == repositoryId )
+            m_repositoryId = repositoryId;
+        success = true;
+    }
+    catch ( const libcmis::Exception& )
+    {
+    }
+    return success;
+}
+
 libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception )
 {
     return getObjectService( ).getObject( getRepositoryId( ), id );

@@ -50,6 +50,7 @@ namespace dummies
             ~Session( );
 
             virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
+            virtual bool setRepository( std::string repositoryId );
             virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
             virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
             virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );

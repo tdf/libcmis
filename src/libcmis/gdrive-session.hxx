@@ -40,17 +40,27 @@ class GDriveSession : public BaseSession
                        libcmis::OAuth2DataPtr oauth2,            
                        bool verbose = false )
                    throw ( libcmis::Exception );
+
         GDriveSession( const GDriveSession& copy );
+
         ~GDriveSession ( );
+
         std::string getBaseUrl( ) { return m_bindingUrl; }
+
         virtual libcmis::RepositoryPtr getRepository( ) 
             throw ( libcmis::Exception );
+
+        virtual bool setRepository( std::string ) { return true; }
+
         virtual libcmis::ObjectPtr getObject( std::string id ) 
             throw ( libcmis::Exception );
+
         virtual libcmis::ObjectPtr getObjectByPath( std::string path ) 
             throw ( libcmis::Exception );
+
         virtual libcmis::ObjectTypePtr getType( std::string id )             
             throw ( libcmis::Exception );
+
         virtual char* oauth2Authenticate( ) throw ( CurlException );
 
     private:

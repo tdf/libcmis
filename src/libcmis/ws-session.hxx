@@ -90,6 +90,8 @@ class WSSession : public BaseSession, public SoapSession
 
         virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
 
+        virtual bool setRepository( std::string repositoryId );
+
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
         
         virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );

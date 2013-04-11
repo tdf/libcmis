@@ -164,6 +164,25 @@ libcmis::RepositoryPtr AtomPubSession::getRepository( ) throw ( libcmis::Excepti
     return getAtomRepository( );
 }
 
+bool AtomPubSession::setRepository( string repositoryId )
+{
+    vector< libcmis::RepositoryPtr > repos = getRepositories( );
+    bool found = false;
+    for ( vector< libcmis::RepositoryPtr >::iterator it = repos.begin();
+            it != repos.end() && !found; ++it )
+    {
+        libcmis::RepositoryPtr repo = *it;
+        if ( repo->getId() == repositoryId )
+        {
+            AtomRepositoryPtr atomRepo = boost::dynamic_pointer_cast< AtomRepository >( repo );
+            m_repository = atomRepo;
+            m_repositoryId = repositoryId;
+            found = true;
+        }
+    }
+    return found;
+}
+
 libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
 {
     libcmis::ObjectPtr cmisObject;

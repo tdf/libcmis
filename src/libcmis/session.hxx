@@ -51,6 +51,14 @@ namespace libcmis
 
             virtual std::vector< RepositoryPtr > getRepositories( ) = 0;
 
+            /** Change the current repository.
+
+                \return
+                    false if no repository with the provided id can be found on the server,
+                    true otherwise
+              */
+            virtual bool setRepository( std::string repositoryId ) = 0;
+
             /** Get the Root folder of the repository
               */
             virtual FolderPtr getRootFolder() throw ( Exception )= 0;
