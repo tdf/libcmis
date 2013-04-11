@@ -87,6 +87,16 @@ libcmis_vector_Repository_Ptr libcmis_session_getRepositories( libcmis_SessionPt
     return result;
 }
 
+bool libcmis_session_setRepository( libcmis_SessionPtr session, const char* id )
+{
+    bool success = false;
+    if ( session && session->handle && id )
+    {
+        success = session->handle->setRepository( id );
+    }
+    return success;
+}
+
 libcmis_FolderPtr libcmis_session_getRootFolder(
         libcmis_SessionPtr session,
         libcmis_ErrorPtr error )
