@@ -67,7 +67,7 @@ namespace dummies
     }
 
     
-    bool Session::setRepository( std::string repositoryId )
+    bool Session::setRepository( std::string )
     {
         return true;
     }
