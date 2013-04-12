@@ -133,7 +133,7 @@ libcmis_FolderPtr libcmis_session_getRootFolder(
 
 libcmis_ObjectPtr libcmis_session_getObject(
         libcmis_SessionPtr session,
-        char* id,
+        const char* id,
         libcmis_ErrorPtr error )
 {
     libcmis_ObjectPtr object = NULL;
@@ -168,7 +168,7 @@ libcmis_ObjectPtr libcmis_session_getObject(
 
 libcmis_ObjectPtr libcmis_session_getObjectByPath(
         libcmis_SessionPtr session,
-        char* path,
+        const char* path,
         libcmis_ErrorPtr error )
 {
     libcmis_ObjectPtr object = NULL;
@@ -203,7 +203,7 @@ libcmis_ObjectPtr libcmis_session_getObjectByPath(
 
 libcmis_FolderPtr libcmis_session_getFolder(
         libcmis_SessionPtr session,
-        char* id,
+        const char* id,
         libcmis_ErrorPtr error )
 {
     libcmis_FolderPtr folder = NULL;
@@ -238,7 +238,7 @@ libcmis_FolderPtr libcmis_session_getFolder(
 
 libcmis_ObjectTypePtr libcmis_session_getType(
         libcmis_SessionPtr session,
-        char* id,
+        const char* id,
         libcmis_ErrorPtr error )
 {
     libcmis_ObjectTypePtr type = NULL;
