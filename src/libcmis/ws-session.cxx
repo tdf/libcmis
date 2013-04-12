@@ -346,7 +346,7 @@ bool WSSession::setRepository( string repositoryId )
     bool success = false;
     try
     {
-        libcmis::RepositoryPtr repo = getRepositoryService( ).getRepositoryInfo( m_repositoryId );
+        libcmis::RepositoryPtr repo = getRepositoryService( ).getRepositoryInfo( repositoryId );
         if (repo && repo->getId( ) == repositoryId )
             m_repositoryId = repositoryId;
         success = true;
