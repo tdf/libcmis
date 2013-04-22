@@ -124,7 +124,6 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
-    initProtocols();
 
     // Init OAuth2 after curl handle as this one will be needed
     // to get the OAuth2 tokens    
@@ -149,7 +148,6 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
-    initProtocols();
 }
 
 BaseSession::BaseSession( ) :
@@ -168,7 +166,6 @@ BaseSession::BaseSession( ) :
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
-    initProtocols();
 }
 
 BaseSession& BaseSession::operator=( const BaseSession& copy )
@@ -190,7 +187,6 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
         // Not sure how sharing curl handles is safe.
         curl_global_init( CURL_GLOBAL_ALL );
         m_curlHandle = curl_easy_init( );
-        initProtocols();
     }
 
     return *this;
@@ -258,6 +254,7 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
+    initProtocols( );
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
@@ -289,6 +286,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
+    initProtocols( );
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
@@ -340,6 +338,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
+    initProtocols( );
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
@@ -392,6 +391,7 @@ void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
 {
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
+    initProtocols( );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
     httpRunRequest( url );
