@@ -36,6 +36,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
+	../libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
