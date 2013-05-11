@@ -1,11 +1,9 @@
 {
  "kind": "drive#file",
- "id": "mock-file-id",
+ "id": "aFileId",
  "etag": "\"an example tag\"",
- "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar9",
- "alternateLink": "https://docs.google.com/spreadsheet/ccc?key=0A",
- "thumbnailLink": "https://docs.google.com",
- "title": "Mock title",
+ "selfLink": "fileSelfLink",
+ "title": "a file title",
  "mimeType": "application/vnd.google-apps.form",
  "labels": {
   "starred": false,
@@ -20,9 +18,9 @@
  "parents": [
   {
    "kind": "drive#parentReference",
-   "id": "0AL9E3szV96I6Uk9PVA",
-   "selfLink": "https://www.googleapis.com/drive/v2/files/0ArPdVE/parents/0AL",
-   "parentLink": "https://www.googleapis.com/drive/v2/files/0AL",
+   "id": "parentId",
+   "selfLink": "parentSelfLink",
+   "parentLink": "parentLink",
    "isRoot": true
   }
  ],
@@ -33,9 +31,7 @@
  },
  "userPermission": {
   "kind": "drive#permission",
-  "etag": "\"8yVR\"",
   "id": "me",
-  "selfLink": "https://www.googleapis.com/drive/v2/files/0Ar/permissions/me",
   "role": "owner",
   "type": "user"
  },
@@ -46,20 +42,15 @@
  "owners": [
   {
    "kind": "drive#user",
-   "displayName": "Mock file owrner",
-   "picture": {
-    "url": "https://lh6.googleusercontent.com/-9VC4/photo.jpg"
-   },
+   "displayName": "Mock file owner",
    "isAuthenticatedUser": true,
-   "permissionId": "06"
   }
  ],
  "lastModifyingUserName": "Mock user",
  "lastModifyingUser": {
   "kind": "drive#user",
-  "displayName": "User User name",
+  "displayName": "User name",
   "isAuthenticatedUser": false,
-  "permissionId": "107"
  },
  "editable": true,
  "writersCanShare": true,
