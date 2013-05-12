@@ -290,11 +290,9 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ )
     return object;
 }
 
-libcmis::ObjectTypePtr GDriveSession::getType( string /*id*/ ) 
+libcmis::ObjectTypePtr GDriveSession::getType( string id ) 
     throw ( libcmis::Exception )
 {
-    // TODO it can be "cmis:document" or "cmis:folder" depend on object
-    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType(
-                                        "cmis:document" ) );
+    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType( id ) );
     return type;
 }

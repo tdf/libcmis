@@ -1,0 +1,47 @@
+{
+ "kind": "drive#file",
+ "id": "aFolderId",
+ "etag": "a folder etag",
+ "selfLink": "SelfLINK",
+ "title": "testFolder",
+ "mimeType": "application/vnd.google-apps.folder",
+ "labels": {
+  "starred": false,
+  "hidden": false,
+  "trashed": false,
+  "restricted": false,
+  "viewed": true
+ },
+ "createdDate": "2013-03-22T17:53:10.290Z",
+ "modifiedDate": "2013-03-22T17:53:44.212Z",
+ "modifiedByMeDate": "2013-03-22T17:53:44.212Z",
+ "lastViewedByMeDate": "2013-04-05T15:27:47.261Z",
+ "parents": [
+  {
+   "kind": "drive#parentReference",
+   "id": "parentID",
+   "isRoot": true
+  }
+ ],
+ "quotaBytesUsed": "0",
+ "ownerNames": [
+  "User"
+ ],
+ "owners": [
+  {
+   "kind": "drive#user",
+   "displayName": "User name",
+   "isAuthenticatedUser": true,
+  }
+ ],
+ "lastModifyingUserName": "User name of the last person modify",
+ "lastModifyingUser": {
+  "kind": "drive#user",
+  "displayName": "Last mofifying username",
+  "isAuthenticatedUser": true,
+ },
+ "editable": true,
+ "writersCanShare": true,
+ "shared": false,
+ "appDataContents": false
+}

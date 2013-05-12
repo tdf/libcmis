@@ -27,6 +27,7 @@
  */
 
 #include "gdrive-property.hxx"
+#include "property-type.hxx"
 
 using std::string;
 using namespace libcmis;
@@ -50,6 +51,10 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     propertyType->setQueryName( convertedKey );
     propertyType->setDisplayName( convertedKey );
     propertyType->setTypeFromJsonType( json.getDataType( ) );
+   
+    // for some reason fileSize is recognized as string
+    if ( key=="fileSize" ) 
+        propertyType->setType( PropertyType::Integer );
     
     setPropertyType( propertyType );    
     vector< string > values;

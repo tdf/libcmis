@@ -1,0 +1,14 @@
+{
+ "kind": "drive#parentList",
+ "etag": "A parent etag",
+ "selfLink": "SelfLink",
+ "items": [
+  {
+   "kind": "drive#parentReference",
+   "id": "AParentId",
+   "selfLink": "aSelfLink",
+   "parentLink": "AParentLink",
+   "isRoot": true
+  }
+ ]
+}

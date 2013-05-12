@@ -40,67 +40,241 @@
 #include "gdrive-session.hxx"
 #include "oauth2-handler.hxx"
 #include "gdrive-object.hxx"
+#include "document.hxx"
 
 using std::string;
 using namespace libcmis;
 
-static const string clientId ( "mock-id" );
-static const string clientSecret ( "mock-secret" );
-static const string loginUrl ("https://accounts.google.com/ServiceLoginAuth" );
-static const string approvalUrl ("https://accounts.google.com/o/oauth2/approval" );
-static const string authUrl ( "https://accounts.google.com/o/oauth2/auth" );
-static const string tokenUrl ( "https://accounts.google.com/o/oauth2/token" );
-static const string scopeFull ( "https://www.googleapis.com/auth/drive" );
-static const string redirectUri ("urn:ietf:wg:oauth:2.0:oob" );
-static const string baseUrl ( "https://www.googleapis.com/drive/v2" );
+static const string CLIENT_ID ( "mock-id" );
+static const string CLIENT_SECRET ( "mock-secret" );
+static const string USERNAME( "mock-user" );
+static const string PASSWORD( "mock-password" );
+static const string LOGIN_URL ("https://login/url" );
+static const string APPROVAL_URL ("https://approval/url" );
+static const string AUTH_URL ( "https://auth/url" );
+static const string TOKEN_URL ( "https://token/url" );
+static const string SCOPE ( "https://scope/url" );
+static const string REDIRECT_URI ("redirect:uri" );
+static const string BASE_URL ( "https://base/url" );
 class GDriveMockTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
+        void getRepositoriesTest( );
+        void getTypeTest( );
         void getObjectTest( );
+        void getDocumentTest( );
+        void getFolderTest( );
+        void getDocumentParentsTest( );
+        void getContentStreamTest( );
 
         CPPUNIT_TEST_SUITE( GDriveMockTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
+        CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getDocumentTest );
+        CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getDocumentParentsTest );
+        CPPUNIT_TEST( getContentStreamTest );        
         CPPUNIT_TEST_SUITE_END( );
 
     private:
-        GDriveSession createSession( string username, string password );
-        GDriveSession getTestSession ( );
+        GDriveSession getTestSession( string username, string password );
 };
+
+void GDriveMockTest::getDocumentTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
+ 
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/files/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/document.json", 200, true);
+
+    libcmis::ObjectPtr obj = session.getObject( objectId );
+ 
+    // Check if we got the document object.
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( obj );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
+ 
+    // Test the document properties
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", objectId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", 
+                                  string( "GDrive File" ), 
+                                  document->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", 
+                                  string( "application/vnd.google-apps.form" ), 
+                                  document->getContentType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !document->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
+ 
+    CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 123 == document->getContentLength( ) );
+
+}
+
+void GDriveMockTest::getFolderTest( )
+{
+    curl_mockup_reset( );
+
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );    
+    static const string folderId ("aFolderId");
+    string url = BASE_URL + "/files/" + folderId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
+    
+    libcmis::ObjectPtr obj = session.getObject( folderId );
+ 
+    // Check if we got the Folder object.
+    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
+            NULL != folder );
+
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "testFolder" ), folder->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
+    //TODO folder parent
+    // CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
+ 
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !folder->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !folder->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !folder->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !folder->getLastModificationDate( ).is_not_a_date_time() );
+}
+
+void GDriveMockTest::getDocumentParentsTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    string url = BASE_URL + "/files/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/document.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( "aFileId" );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+ 
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+    
+    string parentUrl = url + "/parents";
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", "data/gdrive/document_parents.json", 200, true);
+
+    vector< libcmis::FolderPtr > parents= document->getParents( );
+ 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
+    
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", string( "AParentId" ), parents[0]->getId( ) );
+}
+
+void GDriveMockTest::getContentStreamTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    string url = BASE_URL + "/files/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document.json", 200, true);
+    string expectedContent( "Test content stream" );
+    string downloadUrl = "https://downloadLink";
+    curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
+    
+     
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( );
+        ostringstream out;
+        out << is->rdbuf();
+ 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void GDriveMockTest::getTypeTest( )
+{
+    curl_mockup_reset( );
+ 
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    string expectedId( "cmis:document" );
+    libcmis::ObjectTypePtr actual = session.getType( expectedId );
+ 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched type", expectedId, actual->getId( ) );
+}
+
+void GDriveMockTest::getRepositoriesTest( )
+{
+     curl_mockup_reset( );
+ 
+     GDriveSession session = getTestSession( USERNAME, PASSWORD );
+     vector< libcmis::RepositoryPtr > actual = session.getRepositories( );
+ 
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), 
+                                   actual.size( ) );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
+                                   string ( "Google Drive repository" ),
+                                   actual.front()->getId( ) );
+}
 
 void GDriveMockTest::sessionAuthenticationTest( )
 {
-    GDriveSession session = getTestSession( );
-    
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string empty;
-
-    string authRequest( curl_mockup_getRequest( loginUrl.c_str(), empty.c_str( ),
+    
+    // Check authentication request
+    string authRequest( curl_mockup_getRequest( LOGIN_URL.c_str(), empty.c_str( ),
                                                 "POST" ) );
-    string codeRequest( curl_mockup_getRequest( approvalUrl.c_str(),
-                        "ref", "POST" ) );
-    string tokenRequest( curl_mockup_getRequest( tokenUrl.c_str(), empty.c_str( ),
-                                                 "POST" ));
-            
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request",
+    string expectedAuthRequest =
         string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
-                 "&Email=mock-user&Passwd=mock-password" ),
-        authRequest );
- 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request",
-        string( "state_wrapper=stateWrapper&submit_access=true" ), codeRequest);
+                 "&Email=") + USERNAME + string("&Passwd=") + PASSWORD;
 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request",
+                                  expectedAuthRequest, authRequest );
+    
+    // Check code request
+    string codeRequest( curl_mockup_getRequest( APPROVAL_URL.c_str(),
+                        empty.c_str( ), "POST" ) );
+    string expectedCodeRequest = string( "state_wrapper=stateWrapper&submit_access=true" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", 
+                                  expectedCodeRequest, codeRequest);
+    
+    // Check token request
+    string expectedTokenRequest = 
+        string( "code=AuthCode") + 
+        string( "&client_id=") + CLIENT_ID +
+        string( "&client_secret=") + CLIENT_SECRET + 
+        string( "&redirect_uri=") + REDIRECT_URI + 
+        string( "&grant_type=authorization_code" );
+
+    string tokenRequest( curl_mockup_getRequest( TOKEN_URL.c_str(), empty.c_str( ),
+                                                 "POST" ));
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request",
-        string ( "code=AuthCode&client_id=mock-id&client_secret=mock-secret&"
-                 "redirect_uri=urn:ietf:wg:oauth:2.0:oob&"
-                  "grant_type=authorization_code"),
-        tokenRequest );
+                                  expectedTokenRequest, tokenRequest );
 
+    // Check token
     CPPUNIT_ASSERT_EQUAL_MESSAGE(
         "Wrong access token", 
          string ( "mock-access-token" ), 
          session.m_oauth2Handler->getAccessToken( ));
-
     CPPUNIT_ASSERT_EQUAL_MESSAGE( 
         "Wrong refresh token", 
         string ("mock-refresh-token"), 
@@ -110,58 +284,45 @@ void GDriveMockTest::sessionAuthenticationTest( )
 void GDriveMockTest::getObjectTest()
 {
     static const string objectId ("aFileId");
-    GDriveSession session = getTestSession( );
 
-    string url = baseUrl + "/files/" + objectId;
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse ( url.c_str( ), "",
                               "GET", "data/gdrive/gdoc-file.json", 200, true);
-
     libcmis::ObjectPtr object = session.getObject( objectId );
-
     boost::shared_ptr<GDriveObject> obj = boost::dynamic_pointer_cast
                                             <GDriveObject>(object);
-
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", objectId,
                                                      obj->getId( ) );
 }
 
-GDriveSession GDriveMockTest::createSession( string username, 
-                                             string password )
+GDriveSession GDriveMockTest::getTestSession( string username, string password )
 {
     libcmis::OAuth2DataPtr oauth2(
-        new libcmis::OAuth2Data( authUrl, tokenUrl, scopeFull,
-                                 redirectUri, clientId, clientSecret ));
+        new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
+                                 REDIRECT_URI, CLIENT_ID, CLIENT_SECRET ));
     curl_mockup_reset( );
     string empty;
     //login response
-    curl_mockup_addResponse ( authUrl.c_str(),
-                            "scope=https://www.googleapis.com/auth/drive&"
-                            "redirect_uri=urn:ietf:wg:oauth:2.0:oob&response"
-                            "_type=code&client_id=mock-id",
+    string loginIdentifier = string("scope=") + SCOPE +
+                             string("&redirect_uri=") + REDIRECT_URI +
+                             string("&response_type=code") +
+                             string("&client_id=") + CLIENT_ID;
+    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
                             "GET", "data/gdrive/login.html", 200, true);
 
     //authentication response
-    curl_mockup_addResponse( loginUrl.c_str( ), empty.c_str( ), "POST",
+    curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
                              "data/gdrive/approve.html", 200, true);
 
     //approval response
-    curl_mockup_addResponse( approvalUrl.c_str( ), "ref",
+    curl_mockup_addResponse( APPROVAL_URL.c_str( ), empty.c_str( ),
                              "POST", "data/gdrive/authcode.html", 200, true);
 
-    curl_mockup_addResponse ( tokenUrl.c_str( ), empty.c_str( ), "POST",
+    curl_mockup_addResponse ( TOKEN_URL.c_str( ), empty.c_str( ), "POST",
                               "data/gdrive/token-response.json", 200, true );
 
-    return GDriveSession( baseUrl, username, password, oauth2, false );
-}
-
-GDriveSession GDriveMockTest::getTestSession( )
-{
-    static const string username( "mock-user" );
-    static const string password( "mock-password" );
-
-    // The authentication should happen automatically when creating
-    // the session
-    return createSession( username, password );
+    return GDriveSession( BASE_URL, username, password, oauth2, false );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveMockTest );
