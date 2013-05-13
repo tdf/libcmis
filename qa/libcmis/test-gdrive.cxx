@@ -70,6 +70,8 @@ class GDriveTest : public CppUnit::TestFixture
         void setContentStreamTest( );
         void setContentStreamGdocTest( );
         void getChildrenTest( );
+        void getDocumentAllowableActionsTest( );
+        void getFolderAllowableActionsTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -82,7 +84,9 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest ); 
         CPPUNIT_TEST( setContentStreamTest );  
         CPPUNIT_TEST( setContentStreamGdocTest );
-        CPPUNIT_TEST( getChildrenTest );     
+        CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( getDocumentAllowableActionsTest );
+        CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -436,6 +440,53 @@ void GDriveTest::getObjectTest()
                                             <GDriveObject>(object);
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", objectId,
                                                      obj->getId( ) );
+}
+
+void GDriveTest::getDocumentAllowableActionsTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
+ 
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/files/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/document.json", 200, true);
+
+    libcmis::ObjectPtr obj = session.getObject( objectId );
+ 
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( obj );
+
+    boost::shared_ptr< libcmis::AllowableActions > actions = document->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            !actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+}
+
+void GDriveTest::getFolderAllowableActionsTest( )
+{
+    curl_mockup_reset( );
+    static const string folderId ("aFolderId");
+ 
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/files/" + folderId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+
+    boost::shared_ptr< libcmis::AllowableActions > actions = folder->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )

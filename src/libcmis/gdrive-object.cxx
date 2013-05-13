@@ -28,6 +28,7 @@
 
 #include "gdrive-object.hxx"
 #include "gdrive-property.hxx"
+#include "gdrive-allowable-actions.hxx"
 
 using std::string;
 
@@ -75,6 +76,12 @@ void GDriveObject::initializeFromJson ( Json json )
         }
     }
     m_refreshTimestamp = time( NULL );
+    
+    // Create AllowableActions
+    bool isFolder = false;
+    if ( json["mimeType"].toString( ) == "application/vnd.google-apps.folder" ) 
+        isFolder = true;
+    m_allowableActions.reset( new GdriveAllowableActions( isFolder ) );
 }
 
 GDriveSession* GDriveObject::getSession( )
