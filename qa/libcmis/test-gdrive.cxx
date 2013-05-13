@@ -130,15 +130,17 @@ void GDriveTest::getFolderTest( )
     curl_mockup_reset( );
 
     GDriveSession session = getTestSession( USERNAME, PASSWORD );    
-    static const string folderId ("aFolderId");
+    static const string folderId( "aFolderId" );
+    static const string parentId( "parentID" );
     string url = BASE_URL + "/files/" + folderId;
+    string parentUrl = BASE_URL + "/files/" + parentId;
+
     curl_mockup_addResponse( url.c_str( ), "",
                              "GET", "data/gdrive/folder.json", 200, true);
-    
-    libcmis::ObjectPtr obj = session.getObject( folderId );
- 
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
     // Check if we got the Folder object.
-    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
+    libcmis::FolderPtr folder = session.getFolder( folderId );
     CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
             NULL != folder );
 
@@ -146,8 +148,7 @@ void GDriveTest::getFolderTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "testFolder" ), folder->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
-    //TODO folder parent
-    // CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
  
     CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !folder->getCreatedBy( ).empty( ) );

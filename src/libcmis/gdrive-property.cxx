@@ -55,10 +55,16 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     // for some reason fileSize is recognized as string
     if ( key=="fileSize" ) 
         propertyType->setType( PropertyType::Integer );
-    
+
     setPropertyType( propertyType );    
     vector< string > values;
-    values.push_back( json.toString( ) );
+    
+    // take the parentId
+    if (key == "parents" )
+        values.push_back( json[0]["id"].toString( ) );
+    else 
+        values.push_back( json.toString( ) );
+
     setValues( values );
 }
 
