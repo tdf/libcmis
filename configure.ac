@@ -53,7 +53,16 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
-AC_LIBTOOL_WIN32_DLL
+LT_INIT([win32-dll disable-static pic-only])
+AC_CANONICAL_HOST
+
+# ==========================
+# Platform check for windows
+# ==========================
+AC_MSG_CHECKING([for native Win32])
+AS_CASE([$host], [*-*-mingw*], [native_win32=yes], [native_win32=no])
+AC_MSG_RESULT([$native_win32])
+AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 
 # TODO Check for docbook-to-man
 # =============
