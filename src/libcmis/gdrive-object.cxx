@@ -74,6 +74,7 @@ void GDriveObject::initializeFromJson ( Json json )
             }
         }
     }
+    m_refreshTimestamp = time( NULL );
 }
 
 GDriveSession* GDriveObject::getSession( )

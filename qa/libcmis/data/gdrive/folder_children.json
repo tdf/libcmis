@@ -1,0 +1,19 @@
+{
+ "kind": "drive#childrenList",
+ "etag": "A children etag",
+ "selfLink": "SelfLink",
+ "items": [
+  {
+   "kind": "drive#childrenReference",
+   "id": "aChildFolder",
+   "selfLink": "aSelfLink",
+   "childLink": "AchildrenLink",
+  },
+  {
+   "kind": "drive#childrenReference",
+   "id": "aChildDocument",
+   "selfLink": "aSelfLink2",
+   "childLink": "AchildrenLink2",
+  }
+ ]
+}

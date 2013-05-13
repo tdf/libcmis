@@ -98,7 +98,9 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     // Create folder objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
 	{
-		libcmis::FolderPtr parent( new GDriveFolder( getSession(), objs[i] ) );
+        string parentId = objs[i]["id"].toString( );
+		libcmis::ObjectPtr obj = getSession( )->getObject( parentId );
+        libcmis::FolderPtr parent = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
         parents.push_back( parent );
 	}
     return parents;

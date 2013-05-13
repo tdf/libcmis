@@ -56,7 +56,7 @@ static const string TOKEN_URL ( "https://token/url" );
 static const string SCOPE ( "https://scope/url" );
 static const string REDIRECT_URI ("redirect:uri" );
 static const string BASE_URL ( "https://base/url" );
-class GDriveMockTest : public CppUnit::TestFixture
+class GDriveTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
@@ -67,8 +67,11 @@ class GDriveMockTest : public CppUnit::TestFixture
         void getFolderTest( );
         void getDocumentParentsTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
+        void setContentStreamGdocTest( );
+        void getChildrenTest( );
 
-        CPPUNIT_TEST_SUITE( GDriveMockTest );
+        CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
@@ -76,14 +79,17 @@ class GDriveMockTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getDocumentParentsTest );
-        CPPUNIT_TEST( getContentStreamTest );        
+        CPPUNIT_TEST( getContentStreamTest ); 
+        CPPUNIT_TEST( setContentStreamTest );  
+        CPPUNIT_TEST( setContentStreamGdocTest );
+        CPPUNIT_TEST( getChildrenTest );     
         CPPUNIT_TEST_SUITE_END( );
 
     private:
         GDriveSession getTestSession( string username, string password );
 };
 
-void GDriveMockTest::getDocumentTest( )
+void GDriveTest::getDocumentTest( )
 {
     curl_mockup_reset( );
     static const string objectId ("aFileId");
@@ -119,7 +125,7 @@ void GDriveMockTest::getDocumentTest( )
 
 }
 
-void GDriveMockTest::getFolderTest( )
+void GDriveTest::getFolderTest( )
 {
     curl_mockup_reset( );
 
@@ -150,33 +156,39 @@ void GDriveMockTest::getFolderTest( )
     CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !folder->getLastModificationDate( ).is_not_a_date_time() );
 }
 
-void GDriveMockTest::getDocumentParentsTest( )
+void GDriveTest::getDocumentParentsTest( )
 {
     curl_mockup_reset( );
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
 
     static const string documentId( "aFileId" );
+    static const string parentId( "aFolderId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
                              "GET", "data/gdrive/document.json", 200, true);
+
+    string parentUrl = BASE_URL + "/files/" + parentId;
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
+
 
     libcmis::ObjectPtr object = session.getObject( "aFileId" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
  
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
     
-    string parentUrl = url + "/parents";
-    curl_mockup_addResponse( parentUrl.c_str( ), "",
+    string parentListUrl = url + "/parents";
+    curl_mockup_addResponse( parentListUrl.c_str( ), "",
                              "GET", "data/gdrive/document_parents.json", 200, true);
 
     vector< libcmis::FolderPtr > parents= document->getParents( );
  
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
     
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", string( "AParentId" ), parents[0]->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", string( "aFolderId" ), parents[0]->getId( ) );
 }
 
-void GDriveMockTest::getContentStreamTest( )
+void GDriveTest::getContentStreamTest( )
 {
     curl_mockup_reset( );
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
@@ -189,7 +201,6 @@ void GDriveMockTest::getContentStreamTest( )
     string downloadUrl = "https://downloadLink";
     curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
     
-     
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
@@ -209,7 +220,137 @@ void GDriveMockTest::getContentStreamTest( )
     }
 }
 
-void GDriveMockTest::getTypeTest( )
+void GDriveTest::setContentStreamTest( )
+{
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string documentId( "aFileId" );
+    const string uploadBaseUrl = "https://www.googleapis.com/upload/drive/v2/files/";
+
+    string url = BASE_URL + "/files/" + documentId;
+    string putUrl = uploadBaseUrl + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true);
+   
+       
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "PUT", "data/gdrive/document2.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "aFileName" );
+        document->setContentStream( os, "text/plain", filename );
+        
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+
+        // Check the content has been properly uploaded
+        const char* content = curl_mockup_getRequest( putUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void GDriveTest::setContentStreamGdocTest( )
+{
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string documentId( "aFileId" );
+    const string uploadBaseUrl = "https://www.googleapis.com/upload/drive/v2/files/";
+
+    string url = BASE_URL + "/files/" + documentId;
+    string putUrl = uploadBaseUrl + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document.json", 200, true);
+   
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    curl_mockup_addResponse( url.c_str( ), "convert=true",
+                               "PUT", "data/gdrive/document.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "convert=true", "PUT", "Updated", 0, false );
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "aFileName" );
+        document->setContentStream( os, "text/plain", filename );
+        
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+
+        // Check the content has been properly uploaded
+        const char* content = curl_mockup_getRequest( putUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void GDriveTest::getChildrenTest( )
+{
+    curl_mockup_reset( );
+
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );    
+    static const string folderId ("aFolderId");
+    string url = BASE_URL + "/files/" + folderId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
+    
+    string urlChildFolder = BASE_URL + "/files/" + string ("aChildFolder");
+    curl_mockup_addResponse( urlChildFolder.c_str( ), "",
+                             "GET", "data/gdrive/folder.json", 200, true);
+
+    string urlChildDocument = BASE_URL + "/files/" + string ("aChildDocument");
+    curl_mockup_addResponse( urlChildDocument.c_str( ), "",
+                             "GET", "data/gdrive/document.json", 200, true);
+    
+    libcmis::ObjectPtr obj = session.getObject( folderId );
+ 
+    // Check if we got the Folder object.
+    libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
+
+    CPPUNIT_ASSERT_MESSAGE( "Folder expected", folder != NULL );
+    
+    string childrenUrl = url + "/children";
+    curl_mockup_addResponse( childrenUrl.c_str( ), "",
+                             "GET", "data/gdrive/folder_children.json", 200, true);
+
+    vector< libcmis::ObjectPtr > children= folder->getChildren( );
+ 
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of children", size_t( 2 ), children.size() );
+    
+    int folderCount = 0;
+    int documentCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); ++it )
+    {
+        if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
+            ++folderCount;
+        else if ( NULL != boost::dynamic_pointer_cast< libcmis::Document >( *it ) )
+            ++documentCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children", 1, documentCount );
+}
+
+void GDriveTest::getTypeTest( )
 {
     curl_mockup_reset( );
  
@@ -221,7 +362,7 @@ void GDriveMockTest::getTypeTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched type", expectedId, actual->getId( ) );
 }
 
-void GDriveMockTest::getRepositoriesTest( )
+void GDriveTest::getRepositoriesTest( )
 {
      curl_mockup_reset( );
  
@@ -235,7 +376,7 @@ void GDriveMockTest::getRepositoriesTest( )
                                    actual.front()->getId( ) );
 }
 
-void GDriveMockTest::sessionAuthenticationTest( )
+void GDriveTest::sessionAuthenticationTest( )
 {
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string empty;
@@ -281,7 +422,7 @@ void GDriveMockTest::sessionAuthenticationTest( )
         session.m_oauth2Handler->getRefreshToken( ));
 }
 
-void GDriveMockTest::getObjectTest()
+void GDriveTest::getObjectTest()
 {
     static const string objectId ("aFileId");
 
@@ -296,7 +437,7 @@ void GDriveMockTest::getObjectTest()
                                                      obj->getId( ) );
 }
 
-GDriveSession GDriveMockTest::getTestSession( string username, string password )
+GDriveSession GDriveTest::getTestSession( string username, string password )
 {
     libcmis::OAuth2DataPtr oauth2(
         new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
@@ -325,4 +466,4 @@ GDriveSession GDriveMockTest::getTestSession( string username, string password )
     return GDriveSession( BASE_URL, username, password, oauth2, false );
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION( GDriveMockTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( GDriveTest );

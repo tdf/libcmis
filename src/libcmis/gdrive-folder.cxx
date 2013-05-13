@@ -74,7 +74,8 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     // Create children objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
     {   
-        libcmis::ObjectPtr child( new GDriveObject( getSession(), objs[i] ) );
+        string childId = objs[i]["id"].toString( );
+        libcmis::ObjectPtr child = getSession( )->getObject( childId );
         children.push_back( child );
     }   
     

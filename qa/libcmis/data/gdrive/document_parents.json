@@ -5,7 +5,7 @@
  "items": [
   {
    "kind": "drive#parentReference",
-   "id": "AParentId",
+   "id": "aFolderId",
    "selfLink": "aSelfLink",
    "parentLink": "AParentLink",
    "isRoot": true
