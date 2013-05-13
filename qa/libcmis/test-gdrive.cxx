@@ -72,6 +72,8 @@ class GDriveTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void getDocumentAllowableActionsTest( );
         void getFolderAllowableActionsTest( );
+        void checkOutTest( );
+        void checkInTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -87,6 +89,8 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getDocumentAllowableActionsTest );
         CPPUNIT_TEST( getFolderAllowableActionsTest );
+        CPPUNIT_TEST( checkOutTest );
+        CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -226,8 +230,7 @@ void GDriveTest::getContentStreamTest( )
 }
 
 void GDriveTest::setContentStreamTest( )
-{
-    
+{   
     curl_mockup_reset( );
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
 
@@ -487,6 +490,54 @@ void GDriveTest::getFolderAllowableActionsTest( )
     CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be false",
             actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
             !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
+}
+
+void GDriveTest::checkOutTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    string url = BASE_URL + "/files/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document.json", 200, true);
+    string expectedContent( "Test content stream" );
+    string downloadUrl = "https://downloadLink";
+    curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
+    
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    libcmis::DocumentPtr checkout = document->checkOut( );
+    CPPUNIT_ASSERT_MESSAGE( "CheckOut failed", NULL != checkout );
+}
+
+void GDriveTest::checkInTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string documentId( "aFileId" );
+    const string uploadBaseUrl = "https://www.googleapis.com/upload/drive/v2/files/";
+
+    string url = BASE_URL + "/files/" + documentId;
+    string putUrl = uploadBaseUrl + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true);
+   
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "PUT", "data/gdrive/document2.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+   
+    string expectedContent( "content stream" );
+    boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+    string filename( "aFileName" );
+
+    const PropertyPtrMap& properties = document->getProperties( );
+    libcmis::DocumentPtr checkIn = document->checkIn( true, "", properties, os, "text/plain", filename);
+    CPPUNIT_ASSERT_MESSAGE( "CheckIn failed", NULL != checkIn );
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )

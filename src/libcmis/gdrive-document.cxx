@@ -31,6 +31,7 @@
 #include "gdrive-session.hxx"
 
 using namespace std;
+using namespace libcmis;
 
 GDriveDocument::GDriveDocument( GDriveSession* session ) :
     libcmis::Object( session),
@@ -189,29 +190,35 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
 
 libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
 {
-    libcmis::DocumentPtr ptr;
-    // TODO implementation
-    return ptr;
+    // GDrive doesn't have CheckOut, so just return the same document here
+    libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
+    libcmis::DocumentPtr checkout =
+        boost::dynamic_pointer_cast< libcmis::Document > ( obj );
+    return checkout;
 }
 
 void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
-   // TODO implementation 
+    // Don't do anything since we don't have CheckOut
 }
 
 libcmis::DocumentPtr GDriveDocument::checkIn( 
     bool /*isMajor*/, 
     std::string /*comment*/,
-    const std::map< std::string, 
-    libcmis::PropertyPtr >& /*properties*/,
-    boost::shared_ptr< std::ostream > /*stream*/,
-    std::string /*contentType*/, 
-    std::string /*fileName*/ ) 
+    const PropertyPtrMap& /*properties*/,
+    boost::shared_ptr< std::ostream > stream,
+    std::string contentType, 
+    std::string fileName ) 
         throw ( libcmis::Exception )
-{
-    libcmis::DocumentPtr ptr;
-    // TODO implementation
-    return ptr;
+{     
+    // GDrive doesn't have CheckIn, so just upload the properties, 
+    // the content stream and fetch the new document resource.
+    // TODO updateProperties( properties );
+    setContentStream( stream, contentType, fileName );
+    libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
+    libcmis::DocumentPtr checkin = 
+        boost::dynamic_pointer_cast< libcmis::Document > ( obj );
+    return checkin;
 }
         
 
