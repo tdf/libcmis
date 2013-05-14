@@ -36,6 +36,8 @@
 #include "exception.hxx"
 #include "xml-utils.hxx"
 
+using namespace std;
+
 template <>
 Json::Json( const std::vector<Json>& arr ) :
     m_json( ::json_object_new_array( ) )

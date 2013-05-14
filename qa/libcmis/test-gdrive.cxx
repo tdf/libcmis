@@ -42,7 +42,7 @@
 #include "gdrive-object.hxx"
 #include "document.hxx"
 
-using std::string;
+using namespace std;
 using namespace libcmis;
 
 static const string CLIENT_ID ( "mock-id" );

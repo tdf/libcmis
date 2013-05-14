@@ -30,7 +30,7 @@
 #include "gdrive-property.hxx"
 #include "gdrive-allowable-actions.hxx"
 
-using std::string;
+using namespace std;
 
 GDriveObject::GDriveObject( GDriveSession* session ) :
     libcmis::Object( session )

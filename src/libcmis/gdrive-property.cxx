@@ -29,7 +29,7 @@
 #include "gdrive-property.hxx"
 #include "property-type.hxx"
 
-using std::string;
+using namespace std;
 using namespace libcmis;
 
 GDriveProperty::GDriveProperty( )

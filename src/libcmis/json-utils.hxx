@@ -33,13 +33,11 @@
 #include <map>
 #include <vector>
 
-using namespace std;
-
 class Json
 {
     public :
-        typedef std::map<std::string, Json> JsonObject ;
-        typedef std::vector<Json>			JsonVector ;
+        typedef std::map< std::string, Json > JsonObject ;
+        typedef std::vector< Json > JsonVector ;
         template <typename T> explicit Json( const T& val ) ;
 
         Json() ;
@@ -47,7 +45,7 @@ class Json
         Json( const char *str ) ;
         ~Json( ) ;
 
-        Json operator[]( string key ) const ;
+        Json operator[]( std::string key ) const ;
         Json operator[]( const std::size_t& index ) const ;
         Json& operator=( const Json& rhs ) ;
         friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
@@ -58,9 +56,9 @@ class Json
         
         void add( const std::string& key, const Json& json);
 
-        static Json parse( string str ) ;
+        static Json parse( std::string str ) ;
 
-        string toString( );
+        std::string toString( );
 
         enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string, json_datetime } ;
 
@@ -77,3 +75,4 @@ class Json
 } ;
 
 #endif /* _JSON_UTILS_HXX_ */
+

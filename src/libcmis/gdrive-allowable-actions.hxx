@@ -37,64 +37,64 @@ class GdriveAllowableActions: public libcmis::AllowableActions
         GdriveAllowableActions( bool isFolder ) : AllowableActions( )
         {
             m_states.clear( );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::DeleteObject, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::UpdateProperties, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetProperties, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetObjectRelationships, false ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetObjectParents, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::MoveObject, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CreateRelationship, false ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::ApplyPolicy, false ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetAppliedPolicies, false ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::RemovePolicy, false ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetACL, true ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::ApplyACL, true ) );
 
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetFolderTree, isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetFolderParent, isFolder) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetDescendants, isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::DeleteContentStream, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CheckOut, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CancelCheckOut, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CheckIn, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetContentStream, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::SetContentStream, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetAllVersions, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::AddObjectToFolder, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::RemoveObjectFromFolder, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetRenditions, !isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::GetChildren, isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CreateDocument, isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::CreateFolder, isFolder ) );
-            m_states.insert( pair< libcmis::ObjectAction::Type, bool> (
+            m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::DeleteTree, isFolder ) );
         }
 };

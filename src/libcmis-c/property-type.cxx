@@ -50,7 +50,7 @@ libcmis_PropertyTypePtr libcmis_vector_property_type_get( libcmis_vector_propert
     if ( vector != NULL && i < vector->handle.size( ) )
     {
         libcmis::PropertyTypePtr type = vector->handle[i];
-        item = new ( nothrow ) libcmis_property_type( );
+        item = new ( std::nothrow ) libcmis_property_type( );
         if ( item )
             item->handle = type;
     }

@@ -29,6 +29,8 @@
 #include "internals.hxx"
 #include "repository.h"
 
+using std::nothrow;
+
 void libcmis_vector_repository_free( libcmis_vector_Repository_Ptr vector )
 {
     delete vector;
