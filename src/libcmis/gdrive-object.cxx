@@ -78,9 +78,8 @@ void GDriveObject::initializeFromJson ( Json json )
     m_refreshTimestamp = time( NULL );
     
     // Create AllowableActions
-    bool isFolder = false;
-    if ( json["mimeType"].toString( ) == "application/vnd.google-apps.folder" ) 
-        isFolder = true;
+    bool isFolder =
+        json["mimeType"].toString( ) == "application/vnd.google-apps.folder";
     m_allowableActions.reset( new GdriveAllowableActions( isFolder ) );
 }
 

@@ -501,9 +501,6 @@ void GDriveTest::checkOutTest( )
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
                                "GET", "data/gdrive/document.json", 200, true);
-    string expectedContent( "Test content stream" );
-    string downloadUrl = "https://downloadLink";
-    curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
     
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
