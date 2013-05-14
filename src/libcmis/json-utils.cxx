@@ -49,6 +49,14 @@ Json::Json( const std::vector<Json>& arr ) :
         add( *i ) ;
 }
 
+Json::Json( ) :
+	m_json( ::json_object_new_object() ),
+    m_type( json_object )
+{
+	if ( m_json == 0 )
+        throw libcmis::Exception(" Can not create json object " );
+}
+
 Json::Json( const char *str ) :
     m_json( ::json_object_new_string( str ) ),
     m_type( json_string )

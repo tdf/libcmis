@@ -258,6 +258,10 @@ void GDriveTest::setContentStreamTest( )
         
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
+        // Check if metadata has been properly uploaded
+        const char* meta = curl_mockup_getRequest( url.c_str( ), "", "PUT" );
+        string expectedMeta = "{ \"title\": \"" + filename + "\"" + " }";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad meta uploaded", expectedMeta, string( meta ) );
         // Check the content has been properly uploaded
         const char* content = curl_mockup_getRequest( putUrl.c_str( ), "", "PUT" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );

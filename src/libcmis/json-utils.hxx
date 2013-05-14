@@ -44,7 +44,7 @@ class Json
         enum Type { json_null, json_bool, json_double, json_int, json_object, 
             json_array, json_string, json_datetime } ;
 
-        Json() ;
+        Json( ) ;
         Json( const Json& copy ) ;
         Json( const char *str ) ;
         Json( const libcmis::PropertyPtr& property ) ;

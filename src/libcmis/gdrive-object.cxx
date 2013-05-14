@@ -108,7 +108,7 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPutRequest( getSession( )->getBaseUrl( ), is, headers );
+        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
     }
     catch ( const CurlException& e )
     {   

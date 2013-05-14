@@ -29,6 +29,7 @@
 #include "gdrive-document.hxx"
 #include "gdrive-folder.hxx"
 #include "gdrive-session.hxx"
+#include "json-utils.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -147,12 +148,11 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     // Update file name meta information
     if ( !fileName.empty( ) )
     {
-        string uploadStr;
-        uploadStr += "{\n";
-        uploadStr += "\"title\": \"" + fileName + "\"";
-        uploadStr += "\n}";
+        Json metaJson;
+        Json fileJson( fileName.c_str( ) );
+        metaJson.add("title", fileJson );
 
-        std::istringstream is( uploadStr );
+        std::istringstream is( metaJson.toString( ) );
         vector<string> headers;
         headers.push_back( string( "Content-Type: " ) + "application/json" );
         try
@@ -201,7 +201,7 @@ void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
 libcmis::DocumentPtr GDriveDocument::checkIn( 
     bool /*isMajor*/, 
     std::string /*comment*/,
-    const PropertyPtrMap& /*properties*/,
+    const PropertyPtrMap& properties,
     boost::shared_ptr< std::ostream > stream,
     std::string contentType, 
     std::string fileName ) 
@@ -209,7 +209,7 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
 {     
     // GDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
-    // TODO updateProperties( properties );
+    updateProperties( properties );
     setContentStream( stream, contentType, fileName );
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
     libcmis::DocumentPtr checkin = 
