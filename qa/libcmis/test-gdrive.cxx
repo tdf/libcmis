@@ -380,7 +380,7 @@ void GDriveTest::getRepositoriesTest( )
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), 
                                    actual.size( ) );
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
-                                   string ( "Google Drive repository" ),
+                                   string ( "GoogleDrive" ),
                                    actual.front()->getId( ) );
 }
 

@@ -34,6 +34,7 @@
 #include "gdrive-document.hxx"
 #include "gdrive-folder.hxx"
 #include "object-type.hxx"
+#include "gdrive-repository.hxx"
 
 using std::string;
 using std::istringstream;
@@ -50,7 +51,7 @@ GDriveSession::GDriveSession ( string baseUrl,
 {
     if ( oauth2 && oauth2->isComplete( ) ){
         setOAuth2Data( oauth2 );
-        // Add the dummy repository
+        // Add the repository
         m_repositories.push_back( getRepository( ) );
     }
 }
@@ -240,8 +241,8 @@ libcmis::RepositoryPtr GDriveSession::getRepository( )
     throw ( libcmis::Exception )
 {
     // Return a dummy repository since GDrive doesn't have that notion
-    libcmis::RepositoryPtr ptr( new libcmis::DummyRepository( "Google Drive repository", "/files/root" ));
-    return ptr;
+    libcmis::RepositoryPtr repo( new GdriveRepository( ) );
+    return repo;
 }
 
 libcmis::ObjectPtr GDriveSession::getObject( string objectId )
