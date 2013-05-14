@@ -1,0 +1,60 @@
+{
+ "kind": "drive#file",
+ "id": "aFileId",
+ "etag": "\"an example tag\"",
+ "selfLink": "fileSelfLink",
+ "title": "a file title",
+ "mimeType": "application/vnd.google-apps.form",
+ "labels": {
+  "starred": false,
+  "hidden": false,
+  "trashed": false,
+  "restricted": false,
+  "viewed": true
+ },
+ "createdDate": "2010-04-28T14:53:23.141Z",
+ "modifiedDate": "2010-09-30T21:01:37.504Z",
+ "lastViewedByMeDate": "2013-02-26T15:40:30.404Z",
+ "intTest": "-123",
+ "doubleTest": "-123.456",
+ "parents": [
+  {
+   "kind": "drive#parentReference",
+   "id": "parentId",
+   "selfLink": "parentSelfLink",
+   "parentLink": "parentLink",
+   "isRoot": true
+  }
+ ],
+ "exportLinks": {
+  "application/pdf": "pdflink",
+  "application/x-vnd.oasis.opendocument.spreadsheet": "opendocumentlinks",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlslink"
+ },
+ "userPermission": {
+  "kind": "drive#permission",
+  "id": "me",
+  "role": "owner",
+  "type": "user"
+ },
+ "quotaBytesUsed": "0",
+ "ownerNames": [
+  "Owner Real Name"
+ ],
+ "owners": [
+  {
+   "kind": "drive#user",
+   "displayName": "Mock file owner",
+   "isAuthenticatedUser": true,
+  }
+ ],
+ "lastModifyingUserName": "Mock user",
+ "lastModifyingUser": {
+  "kind": "drive#user",
+  "displayName": "User name",
+  "isAuthenticatedUser": false,
+ },
+ "editable": true,
+ "writersCanShare": true,
+ "shared": true
+}

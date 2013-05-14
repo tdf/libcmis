@@ -39,6 +39,8 @@ class Json
         typedef std::map< std::string, Json > JsonObject ;
         typedef std::vector< Json > JsonVector ;
         template <typename T> explicit Json( const T& val ) ;
+        enum Type { json_null, json_bool, json_double, json_int, json_object, 
+            json_array, json_string, json_datetime } ;
 
         Json() ;
         Json( const Json& copy ) ;
@@ -56,12 +58,9 @@ class Json
         
         void add( const std::string& key, const Json& json);
 
-        static Json parse( std::string str ) ;
-
-        std::string toString( );
-
-        enum Type { json_null, json_bool, json_double, json_int, json_object, json_array, json_string, json_datetime } ;
-
+        static Json parse( const std::string& str );
+        
+        std::string toString( ) const;
         Type getDataType( ) const ;
 
         int getLength( ) const;
@@ -71,7 +70,10 @@ class Json
 
     private :
         Json( struct json_object *json ) ;
-        struct json_object  *m_json ;
+        struct json_object *m_json ;
+        Type m_type;
+        
+        Type parseType( );
 } ;
 
 #endif /* _JSON_UTILS_HXX_ */

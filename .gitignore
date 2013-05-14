@@ -23,6 +23,7 @@ libcmis-*.*.*.tar.gz
 test-nosrv-utils
 test-nosrv-mockup
 test-nosrv-gdrive
+test-nosrv-json
 test-atom
 test-ws
 test-api

@@ -37,10 +37,12 @@
 #include "xml-utils.hxx"
 
 using namespace std;
+using namespace libcmis;
 
 template <>
 Json::Json( const std::vector<Json>& arr ) :
-    m_json( ::json_object_new_array( ) )
+    m_json( ::json_object_new_array( ) ),
+    m_type( json_array )
 {
     for ( std::vector<Json>::const_iterator i = arr.begin() ; 
                                         i != arr.end() ; ++i )
@@ -48,21 +50,32 @@ Json::Json( const std::vector<Json>& arr ) :
 }
 
 Json::Json( const char *str ) :
-    m_json( ::json_object_new_string( str ) )
+    m_json( ::json_object_new_string( str ) ),
+    m_type( json_string )
 {
     if ( m_json == 0 )
-        throw libcmis::Exception(
-                " Can not create json object from string + str::string(str) " );
+        throw libcmis::Exception(" Can not create json object from string " );
+    m_type = parseType( );
 }
 
 Json::Json( struct json_object *json ) :
-    m_json( json )
+    m_json( json ),
+    m_type( json_object )
 {
-    ::json_object_get( m_json ) ;
+    try
+    {
+        ::json_object_get( m_json ) ;
+    }
+    catch (...)
+    {
+        throw libcmis::Exception(" Can not create Json object" );
+    }
+    m_type = parseType( );
 }
 
 Json::Json( const Json& copy ) :
-    m_json( copy.m_json )
+    m_json( copy.m_json ),
+    m_type( copy.m_type )
 {
     assert( m_json != 0 ) ;
     ::json_object_get( m_json ) ;
@@ -70,7 +83,8 @@ Json::Json( const Json& copy ) :
 
 template <>
 Json::Json( const JsonObject& obj ) :
-    m_json( ::json_object_new_object() )
+    m_json( ::json_object_new_object() ),
+    m_type( json_array )
 {
     if ( m_json == 0 )
         throw libcmis::Exception( string( "cannot create json object" ) ) ;
@@ -78,8 +92,6 @@ Json::Json( const JsonObject& obj ) :
     for ( JsonObject::const_iterator i = obj.begin() ; i != obj.end() ; ++i )
         add( i->first, i->second ) ;
 }
-
-
 
 Json::~Json( )
 {
@@ -114,7 +126,6 @@ void Json::add( const std::string& key, const Json& json )
     ::json_object_object_add( m_json, key.c_str(), json.m_json ) ; 
 }
 
-
 Json Json::operator[]( const std::size_t& index ) const
 {
     struct json_object *json = ::json_object_array_get_idx( m_json, index ) ;
@@ -144,7 +155,7 @@ void Json::add( const Json& json )
     ::json_object_array_add( m_json, json.m_json ) ;
 }
 
-Json Json::parse( string str )
+Json Json::parse( const string& str )
 {
     struct json_object *json = ::json_tokener_parse( str.c_str() ) ;
     return Json( json) ;
@@ -153,8 +164,6 @@ Json Json::parse( string str )
 Json::JsonObject Json::getObjects( )
 {
     JsonObject objs;
-
-    
     for(struct lh_entry *entry = json_object_get_object(m_json)->head; entry; 
                                                         entry = entry->next )
     {
@@ -164,21 +173,71 @@ Json::JsonObject Json::getObjects( )
             struct json_object* val = (struct json_object*)entry->v; 
             objs.insert( JsonObject::value_type(key, Json( val ) ) );
         }
-        
     }
     return objs ;
 }
-Json::Type Json::getDataType() const
+
+Json::Type Json::parseType( )
 {
+    if ( m_json == NULL ) 
+        return json_null;
     Type type =static_cast<Type>( ::json_object_get_type( m_json ) );
+    string str = toString( );
     if ( type == json_string )
     {
         boost::posix_time::ptime time = libcmis::parseDateTime( 
                                         json_object_get_string( m_json ) );
         if ( !time.is_not_a_date_time( ) )
-            return json_datetime;
+            type = json_datetime;
+        else
+        {
+            Type backupType = type;
+            type = json_bool;
+            try
+            {
+                parseBool( str );
+            }
+            catch (...)
+            {
+                type = backupType;
+            }
+            if ( type != json_bool )
+            {
+                if ( str.find('.') == string::npos )
+                {
+                    backupType = type;
+                    type = json_int;
+                    try
+                    {
+                        parseInteger( str );
+                    }
+                    catch(...) 
+                    { 
+                        type = backupType;
+                    }
+                }
+                else
+                {
+                    backupType = type;
+                    type = json_double;
+                    try
+                    {
+                        parseDouble( str );
+                    }
+                    catch(...) 
+                    { 
+                        type = backupType;
+                    }
+                }
+            }
+        }   
     }
     return type;
+}
+
+Json::Type Json::getDataType( ) const
+{
+    return m_type;
 }
 
 int Json::getLength( ) const
@@ -186,9 +245,10 @@ int Json::getLength( ) const
     return ::json_object_array_length( m_json );
 }
 
-string Json::toString()
+string Json::toString( ) const
 {
     // Return an empty string if the object doesn't exist
     if ( m_json == NULL ) return string( );
     return ::json_object_get_string( m_json ) ;
 }
+
