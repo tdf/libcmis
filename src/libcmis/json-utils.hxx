@@ -33,6 +33,8 @@
 #include <map>
 #include <vector>
 
+#include "property.hxx"
+
 class Json
 {
     public :
@@ -45,6 +47,9 @@ class Json
         Json() ;
         Json( const Json& copy ) ;
         Json( const char *str ) ;
+        Json( const libcmis::PropertyPtr& property ) ;
+        Json( const libcmis::PropertyPtrMap& properties ) ;
+
         ~Json( ) ;
 
         Json operator[]( std::string key ) const ;
@@ -62,6 +67,7 @@ class Json
         
         std::string toString( ) const;
         Type getDataType( ) const ;
+        std::string getStrType( ) const ;
 
         int getLength( ) const;
 

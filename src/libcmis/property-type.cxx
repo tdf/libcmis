@@ -28,6 +28,7 @@
 
 #include "property-type.hxx"
 #include "xml-utils.hxx"
+#include "json-utils.hxx"
 
 using namespace std;
 
@@ -170,25 +171,22 @@ namespace libcmis
         return *this;
     }
 
-    void PropertyType::setTypeFromJsonType( Json::Type jsonType )
+    void PropertyType::setTypeFromJsonType( string jsonType )
     {
-        if ( jsonType == Json::json_bool )
+        if ( jsonType == "json_bool" )
             m_type = Bool;
-        else if ( jsonType == Json::json_double )
+        else if ( jsonType == "json_double" )
             m_type = Decimal;
-        else if ( jsonType == Json::json_int )
+        else if ( jsonType == "json_int" )
             m_type = Integer;
-        else if ( jsonType == Json::json_string )
+        else if ( jsonType == "json_string" )
             m_type = String;
-        else if ( jsonType == Json::json_datetime )
+        else if ( jsonType == "json_datetime" )
             m_type = DateTime;
-        else if ( jsonType == Json::json_object )
+        else if ( jsonType == "json_object" )
             m_type = String;
-        else if ( jsonType == Json::json_array )
-        {
-            // TODO multivalue
+        else if ( jsonType == "json_array" )
             m_type = String;
-        }
         else m_type = String;
 
     }

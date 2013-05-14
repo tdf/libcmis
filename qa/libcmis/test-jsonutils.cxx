@@ -39,18 +39,25 @@
 
 #include <mockup-config.h>
 #include "json-utils.hxx"
+#include "property.hxx"
+#include "property-type.hxx"
 
 using namespace std;
+using namespace libcmis;
 
 class JsonTest : public CppUnit::TestFixture
 {
     public:
         void parseTest( );
         void parseTypeTest( );
+        void createFromPropertyTest( );
+        void createFromPropertiesTest( );
 
         CPPUNIT_TEST_SUITE( JsonTest );
         CPPUNIT_TEST( parseTest );
-        CPPUNIT_TEST( parseTypeTest );    
+        CPPUNIT_TEST( parseTypeTest );
+        CPPUNIT_TEST( createFromPropertyTest );
+        CPPUNIT_TEST( createFromPropertiesTest );  
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -114,6 +121,39 @@ void JsonTest::parseTypeTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong datetime type", Json::json_datetime, dateTimeType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object type", Json::json_object, objectType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong array type", Json::json_array, arrayType );   
+}
+
+void JsonTest::createFromPropertyTest( )
+{
+    vector< string > values;
+    string expected("Value 1" ); 
+    values.push_back( expected );
+
+    PropertyTypePtr propertyType( new PropertyType( ) );
+
+    PropertyPtr property( new Property( propertyType, values ) );
+
+    Json json( property );
+
+    CPPUNIT_ASSERT_EQUAL( expected, json.toString( ) );  
+}
+
+void JsonTest::createFromPropertiesTest( )
+{
+    vector< string > values;
+    string expected( "value" );
+    values.push_back( "value" );
+
+    PropertyTypePtr propertyType( new PropertyType( ) );
+
+    PropertyPtr property( new libcmis::Property( propertyType, values ) );
+    
+    PropertyPtrMap properties;
+    properties[ "key" ] = property;
+    
+    Json json( properties );
+
+    CPPUNIT_ASSERT_EQUAL( expected, json["key"].toString( ) ); 
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( JsonTest );

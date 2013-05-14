@@ -88,19 +88,6 @@ GDriveSession* GDriveObject::getSession( )
     return dynamic_cast< GDriveSession* > ( m_session );
 }
 
-Json GDriveObject::convertPropertiesToJson( const PropertyPtrMap& properties )
-{
-    Json::JsonObject objs;
-    for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
-            it != properties.end() ; ++it )
-    {
-        Json json = it->second->toJson( );
-        objs.insert( pair< string, Json> (it->first, json ) ) ;
-    }
-    Json json( objs );
-    return json;
-}
-
 void GDriveObject::refreshImpl( Json json )
 {
     m_typeDescription.reset( );
@@ -111,7 +98,7 @@ void GDriveObject::refreshImpl( Json json )
 libcmis::ObjectPtr GDriveObject::updateProperties(
         const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {
-    Json json = convertPropertiesToJson( properties );
+    Json json( properties );
 
     istringstream is( json.toString( ));
 
@@ -143,7 +130,7 @@ void GDriveObject::refresh( ) throw ( libcmis::Exception )
     try
     {
         string url = getSession( )->getBaseUrl( ) + "/files/" + getId( );
-       res  = getSession()->httpGetRequest( url )->getStream( )->str( );
+        res  = getSession()->httpGetRequest( url )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {

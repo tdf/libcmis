@@ -32,7 +32,8 @@
 #include <libxml/tree.h>
 
 #include <string>
-#include "json-utils.hxx"
+
+class Json;
 
 namespace libcmis
 {
@@ -109,7 +110,7 @@ namespace libcmis
             void setOpenChoice( bool openChoice ) { m_openChoice = openChoice; }
 
             void setTypeFromXml( std::string typeStr );
-            void setTypeFromJsonType( Json::Type jsonType );
+            void setTypeFromJsonType( std::string jsonType );
     };
     typedef ::boost::shared_ptr< PropertyType > PropertyTypePtr;
 }

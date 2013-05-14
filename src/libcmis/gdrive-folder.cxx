@@ -103,7 +103,7 @@ string GDriveFolder::uploadProperties( const PropertyPtrMap& properties )
     addStringProperty( addedProperties, "parents", parentStr );
 
     // TODO doesn't work correctly at the moment.
-    Json uploadJson = convertPropertiesToJson( addedProperties );
+    Json uploadJson( addedProperties );
     
     std::istringstream is( uploadJson.toString( ) );
     string title = uploadJson["title"].toString();

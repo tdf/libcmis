@@ -73,6 +73,31 @@ Json::Json( struct json_object *json ) :
     m_type = parseType( );
 }
 
+Json::Json( const PropertyPtr& property ):
+    m_json( ::json_object_new_object() ),
+    m_type( json_object )
+{
+    string str = property->toString( );
+    m_json = ::json_object_new_string( str.c_str( ) );
+    m_type = parseType( );
+}
+
+Json::Json( const PropertyPtrMap& properties ) :
+    m_json( ::json_object_new_object() ),
+    m_type( json_array )
+{
+     if ( m_json == 0 )
+        throw libcmis::Exception( string( "cannot create json object" ) ) ;
+
+    for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
+            it != properties.end() ; ++it )
+        {
+            string key = it->first;
+            Json value( it->second );
+            add( key, value ) ;
+        }
+}
+
 Json::Json( const Json& copy ) :
     m_json( copy.m_json ),
     m_type( copy.m_type )
@@ -238,6 +263,22 @@ Json::Type Json::parseType( )
 Json::Type Json::getDataType( ) const
 {
     return m_type;
+}
+
+std::string Json::getStrType( ) const
+{
+    switch ( m_type )
+    {
+        case json_null: return "json_null";
+        case json_bool: return "json_bool";
+        case json_int:  return "json_int";
+        case json_double: return "json_double";
+        case json_string: return "json_string";
+        case json_datetime: return "json_datetime";
+        case json_object: return "json_object";
+        case json_array: return "json_array";
+    }
+    return "json_string";   
 }
 
 int Json::getLength( ) const

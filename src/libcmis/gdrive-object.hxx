@@ -54,8 +54,6 @@ class GDriveObject : public virtual libcmis::Object
         void initializeFromJson( Json json );
         void refreshImpl( Json json );
 
-        Json convertPropertiesToJson( const libcmis::PropertyPtrMap& properties );
-
         virtual boost::shared_ptr< Object > updateProperties(
             const libcmis::PropertyPtrMap& properties )
                 throw ( libcmis::Exception );
