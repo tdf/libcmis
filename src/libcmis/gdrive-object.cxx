@@ -129,8 +129,7 @@ void GDriveObject::refresh( ) throw ( libcmis::Exception )
     string res;
     try
     {
-        string url = getSession( )->getBaseUrl( ) + "/files/" + getId( );
-        res  = getSession()->httpGetRequest( url )->getStream( )->str( );
+        res  = getSession()->httpGetRequest( getUrl( ) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -150,4 +149,14 @@ void GDriveObject::move( boost::shared_ptr< libcmis::Folder > /*source*/,
 {
     // TODO Implement me
 }
+
+string GDriveObject::getUrl( )
+{
+    return getSession( )->getBaseUrl( ) + "/files/" + getId( );
+}
+
+string GDriveObject::getUploadUrl( )
+{
+    return "https://www.googleapis.com/upload/drive/v2/files/";
+}   
 

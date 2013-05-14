@@ -81,8 +81,7 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
-    string parentUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
-                                                                "/parents";    
+    string parentUrl = getUrl( ) + "/parents";    
     // Run the http request to get the properties definition
     string res;
     try
@@ -128,9 +127,6 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
                                        bool /*overwrite*/ ) 
                                             throw ( libcmis::Exception )
 {
-    // Google defines a specific URL to update media
-    static const string uploadBaseUrl = 
-        "https://www.googleapis.com/upload/drive/v2/files/";
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
@@ -138,8 +134,8 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         throw libcmis::Exception( string ( "Document " + getId( )+ 
                                     " is not editable" ) );
 
-    string putUrl = uploadBaseUrl + getId( );
-    string metaUrl = getSession()->getBaseUrl() + "/files/" + getId( );
+    string putUrl = getUploadUrl( ) + getId( );
+    string metaUrl = getUrl( );
 
     // If it's a Google document, convert it 
     if ( m_isGoogleDoc )
@@ -226,8 +222,7 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     throw ( libcmis::Exception )
 {   
     vector< libcmis::DocumentPtr > revisions;
-    string versionUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
-                                                            "revisions";
+    string versionUrl = getUrl( ) + "/revisions";
     // Run the http request to get the properties definition
     string res;
     try

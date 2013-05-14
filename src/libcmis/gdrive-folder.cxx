@@ -57,8 +57,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 {
     vector< libcmis::ObjectPtr > children;
     
-    string childrenUrl = getSession( )->getBaseUrl() + "/files/" + getId( ) + 
-                                                                "/children";    
+    string childrenUrl = getUrl( ) + "/children";    
     string res;
     try
     {
@@ -146,8 +145,6 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     string contentType, string fileName ) 
     throw ( libcmis::Exception )
 {    
-    static const string uploadUrl = 
-        "https://www.googleapis.com/upload/drive/v2/files/";
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
@@ -164,7 +161,7 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     string response;
     try
     {
-        response = getSession()->httpPostRequest( uploadUrl, *is, contentType )
+        response = getSession()->httpPostRequest( getUploadUrl( ), *is, contentType )
                                     ->getStream( )->str( );
     }
     catch ( const CurlException& e )

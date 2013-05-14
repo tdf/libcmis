@@ -53,6 +53,9 @@ class GDriveObject : public virtual libcmis::Object
 
         void initializeFromJson( Json json );
         void refreshImpl( Json json );
+    
+        std::string getUrl( );
+        std::string getUploadUrl( );
 
         virtual boost::shared_ptr< Object > updateProperties(
             const libcmis::PropertyPtrMap& properties )
