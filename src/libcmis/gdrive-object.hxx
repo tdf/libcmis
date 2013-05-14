@@ -52,6 +52,7 @@ class GDriveObject : public virtual libcmis::Object
         GDriveObject& operator=( const GDriveObject& copy );
 
         void initializeFromJson( Json json );
+        void refreshImpl( Json json );
 
         Json convertPropertiesToJson( const libcmis::PropertyPtrMap& properties );
 

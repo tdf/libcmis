@@ -101,9 +101,11 @@ Json GDriveObject::convertPropertiesToJson( const PropertyPtrMap& properties )
     return json;
 }
 
-void refreshImpl( Json /*json*/ )
+void GDriveObject::refreshImpl( Json json )
 {
-    // TODO refresh properties
+    m_typeDescription.reset( );
+    m_properties.clear( );
+    initializeFromJson( json );
 }
 
 libcmis::ObjectPtr GDriveObject::updateProperties(
@@ -129,16 +131,26 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     Json jsonRes = Json::parse( res );
     libcmis::ObjectPtr updated( new GDriveObject ( getSession( ), jsonRes ) );
 
-     if ( updated->getId( ) == getId( ) )
+    if ( updated->getId( ) == getId( ) )
          refreshImpl( jsonRes );
 
     return updated;
 }
 
-
 void GDriveObject::refresh( ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    string res;
+    try
+    {
+        string url = getSession( )->getBaseUrl( ) + "/files/" + getId( );
+       res  = getSession()->httpGetRequest( url )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    Json json = Json::parse( res );
+    refreshImpl( json );
 }
 
 void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
