@@ -155,7 +155,6 @@ void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
 
 Json GDriveObject::createJsonFromParentId( const string& parentId )
 {
-    Json parentsJson;
     Json parentValue( parentId.c_str( ) );
     
     // parents is a Json array
@@ -166,8 +165,8 @@ Json GDriveObject::createJsonFromParentId( const string& parentId )
     parents.insert( parents.begin( ), firstParent );
     
     Json parentsValue( parents );
-    parentsJson.add( "parents", parentsValue);
-    return parentsJson;
+
+    return parentsValue;
 }
 
 void GDriveObject::move( FolderPtr /*source*/,
@@ -178,7 +177,8 @@ void GDriveObject::move( FolderPtr /*source*/,
     
     // to move object, change its parent id
 
-    Json parent = createJsonFromParentId( destination->getId( ) );
+    Json parent;
+    parent.add( "parents", createJsonFromParentId( destination->getId( ) ) );
     istringstream is( parent.toString( ));
 
     libcmis::HttpResponsePtr response;

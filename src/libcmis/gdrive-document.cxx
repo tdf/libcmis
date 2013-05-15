@@ -122,6 +122,40 @@ boost::shared_ptr< istream > GDriveDocument::getContentStream( )
     return stream;
 }
 
+void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os, 
+                                   string contentType )
+                                throw ( libcmis::Exception )
+{
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
+    if ( !isImmutable( ) )
+        throw libcmis::Exception( string ( "Document " + getId( )+ 
+                                    " is not editable" ) );
+    string putUrl = getUploadUrl( ) + getId( );
+    
+    // If it's a Google document, convert it 
+    if ( m_isGoogleDoc )
+        putUrl  += "?convert=true";
+
+    // Upload stream
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+    vector <string> headers;
+    headers.push_back( string( "Content-Type: " ) + contentType );
+    try
+    {
+        getSession()->httpPutRequest( putUrl, *is, headers );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    long httpStatus = getSession( )->getHttpStatus( );
+    if ( httpStatus < 200 || httpStatus >= 300 )
+        throw libcmis::Exception( "Document content wasn't set for"
+                "some reason" );
+    refresh( );
+}
+
 void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
                                        string contentType, 
                                        string fileName, 
@@ -134,16 +168,11 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     if ( !isImmutable( ) )
         throw libcmis::Exception( string ( "Document " + getId( )+ 
                                     " is not editable" ) );
-
-    string putUrl = getUploadUrl( ) + getId( );
     string metaUrl = getUrl( );
 
     // If it's a Google document, convert it 
     if ( m_isGoogleDoc )
-    {
-        putUrl  += "?convert=true";
         metaUrl += "?convert=true";
-    }
 
     // Update file name meta information
     if ( !fileName.empty( ) )
@@ -166,22 +195,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     }
 
     // Upload stream
-    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-    vector <string> headers;
-    headers.push_back( string( "Content-Type: " ) + contentType );
-    try
-    {
-        getSession()->httpPutRequest( putUrl, *is, headers );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-    long httpStatus = getSession( )->getHttpStatus( );
-    if ( httpStatus < 200 || httpStatus >= 300 )
-        throw libcmis::Exception( "Document content wasn't set for"
-                "some reason" );
-    refresh( );
+    uploadStream( os, contentType );
 }
 
 libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )

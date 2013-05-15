@@ -75,7 +75,9 @@ class GDriveTest : public CppUnit::TestFixture
         void checkOutTest( );
         void checkInTest( );
         void deleteTest( );
-        void moveTest( );        
+        void moveTest( );
+        void createDocumentTest( );
+        void createFolderTest( );    
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -95,6 +97,8 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -245,7 +249,6 @@ void GDriveTest::setContentStreamTest( )
     string putUrl = uploadBaseUrl + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
                                "GET", "data/gdrive/document2.json", 200, true);
-   
        
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
@@ -595,6 +598,97 @@ void GDriveTest::moveTest( )
     string newParentId = parentJson["parents"][0]["id"].toString( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", 
                                   desId, newParentId);
+}
+
+void GDriveTest::createDocumentTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string documentId( "aFileId" );
+    const string folderId( "aFolderId" );
+
+    const string folderUrl = BASE_URL + "/files/" + folderId;
+    const string metaUrl = BASE_URL + "/files/";
+    const string uploadBaseUrl = "https://www.googleapis.com/upload/drive/v2/files/";
+    string uploadUrl = uploadBaseUrl + documentId;
+    string documentUrl = metaUrl + documentId;
+
+    curl_mockup_addResponse( folderUrl.c_str( ), "", 
+                               "GET", "data/gdrive/folder.json", 200, true );
+    curl_mockup_addResponse( metaUrl.c_str( ), "",
+                               "POST", "data/gdrive/document.json", 200, true );
+    curl_mockup_addResponse( uploadUrl.c_str( ), "",
+                               "PUT", "updated", 0, false );
+    curl_mockup_addResponse( documentUrl.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true);
+    
+    libcmis::FolderPtr parent = session.getFolder( folderId );
+
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "aFileName" );
+        PropertyPtrMap properties;
+        
+        // function to test
+        parent->createDocument( properties, os, "text/plain", filename );
+
+        const char* createRequest = curl_mockup_getRequest( metaUrl.c_str( ), "", "POST" );
+        Json request = Json::parse( string( createRequest ) );
+        string sentParentId = request["parents"][0]["id"].toString( );
+        string sentFilename = request["title"].toString( );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad parents sent", folderId, sentParentId );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad filename sent", filename, sentFilename );
+
+        const char* content = curl_mockup_getRequest( uploadUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void GDriveTest::createFolderTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string folderId( "aFolderId" );
+
+    const string folderUrl = BASE_URL + "/files/" + folderId;
+    const string metaUrl = BASE_URL + "/files";
+   
+    curl_mockup_addResponse( folderUrl.c_str( ), "", 
+                               "GET", "data/gdrive/folder.json", 200, true );
+    curl_mockup_addResponse( metaUrl.c_str( ), "",
+                               "POST", "data/gdrive/folder2.json", 200, true );    
+    libcmis::FolderPtr parent = session.getFolder( folderId );
+    try
+    {       
+        PropertyPtrMap properties;
+        
+        // function to test
+        parent->createFolder( properties );
+
+        const char* createRequest = curl_mockup_getRequest( metaUrl.c_str( ), "", "POST" );
+        Json request = Json::parse( string( createRequest ) );
+
+        string sentParentId = request["parents"][0]["id"].toString( );
+        string sentMimeType = request["mimeType"].toString( );
+        string expectedMimeType( "application/vnd.google-apps.folder" );
+     
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad parents sent", folderId, sentParentId );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad mimeType", expectedMimeType, sentMimeType );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )

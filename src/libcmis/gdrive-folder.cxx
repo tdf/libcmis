@@ -81,32 +81,16 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     return children;
 }
 
-void addStringProperty( PropertyPtrMap& properties,
-                string key,
-                string value )
-{
-    Json json = Json::parse( "\""+ value + "\"" );
-    PropertyPtr property( new GDriveProperty( key, json ) );
-    properties[ key ] = property;
-}
-
-string GDriveFolder::uploadProperties( const PropertyPtrMap& properties )
+string GDriveFolder::uploadProperties( Json properties )
 {
     // URL for uploading meta data
-    string metaUrl = getSession()->getBaseUrl() + "/files/";
-    
-    PropertyPtrMap addedProperties = properties;
-    
-    // Add parent to the properties
-    string parentStr = "[{\"id\":\""+ getId( ) + "\"}]";
-    addStringProperty( addedProperties, "parents", parentStr );
+    string metaUrl =  getSession()->getBaseUrl() + "/files/";
 
-    // TODO doesn't work correctly at the moment.
-    Json uploadJson( addedProperties );
+    // add parents to the properties    
+    properties.add( "parents", createJsonFromParentId( getId( ) ) );
     
-    std::istringstream is( uploadJson.toString( ) );
-    string title = uploadJson["title"].toString();
-    string parents = uploadJson["parents"].toString();
+    //upload metadata
+    std::istringstream is( properties.toString( ) );
     string response;
     try
     {
@@ -125,19 +109,23 @@ libcmis::FolderPtr GDriveFolder::createFolder(
     const PropertyPtrMap& properties ) 
         throw( libcmis::Exception )
 {
-    PropertyPtrMap addedProperties = properties;
+    Json propsJson( properties );
+ 
     // GDrive folder is a file with a different mime type.
     string mimeType = "application/vnd.google-apps.folder";
-    addStringProperty( addedProperties, "mimeType", mimeType);
+  
+    // Add mimetype to the propsJson
+    Json jsonMimeType( mimeType.c_str( ) );
+    propsJson.add( "mimeType", jsonMimeType );
     
-    // Upload the properties definition
-    string response = uploadProperties( (const PropertyPtrMap&) addedProperties);
+    // Upload meta-datas
+    string response = uploadProperties( propsJson );
+    
     Json jsonRes = Json::parse( response );
     libcmis::FolderPtr folderPtr( new GDriveFolder( getSession( ), jsonRes ) );
 
     return folderPtr;
 }
-    
 
 libcmis::DocumentPtr GDriveFolder::createDocument( 
     const PropertyPtrMap& properties, 
@@ -148,33 +136,26 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
-    PropertyPtrMap addedProperties = properties;
+    Json propsJson( properties );
+
+    // Add filename to properties
+    Json jsonFilename( fileName.c_str( ) );
+    propsJson.add( "title", jsonFilename );
     
-    if ( !fileName.empty( ) )
-        addStringProperty( addedProperties, "title", fileName );
+    // Upload meta-datas
+    string res = uploadProperties( propsJson);
+
+    // parse the document
+    Json jsonRes = Json::parse( res );
+    DocumentPtr documentPtr( new GDriveDocument( getSession( ), jsonRes ) );
     
-    // Upload metadata    
-    uploadProperties( (const PropertyPtrMap&) addedProperties );
-    
+    ::boost::shared_ptr< GDriveDocument > gDocument = 
+        boost::dynamic_pointer_cast< GDriveDocument >( documentPtr );
+
     // Upload stream
-    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-    string response;
-    try
-    {
-        response = getSession()->httpPostRequest( getUploadUrl( ), *is, contentType )
-                                    ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-    long httpStatus = getSession( )->getHttpStatus( );
-    if ( httpStatus < 200 || httpStatus >= 300 )
-        throw libcmis::Exception( "Document content wasn't set for"
-                "some reason" );
-    Json jsonResponse = Json::parse( response );
-    DocumentPtr documentPtr( new GDriveDocument( getSession( ), jsonResponse ) );
-    return documentPtr;
+    gDocument->uploadStream( os, contentType);    
+
+    return gDocument;
 }
 
 vector< string > GDriveFolder::removeTree( 

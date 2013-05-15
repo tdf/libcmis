@@ -63,7 +63,7 @@ class GDriveFolder : public libcmis::Folder, public GDriveObject
             bool continueOnError = false ) 
                 throw ( libcmis::Exception );
 
-        std::string uploadProperties(const libcmis::PropertyPtrMap& properties);
+        std::string uploadProperties( Json properties );
 };
 
 #endif
