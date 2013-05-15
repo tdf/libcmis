@@ -164,8 +164,19 @@ vector< string > GDriveFolder::removeTree(
     bool /*continueOnError*/ ) 
         throw ( libcmis::Exception )
 {
-    //TODO implementation
-    vector< string > result;
-    return result;
+    // Object remove doesn't work with folder
+    // Using trash instead
+    try
+    {   
+        istringstream is( "" );
+        getSession( )->httpPostRequest( getUrl( ) + "/trash", is, "" );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    
+    // Nothing to return here
+    return vector< string >( );
 }
 
