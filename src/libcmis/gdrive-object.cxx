@@ -142,9 +142,15 @@ void GDriveObject::refresh( ) throw ( libcmis::Exception )
 
 void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
 {
-    // TODO Implement me
+    try
+    {
+        getSession( )->httpDeleteRequest( getUrl( ) );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
 }
-
 void GDriveObject::move( boost::shared_ptr< libcmis::Folder > /*source*/,
                          boost::shared_ptr< libcmis::Folder > /*destination*/ ) throw ( libcmis::Exception )
 {

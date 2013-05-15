@@ -74,6 +74,7 @@ class GDriveTest : public CppUnit::TestFixture
         void getFolderAllowableActionsTest( );
         void checkOutTest( );
         void checkInTest( );
+        void deleteTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -91,6 +92,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -539,6 +541,25 @@ void GDriveTest::checkInTest( )
     const PropertyPtrMap& properties = document->getProperties( );
     libcmis::DocumentPtr checkIn = document->checkIn( true, "", properties, os, "text/plain", filename);
     CPPUNIT_ASSERT_MESSAGE( "CheckIn failed", NULL != checkIn );
+}
+
+void GDriveTest::deleteTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string objectId( "aFileId" );
+
+    string url = BASE_URL + "/files/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true);
+    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 204, false);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    
+    object->remove( );
+    const char* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+    CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )
