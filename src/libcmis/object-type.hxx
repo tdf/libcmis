@@ -138,14 +138,6 @@ namespace libcmis
     };
 
     typedef ::boost::shared_ptr< ObjectType > ObjectTypePtr;
-    
-    class DummyObjectType: public ObjectType 
-    {
-        public :
-            DummyObjectType ( const std::string& dummy );
-            virtual ObjectTypePtr getParentType( ) throw ( Exception );
-            virtual ObjectTypePtr getBaseType( ) throw ( Exception );
-    };
 }
 
 #endif

@@ -35,6 +35,7 @@
 #include "gdrive-folder.hxx"
 #include "object-type.hxx"
 #include "gdrive-repository.hxx"
+#include "gdrive-object-type.hxx"
 
 using std::string;
 using std::istringstream;
@@ -294,6 +295,6 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ )
 libcmis::ObjectTypePtr GDriveSession::getType( string id ) 
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr type( new libcmis::DummyObjectType( id ) );
+    libcmis::ObjectTypePtr type( new GdriveObjectType( id ) );
     return type;
 }

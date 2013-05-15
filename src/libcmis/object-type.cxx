@@ -268,42 +268,4 @@ namespace libcmis
 
         return buf.str();
     }
-
-    DummyObjectType::DummyObjectType ( const std::string& dummy ) : ObjectType( )
-    {   
-        m_id = dummy;
-        m_localName = dummy;    
-        m_localNamespace = dummy;
-        m_displayName = dummy;
-        m_queryName = dummy;
-        m_description = dummy;
-        m_parentTypeId = dummy;
-        m_baseTypeId = dummy;
-
-        libcmis::PropertyTypePtr nameType( new libcmis::PropertyType( ) );
-        nameType->setId( "cmis:name" );
-        nameType->setType( libcmis::PropertyType::String );
-
-        m_propertiesTypes[ nameType->getId( ) ] = nameType;
-
-
-        libcmis::PropertyTypePtr idType(new libcmis::PropertyType( ) );
-        idType->setId( "cmis:objectTypeId" );
-        idType->setType( libcmis::PropertyType::String );
-
-        m_propertiesTypes[ idType->getId( ) ] = idType;
-    }   
-
-    ObjectTypePtr DummyObjectType::getBaseType( ) throw ( Exception )
-    {   
-        ObjectTypePtr baseTypePtr( new DummyObjectType( m_baseTypeId ) );
-        return baseTypePtr;
-    }   
-
-    ObjectTypePtr DummyObjectType::getParentType( ) throw ( Exception )
-    {   
-        ObjectTypePtr parentTypePtr( new DummyObjectType( m_parentTypeId ) );
-        return parentTypePtr;
-    }
-
 }
