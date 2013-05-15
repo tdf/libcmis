@@ -55,14 +55,10 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     setPropertyType( propertyType );    
     vector< string > values;
     
-    // take the parentId
     if (key == "parents" ){
-        Json firstParent = json[0];
-        if ( firstParent.getStrType( ) != "json_null" )
-        {
-            string parentId = firstParent["id"].toString( );
-            values.push_back( parentId );
-        }
+        // take the first parent Id
+        string parentId = json[0]["id"].toString( );
+        values.push_back( parentId );
     }
     else 
         values.push_back( json.toString( ) );

@@ -146,6 +146,7 @@ void Json::swap( Json& other )
 
 Json Json::operator[]( string key ) const
 {
+    if ( !m_json ) return Json( );
     struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
     return Json( j ) ;
 }
@@ -161,8 +162,8 @@ void Json::add( const std::string& key, const Json& json )
 
 Json Json::operator[]( const std::size_t& index ) const
 {
+    if ( !m_json ) return Json( );
     struct json_object *json = ::json_object_array_get_idx( m_json, index ) ;
-
     return Json( json ) ;
 }
 
