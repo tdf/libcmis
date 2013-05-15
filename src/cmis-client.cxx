@@ -988,8 +988,11 @@ void CmisClient::printHelp( )
     cerr << "   update-object <Object Id>\n"
             "           Update the object matching id <Object Id> with the properties\n"
             "           defined with --object-property." << endl;
+    cerr << "   move-object <Object Id> <Source Folder Id> <Destination Folder Id>\n"
+            "           Move the object matching id <Object Id> from the\n"
+            "           folder <Source Folder Id> to the folder <Destination Folder Id>." << endl;
     cerr << "   delete <Object Id 1> [... <Object Id N>]\n"
-            "           Delete the objects corresponding to the ids. If the node"
+            "           Delete the objects corresponding to the ids. If the node\n"
             "           is a folder, its content will be removed as well." << endl;
     cerr << "   checkout <Object Id>\n"
             "           Check out the document corresponding to the id and shows the\n"
