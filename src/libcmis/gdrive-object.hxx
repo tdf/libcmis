@@ -53,6 +53,7 @@ class GDriveObject : public virtual libcmis::Object
 
         void initializeFromJson( Json json );
         void refreshImpl( Json json );
+        Json createJsonFromParentId( const std::string& parentId );
     
         std::string getUrl( );
         std::string getUploadUrl( );

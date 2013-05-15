@@ -75,6 +75,7 @@ class GDriveTest : public CppUnit::TestFixture
         void checkOutTest( );
         void checkInTest( );
         void deleteTest( );
+        void moveTest( );        
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -93,6 +94,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( deleteTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -560,6 +562,39 @@ void GDriveTest::deleteTest( )
     object->remove( );
     const char* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
+}
+
+void GDriveTest::moveTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string objectId( "aFileId" );
+    const string sourceId( "aFolderId" );
+    const string desId( "aNewFolderId" );
+
+    string url = BASE_URL + "/files/" + objectId;
+    string sourceUrl = BASE_URL + "/files/" + sourceId;
+    string desUrl = BASE_URL + "/files/" + desId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true );
+    curl_mockup_addResponse( url.c_str( ), "", 
+                               "PUT", "data/gdrive/document2.json", 200, true );
+    curl_mockup_addResponse( sourceUrl.c_str( ), "",
+                               "GET", "data/gdrive/folder.json", 200, true );
+    curl_mockup_addResponse( desUrl.c_str( ), "",
+                               "GET", "data/gdrive/folder2.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    
+    libcmis::FolderPtr source = session.getFolder( sourceId );
+    libcmis::FolderPtr destination = session.getFolder( desId );    
+
+    object->move( source, destination );
+    const char* moveRequest = curl_mockup_getRequest( url.c_str( ), "", "PUT" );
+    Json parentJson = Json::parse( string( moveRequest ) );
+    string newParentId = parentJson["parents"][0]["id"].toString( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", 
+                                  desId, newParentId);
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )

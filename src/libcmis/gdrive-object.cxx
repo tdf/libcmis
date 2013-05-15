@@ -13,7 +13,7 @@
  *
  * Major Contributor(s):
  * Copyright (C) 2013 SUSE <cbosdonnat@suse.com>
- *
+ *               2013 Cao Cuong Ngo <cao.cuong.ngo@gmail.com>   
  *
  * All Rights Reserved.
  *
@@ -32,6 +32,7 @@
 #include "gdrive-repository.hxx"
 
 using namespace std;
+using namespace libcmis;
 
 GDriveObject::GDriveObject( GDriveSession* session ) :
     libcmis::Object( session )
@@ -151,10 +152,50 @@ void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
         throw e.getCmisException( );
     }
 }
-void GDriveObject::move( boost::shared_ptr< libcmis::Folder > /*source*/,
-                         boost::shared_ptr< libcmis::Folder > /*destination*/ ) throw ( libcmis::Exception )
+
+Json GDriveObject::createJsonFromParentId( const string& parentId )
 {
-    // TODO Implement me
+    Json parentsJson;
+    Json parentValue( parentId.c_str( ) );
+    
+    // parents is a Json array
+    Json firstParent;
+    firstParent.add( "id", parentValue );
+    
+    Json::JsonVector parents;
+    parents.insert( parents.begin( ), firstParent );
+    
+    Json parentsValue( parents );
+    parentsJson.add( "parents", parentsValue);
+    return parentsJson;
+}
+
+void GDriveObject::move( FolderPtr /*source*/,
+                         FolderPtr destination ) throw ( libcmis::Exception )
+{
+    // Move to the destination folder, the source folder is the parent
+    // of the object
+    
+    // to move object, change its parent id
+
+    Json parent = createJsonFromParentId( destination->getId( ) );
+    istringstream is( parent.toString( ));
+
+    libcmis::HttpResponsePtr response;
+    try 
+    {   
+        vector< string > headers;
+        headers.push_back( "Content-Type: application/json" );
+        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    string res = response->getStream( )->str( );
+    Json jsonRes = Json::parse( res );
+
+    refreshImpl( jsonRes );
 }
 
 string GDriveObject::getUrl( )
