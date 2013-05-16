@@ -90,6 +90,8 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
 {
     Json propsJson;
     
+    // check if cmis:name and cmis:contentStreamFileName has been duplicated
+    bool duplicated = false;
     for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
             it != properties.end() ; ++it )
     {
@@ -97,12 +99,14 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
         Json value( it->second );
         
         // Convert the key back to the gdrive key
-        // skip the "cmis:name" since we duplicated it.
-        if ( key != "cmis:name" )
+        // take one of the two: cmis:name and cmis:contentStreamFileName
+        if ( key != "cmis:name" || key != "cmis:contentStreamFleName" || !duplicated )
             propsJson.add( toGdriveKey( key ), value );
+
+        if ( key == "cmis:name" || key =="cmis:contentStreamFileName" )
+            duplicated = true;
     }
 
     return propsJson;
 } 
-
 
