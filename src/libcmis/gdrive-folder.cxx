@@ -30,6 +30,7 @@
 #include "gdrive-session.hxx"
 #include "gdrive-document.hxx"
 #include "gdrive-property.hxx"
+#include "gdrive-utils.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -117,7 +118,7 @@ libcmis::FolderPtr GDriveFolder::createFolder(
     const PropertyPtrMap& properties ) 
         throw( libcmis::Exception )
 {
-    Json propsJson( properties );
+    Json propsJson = GdriveUtils::toGdriveJson( properties );
  
     // GDrive folder is a file with a different mime type.
     string mimeType = "application/vnd.google-apps.folder";
@@ -144,7 +145,7 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
-    Json propsJson( properties );
+    Json propsJson = GdriveUtils::toGdriveJson( properties );
 
     // Add filename to properties
     Json jsonFilename( fileName.c_str( ) );

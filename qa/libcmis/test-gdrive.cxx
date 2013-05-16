@@ -77,7 +77,8 @@ class GDriveTest : public CppUnit::TestFixture
         void deleteTest( );
         void moveTest( );
         void createDocumentTest( );
-        void createFolderTest( );    
+        void createFolderTest( );
+        void updatePropertiesTest( );   
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -99,6 +100,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( createFolderTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -689,6 +691,41 @@ void GDriveTest::createFolderTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void GDriveTest::updatePropertiesTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string documentId( "aFileId" );
+
+    const string documentUrl = BASE_URL + "/files/" + documentId;
+   
+    curl_mockup_addResponse( documentUrl.c_str( ), "", 
+                               "GET", "data/gdrive/document.json", 200, true );
+    curl_mockup_addResponse( documentUrl.c_str( ), "",
+                               "PUT", "data/gdrive/document.json", 200, true );   
+ 
+    libcmis::ObjectPtr document = session.getObject( documentId );
+ 
+    document->updateProperties( document->getProperties( ) );
+    
+    const char* updateRequest = curl_mockup_getRequest( documentUrl.c_str( ), "", "PUT" );
+
+    // Check if properties keys are properly converted back before sending
+    Json json = Json::parse( string( updateRequest ) );
+    string id = json["id"].toString( );
+    string createdDate = json["createdDate"].toString( );
+    string title = json["title"].toString( );
+    string mimeType = json["mimeType"].toString( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "id key not converted", documentId, id );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "createdDate key not converted", 
+                    string( "2010-04-28T14:53:23.141Z"), createdDate );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "title key not converted", 
+                                  string( "GDrive File"), title );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "mimeType key not converted", 
+                    string( "application/vnd.google-apps.form"), mimeType );
 }
 
 GDriveSession GDriveTest::getTestSession( string username, string password )

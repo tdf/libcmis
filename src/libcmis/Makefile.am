@@ -84,6 +84,8 @@ libcmis_la_SOURCES = \
     gdrive-folder.cxx \
 	gdrive-session.hxx \
 	gdrive-session.cxx \
+	gdrive-utils.hxx \
+	gdrive-utils.cxx \
 	json-utils.hxx \
 	json-utils.cxx \
 	oauth2-handler.hxx \

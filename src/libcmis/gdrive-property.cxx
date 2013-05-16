@@ -28,6 +28,7 @@
 
 #include "gdrive-property.hxx"
 #include "property-type.hxx"
+#include "gdrive-utils.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -44,7 +45,7 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     Property( )
 {
     PropertyTypePtr propertyType( new PropertyType( ) );
-    string convertedKey = convertToCmisKey( key );
+    string convertedKey = GdriveUtils::toCmisKey( key );
     propertyType->setId( convertedKey );
     propertyType->setLocalName( convertedKey );
     propertyType->setLocalNamespace( convertedKey );
@@ -70,59 +71,5 @@ GDriveProperty& GDriveProperty::operator=( const GDriveProperty& copy )
         libcmis::Property::operator=( copy );
     }
     return *this;
-}
-
-string GDriveProperty::convertToCmisKey( const string& key )
-{
-    string convertedKey;
-    if ( key == "id")
-        convertedKey = "cmis:objectId";
-    else if ( key == "ownerNames" )
-        convertedKey = "cmis:createdBy";
-    else if ( key == "createdDate" )
-        convertedKey = "cmis:creationDate";
-    else if ( key == "lastModifyingUserName" )
-        convertedKey = "cmis:lastModifiedBy";
-    else if ( key == "modifiedDate" )
-        convertedKey = "cmis:lastModificationDate";
-    else if ( key == "title" )
-        convertedKey = "cmis:contentStreamFileName";
-    else if ( key == "mimeType" )
-        convertedKey = "cmis:contentStreamMimeType";
-    else if ( key == "fileSize" )
-        convertedKey = "cmis:contentStreamLength";
-    else if ( key == "editable" )
-        convertedKey = "cmis:isImmutable";
-    else if ( key == "parents" )
-        convertedKey = "cmis:parentId";
-    else convertedKey = key;
-    return convertedKey;
-}
-
-string GDriveProperty::convertToGDriveKey( const string& key )
-{
-    string convertedKey;
-    if ( key == "cmis:objectId")
-        convertedKey = "id";
-    else if ( key == "cmis:createBy" )
-        convertedKey = "ownerNames";
-    else if ( key == "cmis:creationDate" )
-        convertedKey = "createdDate";
-    else if ( key == "cmis:lastModifiedBy" )
-        convertedKey = "lastModifyingUserNam";
-    else if ( key == "cmis:lastModificationDate" )
-        convertedKey = "modifiedDate";
-    else if ( key == "cmis:contentStreamFileName" )
-        convertedKey = "title";
-    else if ( key == "cmis:contentStreamMimeType" )
-        convertedKey = "mimeType";
-    else if ( key == "cmis:contentStreamLength" )
-        convertedKey = "fileSize";
-    else if ( key == "cmis:isImmutable" )
-        convertedKey = "editable";
-    else if ( key == "cmis:parentId" )
-        convertedKey = "parents";
-    else convertedKey = key;
-    return convertedKey;
 }
 

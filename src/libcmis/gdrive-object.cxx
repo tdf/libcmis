@@ -30,6 +30,7 @@
 #include "gdrive-property.hxx"
 #include "gdrive-allowable-actions.hxx"
 #include "gdrive-repository.hxx"
+#include "gdrive-utils.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -100,7 +101,8 @@ void GDriveObject::refreshImpl( Json json )
 libcmis::ObjectPtr GDriveObject::updateProperties(
         const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {
-    Json json( properties );
+    // Make Json object from properties
+    Json json = GdriveUtils::toGdriveJson( properties );
 
     istringstream is( json.toString( ));
 

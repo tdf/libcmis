@@ -26,23 +26,24 @@
  * instead of those above.
  */
 
-#ifndef _GDRIVE_PROPERTY_HXX_
-#define _GDRIVE_PROPERTY_HXX_
+#include <string>
 
-#include "json-utils.hxx"
 #include "property.hxx"
 
-class GDriveProperty : public libcmis::Property
+#ifndef _GDRIVE_UTILS_HXX_
+#define _GDRIVE_UTILS_HXX_
+
+class GdriveUtils
 {
     public :
-        // Create a GDrive Property from a Json property with its key
-        GDriveProperty( const std::string& key, Json json);
-        ~GDriveProperty( );    
-        GDriveProperty( const GDriveProperty& copy);
-        GDriveProperty& operator=( const GDriveProperty& copy );
-     
-    private :
-        // Avoid calling default constructor
-        GDriveProperty( );
+        // Convert a GDrive Property key to a CMIS key
+        static std::string toCmisKey( const std::string& key);
+
+        // Convert a CMIS key to GDrive key
+        static std::string toGdriveKey( const std::string& key );
+
+        // Convert CMIS properties to GDrive properties
+        static Json toGdriveJson( const libcmis::PropertyPtrMap& properties );
 };
-#endif /* _GDRIVE_PROPERTY_HXX_ */
+
+#endif
