@@ -9,14 +9,19 @@ if ENABLE_TESTS
 #
 # 	test-nosrv-* is a test that doesn't need a running server,
 # 	others will trigger a server start / stop
-#
+
+if !OS_WIN32
+mockup_tests = \
+	test-nosrv-mockup \
+	test-nosrv-gdrive
+endif
+
 check_PROGRAMS = \
 	test-nosrv-utils \
-	test-nosrv-mockup \
-	test-nosrv-gdrive \
 	test-nosrv-json \
 	test-atom \
-	test-ws
+	test-ws \
+	${mockup_tests}
 
 test_nosrv_utils_SOURCES =	\
 	test-decoder.cxx \
@@ -149,6 +154,6 @@ long_tests = \
 endif
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils test-nosrv-mockup test-nosrv-json test-nosrv-gdrive ${long_tests}
+TESTS = test-nosrv-utils test-nosrc-json ${mockup_tests} ${long_tests}
 
 endif

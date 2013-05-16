@@ -34,6 +34,7 @@ AS_IF([test "x$enable_tests" != "xno"], [
 ], [enable_long_tests=no])
 AM_CONDITIONAL(ENABLE_LONG_TESTS, test "x$enable_long_tests" != "xno")
 
+
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
 
