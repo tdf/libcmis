@@ -78,7 +78,8 @@ class GDriveTest : public CppUnit::TestFixture
         void moveTest( );
         void createDocumentTest( );
         void createFolderTest( );
-        void updatePropertiesTest( );   
+        void updatePropertiesTest( );
+        void removeTreeTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -101,6 +102,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( removeTreeTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -691,6 +693,25 @@ void GDriveTest::createFolderTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void GDriveTest::removeTreeTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string folderId( "aFolderId" );
+
+    const string folderUrl = BASE_URL + "/files/" + folderId;
+    const string trashUrl = folderUrl + "/trash";
+   
+    curl_mockup_addResponse( folderUrl.c_str( ), "", 
+                               "GET", "data/gdrive/folder.json", 200, true );
+    curl_mockup_addResponse( trashUrl.c_str( ), "",
+                               "POST", "", 200, false );    
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+
+    // just make sure it doesn't crash 
+    folder->removeTree( );
 }
 
 void GDriveTest::updatePropertiesTest( )
