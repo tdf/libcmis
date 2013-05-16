@@ -52,29 +52,35 @@ class JsonTest : public CppUnit::TestFixture
         void parseTypeTest( );
         void createFromPropertyTest( );
         void createFromPropertiesTest( );
+        void badKeyTest( );
+        void badIndexTest( );
+        void addTest( );
 
         CPPUNIT_TEST_SUITE( JsonTest );
         CPPUNIT_TEST( parseTest );
         CPPUNIT_TEST( parseTypeTest );
         CPPUNIT_TEST( createFromPropertyTest );
         CPPUNIT_TEST( createFromPropertiesTest );  
+        CPPUNIT_TEST( badKeyTest );
+        CPPUNIT_TEST( badIndexTest );
+        CPPUNIT_TEST( addTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
-string getFileContents(const char *filename)
+string getFileContents( const char *filename)
 {
-  std::ifstream in(filename, std::ios::in | std::ios::binary);
-  if (in)
-  {
-    std::string contents;
-    in.seekg(0, std::ios::end);
-    contents.resize(in.tellg());
-    in.seekg(0, std::ios::beg);
-    in.read(&contents[0], contents.size());
-    in.close();
-    return(contents);
-  }
-  throw(errno);
+    std::ifstream in( filename, std::ios::in | std::ios::binary );
+    if (in)
+    {
+        std::string contents;
+        in.seekg( 0, std::ios::end );
+        contents.resize(in.tellg( ) );
+        in.seekg( 0, std::ios::beg );
+        in.read( &contents[0], contents.size( ) );
+        in.close( );
+        return contents;
+    }
+    throw ( errno );
 }
 
 Json parseFile( string fileName )
@@ -154,6 +160,30 @@ void JsonTest::createFromPropertiesTest( )
     Json json( properties );
 
     CPPUNIT_ASSERT_EQUAL( expected, json["key"].toString( ) ); 
+}
+
+void JsonTest::badKeyTest( )
+{
+    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    // just make sure it doesn't crash here
+    string notExist = json["nonExistedKey"].toString( );
+    CPPUNIT_ASSERT_EQUAL( string( ), notExist);
+}
+
+void JsonTest::badIndexTest( )
+{
+    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    // just make sure it doesn't crash here
+    string notExist = json[1000].toString( );
+    CPPUNIT_ASSERT_EQUAL( string( ), notExist);
+}
+
+void JsonTest::addTest( )
+{
+    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json addJson("added");
+    json.add( "new", addJson);
+    CPPUNIT_ASSERT_EQUAL( addJson.toString( ), json["new"].toString( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( JsonTest );
