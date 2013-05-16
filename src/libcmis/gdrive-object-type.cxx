@@ -69,14 +69,14 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
  
     // description  
     libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
-    descriptionType->setId( "description" );
+    descriptionType->setId( "cmis:description" );
     descriptionType->setType( libcmis::PropertyType::String );
     descriptionType->setUpdatable( true );
     m_propertiesTypes[ descriptionType->getId( ) ] = descriptionType;
 
     // modifiedDate  
     libcmis::PropertyTypePtr modifiedDateType( new libcmis::PropertyType( ) );
-    modifiedDateType->setId( "modifiedDate" );
+    modifiedDateType->setId( "cmis:lastModificationDate" );
     modifiedDateType->setType( libcmis::PropertyType::DateTime );
     modifiedDateType->setUpdatable( true );
     m_propertiesTypes[ modifiedDateType->getId( ) ] = modifiedDateType; 
@@ -104,3 +104,4 @@ libcmis::ObjectTypePtr GdriveObjectType::getBaseType( )
     libcmis::ObjectTypePtr baseTypePtr( new GdriveObjectType( m_baseTypeId ) );
     return baseTypePtr;
 }
+

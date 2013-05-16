@@ -39,6 +39,8 @@ string GdriveUtils::toCmisKey( const string& key )
         convertedKey = "cmis:objectId";
     else if ( key == "ownerNames" )
         convertedKey = "cmis:createdBy";
+    else if ( key == "description" )
+        convertedKey = "cmis:description";
     else if ( key == "createdDate" )
         convertedKey = "cmis:creationDate";
     else if ( key == "lastModifyingUserName" )
@@ -68,6 +70,8 @@ string GdriveUtils::toGdriveKey( const string& key )
         convertedKey = "ownerNames";
     else if ( key == "cmis:creationDate" )
         convertedKey = "createdDate";
+    else if ( key == "cmis:description" )
+        convertedKey = "description";
     else if ( key == "cmis:lastModifiedBy" )
         convertedKey = "lastModifyingUserName";
     else if ( key == "cmis:lastModificationDate" )
