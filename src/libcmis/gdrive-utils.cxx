@@ -74,6 +74,8 @@ string GdriveUtils::toGdriveKey( const string& key )
         convertedKey = "modifiedDate";
     else if ( key == "cmis:contentStreamFileName" )
         convertedKey = "title";
+    else if ( key == "cmis:name" )
+        convertedKey = "title";
     else if ( key == "cmis:contentStreamMimeType" )
         convertedKey = "mimeType";
     else if ( key == "cmis:contentStreamLength" )
@@ -109,4 +111,19 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
 
     return propsJson;
 } 
+
+bool GdriveUtils::checkUpdatable( const string& key )
+{
+    bool updatable = false;
+
+    // taken from https://developers.google.com/drive/v2/reference/files
+    updatable = ( key == "title" ||
+                  key == "mimeType" ||
+                  key == "description" ||
+                  key == "modifiedDate" ||
+                  key == "labels" ||
+                  key == "parents" ||
+                  key == "lastViewedByMeDate" );
+    return updatable;    
+}
 

@@ -102,34 +102,6 @@ namespace libcmis
         }
     }
 
-    PropertyType::PropertyType( Json jsonProperty ) :
-            m_id( ),
-            m_localName( ),
-            m_localNamespace( ),
-            m_displayName( ),
-            m_queryName( ),
-            m_type( String ),
-            m_xmlType( "String" ),
-            m_multiValued( false ),
-            m_updatable( false ),
-            m_inherited( false ),
-            m_required( false ),
-            m_queryable( false ),
-            m_orderable( false ),
-            m_openChoice( false )
-        {
-            // From CMIS 1.1 specification
-            // TODO not completed
-            m_id = jsonProperty[ "id" ].toString( );
-            m_localName = jsonProperty[ "localName" ].toString( );
-            m_localNamespace = jsonProperty[ "localNamespace" ].toString( );
-            m_displayName = jsonProperty[ "displayName" ].toString( );
-            m_queryName = jsonProperty[ "queryName" ].toString( );
-            setTypeFromXml( jsonProperty[ "type" ].toString( ) );       
-            string cardinality = jsonProperty[ "cartinality" ].toString( );
-            m_multiValued = cardinality == "multi";
-        }
-
     PropertyType::PropertyType( const PropertyType& copy ) :
         m_id ( copy.m_id ),
         m_localName ( copy.m_localName ),

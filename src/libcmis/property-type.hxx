@@ -72,9 +72,6 @@ namespace libcmis
             /// Default constructor, mostly present for testing.
             PropertyType( );
             PropertyType( xmlNodePtr node );
-            // Build a PropertyType from a Json object.
-            // Its key is converted to a CMIS key.
-            PropertyType( Json jsonProperty );
             PropertyType( const PropertyType& copy );
             virtual ~PropertyType( ) { };
 

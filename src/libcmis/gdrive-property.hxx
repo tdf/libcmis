@@ -40,7 +40,9 @@ class GDriveProperty : public libcmis::Property
         ~GDriveProperty( );    
         GDriveProperty( const GDriveProperty& copy);
         GDriveProperty& operator=( const GDriveProperty& copy );
-     
+        
+        // Check if the property is updatable
+        bool checkUpdatable( const std::string& key );
     private :
         // Avoid calling default constructor
         GDriveProperty( );

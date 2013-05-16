@@ -44,6 +44,9 @@ class GdriveUtils
 
         // Convert CMIS properties to GDrive properties
         static Json toGdriveJson( const libcmis::PropertyPtrMap& properties );
+
+        // Check if a property is updatable
+        static bool checkUpdatable( const std::string& key);
 };
 
 #endif

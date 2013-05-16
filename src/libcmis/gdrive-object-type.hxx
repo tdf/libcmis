@@ -29,48 +29,19 @@
 #ifndef _GDRIVE_OBJECT_TYPE_HXX_
 #define _GDRIVE_OBJECT_TYPE_HXX_
 
-#include <object-type.hxx>
+#include "object-type.hxx"
+#include "json-utils.hxx"
 
 class GdriveObjectType: public libcmis::ObjectType
 {
     public:
-        GdriveObjectType( const std::string& id ): ObjectType( )
-        {   
-            m_id = id;
-            m_localName = "GoogleDrive Object Type";
-            m_localNamespace = "GoogleDrive Object Type";
-            m_displayName = "GoogleDrive Object Type";
-            m_queryName = "GoogleDrive Object Type";
-            m_description = "GoogleDrive Object Type";
-            m_parentTypeId = id;
-            m_baseTypeId = id;
-
-            libcmis::PropertyTypePtr nameType( new libcmis::PropertyType( ) );
-            nameType->setId( "cmis:name" );
-            nameType->setType( libcmis::PropertyType::String );
-
-            m_propertiesTypes[ nameType->getId( ) ] = nameType;
-
-            libcmis::PropertyTypePtr idType(new libcmis::PropertyType( ) );
-            idType->setId( "cmis:objectTypeId" );
-            idType->setType( libcmis::PropertyType::String );
-
-            m_propertiesTypes[ idType->getId( ) ] = idType;
-        }
+        GdriveObjectType( const std::string& id );
+   
         virtual libcmis::ObjectTypePtr getParentType( ) 
-                                            throw( libcmis::Exception )
-        {            
-            libcmis::ObjectTypePtr parentTypePtr( 
-                                       new GdriveObjectType( m_parentTypeId ) );
-            return parentTypePtr;
-        }
+                                            throw( libcmis::Exception );
+       
         virtual libcmis::ObjectTypePtr getBaseType( ) 
-                                            throw( libcmis::Exception )
-        {
-            libcmis::ObjectTypePtr baseTypePtr( 
-                                       new GdriveObjectType( m_baseTypeId ) );
-            return baseTypePtr;
-        }
+                                            throw( libcmis::Exception );
 };
 
 #endif
