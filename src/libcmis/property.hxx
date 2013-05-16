@@ -53,10 +53,11 @@ namespace libcmis
             std::vector< long > m_longValues;
             std::vector< double > m_doubleValues;
             std::vector< boost::posix_time::ptime > m_dateTimeValues;
+        
+        protected:
+            Property( );
 
         public:
-
-            Property( );
             /** Property constructor allowing to use different values for the id and names.
               */
             Property( PropertyTypePtr propertyType, std::vector< std::string > strValues );
