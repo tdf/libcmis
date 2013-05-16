@@ -82,19 +82,10 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
-    string parentUrl = getUrl( ) + "/parents";    
-    // Run the http request to get the properties definition
-    string res;
-    try
-    {
-        res = getSession( )->httpGetRequest( parentUrl )->getStream()->str();
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-    Json jsonRes = Json::parse( res );
-    Json::JsonVector objs = jsonRes["items"].getList( );
+
+    string parentsStr = getStringProperty( "cmis:parentId" );
+    Json parentsJson = Json::parse( parentsStr );
+    Json::JsonVector objs = parentsJson.getList( );
    
     // Create folder objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)

@@ -180,29 +180,29 @@ void GDriveTest::getDocumentParentsTest( )
 
     static const string documentId( "aFileId" );
     static const string parentId( "aFolderId" );
+    static const string parentId2( "aNewFolderId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
                              "GET", "data/gdrive/document.json", 200, true);
 
-    string parentUrl = BASE_URL + "/files/" + parentId;
-    curl_mockup_addResponse( parentUrl.c_str( ), "",
+    string parent1Url = BASE_URL + "/files/" + parentId;
+    string parent2Url = BASE_URL + "/files/" + parentId2;
+    curl_mockup_addResponse( parent1Url.c_str( ), "",
                              "GET", "data/gdrive/folder.json", 200, true);
-
+    curl_mockup_addResponse( parent2Url.c_str( ), "",
+                             "GET", "data/gdrive/folder2.json", 200, true);
 
     libcmis::ObjectPtr object = session.getObject( "aFileId" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
  
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
     
-    string parentListUrl = url + "/parents";
-    curl_mockup_addResponse( parentListUrl.c_str( ), "",
-                             "GET", "data/gdrive/document_parents.json", 200, true);
-
     vector< libcmis::FolderPtr > parents= document->getParents( );
  
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 2 ), parents.size() );
     
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", string( "aFolderId" ), parents[0]->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", parentId, parents[0]->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", parentId2, parents[1]->getId( ) );
 }
 
 void GDriveTest::getContentStreamTest( )

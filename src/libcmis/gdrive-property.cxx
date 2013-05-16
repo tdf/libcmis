@@ -51,18 +51,10 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     propertyType->setQueryName( convertedKey );
     propertyType->setDisplayName( convertedKey );
     propertyType->setTypeFromJsonType( json.getStrType( ) );
-   
     setPropertyType( propertyType );    
-    vector< string > values;
     
-    if (key == "parents" ){
-        // take the first parent Id
-        string parentId = json[0]["id"].toString( );
-        values.push_back( parentId );
-    }
-    else 
-        values.push_back( json.toString( ) );
-
+    vector< string > values;
+    values.push_back( json.toString( ) );
     setValues( values );
 }
 

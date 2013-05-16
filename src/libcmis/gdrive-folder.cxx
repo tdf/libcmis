@@ -52,6 +52,14 @@ GDriveFolder::~GDriveFolder( )
 {
 }
 
+string GDriveFolder::getParentId( )
+{
+    // Folder only has one parent
+    string parents = getStringProperty( "cmis:parentId" );
+    Json parentsJson = Json::parse( parents );
+    return parentsJson[0]["id"].toString( );
+}
+
 vector< libcmis::ObjectPtr > GDriveFolder::getChildren( ) 
     throw ( libcmis::Exception )
 {
