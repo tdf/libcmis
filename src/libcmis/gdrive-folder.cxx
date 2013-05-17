@@ -71,7 +71,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     // we send a single query to search for objects where parents
     // include the folderID.
     string query = getSession( )->getBaseUrl( ) + 
-                    "/files?q=\"" + getId( ) + "\"+in+parents";
+        "/files?q=\"" + getId( ) + "\"+in+parents+and+trashed+=+false";
 
     string res;
     try

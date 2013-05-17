@@ -354,7 +354,7 @@ void GDriveTest::getChildrenTest( )
     CPPUNIT_ASSERT_MESSAGE( "Folder expected", folder != NULL );
     
     
-    string query = "q=\"" + folderId + "\"+in+parents";
+    string query = "q=\"" + folderId + "\"+in+parents+and+trashed+=+false";
     string childrenUrl = BASE_URL + "/files";
     curl_mockup_addResponse( childrenUrl.c_str( ), query.c_str( ),
                              "GET", "data/gdrive/folder_children.json", 200, true);
