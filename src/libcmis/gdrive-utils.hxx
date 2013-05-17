@@ -47,6 +47,22 @@ class GdriveUtils
 
         // Check if a property is updatable
         static bool checkUpdatable( const std::string& key);
+        
+        /*
+        * Parse the authorization code from the response page
+        * in the input tag, with id = code
+        */
+        static std::string parseCode ( const char* response );
+
+        /*
+         * Parse input values and redirect link from the response page
+         */
+        static int parseResponse ( const char* response, 
+                                   std::string& post, 
+                                   std::string& link );
+
+        // Create a Json array from a ParentId
+        static Json createJsonFromParentId( const std::string& parentId );
 };
 
 #endif

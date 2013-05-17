@@ -106,7 +106,7 @@ string GDriveFolder::uploadProperties( Json properties )
     string metaUrl =  getSession()->getBaseUrl() + "/files/";
 
     // add parents to the properties    
-    properties.add( "parents", createJsonFromParentId( getId( ) ) );
+    properties.add( "parents", GdriveUtils::createJsonFromParentId( getId( ) ) );
     
     //upload metadata
     std::istringstream is( properties.toString( ) );
