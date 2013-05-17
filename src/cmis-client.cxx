@@ -376,7 +376,11 @@ void CmisClient::execute( ) throw ( exception )
             if ( NULL != document )
             {
                 // TODO Handle name clashes
-                boost::shared_ptr< istream > in = document->getContentStream( );
+                string streamId;
+                if ( m_vm.count( "stream-id" ) > 0 )
+                    streamId = m_vm["stream-id"].as<string>();
+
+                boost::shared_ptr< istream > in = document->getContentStream( streamId );
                 ofstream out( document->getContentFilename().c_str() );
                 out << in->rdbuf();
                 out.close();
@@ -951,6 +955,7 @@ options_description CmisClient::getOptionsDescription( )
                                                 "to be set on the object" )
         ( "message,m", value< string >(), "Check in message" )
         ( "major", "The version to create during the check in will be a major version." )
+        ( "stream-id", value< string >(), "streamId of the rendition to get content." )
     ;
 
     desc.add( setcontentOpts );
@@ -974,7 +979,8 @@ void CmisClient::printHelp( )
             "           Dumps the objects informations for all the paths." << endl;
     cerr << "   get-content <Object Id>\n"
             "           Saves the stream of the content object in the\n"
-            "           current folder. Any existing file is overwritten." << endl;
+            "           current folder. Any existing file is overwritten.\n" 
+            "           streamId can be used to get the desired rendition with --stream-id"<< endl;
     cerr << "   set-content <Object Id>\n"
             "           Replaces the stream of the content object by the\n"
             "           file selected with --input-file." << endl;
