@@ -353,8 +353,10 @@ void GDriveTest::getChildrenTest( )
 
     CPPUNIT_ASSERT_MESSAGE( "Folder expected", folder != NULL );
     
-    string childrenUrl = url + "/children";
-    curl_mockup_addResponse( childrenUrl.c_str( ), "",
+    
+    string query = "q=\"" + folderId + "\"+in+parents";
+    string childrenUrl = BASE_URL + "/files";
+    curl_mockup_addResponse( childrenUrl.c_str( ), query.c_str( ),
                              "GET", "data/gdrive/folder_children.json", 200, true);
 
     vector< libcmis::ObjectPtr > children= folder->getChildren( );

@@ -6,6 +6,7 @@
   {
    "kind": "drive#childrenReference",
    "id": "aChildFolder",
+   "mimeType": "application/vnd.google-apps.folder",
    "selfLink": "aSelfLink",
    "childLink": "AchildrenLink",
   },

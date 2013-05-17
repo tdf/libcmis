@@ -66,11 +66,17 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 {
     vector< libcmis::ObjectPtr > children;
     
-    string childrenUrl = getUrl( ) + "/children";    
+    // GDrive doesn't support fetch all the children in one query.
+    // Instead of sending multiple queries for children,
+    // we send a single query to search for objects where parents
+    // include the folderID.
+    string query = getSession( )->getBaseUrl( ) + 
+                    "/files?q=\"" + getId( ) + "\"+in+parents";
+
     string res;
     try
     {
-        res = getSession( )->httpGetRequest( childrenUrl )->getStream()->str();
+        res = getSession( )->httpGetRequest( query )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -79,11 +85,15 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 
     Json jsonRes = Json::parse( res );
     Json::JsonVector objs = jsonRes["items"].getList( );
+    
     // Create children objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
     {   
-        string childId = objs[i]["id"].toString( );
-        libcmis::ObjectPtr child = getSession( )->getObject( childId );
+        ObjectPtr child;
+        if ( objs[i]["mimeType"].toString( ) == "application/vnd.google-apps.folder" )
+            child.reset( new GDriveFolder( getSession( ), objs[i] ) );
+        else
+            child.reset( new GDriveDocument( getSession( ), objs[i] ) );
         children.push_back( child );
     }   
     
