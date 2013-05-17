@@ -20,7 +20,14 @@
  "parents": [
   {
    "kind": "drive#parentReference",
-   "id": "parentId",
+   "id": "aFolderId",
+   "selfLink": "parentSelfLink",
+   "parentLink": "parentLink",
+   "isRoot": true
+  },
+  {
+   "kind": "drive#parentReference",
+   "id": "anotherFolderId",
    "selfLink": "parentSelfLink",
    "parentLink": "parentLink",
    "isRoot": true
