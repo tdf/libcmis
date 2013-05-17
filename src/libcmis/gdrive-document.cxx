@@ -49,6 +49,7 @@ GDriveDocument::GDriveDocument( GDriveSession* session, Json json ) :
     GDriveObject( session, json ),
     m_isGoogleDoc( false )
 {
+    m_isGoogleDoc = getContentType( ).find( "google" ) != string::npos;
     getRenditions( );   
 }
 
@@ -71,7 +72,6 @@ vector< Rendition> GDriveDocument::getRenditions( )
         string exportLinks = getStringProperty( "exportLinks" );
         if ( !exportLinks.empty( ) )
         {
-            m_isGoogleDoc = true;
             Json renditionJson = Json::parse( exportLinks );
             Json::JsonObject objs = renditionJson.getObjects( );
             Json::JsonObject::iterator it; 
