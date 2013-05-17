@@ -64,6 +64,7 @@ namespace libcmis
                 no content or if something wrong happened during the
                 download.</p>
 
+                @param streamId of the rendition
                 @return
                     An input stream to read the data from.
 
@@ -72,7 +73,8 @@ namespace libcmis
                     In such a case, the content of the stream can't be
                     guaranteed.
               */
-            virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( Exception ) = 0;
+            virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) ) 
+                        throw ( Exception ) = 0;
 
             /** Set or replace the content stream of the document.
 

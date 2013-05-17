@@ -122,7 +122,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     return parents;
 }
 
-boost::shared_ptr< istream > AtomDocument::getContentStream( ) throw ( libcmis::Exception )
+boost::shared_ptr< istream > AtomDocument::getContentStream( string /*streamId*/ ) throw ( libcmis::Exception )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
         throw libcmis::Exception( string( "GetContentStream is not allowed on document " ) + getId() );

@@ -40,7 +40,8 @@ class WSDocument : public libcmis::Document, public WSObject
 
         virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
 
-        virtual boost::shared_ptr< std::istream > getContentStream( ) throw ( libcmis::Exception );
+        virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) ) 
+                                                                         throw ( libcmis::Exception );
 
         virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
                                        std::string fileName, bool overwrite = true ) throw ( libcmis::Exception );

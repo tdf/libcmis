@@ -48,7 +48,8 @@ vector< libcmis::FolderPtr > WSDocument::getParents( ) throw ( libcmis::Exceptio
     return getSession( )->getNavigationService( ).getObjectParents( repoId, getId( ) );
 }
 
-boost::shared_ptr< istream > WSDocument::getContentStream( ) throw ( libcmis::Exception )
+boost::shared_ptr< istream > WSDocument::getContentStream( std::string /* streamId */ ) 
+                                                      throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).getContentStream( repoId, getId( ) );

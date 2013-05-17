@@ -30,6 +30,7 @@
 #include "gdrive-folder.hxx"
 #include "gdrive-session.hxx"
 #include "json-utils.hxx"
+#include "rendition.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -38,9 +39,7 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
     libcmis::Object( session),
     libcmis::Document( session ),
     GDriveObject( session ),
-    m_revisionId( ),
-    m_isGoogleDoc( false ),
-    m_downloadUrl( )
+    m_isGoogleDoc( false )
 {
 }
 
@@ -48,34 +47,89 @@ GDriveDocument::GDriveDocument( GDriveSession* session, Json json ) :
     libcmis::Object( session),
     libcmis::Document( session ),
     GDriveObject( session, json ),
-    m_revisionId( ),
-    m_isGoogleDoc( false ),
-    m_downloadUrl( )
+    m_isGoogleDoc( false )
 {
-    m_downloadUrl = json["downloadUrl"].toString( );
-    if ( m_downloadUrl.empty( ) )
-    {
-        // If it's a Google document, we download the export link and then 
-        // automatically convert when upload
-        Json exportLinks = json["exportLinks"];
-        Json::JsonObject objs = exportLinks.getObjects( );
-        Json::JsonObject::iterator it; 
-        for ( it = objs.begin( ); it != objs.end( ); it++)
-        { 
-            string link = it->first;
-            // We get the ODF link
-            if ( link.find( "opendocument" ) != string::npos )
-            {
-                m_downloadUrl = it->second.toString( );
-                break;
-            }
-        }
-        m_isGoogleDoc = true;
-    }
+    getRenditions( );   
 }
 
 GDriveDocument::~GDriveDocument( )
 {
+}
+
+vector< Rendition> GDriveDocument::getRenditions( )
+{
+    if ( m_renditions.empty( ) )
+    {
+        string downloadUrl = getStringProperty( "downloadUrl" );
+        if ( !downloadUrl.empty( ) )
+        {
+            string mimeType = getContentType( );   
+            Rendition rendition( mimeType, mimeType, mimeType, downloadUrl );
+            m_renditions.push_back( rendition );
+        }
+
+        string exportLinks = getStringProperty( "exportLinks" );
+        if ( !exportLinks.empty( ) )
+        {
+            m_isGoogleDoc = true;
+            Json renditionJson = Json::parse( exportLinks );
+            Json::JsonObject objs = renditionJson.getObjects( );
+            Json::JsonObject::iterator it; 
+            for ( it = objs.begin( ); it != objs.end( ); it++)
+            { 
+                string mimeType = it->first;
+                string url = it->second.toString( );
+                Rendition rendition( mimeType, mimeType, mimeType, url );
+                m_renditions.push_back( rendition );
+            }
+        }     
+    }
+    return m_renditions;
+}
+
+string GDriveDocument::getDownloadUrl( string streamId )
+{
+    string streamUrl;
+    vector< Rendition > renditions = getRenditions( );    
+    
+    if ( renditions.empty( ) )
+        return streamUrl;    
+
+    if ( !streamId.empty( ) )
+    {
+        // Find the rendition associated with the streamId
+        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+            it != renditions.end(); ++it )
+        {
+            if ( it->getStreamId( ) == streamId )
+            {
+                streamUrl = it->getUrl( );
+                break;
+            }
+        }
+    }
+    else
+    {
+        // Automatically find the rendition
+
+        // Prefer ODF format
+        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+            it != renditions.end(); ++it )
+            if ( it->getMimeType( ).find( "opendocument") != string::npos )
+                return it->getUrl( );
+
+        // Then MS format
+        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+            it != renditions.end(); ++it )
+            if ( it->getMimeType( ).find( "officedocument") != string::npos )
+                return it->getUrl( );
+
+        // If not found, take the first one
+        streamUrl = renditions.front( ).getUrl( );
+
+    }
+
+    return streamUrl;
 }
 
 vector< libcmis::FolderPtr > GDriveDocument::getParents( ) 
@@ -98,13 +152,17 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     return parents;
 }
 
-boost::shared_ptr< istream > GDriveDocument::getContentStream( ) 
+boost::shared_ptr< istream > GDriveDocument::getContentStream( string streamId )
     throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;
+    string streamUrl = getDownloadUrl( streamId );
+    if ( streamUrl.empty( ) )
+        throw libcmis::Exception( "can not found stream url" );
+
     try
     {
-        stream = getSession( )->httpGetRequest( m_downloadUrl )->getStream( );
+        stream = getSession( )->httpGetRequest( streamUrl )->getStream( );
     }
     catch ( const CurlException& e )
     {
@@ -125,7 +183,7 @@ void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
     string putUrl = getUploadUrl( ) + getId( );
     
     // If it's a Google document, convert it 
-    if ( m_isGoogleDoc )
+    if ( isGoogleDoc( ) )
         putUrl  += "?convert=true";
 
     // Upload stream
@@ -162,7 +220,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     string metaUrl = getUrl( );
 
     // If it's a Google document, convert it 
-    if ( m_isGoogleDoc )
+    if ( isGoogleDoc( ) )
         metaUrl += "?convert=true";
 
     // Update file name meta information

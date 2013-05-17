@@ -80,6 +80,7 @@ class GDriveTest : public CppUnit::TestFixture
         void createFolderTest( );
         void updatePropertiesTest( );
         void removeTreeTest( );
+        void getContentStreamWithRenditionsTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -103,6 +104,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( removeTreeTest );
+        CPPUNIT_TEST( getContentStreamWithRenditionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -712,6 +714,78 @@ void GDriveTest::removeTreeTest( )
 
     // just make sure it doesn't crash 
     folder->removeTree( );
+}
+
+void GDriveTest::getContentStreamWithRenditionsTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    string url = BASE_URL + "/files/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document.json", 200, true);
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    // pdf stream
+    string pdfContent( "pdf Content stream" );
+    string pdfUrl = "pdflink";
+    curl_mockup_addResponse( pdfUrl.c_str( ), "", "GET", pdfContent.c_str( ), 0, false );    
+    
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( "application/pdf" );
+        ostringstream out;
+        out << is->rdbuf();
+ 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", pdfContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+
+    // ODF stream
+    string odfContent( "open document Content stream" );
+    string odfUrl = "https://downloadLink";
+    curl_mockup_addResponse( odfUrl.c_str( ), "", "GET", odfContent.c_str( ), 0, false );       
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( "application/x-vnd.oasis.opendocument.spreadsheet" );
+        ostringstream out;
+        out << is->rdbuf();
+ 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", odfContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+
+    // MS stream
+    string msContent( "office document Content stream" );
+    string msUrl = "xlslink";
+    curl_mockup_addResponse( msUrl.c_str( ), "", "GET", msContent.c_str( ), 0, false );       
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( 
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" );
+        ostringstream out;
+        out << is->rdbuf();
+ 
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", msContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
 }
 
 void GDriveTest::updatePropertiesTest( )

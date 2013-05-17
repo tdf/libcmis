@@ -91,7 +91,9 @@ libcmis_la_SOURCES = \
 	json-utils.hxx \
 	json-utils.cxx \
 	oauth2-handler.hxx \
-	oauth2-handler.cxx 
+	oauth2-handler.cxx \
+	rendition.hxx \
+	rendition.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 

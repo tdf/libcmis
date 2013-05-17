@@ -32,6 +32,8 @@
 #include "document.hxx"
 #include "folder.hxx"
 #include "gdrive-object.hxx"
+#include "json-utils.hxx"
+#include "rendition.hxx"
 
 class GDriveDocument : public libcmis::Document, public GDriveObject
 {
@@ -43,14 +45,22 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
         std::string getType( ) { return std::string( "cmis:document" );}
         std::string getBaseType( ) { return std::string( "cmis:document" );} 
 
+        bool isGoogleDoc( ) { return m_isGoogleDoc; }
+        
+        /* Get the download Url associated to streamId,
+           automatically find ODF then MS format if no streamId is specified.
+        */
+        std::string getDownloadUrl( std::string streamId = std::string( ) );
+        
         void uploadStream( boost::shared_ptr< std::ostream > os, 
                                        std::string contentType )
                                              throw ( libcmis::Exception );
-    
+
+        virtual std::vector< libcmis::Rendition> getRenditions( );
         virtual std::vector< libcmis::FolderPtr > getParents( ) 
                     throw (libcmis::Exception );
-        virtual boost::shared_ptr< std::istream > getContentStream( ) 
-                    throw (libcmis::Exception );
+        virtual boost::shared_ptr< std::istream > getContentStream( 
+                std::string streamId = std::string( ) ) throw (libcmis::Exception );
         
         virtual void setContentStream( boost::shared_ptr< std::ostream > os, 
                                        std::string contentType,
@@ -74,9 +84,7 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
             throw (libcmis::Exception );
 
     private:
-        std::string m_revisionId;
         bool m_isGoogleDoc;
-        std::string m_downloadUrl;    
 };
 
 #endif

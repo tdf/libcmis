@@ -40,7 +40,8 @@ namespace libcmis
         m_refreshTimestamp( 0 ),
         m_typeId( ),
         m_properties( ),
-        m_allowableActions( )
+        m_allowableActions( ),
+        m_renditions( )
     {
     }
 
@@ -50,7 +51,8 @@ namespace libcmis
         m_refreshTimestamp( 0 ),
         m_typeId( ),
         m_properties( ),
-        m_allowableActions( )
+        m_allowableActions( ),
+        m_renditions( )
     {
         initializeFromNode( node );
     }
@@ -61,7 +63,8 @@ namespace libcmis
         m_refreshTimestamp( copy.m_refreshTimestamp ),
         m_typeId( copy.m_typeId ),
         m_properties( copy.m_properties ),
-        m_allowableActions( copy.m_allowableActions )
+        m_allowableActions( copy.m_allowableActions ),
+        m_renditions( copy.m_renditions )
     {
     }
 
@@ -75,6 +78,7 @@ namespace libcmis
             m_typeId = copy.m_typeId;
             m_properties = copy.m_properties;
             m_allowableActions = copy.m_allowableActions;
+            m_renditions = copy.m_renditions;
         }
 
         return *this;

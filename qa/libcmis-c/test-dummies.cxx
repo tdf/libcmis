@@ -518,7 +518,7 @@ namespace dummies
         return parents;
     }
     
-    boost::shared_ptr< istream > Document::getContentStream( ) throw ( libcmis::Exception )
+    boost::shared_ptr< istream > Document::getContentStream( string /*streamId*/ ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );

@@ -31,6 +31,7 @@
 #include <ctime>
 #include <map>
 #include <string>
+#include <vector>
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -46,6 +47,7 @@
 #include "property.hxx"
 #include "xmlserializable.hxx"
 #include "json-utils.hxx"
+#include "rendition.hxx"
 
 namespace libcmis
 {
@@ -68,6 +70,7 @@ namespace libcmis
 
             std::map< std::string, libcmis::PropertyPtr > m_properties;
             boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
+            std::vector< libcmis::Rendition > m_renditions;
             void initializeFromNode( xmlNodePtr node );
         public:
 
@@ -112,6 +115,14 @@ namespace libcmis
                 \sa updateProperties to change properties on the server
               */
             virtual libcmis::PropertyPtrMap& getProperties( );
+            
+            
+            /** Get the renditions of the object.
+    
+                \attention
+                    The streamId of the rendition is used in getContentStream( )
+              */
+            virtual std::vector< libcmis::Rendition> getRenditions( ) { return m_renditions; }
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
             /** Update the object properties and return the updated object.
