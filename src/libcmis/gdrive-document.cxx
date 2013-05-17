@@ -82,7 +82,16 @@ vector< Rendition> GDriveDocument::getRenditions( )
                 Rendition rendition( mimeType, mimeType, mimeType, url );
                 m_renditions.push_back( rendition );
             }
-        }     
+        }
+
+        // thumbnail link        
+        string thumbnailLink = getStringProperty( "thumbnailLink" );
+        if ( !thumbnailLink.empty( ) )
+        {
+            string mimeType = "cmis:thumbnail";   
+            Rendition rendition( mimeType, mimeType, mimeType, thumbnailLink );
+            m_renditions.push_back( rendition );
+        }
     }
     return m_renditions;
 }
