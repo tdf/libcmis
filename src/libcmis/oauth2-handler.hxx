@@ -43,7 +43,6 @@ class OAuth2Handler
         libcmis::OAuth2DataPtr m_data;
 
         std::string m_access;
-        std::string m_refresh;
 
     public:
 
@@ -57,8 +56,10 @@ class OAuth2Handler
 
         std::string getAuthURL();
 
-        std::string getRefreshToken( ) throw ( libcmis::Exception ) ;
         std::string getAccessToken( ) throw ( libcmis::Exception ) ;
+        std::string getRefreshToken( ) throw ( libcmis::Exception ) ;
+
+        bool isAuthenticated( ) throw ( libcmis::Exception );
 
         // adding HTTP auth header
         std::string getHttpHeader( ) throw ( libcmis::Exception ) ;
