@@ -510,6 +510,8 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 {
     OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
     
+    m_oauth2Handler = oauth2Handler;
+
     // If oauth2 contains refresh token, we are done here
     if ( oauth2Handler->isAuthenticated( ) ) return;
 
@@ -517,9 +519,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 
     try
     {
-        m_oauth2Handler = oauth2Handler;
-
-        // Try to get the authentication code using the given provider.
+                // Try to get the authentication code using the given provider.
         authCode = oauth2Authenticate( );
 
         // If that didn't work, call the fallback provider from SessionFactory
