@@ -33,9 +33,13 @@
 #ifndef _GDRIVE_UTILS_HXX_
 #define _GDRIVE_UTILS_HXX_
 
+static const std::string GDRIVE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder" ;
+static const std::string GDRIVE_UPLOAD_LINKS = "https://www.googleapis.com/upload/drive/v2/files/";
+
 class GdriveUtils
 {
     public :
+               
         // Convert a GDrive Property key to a CMIS key
         static std::string toCmisKey( const std::string& key);
 

@@ -165,8 +165,9 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     if ( kind == "drive#file" )
     {
         string mimeType = jsonRes["mimeType"].toString( );
+        
         // Folder is a file with a special mimeType
-        if ( mimeType == "application/vnd.google-apps.folder" )
+        if ( mimeType == GDRIVE_FOLDER_MIME_TYPE )
             object.reset( new GDriveFolder( this, jsonRes ) );
         else 
             object.reset( new GDriveDocument( this, jsonRes ) );

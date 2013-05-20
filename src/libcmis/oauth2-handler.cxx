@@ -106,12 +106,11 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
     {
         throw libcmis::Exception(
                 "Couldn't get tokens from the authorization code ");
-        return;
     }
 
-    Json jresp = Json::parse( resp->getStream()->str() );
-    m_access = jresp["access_token"].toString();
-    string refreshToken = jresp["refresh_token"].toString();
+    Json jresp = Json::parse( resp->getStream( )->str( ) );
+    m_access = jresp[ "access_token" ].toString( );
+    string refreshToken = jresp[ "refresh_token" ].toString( );
     m_data->setRefreshToken( refreshToken );
 }
 
@@ -128,7 +127,7 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
     libcmis::HttpResponsePtr resp;
     try
     {
-        resp = m_session->httpPostRequest( m_data->getTokenUrl(), is,
+        resp = m_session->httpPostRequest( m_data->getTokenUrl( ), is,
                                            "application/x-www-form-urlencoded" );
     }
     catch (const CurlException& e )
@@ -136,17 +135,17 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
         throw libcmis::Exception( "Couldn't refresh token ");
     }
 
-    Json jresp = Json::parse( resp->getStream()->str() );
-    m_access = jresp["access_token"].toString();
+    Json jresp = Json::parse( resp->getStream( )->str( ) );
+    m_access = jresp[ "access_token" ].toString();
 }
 
 string OAuth2Handler::getAuthURL( )
 {
     return m_data->getAuthUrl() + 
-            "?scope=" + libcmis::escape( m_data->getScope() ) +
-            "&redirect_uri="+ m_data->getRedirectUri() +
+            "?scope=" + libcmis::escape( m_data->getScope( ) ) +
+            "&redirect_uri="+ m_data->getRedirectUri( ) +
             "&response_type=code" + 
-            "&client_id=" + m_data->getClientId();
+            "&client_id=" + m_data->getClientId( );
 }
 
 string OAuth2Handler::getAccessToken( ) throw ( libcmis::Exception )

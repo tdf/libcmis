@@ -69,8 +69,9 @@ void GDriveObject::initializeFromJson ( Json json )
         PropertyPtr property(new GDriveProperty( it->first,it->second) );
         if ( property != NULL ){
             m_properties[ property->getPropertyType( )->getId()] = property;
+           
             // we map "title" to both "cmis:name" and 
-            // "cmis:getContentStreamFileName
+            // "cmis:getContentStreamFileName"
             if ( it->first == "title" )
             {
                 property.reset( new GDriveProperty( "cmis:name", it->second) );
@@ -81,8 +82,7 @@ void GDriveObject::initializeFromJson ( Json json )
     m_refreshTimestamp = time( NULL );
     
     // Create AllowableActions
-    bool isFolder =
-        json["mimeType"].toString( ) == "application/vnd.google-apps.folder";
+    bool isFolder = json["mimeType"].toString( ) == GDRIVE_FOLDER_MIME_TYPE;
     m_allowableActions.reset( new GdriveAllowableActions( isFolder ) );
 }
 
@@ -203,6 +203,6 @@ string GDriveObject::getUrl( )
 
 string GDriveObject::getUploadUrl( )
 {
-    return "https://www.googleapis.com/upload/drive/v2/files/";
-}   
+    return GDRIVE_UPLOAD_LINKS;
+}
 

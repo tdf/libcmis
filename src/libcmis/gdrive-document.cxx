@@ -241,7 +241,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
 
         std::istringstream is( metaJson.toString( ) );
         vector<string> headers;
-        headers.push_back( string( "Content-Type: " ) + "application/json" );
+        headers.push_back( "Content-Type: application/json" );
         try
         {
             getSession()->httpPutRequest( metaUrl, is, headers );

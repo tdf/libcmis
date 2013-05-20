@@ -90,7 +90,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     for(unsigned int i = 0; i < objs.size(); i++)
     {   
         ObjectPtr child;
-        if ( objs[i]["mimeType"].toString( ) == "application/vnd.google-apps.folder" )
+        if ( objs[i]["mimeType"].toString( ) == GDRIVE_FOLDER_MIME_TYPE )
             child.reset( new GDriveFolder( getSession( ), objs[i] ) );
         else
             child.reset( new GDriveDocument( getSession( ), objs[i] ) );
@@ -131,7 +131,7 @@ libcmis::FolderPtr GDriveFolder::createFolder(
     Json propsJson = GdriveUtils::toGdriveJson( properties );
  
     // GDrive folder is a file with a different mime type.
-    string mimeType = "application/vnd.google-apps.folder";
+    string mimeType = GDRIVE_FOLDER_MIME_TYPE;
   
     // Add mimetype to the propsJson
     Json jsonMimeType( mimeType.c_str( ) );
