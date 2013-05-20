@@ -60,6 +60,11 @@ class GDriveTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
+        void sessionAuthenticationRefreshkeyTest( );
+        void sessionExpiryTokenGetTest( );
+        void sessionExpiryTokenPostTest( );
+        void sessionExpiryTokenPutTest( );
+        void sessionExpiryTokenDeleteTest( );
         void getRepositoriesTest( );
         void getTypeTest( );
         void getObjectTest( );
@@ -84,6 +89,11 @@ class GDriveTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
+        CPPUNIT_TEST( sessionAuthenticationRefreshkeyTest );
+        CPPUNIT_TEST( sessionExpiryTokenGetTest );
+        CPPUNIT_TEST( sessionExpiryTokenPutTest );
+        CPPUNIT_TEST( sessionExpiryTokenPostTest );
+        CPPUNIT_TEST( sessionExpiryTokenDeleteTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
@@ -110,6 +120,274 @@ class GDriveTest : public CppUnit::TestFixture
     private:
         GDriveSession getTestSession( string username, string password );
 };
+
+GDriveSession GDriveTest::getTestSession( string username, string password )
+{
+    libcmis::OAuth2DataPtr oauth2(
+        new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
+                                 REDIRECT_URI, CLIENT_ID, CLIENT_SECRET ));
+    curl_mockup_reset( );
+    string empty;
+    //login response
+    string loginIdentifier = string("scope=") + SCOPE +
+                             string("&redirect_uri=") + REDIRECT_URI +
+                             string("&response_type=code") +
+                             string("&client_id=") + CLIENT_ID;
+    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
+                            "GET", "data/gdrive/login.html", 200, true);
+
+    //authentication response
+    curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
+                             "data/gdrive/approve.html", 200, true);
+
+    //approval response
+    curl_mockup_addResponse( APPROVAL_URL.c_str( ), empty.c_str( ),
+                             "POST", "data/gdrive/authcode.html", 200, true);
+
+    curl_mockup_addResponse ( TOKEN_URL.c_str( ), empty.c_str( ), "POST",
+                              "data/gdrive/token-response.json", 200, true );
+
+    return GDriveSession( BASE_URL, username, password, oauth2, false );
+}
+
+void GDriveTest::sessionAuthenticationTest( )
+{
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string empty;
+    
+    // Check authentication request
+    string authRequest( curl_mockup_getRequest( LOGIN_URL.c_str(), empty.c_str( ),
+                                                "POST" ) );
+    string expectedAuthRequest =
+        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Email=") + USERNAME + string("&Passwd=") + PASSWORD;
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request",
+                                  expectedAuthRequest, authRequest );
+    
+    // Check code request
+    string codeRequest( curl_mockup_getRequest( APPROVAL_URL.c_str(),
+                        empty.c_str( ), "POST" ) );
+    string expectedCodeRequest = string( "state_wrapper=stateWrapper&submit_access=true" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", 
+                                  expectedCodeRequest, codeRequest);
+    
+    // Check token request
+    string expectedTokenRequest = 
+        string( "code=AuthCode") + 
+        string( "&client_id=") + CLIENT_ID +
+        string( "&client_secret=") + CLIENT_SECRET + 
+        string( "&redirect_uri=") + REDIRECT_URI + 
+        string( "&grant_type=authorization_code" );
+
+    string tokenRequest( curl_mockup_getRequest( TOKEN_URL.c_str(), empty.c_str( ),
+                                                 "POST" ));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request",
+                                  expectedTokenRequest, tokenRequest );
+
+    // Check token
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "Wrong access token", 
+         string ( "mock-access-token" ), 
+         session.m_oauth2Handler->getAccessToken( ));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( 
+        "Wrong refresh token", 
+        string ("mock-refresh-token"), 
+        session.m_oauth2Handler->getRefreshToken( ));
+}
+
+void GDriveTest::sessionAuthenticationRefreshkeyTest( )
+{
+    // OAuth2 authentication using refresh key without username/password
+    string aRefreshToken( "aRefreshToken" );
+
+    libcmis::OAuth2DataPtr oauth2(
+        new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
+                                 REDIRECT_URI, CLIENT_ID, CLIENT_SECRET, aRefreshToken));
+    
+    curl_mockup_reset( );
+    string empty;
+    curl_mockup_addResponse( TOKEN_URL.c_str(), empty.c_str( ),
+                            "POST", "data/gdrive/refresh_response.json", 200, true);
+
+    GDriveSession session( BASE_URL, "bad", "bad", oauth2, false );
+
+    // Check new acess token
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+            "Wrong access token",
+            string ( "new-access-token" ),
+            session.m_oauth2Handler->getAccessToken( ) );
+    
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+            "Wrong refresh token",
+            aRefreshToken,
+            session.m_oauth2Handler->getRefreshToken( ) );
+}
+
+void GDriveTest::sessionExpiryTokenGetTest( )
+{
+    // Access_token will expire after expires_in seconds,
+    // We need to use the refresh key to get a new one.
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    
+    curl_mockup_reset( );
+    static const string objectId("aFileId");
+    string url = BASE_URL + "/files/" + objectId;
+
+    // 401 response, token is expired
+    curl_mockup_addResponse( url.c_str( ),"", "GET", "", 401, false );
+
+    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
+                             "POST", "data/gdrive/refresh_response.json", 200, true);
+    try
+    {
+        // GET expires, need to refresh then GET again
+        libcmis::ObjectPtr obj = session.getObject( objectId );
+    }
+    catch ( ... )
+    {
+        if ( session.getHttpStatus( ) == 401 )
+        {
+            // Check if access token is refreshed
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(
+                   "wrong access token",
+                   string ( "new-access-token" ),
+                   session.m_oauth2Handler->getAccessToken( ) );
+        }
+    } 
+}
+
+void GDriveTest::sessionExpiryTokenPostTest( )
+{
+    // Access_token will expire after expires_in seconds,
+    // We need to use the refresh key to get a new one.
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    
+    curl_mockup_reset( );
+    static const string folderId("aFileId");
+    const string folderUrl = BASE_URL + "/files/" + folderId;
+    const string metaUrl = BASE_URL + "/files";
+
+    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
+                             "POST", "data/gdrive/refresh_response.json", 200, true);
+
+    curl_mockup_addResponse( folderUrl.c_str( ), "", 
+                               "GET", "data/gdrive/folder.json", 200, true );
+
+    // 401 response, token is expired
+    // refresh and then POST again
+    curl_mockup_addResponse( metaUrl.c_str( ), "",
+                               "POST", "", 401, false );    
+    libcmis::FolderPtr parent = session.getFolder( folderId );
+    
+    try
+    {
+         PropertyPtrMap properties;   
+        // POST expires, need to refresh then POST again
+        parent->createFolder( properties );
+    }
+    catch ( ... )
+    {
+        if ( session.getHttpStatus( ) == 401 )
+        {
+            // Check if access token is refreshed
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(
+                   "wrong access token",
+                   string ( "new-access-token" ),
+                   session.m_oauth2Handler->getAccessToken( ) );
+        }
+    }    
+}
+
+void GDriveTest::sessionExpiryTokenDeleteTest( )
+{
+    // Access_token will expire after expires_in seconds,
+    // We need to use the refresh key to get a new one.
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    
+    curl_mockup_reset( );
+    static const string objectId("aFileId");
+    string url = BASE_URL + "/files/" + objectId;
+  
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", "data/gdrive/document2.json", 200, true);
+   
+    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
+                             "POST", "data/gdrive/refresh_response.json", 200, true);
+    // 401 response, token is expired
+    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 401, false);
+    
+    libcmis::ObjectPtr obj = session.getObject( objectId );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    
+    try
+    {
+        // DELETE expires, need to refresh then DELETE again
+        object->remove( );
+    }
+    catch ( ... )
+    {
+        if ( session.getHttpStatus( ) == 401 )
+        {
+            // Check if access token is refreshed
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(
+                   "wrong access token",
+                   string ( "new-access-token" ),
+                   session.m_oauth2Handler->getAccessToken( ) );
+            const char* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+            CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
+        }
+    }
+    
+}
+
+void GDriveTest::sessionExpiryTokenPutTest( )
+{
+    // Access_token will expire after expires_in seconds,
+    // We need to use the refresh key to get a new one.
+    
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    
+    curl_mockup_reset( );
+    static const string objectId("aFileId");
+    string url = BASE_URL + "/files/" + objectId;  
+
+    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
+                             "POST", "data/gdrive/refresh_response.json", 200, true);
+
+    curl_mockup_addResponse( url.c_str( ), "", 
+                               "GET", "data/gdrive/document.json", 200, true );
+
+    // 401 response, token is expired
+    curl_mockup_addResponse( url.c_str( ),"", "PUT", "", 401, false );
+ 
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    try
+    {
+        // PUT expires, need to refresh then PUT again
+        object->updateProperties( object->getProperties( ) );
+    }
+    catch ( ... )
+    {
+        if ( session.getHttpStatus( ) == 401 )
+        {
+            // Check if access token is refreshed
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(
+                   "wrong access token",
+                   string ( "new-access-token" ),
+                   session.m_oauth2Handler->getAccessToken( ) );
+        }
+    }
+}
 
 void GDriveTest::getDocumentTest( )
 {
@@ -401,52 +679,6 @@ void GDriveTest::getRepositoriesTest( )
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
                                    string ( "GoogleDrive" ),
                                    actual.front()->getId( ) );
-}
-
-void GDriveTest::sessionAuthenticationTest( )
-{
-    GDriveSession session = getTestSession( USERNAME, PASSWORD );
-    string empty;
-    
-    // Check authentication request
-    string authRequest( curl_mockup_getRequest( LOGIN_URL.c_str(), empty.c_str( ),
-                                                "POST" ) );
-    string expectedAuthRequest =
-        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
-                 "&Email=") + USERNAME + string("&Passwd=") + PASSWORD;
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request",
-                                  expectedAuthRequest, authRequest );
-    
-    // Check code request
-    string codeRequest( curl_mockup_getRequest( APPROVAL_URL.c_str(),
-                        empty.c_str( ), "POST" ) );
-    string expectedCodeRequest = string( "state_wrapper=stateWrapper&submit_access=true" );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", 
-                                  expectedCodeRequest, codeRequest);
-    
-    // Check token request
-    string expectedTokenRequest = 
-        string( "code=AuthCode") + 
-        string( "&client_id=") + CLIENT_ID +
-        string( "&client_secret=") + CLIENT_SECRET + 
-        string( "&redirect_uri=") + REDIRECT_URI + 
-        string( "&grant_type=authorization_code" );
-
-    string tokenRequest( curl_mockup_getRequest( TOKEN_URL.c_str(), empty.c_str( ),
-                                                 "POST" ));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request",
-                                  expectedTokenRequest, tokenRequest );
-
-    // Check token
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-        "Wrong access token", 
-         string ( "mock-access-token" ), 
-         session.m_oauth2Handler->getAccessToken( ));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( 
-        "Wrong refresh token", 
-        string ("mock-refresh-token"), 
-        session.m_oauth2Handler->getRefreshToken( ));
 }
 
 void GDriveTest::getObjectTest()
@@ -825,33 +1057,5 @@ void GDriveTest::updatePropertiesTest( )
                     string( "application/vnd.google-apps.form"), mimeType );
 }
 
-GDriveSession GDriveTest::getTestSession( string username, string password )
-{
-    libcmis::OAuth2DataPtr oauth2(
-        new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
-                                 REDIRECT_URI, CLIENT_ID, CLIENT_SECRET ));
-    curl_mockup_reset( );
-    string empty;
-    //login response
-    string loginIdentifier = string("scope=") + SCOPE +
-                             string("&redirect_uri=") + REDIRECT_URI +
-                             string("&response_type=code") +
-                             string("&client_id=") + CLIENT_ID;
-    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
-                            "GET", "data/gdrive/login.html", 200, true);
-
-    //authentication response
-    curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
-                             "data/gdrive/approve.html", 200, true);
-
-    //approval response
-    curl_mockup_addResponse( APPROVAL_URL.c_str( ), empty.c_str( ),
-                             "POST", "data/gdrive/authcode.html", 200, true);
-
-    curl_mockup_addResponse ( TOKEN_URL.c_str( ), empty.c_str( ), "POST",
-                              "data/gdrive/token-response.json", 200, true );
-
-    return GDriveSession( BASE_URL, username, password, oauth2, false );
-}
-
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveTest );
+

@@ -108,6 +108,7 @@ class BaseSession : public libcmis::Session
 
         bool m_verbose;
         bool m_noHttpErrors;
+        bool m_refreshedToken;
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
                      std::string username, std::string password,

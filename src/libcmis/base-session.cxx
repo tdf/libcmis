@@ -120,7 +120,8 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
     m_authProvided( false ),
     m_repositories( ),
     m_verbose( verbose ),
-    m_noHttpErrors( false )
+    m_noHttpErrors( false ),
+    m_refreshedToken( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -143,7 +144,8 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_authProvided( copy.m_authProvided ),
     m_repositories( copy.m_repositories ),
     m_verbose( copy.m_verbose ),
-    m_noHttpErrors( copy.m_noHttpErrors )
+    m_noHttpErrors( copy.m_noHttpErrors ),
+    m_refreshedToken( false )
 {
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
@@ -162,7 +164,8 @@ BaseSession::BaseSession( ) :
     m_authProvided( false ),
     m_repositories( ),
     m_verbose( false ),
-    m_noHttpErrors( false )
+    m_noHttpErrors( false ),
+    m_refreshedToken( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -183,7 +186,8 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
         m_repositories = copy.m_repositories;
         m_verbose = copy.m_verbose;
         m_noHttpErrors = copy.m_noHttpErrors;
-        
+        m_refreshedToken = copy.m_refreshedToken;
+
         // Not sure how sharing curl handles is safe.
         curl_global_init( CURL_GLOBAL_ALL );
         m_curlHandle = curl_easy_init( );
@@ -272,18 +276,46 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
     try
     {
         httpRunRequest( url );
-        response->getData( )->finish();
+        response->getData( )->finish( );
     }
     catch ( const CurlException& e )
     {
-        throw;
+        // If the access token is expired, we get 401 error,
+        // Need to use the refresh token to get a new one.
+        if ( getHttpStatus( ) == 401 && m_oauth2Handler && !m_refreshedToken )
+        {        
+            // Refresh the token
+            m_oauth2Handler->refresh( );
+            
+            // Resend the query
+            try
+            {
+                // Avoid infinite recursive call
+                m_refreshedToken = true;
+                response = httpGetRequest( url );
+                m_refreshedToken = false;
+            } 
+            catch (const CurlException& )
+            {
+               
+                throw;
+            }
+            m_refreshedToken = false;
+        }
+        else throw;
     }
+    m_refreshedToken = false;
 
     return response;
 }
 
 libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, vector< string > headers ) throw ( CurlException )
 {
+    // Duplicate istream in case we need to retry
+    string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
+    
+    istringstream isOriginal( isStr ), isBackup( isStr );    
+
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
     initProtocols( );
@@ -301,41 +333,73 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
     long size = is.tellg( );
     is.seekg( 0, ios::beg );
     curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &is );
+    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
-
+    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
     if ( m_no100Continue )
         headers.push_back( "Expect:" );
-
-    httpRunRequest( url, headers );
-    response->getData( )->finish();
-
-    /** If we had a HTTP 417 response, this is likely to be due to some 
-        HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
-        header. Try to disable this header and try again.
-      */
-    if ( getHttpStatus() == 417 )
+    try
     {
-        headers.push_back( "Expect:" );
         httpRunRequest( url, headers );
         response->getData( )->finish();
-
-        // Remember that we don't want 100-Continue for the future requests
-        m_no100Continue = true;
     }
+    catch ( const CurlException& e )
+    {
+        long status = getHttpStatus( );
+        /** If we had a HTTP 417 response, this is likely to be due to some 
+            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+            header. Try to disable this header and try again.
+        */
+        if ( status == 417 && !m_no100Continue)
+        {
+            // Remember that we don't want 100-Continue for the future requests
+            m_no100Continue = true;
+            response = httpPutRequest( url, isBackup, headers );
+        }
 
+        // If the access token is expired, we get 401 error,
+        // Need to use the refresh token to get a new one.
+        if ( status == 401 && m_oauth2Handler && !m_refreshedToken )
+        {
+            
+            // Refresh the token
+            m_oauth2Handler->refresh( );
+            
+            // Resend the query
+            try
+            {
+                // Avoid infinite recursive call
+                m_refreshedToken = true;
+                response = httpPutRequest( url, isBackup, headers );
+                m_refreshedToken = false;
+            } 
+            catch (const CurlException& )
+            {
+                m_refreshedToken = false;
+                throw;
+            }
+        }
+        // Has tried but failed
+        if ( ( status != 417 || m_no100Continue ) && 
+             ( status != 401 || !m_oauth2Handler || m_refreshedToken ) ) throw;
+    }
+    m_refreshedToken = false;
     return response;
 }
 
 libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, 
     const string& contentType) throw ( CurlException )
 {
+    // Duplicate istream in case we need to retry
+    string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
+    
+    istringstream isOriginal( isStr ), isBackup( isStr );
+    
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
     initProtocols( );
@@ -353,11 +417,11 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
     long size = is.tellg( );
     is.seekg( 0, ios::beg );
     curl_easy_setopt( m_curlHandle, CURLOPT_POSTFIELDSIZE, size );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &is );
+    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &is );
+    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
 
     vector< string > headers;
     headers.push_back( string( "Content-Type:" ) + contentType );
@@ -366,23 +430,53 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
     // don't even try with it to save one HTTP request.
     if ( m_no100Continue )
         headers.push_back( "Expect:" );
-
-    httpRunRequest( url, headers );
-    response->getData( )->finish();
-
-    /** If we had a HTTP 417 response, this is likely to be due to some 
-        HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
-        header. Try to disable this header and try again.
-      */
-    if ( getHttpStatus() == 417 )
+    try 
     {
-        headers.push_back( "Expect:" );
         httpRunRequest( url, headers );
-        response->getData( )->finish();
-
-        // Remember that we don't want 100-Continue for the future requests
-        m_no100Continue = true;
+        response->getData( )->finish();    
     }
+    catch ( const CurlException& e )
+    {
+        
+        long status = getHttpStatus( );
+        /** If we had a HTTP 417 response, this is likely to be due to some 
+            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+            header. Try to disable this header and try again.
+        */
+        if ( status == 417 && !m_no100Continue )
+        {       
+            // Remember that we don't want 100-Continue for the future requests
+            m_no100Continue = true;
+            response = httpPostRequest( url, isBackup, contentType );
+        }
+
+        // If the access token is expired, we get 401 error,
+        // Need to use the refresh token to get a new one.
+        if ( status == 401 && m_oauth2Handler && !m_refreshedToken )
+        {          
+            // Refresh the token
+            m_oauth2Handler->refresh( );
+            
+            // Resend the query
+            try
+            {
+                // Avoid infinite recursive call
+                m_refreshedToken = true;
+                response = httpPostRequest( url, isBackup, contentType );
+                m_refreshedToken = false;
+            } 
+            catch (const CurlException& )
+            {
+                m_refreshedToken = false;
+                throw;
+            }
+        }
+        
+        // Has tried but failed
+        if ( ( status != 417 || m_no100Continue ) && 
+             ( status != 401 || !m_oauth2Handler || m_refreshedToken ) ) throw;
+    }
+    m_refreshedToken = false;
 
     return response;
 }
@@ -394,7 +488,36 @@ void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
     initProtocols( );
 
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
-    httpRunRequest( url );
+    try
+    {
+        httpRunRequest( url );
+    }
+    catch ( const CurlException& e )
+    {
+        // If the access token is expired, we get 401 error,
+        // Need to use the refresh token to get a new one.
+        if ( getHttpStatus( ) == 401 && m_oauth2Handler && !m_refreshedToken )
+        {
+            
+            // Refresh the token
+            m_oauth2Handler->refresh( );
+            // Resend the query
+            try
+            {
+                // Avoid infinite recursive call
+                m_refreshedToken = true;
+                httpDeleteRequest( url );
+                m_refreshedToken = false;
+            } 
+            catch (const CurlException& )
+            {  
+                m_refreshedToken = false;
+                throw;
+            }
+        }
+        else throw;
+    }
+    m_refreshedToken = false;
 }
 
 void BaseSession::checkCredentials( ) throw ( CurlException )
