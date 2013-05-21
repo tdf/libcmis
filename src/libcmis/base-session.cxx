@@ -626,12 +626,10 @@ long BaseSession::getHttpStatus( )
 
 void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
 {
-    OAuth2Handler* oauth2Handler = new OAuth2Handler( this, oauth2 );
+    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
     
-    m_oauth2Handler = oauth2Handler;
-
     // If oauth2 contains refresh token, we are done here
-    if ( oauth2Handler->isAuthenticated( ) ) return;
+    if ( m_oauth2Handler->isAuthenticated( ) ) return;
 
     string authCode;
 
@@ -645,7 +643,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
         {
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
             if ( fallbackProvider != NULL )
-                authCode = string( fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() ) ); 
+                authCode = string( fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() ) ); 
         }
     }
     catch ( const CurlException& e )
@@ -659,7 +657,7 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     if ( authCode.empty( ) )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
-    oauth2Handler->fetchTokens( string( authCode ) );
+    m_oauth2Handler->fetchTokens( string( authCode ) );
 }
 
 vector< libcmis::RepositoryPtr > BaseSession::getRepositories( )
