@@ -69,7 +69,7 @@ GDriveSession::~GDriveSession()
 {
 }
 
-char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
+string GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 {
     static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
     // STEP 1: Log in
@@ -125,12 +125,8 @@ char* GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
 
     // STEP 3: Take the authentication code from the text bar
     string code = GdriveUtils::parseCode( approvalRes.c_str( ) );
-    if ( code.empty( )) 
-        return NULL;
-    char* authCode = new char [ code.length( ) ];
-    strcpy( authCode, code.c_str( ));
 
-    return authCode;
+    return code;
 }
 
 libcmis::RepositoryPtr GDriveSession::getRepository( ) 

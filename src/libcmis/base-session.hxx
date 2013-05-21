@@ -163,10 +163,9 @@ class BaseSession : public libcmis::Session
 
             \return
                 the authentication code to transform into access/refresh tokens or NULL.
-                The resulting authentication code will need to be deleted by the client
-                code.
+                If no code is found, an empty string is returned.
           */
-        virtual char* oauth2Authenticate( ) throw ( CurlException );
+        virtual std::string oauth2Authenticate( ) throw ( CurlException );
         
         virtual std::string getRefreshToken( ) throw ( libcmis::Exception );    
     protected:

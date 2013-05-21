@@ -638,19 +638,19 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     // If oauth2 contains refresh token, we are done here
     if ( oauth2Handler->isAuthenticated( ) ) return;
 
-    char* authCode = NULL;
+    string authCode;
 
     try
     {
-                // Try to get the authentication code using the given provider.
+        // Try to get the authentication code using the given provider.
         authCode = oauth2Authenticate( );
 
         // If that didn't work, call the fallback provider from SessionFactory
-        if ( authCode == NULL )
+        if ( authCode.empty( ) )
         {
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
             if ( fallbackProvider != NULL )
-                authCode = fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+                authCode = string( fallbackProvider( oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() ) ); 
         }
     }
     catch ( const CurlException& e )
@@ -661,11 +661,10 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     }
 
     // If still no auth code, then raise an exception
-    if ( authCode == NULL )
+    if ( authCode.empty( ) )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     oauth2Handler->fetchTokens( string( authCode ) );
-    delete authCode;
 }
 
 vector< libcmis::RepositoryPtr > BaseSession::getRepositories( )
@@ -685,9 +684,9 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
     return folder;
 }
 
-char* BaseSession::oauth2Authenticate( ) throw ( CurlException )
+string BaseSession::oauth2Authenticate( ) throw ( CurlException )
 {
-    return NULL;
+    return string( );
 }
 
 const char* CurlException::what( ) const throw ()
