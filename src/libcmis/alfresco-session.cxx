@@ -68,7 +68,7 @@ string AlfrescoSession::oauth2Authenticate ( ) throw ( CurlException )
     }
     catch ( const CurlException& e )
     {
-        throw e.getCmisException( );
+        return string( );
     }
 
     string loginPost, loginLink;

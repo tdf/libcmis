@@ -81,12 +81,12 @@ string GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
     }
     catch ( const CurlException& e )
     {
-        throw e.getCmisException( );
+        return string( );
     }
 
     string loginPost, loginLink; 
     if ( !GdriveUtils::parseResponse( res.c_str( ), loginPost, loginLink ) ) 
-        return NULL;
+        return string( );
     
     loginPost += "Email=";  
     loginPost += string( getUsername( ) );
@@ -102,13 +102,13 @@ string GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
     }
     catch ( const CurlException& e )
     {
-        throw e.getCmisException( );
+        return string( );
     }
 
     // STEP 2: allow libcmis to access google drive
     string approvalPost, approvalLink; 
     if ( !GdriveUtils::parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
-        return NULL;
+        return string( );
     approvalPost += "submit_access=true";
 
     istringstream approvalIs( approvalPost );
