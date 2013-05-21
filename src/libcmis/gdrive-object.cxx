@@ -98,6 +98,48 @@ void GDriveObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
+vector< Rendition> GDriveObject::getRenditions( )
+{
+    if ( m_renditions.empty( ) )
+    {
+        string downloadUrl = getStringProperty( "downloadUrl" );
+        if ( !downloadUrl.empty( ) )
+        {
+            string mimeType = getStringProperty( "cmis:contentStreamMimeType" );
+            if ( !mimeType.empty( ) )
+            { 
+                Rendition rendition( mimeType, mimeType, mimeType, downloadUrl );
+                m_renditions.push_back( rendition );
+            }
+        }
+
+        string exportLinks = getStringProperty( "exportLinks" );
+        if ( !exportLinks.empty( ) )
+        {
+            Json renditionJson = Json::parse( exportLinks );
+            Json::JsonObject objs = renditionJson.getObjects( );
+            Json::JsonObject::iterator it; 
+            for ( it = objs.begin( ); it != objs.end( ); it++)
+            { 
+                string mimeType = it->first;
+                string url = it->second.toString( );
+                Rendition rendition( mimeType, mimeType, mimeType, url );
+                m_renditions.push_back( rendition );
+            }
+        }
+
+        // thumbnail link        
+        string thumbnailLink = getStringProperty( "thumbnailLink" );
+        if ( !thumbnailLink.empty( ) )
+        {
+            string mimeType = "cmis:thumbnail";   
+            Rendition rendition( mimeType, mimeType, mimeType, thumbnailLink );
+            m_renditions.push_back( rendition );
+        }
+    }
+    return m_renditions;
+}
+
 libcmis::ObjectPtr GDriveObject::updateProperties(
         const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {

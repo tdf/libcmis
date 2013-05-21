@@ -87,6 +87,7 @@ class GDriveTest : public CppUnit::TestFixture
         void removeTreeTest( );
         void getContentStreamWithRenditionsTest( );
         void getRefreshTokenTest( );
+        void getThumbnailUrlTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -117,6 +118,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( removeTreeTest );
         CPPUNIT_TEST( getContentStreamWithRenditionsTest );
         CPPUNIT_TEST( getRefreshTokenTest );
+        CPPUNIT_TEST( getThumbnailUrlTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -1066,6 +1068,24 @@ void GDriveTest::getRefreshTokenTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Refresh token does not match",
                                   string ("mock-refresh-token"),
                                   session.getRefreshToken( ) );
+}
+
+void GDriveTest::getThumbnailUrlTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string documentId( "aFileId" );
+
+    const string documentUrl = BASE_URL + "/files/" + documentId;
+   
+    curl_mockup_addResponse( documentUrl.c_str( ), "", 
+                               "GET", "data/gdrive/document.json", 200, true );
+ 
+    libcmis::ObjectPtr document = session.getObject( documentId );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Thumbnail URL does not match",
+                                   string ("https://aThumbnailLink"),
+                                   document->getThumbnailUrl( ) );
+
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveTest );

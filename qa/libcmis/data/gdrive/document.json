@@ -37,6 +37,7 @@
   "application/x-vnd.oasis.opendocument.spreadsheet": "https://downloadLink",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlslink"
  },
+ "thumbnailLink": "https://aThumbnailLink",
  "userPermission": {
   "kind": "drive#permission",
   "id": "me",

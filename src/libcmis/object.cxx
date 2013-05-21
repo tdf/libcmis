@@ -222,6 +222,20 @@ namespace libcmis
         return m_typeDescription;
     }
 
+    string Object::getThumbnailUrl( ) throw ( libcmis::Exception )
+    {
+        string url;
+        vector< Rendition > renditions = getRenditions( );
+        for ( vector< Rendition>::iterator it = renditions.begin( ); 
+            it != renditions.end( ); it++)
+                
+        {
+            if ( (*it).getKind( ) == "cmis:thumbnail" ) return (*it).getUrl( );    
+        }
+        
+        return url;
+    }
+
     string Object::toString( )
     {
         stringstream buf;

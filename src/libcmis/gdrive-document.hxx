@@ -56,7 +56,6 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
                                        std::string contentType )
                                              throw ( libcmis::Exception );
 
-        virtual std::vector< libcmis::Rendition> getRenditions( );
         virtual std::vector< libcmis::FolderPtr > getParents( ) 
                     throw (libcmis::Exception );
         virtual boost::shared_ptr< std::istream > getContentStream( 

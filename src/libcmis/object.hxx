@@ -146,6 +146,9 @@ namespace libcmis
 
             virtual void move( boost::shared_ptr< Folder > source, boost::shared_ptr< Folder > destination ) throw ( Exception ) = 0;
 
+
+            virtual std::string getThumbnailUrl( ) throw ( Exception );
+
             /** Dump the object as a string for debugging or display purpose.
               */
             virtual std::string toString( );
