@@ -100,7 +100,7 @@
       <cmis:canGetDescendants>false</cmis:canGetDescendants>
       <cmis:canMoveObject>true</cmis:canMoveObject>
       <cmis:canDeleteContentStream>true</cmis:canDeleteContentStream>
-      <cmis:canCheckOut>false</cmis:canCheckOut>
+      <cmis:canCheckOut>true</cmis:canCheckOut>
       <cmis:canCancelCheckOut>false</cmis:canCancelCheckOut>
       <cmis:canCheckIn>false</cmis:canCheckIn>
       <cmis:canSetContentStream>true</cmis:canSetContentStream>
