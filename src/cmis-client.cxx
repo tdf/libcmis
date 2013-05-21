@@ -191,66 +191,77 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
 
     bool verbose = m_vm.count( "verbose" ) > 0;
 
+    libcmis::Session* session = NULL;
     string repoId;
     // The repository ID is needed to initiate a session
     if ( m_vm.count( "repository" ) == 0 && !inGetRepositories )
     {
         // Do we have a single repository on the server?
-        libcmis::Session* session = getSession( true );
+        session = getSession( true );
         if ( session != NULL )
         {
             vector< libcmis::RepositoryPtr > repos = session->getRepositories();
             if ( repos.size() == 1 )
+            {
                 repoId = repos.front( )->getId( );
+                session->setRepository( repoId );
+            }
         }
-        delete session;
 
         // We couldn't auto-guess the repository, then throw an error
         if ( repoId.empty( ) )
+        {
+            delete session;
             throw CommandException( "Missing repository ID" );
+        }
     }
     else if ( m_vm.count( "repository" ) > 0 )
     {
         repoId = m_vm["repository"].as< string >();
     }
 
-    // Should we use OAuth2?
-    string oauth2ClientId;
-    string oauth2ClientSecret;
-    string oauth2AuthUrl;
-    string oauth2TokenUrl;
-    string oauth2RedirectUri;
-    string oauth2Scope;
-    string oauth2Refreshtoken;
-    if ( m_vm.count( "oauth2-client-id" ) > 0 )
-        oauth2ClientId = m_vm["oauth2-client-id"].as< string >();
-    if ( m_vm.count( "oauth2-client-secret" ) > 0 )
-        oauth2ClientSecret = m_vm["oauth2-client-secret"].as< string >();
-    if ( m_vm.count( "oauth2-auth-url" ) > 0 )
-        oauth2AuthUrl = m_vm["oauth2-auth-url"].as< string >();
-    if ( m_vm.count( "oauth2-token-url" ) > 0 )
-        oauth2TokenUrl = m_vm["oauth2-token-url"].as< string >();
-    if ( m_vm.count( "oauth2-redirect-uri" ) > 0 )
-        oauth2RedirectUri = m_vm["oauth2-redirect-uri"].as< string >();
-    if ( m_vm.count( "oauth2-scope" ) > 0 )
-        oauth2Scope = m_vm["oauth2-scope"].as< string >();
-    if ( m_vm.count( "oauth2-refresh-token" ) > 0 )
-        oauth2Refreshtoken = m_vm["oauth2-refresh-token"].as< string >();
-
-    libcmis::OAuth2DataPtr oauth2Data( new libcmis::OAuth2Data( oauth2AuthUrl, oauth2TokenUrl,
-                oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret, oauth2Refreshtoken ) );
-
-    if ( oauth2Data->isComplete( ) )
+    if ( session == NULL )
     {
-        // Set the fallback AuthCode provider
-        libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_queryAuthCode );
-    }
-    else
-    {
-        oauth2Data.reset( );
+        // Should we use OAuth2?
+        string oauth2ClientId;
+        string oauth2ClientSecret;
+        string oauth2AuthUrl;
+        string oauth2TokenUrl;
+        string oauth2RedirectUri;
+        string oauth2Scope;
+        string oauth2Refreshtoken;
+        if ( m_vm.count( "oauth2-client-id" ) > 0 )
+            oauth2ClientId = m_vm["oauth2-client-id"].as< string >();
+        if ( m_vm.count( "oauth2-client-secret" ) > 0 )
+            oauth2ClientSecret = m_vm["oauth2-client-secret"].as< string >();
+        if ( m_vm.count( "oauth2-auth-url" ) > 0 )
+            oauth2AuthUrl = m_vm["oauth2-auth-url"].as< string >();
+        if ( m_vm.count( "oauth2-token-url" ) > 0 )
+            oauth2TokenUrl = m_vm["oauth2-token-url"].as< string >();
+        if ( m_vm.count( "oauth2-redirect-uri" ) > 0 )
+            oauth2RedirectUri = m_vm["oauth2-redirect-uri"].as< string >();
+        if ( m_vm.count( "oauth2-scope" ) > 0 )
+            oauth2Scope = m_vm["oauth2-scope"].as< string >();
+        if ( m_vm.count( "oauth2-refresh-token" ) > 0 )
+            oauth2Refreshtoken = m_vm["oauth2-refresh-token"].as< string >();
+
+        libcmis::OAuth2DataPtr oauth2Data( new libcmis::OAuth2Data( oauth2AuthUrl, oauth2TokenUrl,
+                    oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret, oauth2Refreshtoken ) );
+
+        if ( oauth2Data->isComplete( ) )
+        {
+            // Set the fallback AuthCode provider
+            libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_queryAuthCode );
+        }
+        else
+        {
+            oauth2Data.reset( );
+        }
+
+        session = libcmis::SessionFactory::createSession( url, username, password, repoId, oauth2Data, verbose );
     }
 
-    return libcmis::SessionFactory::createSession( url, username, password, repoId, oauth2Data, verbose );
+    return session;
 }
 
 void CmisClient::execute( ) throw ( exception )
