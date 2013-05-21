@@ -29,6 +29,7 @@
 #include "gdrive-session.hxx"
 #include "session-factory.hxx"
 #include "ws-session.hxx"
+#include "alfresco-session.hxx"
 
 using namespace std;
 
@@ -63,6 +64,12 @@ namespace libcmis
             if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
             {
                 session = new GDriveSession( bindingUrl, username, 
+                                             password, oauth2, verbose );
+            }
+            else
+            if ( bindingUrl == "https://api.alfresco.com/cmis/versions/1.0/atom/" )
+            {
+                session = new AlfrescoSession( bindingUrl, repository, username, 
                                              password, oauth2, verbose );
             }
             else

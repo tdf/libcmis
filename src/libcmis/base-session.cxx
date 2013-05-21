@@ -108,7 +108,7 @@ namespace
 }
 
 BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
-        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+        string password, libcmis::OAuth2DataPtr /*oauth2*/, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
@@ -125,11 +125,6 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
-
-    // Init OAuth2 after curl handle as this one will be needed
-    // to get the OAuth2 tokens    
-    if ( oauth2 && oauth2->isComplete() )
-        setOAuth2Data( oauth2 );
 }
 
 BaseSession::BaseSession( const BaseSession& copy ) :
@@ -393,7 +388,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
 }
 
 libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istream& is, 
-    const string& contentType) throw ( CurlException )
+    const string& contentType, bool redirect ) throw ( CurlException )
 {
     // Duplicate istream in case we need to retry
     string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
@@ -432,7 +427,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
         headers.push_back( "Expect:" );
     try 
     {
-        httpRunRequest( url, headers );
+        httpRunRequest( url, headers, redirect );
         response->getData( )->finish();    
     }
     catch ( const CurlException& e )
@@ -447,7 +442,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
         {       
             // Remember that we don't want 100-Continue for the future requests
             m_no100Continue = true;
-            response = httpPostRequest( url, isBackup, contentType );
+            response = httpPostRequest( url, isBackup, contentType, redirect );
         }
 
         // If the access token is expired, we get 401 error,
@@ -462,7 +457,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
             {
                 // Avoid infinite recursive call
                 m_refreshedToken = true;
-                response = httpPostRequest( url, isBackup, contentType );
+                response = httpPostRequest( url, isBackup, contentType, redirect );
                 m_refreshedToken = false;
             } 
             catch (const CurlException& )
@@ -534,10 +529,10 @@ void BaseSession::checkCredentials( ) throw ( CurlException )
     }
 }
 
-void BaseSession::httpRunRequest( string url, vector< string > headers ) throw ( CurlException )
+void BaseSession::httpRunRequest( string url, vector< string > headers, bool redirect ) throw ( CurlException )
 {
-    // Always redirect
-    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, 1);
+    // Redirect
+    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
     
     // Activate the cookie engine
     curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );

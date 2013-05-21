@@ -64,7 +64,7 @@ class AtomPubSession : public BaseSession
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 
-    private:
+    protected:
 
         /** Defaults constructor shouldn't be used
           */

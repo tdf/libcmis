@@ -142,7 +142,7 @@ class BaseSession : public libcmis::Session
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType ) throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType, bool redirect = true ) throw ( CurlException );
         void httpDeleteRequest( std::string url ) throw ( CurlException );
         
         long getHttpStatus( );
@@ -173,7 +173,7 @@ class BaseSession : public libcmis::Session
 
     private:
         void checkCredentials( ) throw ( CurlException );
-        void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ) ) throw ( CurlException );
+        void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ), bool redirect = true ) throw ( CurlException );
         void initProtocols( );
 };
 
