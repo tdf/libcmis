@@ -110,6 +110,11 @@ namespace dummies
         return type;
     }
 
+    std::string Session::getRefreshToken( ) throw ( libcmis::Exception )
+    {
+        return string( );
+    }
+
     Repository::Repository( ) :
         libcmis::Repository( )
     {

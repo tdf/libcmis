@@ -86,6 +86,7 @@ class GDriveTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void removeTreeTest( );
         void getContentStreamWithRenditionsTest( );
+        void getRefreshTokenTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -115,6 +116,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( removeTreeTest );
         CPPUNIT_TEST( getContentStreamWithRenditionsTest );
+        CPPUNIT_TEST( getRefreshTokenTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -1055,6 +1057,15 @@ void GDriveTest::updatePropertiesTest( )
                                   string( "GDrive File"), title );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "mimeType key not converted", 
                     string( "application/vnd.google-apps.form"), mimeType );
+}
+
+void GDriveTest::getRefreshTokenTest( )
+{
+    curl_mockup_reset( );
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Refresh token does not match",
+                                  string ("mock-refresh-token"),
+                                  session.getRefreshToken( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveTest );

@@ -167,7 +167,8 @@ class BaseSession : public libcmis::Session
                 code.
           */
         virtual char* oauth2Authenticate( ) throw ( CurlException );
-
+        
+        virtual std::string getRefreshToken( ) throw ( libcmis::Exception );    
     protected:
         BaseSession( );
 

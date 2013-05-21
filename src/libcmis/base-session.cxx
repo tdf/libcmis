@@ -752,3 +752,12 @@ void BaseSession::initProtocols( )
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
 }
+
+string BaseSession::getRefreshToken( ) throw ( libcmis::Exception )
+{
+    string refreshToken;
+    if ( m_oauth2Handler ) 
+        refreshToken = m_oauth2Handler->getRefreshToken( );
+    return refreshToken;
+}
+
