@@ -44,7 +44,16 @@ OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
     
     // If data contains refresh token, use it to fetch access key directly    
     if ( !m_data->getRefreshToken( ).empty( ) )
-        refresh( );
+    {
+        try
+        {
+            refresh( );
+        }
+        catch (...)
+        {
+            // Couldn't refresh token, continue with other methods
+        }
+    }
 }
 
 OAuth2Handler::OAuth2Handler( const OAuth2Handler& copy ) :
