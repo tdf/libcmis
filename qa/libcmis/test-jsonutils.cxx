@@ -37,7 +37,6 @@
 #define private public
 #define protected public
 
-#include <mockup-config.h>
 #include "json-utils.hxx"
 #include "property.hxx"
 #include "property-type.hxx"

@@ -92,14 +92,13 @@ test_nosrv_json_SOURCES =	\
 
 test_nosrv_json_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
-	-I$(top_builddir)/qa/mockup \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	$(JSON_CPPFLAGS) \
 	-O0
 
 test_nosrv_json_LDADD = \
-	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)\
@@ -154,6 +153,6 @@ long_tests = \
 endif
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils test-nosrc-json ${mockup_tests} ${long_tests}
+TESTS = test-nosrv-utils test-nosrv-json ${mockup_tests} ${long_tests}
 
 endif
