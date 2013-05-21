@@ -277,7 +277,7 @@ libcmis::HttpResponsePtr BaseSession::httpGetRequest( string url ) throw ( CurlE
     {
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.
-        if ( getHttpStatus( ) == 401 && m_oauth2Handler && !m_refreshedToken )
+        if ( getHttpStatus( ) == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )
         {        
             // Refresh the token
             m_oauth2Handler->refresh( );
@@ -359,7 +359,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
 
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.
-        if ( status == 401 && m_oauth2Handler && !m_refreshedToken )
+        if ( status == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )
         {
             
             // Refresh the token
@@ -381,7 +381,7 @@ libcmis::HttpResponsePtr BaseSession::httpPutRequest( string url, istream& is, v
         }
         // Has tried but failed
         if ( ( status != 417 || m_no100Continue ) && 
-             ( status != 401 || !m_oauth2Handler || m_refreshedToken ) ) throw;
+             ( status != 401 || getRefreshToken( ).empty( ) || m_refreshedToken ) ) throw;
     }
     m_refreshedToken = false;
     return response;
@@ -447,7 +447,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
 
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.
-        if ( status == 401 && m_oauth2Handler && !m_refreshedToken )
+        if ( status == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )            
         {          
             // Refresh the token
             m_oauth2Handler->refresh( );
@@ -469,7 +469,7 @@ libcmis::HttpResponsePtr BaseSession::httpPostRequest( const string& url, istrea
         
         // Has tried but failed
         if ( ( status != 417 || m_no100Continue ) && 
-             ( status != 401 || !m_oauth2Handler || m_refreshedToken ) ) throw;
+             ( status != 401 || getRefreshToken( ).empty( ) || m_refreshedToken ) ) throw;
     }
     m_refreshedToken = false;
 
@@ -491,7 +491,7 @@ void BaseSession::httpDeleteRequest( string url ) throw ( CurlException )
     {
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.
-        if ( getHttpStatus( ) == 401 && m_oauth2Handler && !m_refreshedToken )
+        if ( getHttpStatus( ) == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )            
         {
             
             // Refresh the token
@@ -636,7 +636,14 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     try
     {
         // Try to get the authentication code using the given provider.
-        authCode = oauth2Authenticate( );
+        try
+        {
+            authCode = oauth2Authenticate( );
+        }
+        catch (...)
+        {
+            // continue to fallback
+        }
 
         // If that didn't work, call the fallback provider from SessionFactory
         if ( authCode.empty( ) )

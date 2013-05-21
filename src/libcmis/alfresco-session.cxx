@@ -74,7 +74,7 @@ string AlfrescoSession::oauth2Authenticate ( ) throw ( CurlException )
     string loginPost, loginLink;
 
     if ( !GdriveUtils::parseResponse( res.c_str( ), loginPost, loginLink ) ) 
-        return NULL;
+        return string( );
     
     loginPost += "username=";  
     loginPost += string( getUsername( ) );
@@ -92,7 +92,7 @@ string AlfrescoSession::oauth2Authenticate ( ) throw ( CurlException )
     }
     catch ( const CurlException& e )
     {
-         throw e.getCmisException( );
+        return string( );
     }
 
     string header = resp->getHeaders()["Location"];
