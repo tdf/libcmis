@@ -10,6 +10,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	object.hxx \
 	property-type.hxx \
 	property.hxx \
+	rendition.hxx \
 	repository.hxx \
 	session-factory.hxx \
 	session.hxx \
@@ -92,7 +93,6 @@ libcmis_la_SOURCES = \
 	json-utils.cxx \
 	oauth2-handler.hxx \
 	oauth2-handler.cxx \
-	rendition.hxx \
 	rendition.cxx \
 	alfresco-session.cxx
 
