@@ -60,7 +60,6 @@ class GDriveTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
-        void sessionAuthenticationRefreshkeyTest( );
         void sessionExpiryTokenGetTest( );
         void sessionExpiryTokenPostTest( );
         void sessionExpiryTokenPutTest( );
@@ -91,7 +90,6 @@ class GDriveTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
-        CPPUNIT_TEST( sessionAuthenticationRefreshkeyTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
         CPPUNIT_TEST( sessionExpiryTokenPutTest );
         CPPUNIT_TEST( sessionExpiryTokenPostTest );
@@ -198,34 +196,6 @@ void GDriveTest::sessionAuthenticationTest( )
         "Wrong refresh token", 
         string ("mock-refresh-token"), 
         session.m_oauth2Handler->getRefreshToken( ));
-}
-
-void GDriveTest::sessionAuthenticationRefreshkeyTest( )
-{
-    // OAuth2 authentication using refresh key without username/password
-    string aRefreshToken( "aRefreshToken" );
-
-    libcmis::OAuth2DataPtr oauth2(
-        new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
-                                 REDIRECT_URI, CLIENT_ID, CLIENT_SECRET, aRefreshToken));
-    
-    curl_mockup_reset( );
-    string empty;
-    curl_mockup_addResponse( TOKEN_URL.c_str(), empty.c_str( ),
-                            "POST", "data/gdrive/refresh_response.json", 200, true);
-
-    GDriveSession session( BASE_URL, "bad", "bad", oauth2, false );
-
-    // Check new acess token
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-            "Wrong access token",
-            string ( "new-access-token" ),
-            session.m_oauth2Handler->getAccessToken( ) );
-    
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(
-            "Wrong refresh token",
-            aRefreshToken,
-            session.m_oauth2Handler->getRefreshToken( ) );
 }
 
 void GDriveTest::sessionExpiryTokenGetTest( )

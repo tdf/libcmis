@@ -78,10 +78,6 @@ namespace libcmis
             /** Get a CMIS object type from its ID.
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
-
-            /** Get the OAuth2 refresh token, to be stored and reused.
-              */
-            virtual std::string getRefreshToken( ) throw ( Exception ) = 0;
     };
 }
 

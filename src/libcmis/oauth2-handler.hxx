@@ -43,7 +43,7 @@ class OAuth2Handler
         libcmis::OAuth2DataPtr m_data;
 
         std::string m_access;
-
+        std::string m_refresh;
     public:
 
         OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data ) 

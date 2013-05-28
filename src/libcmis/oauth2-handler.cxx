@@ -37,36 +37,26 @@ OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
     throw ( libcmis::Exception ) :
         m_session( session ),
         m_data( data ),
-        m_access( )
+        m_access( ),
+        m_refresh( )
 {
     if ( !m_data )
         m_data.reset( new libcmis::OAuth2Data() );
-    
-    // If data contains refresh token, use it to fetch access key directly    
-    if ( !m_data->getRefreshToken( ).empty( ) )
-    {
-        try
-        {
-            refresh( );
-        }
-        catch (...)
-        {
-            // Couldn't refresh token, continue with other methods
-        }
-    }
 }
 
 OAuth2Handler::OAuth2Handler( const OAuth2Handler& copy ) :
         m_session( copy.m_session ),
         m_data( copy.m_data ),
-        m_access( copy.m_access )
+        m_access( copy.m_access ),
+        m_refresh( copy.m_refresh )
 {
 }
 
 OAuth2Handler::OAuth2Handler( ):
         m_session( NULL ),
         m_data( ),
-        m_access( )
+        m_access( ),
+        m_refresh( )
 {
     m_data.reset( new libcmis::OAuth2Data() );
 }
@@ -78,6 +68,7 @@ OAuth2Handler& OAuth2Handler::operator=( const OAuth2Handler& copy )
         m_session = copy.m_session;
         m_data = copy.m_data;
         m_access = copy.m_access;
+        m_refresh = copy.m_refresh;
     }
 
     return *this;
@@ -119,15 +110,14 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 
     Json jresp = Json::parse( resp->getStream( )->str( ) );
     m_access = jresp[ "access_token" ].toString( );
-    string refreshToken = jresp[ "refresh_token" ].toString( );
-    m_data->setRefreshToken( refreshToken );
+    m_refresh = jresp[ "refresh_token" ].toString( );
 }
 
 void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
 {
     m_access = string( );
     string post =
-        "refresh_token="     + m_data->getRefreshToken( ) +
+        "refresh_token="     + m_refresh +
         "&client_id="        + m_data->getClientId() +
         "&client_secret="    + m_data->getClientSecret() +
         "&grant_type=refresh_token" ;
@@ -159,12 +149,12 @@ string OAuth2Handler::getAuthURL( )
 
 string OAuth2Handler::getAccessToken( ) throw ( libcmis::Exception )
 {
-    return m_access ;
+    return m_access;
 }
 
 string OAuth2Handler::getRefreshToken( ) throw ( libcmis::Exception )
 {
-    return m_data->getRefreshToken( ) ;
+    return m_refresh;
 }
 
 string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )

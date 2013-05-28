@@ -45,7 +45,6 @@ namespace libcmis
             std::string m_clientSecret;
             std::string m_scope;
             std::string m_redirectUri;
-            std::string m_refreshToken;
         public:
 
             OAuth2Data( );
@@ -54,8 +53,7 @@ namespace libcmis
                         const std::string& scope, 
                         const std::string& redirectUri,
                         const std::string& clientId, 
-                        const std::string& clientSecret,
-                        const std::string& refreshToken = std::string( ) );
+                        const std::string& clientSecret );
 
             OAuth2Data( const OAuth2Data& copy );
             ~OAuth2Data( );
@@ -64,9 +62,6 @@ namespace libcmis
 
             bool isComplete();
 
-            void setRefreshToken( const std::string& refreshToken ) { m_refreshToken = refreshToken; }
-
-            std::string getRefreshToken() { return m_refreshToken; }
             std::string getAuthUrl() { return m_authUrl; }
             std::string getTokenUrl() { return m_tokenUrl; }
             std::string getClientId() { return m_clientId; }

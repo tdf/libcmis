@@ -229,7 +229,6 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
         string oauth2TokenUrl;
         string oauth2RedirectUri;
         string oauth2Scope;
-        string oauth2Refreshtoken;
         if ( m_vm.count( "oauth2-client-id" ) > 0 )
             oauth2ClientId = m_vm["oauth2-client-id"].as< string >();
         if ( m_vm.count( "oauth2-client-secret" ) > 0 )
@@ -242,11 +241,9 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
             oauth2RedirectUri = m_vm["oauth2-redirect-uri"].as< string >();
         if ( m_vm.count( "oauth2-scope" ) > 0 )
             oauth2Scope = m_vm["oauth2-scope"].as< string >();
-        if ( m_vm.count( "oauth2-refresh-token" ) > 0 )
-            oauth2Refreshtoken = m_vm["oauth2-refresh-token"].as< string >();
 
         libcmis::OAuth2DataPtr oauth2Data( new libcmis::OAuth2Data( oauth2AuthUrl, oauth2TokenUrl,
-                    oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret, oauth2Refreshtoken ) );
+                    oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret) );
 
         if ( oauth2Data->isComplete( ) )
         {
@@ -956,7 +953,6 @@ options_description CmisClient::getOptionsDescription( )
         ( "oauth2-token-url", value< string >(), "URL to convert code to tokens in the OAuth2 flow" )
         ( "oauth2-redirect-uri", value< string >(), "redirect URI indicating that the authentication is finished in OAuth2 flow" )
         ( "oauth2-scope", value< string >(), "The authentication scope in OAuth2" )
-        ( "oauth2-refresh-token", value< string >(), "The OAuth2 refresh key, to avoid using username/password" )
     ;
 
     options_description setcontentOpts( "modification operations options" );
