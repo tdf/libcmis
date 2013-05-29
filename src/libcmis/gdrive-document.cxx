@@ -60,7 +60,7 @@ GDriveDocument::~GDriveDocument( )
 string GDriveDocument::getDownloadUrl( string streamId )
 {
     string streamUrl;
-    vector< Rendition > renditions = getRenditions( );    
+    vector< RenditionPtr > renditions = getRenditions( );    
     
     if ( renditions.empty( ) )
         return streamUrl;    
@@ -68,12 +68,12 @@ string GDriveDocument::getDownloadUrl( string streamId )
     if ( !streamId.empty( ) )
     {
         // Find the rendition associated with the streamId
-        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
             it != renditions.end(); ++it )
         {
-            if ( it->getStreamId( ) == streamId )
+            if ( (*it)->getStreamId( ) == streamId )
             {
-                streamUrl = it->getUrl( );
+                streamUrl = (*it)->getUrl( );
                 break;
             }
         }
@@ -83,19 +83,19 @@ string GDriveDocument::getDownloadUrl( string streamId )
         // Automatically find the rendition
 
         // Prefer ODF format
-        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
             it != renditions.end(); ++it )
-            if ( it->getMimeType( ).find( "opendocument") != string::npos )
-                return it->getUrl( );
+            if ( (*it)->getMimeType( ).find( "opendocument") != string::npos )
+                return (*it)->getUrl( );
 
         // Then MS format
-        for ( vector< Rendition >::iterator it = renditions.begin( ) ; 
+        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
             it != renditions.end(); ++it )
-            if ( it->getMimeType( ).find( "officedocument") != string::npos )
-                return it->getUrl( );
+            if ( (*it)->getMimeType( ).find( "officedocument") != string::npos )
+                return (*it)->getUrl( );
 
         // If not found, take the first one
-        streamUrl = renditions.front( ).getUrl( );
+        streamUrl = renditions.front( )->getUrl( );
 
     }
 

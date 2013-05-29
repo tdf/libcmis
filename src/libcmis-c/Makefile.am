@@ -10,11 +10,13 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	object-type.h \
 	property.h \
 	property-type.h \
+	oauth2-data.h \
+	rendition.h \
 	repository.h \
 	types.h \
 	session.h \
 	session-factory.h \
-	vectors.h
+	vectors.h 
 
 lib_LTLIBRARIES = libcmis-c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -31,7 +33,9 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	repository.cxx \
 	session.cxx \
 	session-factory.cxx \
-	vectors.cxx
+	vectors.cxx \
+	oauth2-data.cxx \
+	rendition.cxx
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 

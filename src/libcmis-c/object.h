@@ -79,6 +79,12 @@ time_t libcmis_object_getLastModificationDate( libcmis_ObjectPtr object );
 char* libcmis_object_getChangeToken( libcmis_ObjectPtr object );
 bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 
+/** The resulting value needs to be free'd.
+  */
+char* libcmis_object_getThumbnailUrl( libcmis_ObjectPtr object );
+
+libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
+
 libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object );
 libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );

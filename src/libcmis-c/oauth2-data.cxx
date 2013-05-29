@@ -31,38 +31,10 @@
 
 using namespace std;
 
-
-libcmis_OAuth2DataPtr libcmis_oauth2data_create(
-        char* authUrl, char* tokenUrl, char* scope, char* redirectUri,
-        char* clientId, char* clientSecret,
-        libcmis_OAuth2AuthCodeProvider authCodeProvider = NULL )
-{
-    libcmis_OAuth2DataPtr data = NULL;
-    try
-    {
-        data = libcmis_oauth2data( );
-
-        data->handle.reset( new libcmis::OAuth2Data(
-                   authUrl, tokenUrl, scope, redirectUri,
-                   clientId, clientSecret, authCodeProvider ) );
-    }
-    catch ( const bad_alloc& e )
-    {
-        if ( error != NULL )
-        {
-            error->message = strdup( e.what() );
-            error->badAlloc = true;
-        }
-    }
-    return data;
-}
-
-
 void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 )
 {
     delete oauth2;
 }
-
 
 bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 )
 {
@@ -121,9 +93,3 @@ const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 )
 }
 
 
-libcmis_OAuth2AuthCodeProvider libcmis_oauth2data_getAuthCodeProvider( libcmis_OAuth2DataPtr oauth2 )
-{
-    if ( oauth2 != NULL && oauth2->handle != NULL )
-        return oauth2->handle->getAuthCodeProvider( );
-    return NULL;
-}

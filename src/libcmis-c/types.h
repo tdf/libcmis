@@ -177,6 +177,13 @@ typedef char* ( *libcmis_OAuth2AuthCodeProvider )( const char* authUrl,
         const char* username, const char* password );
 
 
+/* Rendition */
+
+
+typedef struct libcmis_rendition* libcmis_RenditionPtr;
+typedef struct libcmis_vector_rendition* libcmis_vector_rendition_Ptr;
+
+
 /* Vectors of simple types */
 
 

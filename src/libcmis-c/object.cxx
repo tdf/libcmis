@@ -166,6 +166,38 @@ char* libcmis_object_getChangeToken( libcmis_ObjectPtr object )
         return NULL;
 }
 
+char* libcmis_object_getThumbnailUrl( libcmis_ObjectPtr object )
+{
+    if ( object != NULL && object->handle != NULL )
+        return strdup( object->handle->getThumbnailUrl( ).c_str( ) );
+    else
+        return NULL;
+}
+
+libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object, 
+                                                           libcmis_ErrorPtr error )
+{
+    libcmis_vector_rendition_Ptr result = NULL;
+    if ( object != NULL && object->handle.get( ) != NULL )
+    {
+        try
+        {
+            std::vector< libcmis::RenditionPtr > handles = object->handle->getRenditions( );
+            result = new libcmis_vector_rendition( );
+            result->handle = handles;
+        }
+       
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+    }
+    return result;
+}
 
 bool libcmis_object_isImmutable( libcmis_ObjectPtr object )
 {

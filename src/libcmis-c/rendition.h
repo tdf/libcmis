@@ -1,4 +1,3 @@
-
 /* libcmis
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -13,7 +12,7 @@
  * License.
  *
  * Major Contributor(s):
- * Copyright (C) 2011 SUSE <cbosdonnat@suse.com>
+ * Copyright (C) 2013 Cao Cuong Ngo <cao.cuong.ngo@gmail.com>
  *
  *
  * All Rights Reserved.
@@ -26,8 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _LIBCMIS_OAUTH2_DATA_H_
-#define _LIBCMIS_OAUTH2_DATA_H_
+
+#ifndef _LIBCMIS_RENDITION_H_
+#define _LIBCMIS_RENDITION_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,19 +35,19 @@ extern "C" {
 
 #include "types.h"
 
-void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 );
+void libcmis_rendition_free( libcmis_RenditionPtr rendition );
 
-bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 );
+bool libcmis_rendition_isThumbnail( libcmis_RenditionPtr rendition );
 
-const char* libcmis_oauth2data_getAuthUrl( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getTokenUrl( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getClientId( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getScope( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 );
+const char* libcmis_rendition_getStreamId( libcmis_RenditionPtr rendition );
+const char* libcmis_rendition_getMimeType( libcmis_RenditionPtr rendition );
+const char* libcmis_rendition_getKind( libcmis_RenditionPtr rendition );
+const char* libcmis_rendition_getUrl( libcmis_RenditionPtr rendition );
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+
+

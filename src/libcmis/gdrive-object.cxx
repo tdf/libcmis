@@ -98,7 +98,7 @@ void GDriveObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
-vector< Rendition> GDriveObject::getRenditions( )
+vector< RenditionPtr> GDriveObject::getRenditions( )
 {
     if ( m_renditions.empty( ) )
     {
@@ -108,7 +108,8 @@ vector< Rendition> GDriveObject::getRenditions( )
             string mimeType = getStringProperty( "cmis:contentStreamMimeType" );
             if ( !mimeType.empty( ) )
             { 
-                Rendition rendition( mimeType, mimeType, mimeType, downloadUrl );
+                RenditionPtr rendition( 
+                    new Rendition( mimeType, mimeType, mimeType, downloadUrl ));
                 m_renditions.push_back( rendition );
             }
         }
@@ -123,7 +124,8 @@ vector< Rendition> GDriveObject::getRenditions( )
             { 
                 string mimeType = it->first;
                 string url = it->second.toString( );
-                Rendition rendition( mimeType, mimeType, mimeType, url );
+                RenditionPtr rendition(
+                    new Rendition( mimeType, mimeType, mimeType, url ) );
                 m_renditions.push_back( rendition );
             }
         }
@@ -133,7 +135,8 @@ vector< Rendition> GDriveObject::getRenditions( )
         if ( !thumbnailLink.empty( ) )
         {
             string mimeType = "cmis:thumbnail";   
-            Rendition rendition( mimeType, mimeType, mimeType, thumbnailLink );
+            RenditionPtr rendition( 
+                new Rendition( mimeType, mimeType, mimeType, thumbnailLink ));
             m_renditions.push_back( rendition );
         }
     }

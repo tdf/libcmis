@@ -70,7 +70,7 @@ namespace libcmis
 
             std::map< std::string, libcmis::PropertyPtr > m_properties;
             boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
-            std::vector< libcmis::Rendition > m_renditions;
+            std::vector< libcmis::RenditionPtr > m_renditions;
             void initializeFromNode( xmlNodePtr node );
         public:
 
@@ -122,7 +122,7 @@ namespace libcmis
                 \attention
                     The streamId of the rendition is used in getContentStream( )
               */
-            virtual std::vector< libcmis::Rendition> getRenditions( ) { return m_renditions; }
+            virtual std::vector< libcmis::RenditionPtr> getRenditions( ) { return m_renditions; }
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
             /** Update the object properties and return the updated object.

@@ -31,6 +31,8 @@
 
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 namespace libcmis
 {  
     class Rendition
@@ -54,6 +56,8 @@ namespace libcmis
             std::string getKind( ) { return m_kind; }                            
             std::string getUrl( ) { return m_href; }            
     };
+
+    typedef ::boost::shared_ptr< Rendition > RenditionPtr;
 }
 
 #endif

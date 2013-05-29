@@ -155,6 +155,13 @@ struct libcmis_oauth2data
     libcmis_oauth2data( ) : handle( ) { }
 };
 
+struct libcmis_rendition
+{
+    libcmis::RenditionPtr handle;
+
+    libcmis_rendition( ) : handle( ) { }
+};
+
 struct libcmis_vector_bool
 {
     std::vector< bool > handle;
@@ -237,6 +244,13 @@ struct libcmis_vector_repository
     std::vector< libcmis::RepositoryPtr > handle;
 
     libcmis_vector_repository( ) : handle( ) { }
+};
+
+struct libcmis_vector_rendition
+{
+    std::vector< libcmis::RenditionPtr > handle;
+
+    libcmis_vector_rendition( ) : handle( ) { }
 };
 
 #endif
