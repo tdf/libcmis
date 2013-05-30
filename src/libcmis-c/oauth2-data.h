@@ -35,6 +35,10 @@ extern "C" {
 
 #include "types.h"
 
+libcmis_OAuth2DataPtr libcmis_oauth2data_create(
+        char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,
+        char* clientId, char* clientSecret );
+
 void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 );
 
 bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 );

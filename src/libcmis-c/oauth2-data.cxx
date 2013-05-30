@@ -31,10 +31,26 @@
 
 using namespace std;
 
+
+libcmis_OAuth2DataPtr libcmis_oauth2data_create(
+        char* authUrl, char* tokenUrl, char* scope, char* redirectUri,
+        char* clientId, char* clientSecret )
+{
+    libcmis_OAuth2DataPtr data = new( nothrow ) libcmis_oauth2data( );
+
+    if ( NULL != data )
+        data->handle.reset( new libcmis::OAuth2Data(
+                   authUrl, tokenUrl, scope, redirectUri,
+                   clientId, clientSecret ) );
+    return data;
+}
+
+
 void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 )
 {
     delete oauth2;
 }
+
 
 bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 )
 {
@@ -91,5 +107,3 @@ const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 )
         return oauth2->handle->getRedirectUri().c_str();
     return NULL;
 }
-
-
