@@ -81,6 +81,7 @@ class AtomTest : public CppUnit::TestFixture
         void deleteDocumentTest( );
         void deleteFolderTreeTest( );
         void checkOutTest( );
+        void cancelCheckOutTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -112,6 +113,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteFolderTreeTest );
         CPPUNIT_TEST( checkOutTest );
+        CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -937,6 +939,28 @@ void AtomTest::checkOutTest( )
     PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
     vector< bool > values = it->second->getBools( );
     CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
+}
+
+void AtomTest::cancelCheckOutTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=working-copy", "GET", "data/atom/working-copy.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=working-copy", "DELETE", "", 204, false );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom/type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    // First create a versionable document and check it out
+    libcmis::ObjectPtr object = session.getObject( "working-copy" );
+    libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    string id = pwc->getId( );
+    pwc->cancelCheckout( );
+
+    // Check that the DELETE request was sent out
+    const char* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=working-copy", "DELETE" );
+    CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

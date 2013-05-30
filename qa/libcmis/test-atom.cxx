@@ -51,43 +51,16 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void cancelCheckOutTest( );
         void checkInTest( );
         void getAllVersionsTest( );
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::cancelCheckOutTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-
-    // First create a versionable document and check it out
-    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "cancelCheckOutTest" );
-    libcmis::DocumentPtr pwc = doc->checkOut( );
-
-    CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
-
-    string id = pwc->getId( );
-    pwc->cancelCheckout( );
-
-    // Check that the PWC doesn't exist any more
-    try
-    {
-        session.getObject( id );
-        CPPUNIT_FAIL( "Private Working Copy object should no longer exist" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " ) + id, string( e.what() ) );
-    }
-}
 
 void AtomTest::checkInTest( )
 {
