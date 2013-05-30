@@ -42,7 +42,7 @@ OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
         m_refresh( ),
         m_oauth2Parser( )
 {
-    m_oauth2Parser = OAuth2Providers::getOAuth2Parser( m_session->getBaseUrl( ) );
+    m_oauth2Parser = OAuth2Providers::getOAuth2Parser( m_session->getBindingUrl( ) );
 
     if ( !m_data )
         m_data.reset( new libcmis::OAuth2Data() );

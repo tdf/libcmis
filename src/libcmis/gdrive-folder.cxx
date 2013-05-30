@@ -70,7 +70,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     // Instead of sending multiple queries for children,
     // we send a single query to search for objects where parents
     // include the folderID.
-    string query = getSession( )->getBaseUrl( ) + 
+    string query = getSession( )->getBindingUrl( ) + 
         "/files?q=\"" + getId( ) + "\"+in+parents+and+trashed+=+false";
 
     string res;
@@ -103,7 +103,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 string GDriveFolder::uploadProperties( Json properties )
 {
     // URL for uploading meta data
-    string metaUrl =  getSession()->getBaseUrl() + "/files/";
+    string metaUrl =  getSession()->getBindingUrl() + "/files/";
 
     // add parents to the properties    
     properties.add( "parents", GdriveUtils::createJsonFromParentId( getId( ) ) );

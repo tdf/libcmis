@@ -140,7 +140,7 @@ class BaseSession : public libcmis::Session
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
         
-        std::string getBaseUrl( ) { return m_bindingUrl; }
+        std::string getBindingUrl( ) { return m_bindingUrl; }
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );

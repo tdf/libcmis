@@ -243,7 +243,7 @@ void GDriveObject::move( FolderPtr source, FolderPtr destination )
 
 string GDriveObject::getUrl( )
 {
-    return getSession( )->getBaseUrl( ) + "/files/" + getId( );
+    return getSession( )->getBindingUrl( ) + "/files/" + getId( );
 }
 
 string GDriveObject::getUploadUrl( )
