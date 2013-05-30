@@ -160,7 +160,7 @@ libcmis::AllowableActionsPtr AtomObject::getAllowableActions( )
 
                 xmlFreeDoc( doc );
             }
-            catch ( libcmis::Exception& )
+            catch ( CurlException& )
             {
             }
         }
