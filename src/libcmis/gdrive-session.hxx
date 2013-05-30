@@ -45,8 +45,6 @@ class GDriveSession : public BaseSession
 
         ~GDriveSession ( );
 
-        std::string getBaseUrl( ) { return m_bindingUrl; }
-
         virtual libcmis::RepositoryPtr getRepository( ) 
             throw ( libcmis::Exception );
 
@@ -60,8 +58,6 @@ class GDriveSession : public BaseSession
 
         virtual libcmis::ObjectTypePtr getType( std::string id )             
             throw ( libcmis::Exception );
-
-        virtual std::string oauth2Authenticate( ) throw ( CurlException );
 
     private:
         GDriveSession( );

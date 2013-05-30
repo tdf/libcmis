@@ -94,7 +94,7 @@ libcmis_la_SOURCES = \
 	oauth2-handler.hxx \
 	oauth2-handler.cxx \
 	rendition.cxx \
-	alfresco-session.cxx
+	oauth2-providers.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
 

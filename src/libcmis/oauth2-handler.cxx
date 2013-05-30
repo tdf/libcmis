@@ -30,6 +30,7 @@
 #include "oauth2-handler.hxx"
 #include "json-utils.hxx"
 #include "xml-utils.hxx"
+#include "oauth2-providers.hxx"
 
 using namespace std;
 
@@ -38,17 +39,22 @@ OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
         m_session( session ),
         m_data( data ),
         m_access( ),
-        m_refresh( )
+        m_refresh( ),
+        m_oauth2Parser( )
 {
+    m_oauth2Parser = OAuth2Providers::getOAuth2Parser( m_session->getBaseUrl( ) );
+
     if ( !m_data )
         m_data.reset( new libcmis::OAuth2Data() );
+    
 }
 
 OAuth2Handler::OAuth2Handler( const OAuth2Handler& copy ) :
         m_session( copy.m_session ),
         m_data( copy.m_data ),
         m_access( copy.m_access ),
-        m_refresh( copy.m_refresh )
+        m_refresh( copy.m_refresh ),
+        m_oauth2Parser( copy.m_oauth2Parser )
 {
 }
 
@@ -56,7 +62,8 @@ OAuth2Handler::OAuth2Handler( ):
         m_session( NULL ),
         m_data( ),
         m_access( ),
-        m_refresh( )
+        m_refresh( ),
+        m_oauth2Parser( )
 {
     m_data.reset( new libcmis::OAuth2Data() );
 }
@@ -163,5 +170,12 @@ string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )
     if ( !m_access.empty() )
         header = "Authorization: Bearer " + m_access ;
     return header;
+}
+
+string OAuth2Handler::oauth2Authenticate( )
+{
+    return m_oauth2Parser( m_session, getAuthURL( ), 
+                           m_session->getUsername( ), 
+                           m_session->getPassword( ) );
 }
 

@@ -139,6 +139,8 @@ class BaseSession : public libcmis::Session
         std::string getRootId( ) throw ( libcmis::Exception ) { return getRepository()->getRootId( ); }
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
+        
+        std::string getBaseUrl( ) { return m_bindingUrl; }
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
         libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
@@ -154,18 +156,6 @@ class BaseSession : public libcmis::Session
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
         
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
-
-        /** Get the authentication code given credentials.
-
-            This method should be overridden to parse the authentication URL response,
-            authenticate using the form and get the token to avoid asking the user
-            to launch a web browser and do it himself.
-
-            \return
-                the authentication code to transform into access/refresh tokens or NULL.
-                If no code is found, an empty string is returned.
-          */
-        virtual std::string oauth2Authenticate( ) throw ( CurlException );
         
         virtual std::string getRefreshToken( ) throw ( libcmis::Exception );    
     protected:

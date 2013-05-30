@@ -30,6 +30,7 @@
 
 #include <string>
 #include "base-session.hxx"
+#include "oauth2-providers.hxx"
 
 namespace libcmis
 {
@@ -44,6 +45,8 @@ class OAuth2Handler
 
         std::string m_access;
         std::string m_refresh;
+
+        OAuth2Parser m_oauth2Parser;
     public:
 
         OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data ) 
@@ -73,6 +76,18 @@ class OAuth2Handler
           */
         void fetchTokens( std::string authCode ) throw ( libcmis::Exception );
         void refresh( ) throw ( libcmis::Exception );
+
+        /** Get the authentication code given credentials.
+
+            This method should be overridden to parse the authentication URL response,
+            authenticate using the form and get the token to avoid asking the user
+            to launch a web browser and do it himself.
+
+            \return
+                the authentication code to transform into access/refresh tokens.
+                If no code is found, an empty string is returned.
+          */
+        std::string oauth2Authenticate( );
 
     protected:
         OAuth2Handler( );

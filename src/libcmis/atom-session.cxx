@@ -45,8 +45,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
     BaseSession( atomPubUrl, repositoryId, username, password, oauth2, verbose ),
     m_repository( )
 {
-    if ( !oauth2 )
-        initialize( );
+    initialize( );
 }
 
 AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :

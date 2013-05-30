@@ -69,66 +69,6 @@ GDriveSession::~GDriveSession()
 {
 }
 
-string GDriveSession::oauth2Authenticate ( ) throw ( CurlException )
-{
-    static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
-    // STEP 1: Log in
-    string res;
-    try
-    {
-        res = httpGetRequest( m_oauth2Handler->getAuthURL( ) )
-                                    ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        return string( );
-    }
-
-    string loginPost, loginLink; 
-    if ( !GdriveUtils::parseResponse( res.c_str( ), loginPost, loginLink ) ) 
-        return string( );
-    
-    loginPost += "Email=";  
-    loginPost += string( getUsername( ) );
-    loginPost += "&Passwd=";
-    loginPost += string( getPassword( ) );
-    
-    istringstream loginIs( loginPost );
-    string loginRes;
-    try 
-    {
-        loginRes = httpPostRequest ( loginLink, loginIs, CONTENT_TYPE )
-                        ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        return string( );
-    }
-
-    // STEP 2: allow libcmis to access google drive
-    string approvalPost, approvalLink; 
-    if ( !GdriveUtils::parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
-        return string( );
-    approvalPost += "submit_access=true";
-
-    istringstream approvalIs( approvalPost );
-    string approvalRes;
-    try
-    {
-        approvalRes = httpPostRequest ( approvalLink, approvalIs, 
-                            CONTENT_TYPE) ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-
-    // STEP 3: Take the authentication code from the text bar
-    string code = GdriveUtils::parseCode( approvalRes.c_str( ) );
-
-    return code;
-}
-
 libcmis::RepositoryPtr GDriveSession::getRepository( ) 
     throw ( libcmis::Exception )
 {

@@ -25,26 +25,26 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _ALFRESCO_SESSION_HXX_
-#define _ALFRESCO_SESSION_HXX_
 
-#include "atom-session.hxx"
+#ifndef _OAUTH2_PROVIDERS_HXX_
+#define _OAUTH2_PROVIDERS_HXX_
 
-class AlfrescoSession : public AtomPubSession
+#include <string>
+
+class BaseSession;
+
+typedef std::string ( *OAuth2Parser) ( BaseSession* session, const std::string& authUrl, 
+                                       const std::string& username, const std::string& password );
+
+class OAuth2Providers
 {
-    public:
-        AlfrescoSession( std::string baseUrl,
-                         std::string repository,
-                         std::string username, 
-                         std::string password,
-                         libcmis::OAuth2DataPtr oauth2,            
-                         bool verbose = false )
-                   throw ( libcmis::Exception );
+    public :
+        static std::string OAuth2Gdrive( BaseSession* session, const std::string& authUrl, 
+                                       const std::string& username, const std::string& password );
+        static std::string OAuth2Alfresco( BaseSession* session, const std::string& authUrl, 
+                                       const std::string& username, const std::string& password );
 
-        virtual std::string oauth2Authenticate( ) throw ( CurlException );
-
-    private:
-        AlfrescoSession( );
+        static OAuth2Parser getOAuth2Parser( const std::string& baseUrl );
 };
 
-#endif /* _ALFRESCO_SESSION_HXX_ */
+#endif /* _OAUTH2_PROVIDERS_HXX_ */

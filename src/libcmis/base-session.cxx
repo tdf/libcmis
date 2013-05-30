@@ -108,7 +108,7 @@ namespace
 }
 
 BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
-        string password, libcmis::OAuth2DataPtr /*oauth2*/, bool verbose ) throw ( libcmis::Exception ) :
+        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
@@ -125,6 +125,10 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
+
+    if ( oauth2 && oauth2->isComplete( ) ){
+        setOAuth2Data( oauth2 );
+    }
 }
 
 BaseSession::BaseSession( const BaseSession& copy ) :
@@ -628,24 +632,16 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
 {
     m_oauth2Handler = new OAuth2Handler( this, oauth2 );
     
-    // If oauth2 contains refresh token, we are done here
-    if ( m_oauth2Handler->isAuthenticated( ) ) return;
-
     string authCode;
 
+    // Try to get the authentication code using the given provider.
+ 
+    authCode = m_oauth2Handler->oauth2Authenticate( );
+ 
+
+    // If that didn't work, call the fallback provider from SessionFactory
     try
     {
-        // Try to get the authentication code using the given provider.
-        try
-        {
-            authCode = oauth2Authenticate( );
-        }
-        catch (...)
-        {
-            // continue to fallback
-        }
-
-        // If that didn't work, call the fallback provider from SessionFactory
         if ( authCode.empty( ) )
         {
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
@@ -656,7 +652,6 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
     catch ( const CurlException& e )
     {
         // Thrown by getUsername() and getPassword() if user cancels the credentials request
-        // or by oauth2Authenticate() if anything wrong happened when getting the auth code
         throw e.getCmisException( );
     }
 
@@ -682,11 +677,6 @@ libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exceptio
     libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
-}
-
-string BaseSession::oauth2Authenticate( ) throw ( CurlException )
-{
-    return string( );
 }
 
 const char* CurlException::what( ) const throw ()
