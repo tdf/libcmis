@@ -152,7 +152,9 @@ string OAuth2Providers::OAuth2Alfresco( BaseSession* session, const string& auth
 
 OAuth2Parser OAuth2Providers::getOAuth2Parser( const std::string& bindingUrl )
 {
-    if ( bindingUrl == "https://api.alfresco.com/cmis/versions/1.0/atom/" )
+    if ( bindingUrl.find( "https://api.alfresco.com/" ) == 0 )
+        // For Alfresco in the cloud, only match the hostname as there can be several
+        // binding URLs created with it.
         return OAuth2Alfresco;
     else if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
         return OAuth2Gdrive;
