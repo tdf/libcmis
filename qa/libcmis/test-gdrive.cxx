@@ -87,6 +87,7 @@ class GDriveTest : public CppUnit::TestFixture
         void getContentStreamWithRenditionsTest( );
         void getRefreshTokenTest( );
         void getThumbnailUrlTest( );
+        void getAllVersionsTest( );
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -117,6 +118,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamWithRenditionsTest );
         CPPUNIT_TEST( getRefreshTokenTest );
         CPPUNIT_TEST( getThumbnailUrlTest );
+        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -396,7 +398,6 @@ void GDriveTest::getDocumentTest( )
     CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
  
     CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 123 == document->getContentLength( ) );
-
 }
 
 void GDriveTest::getFolderTest( )
@@ -1056,6 +1057,29 @@ void GDriveTest::getThumbnailUrlTest( )
                                    string ("https://aThumbnailLink"),
                                    document->getThumbnailUrl( ) );
 
+}
+
+void GDriveTest::getAllVersionsTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
+ 
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/files/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", "data/gdrive/document.json", 200, true);
+    string revisionUrl = url + "/revisions";
+    curl_mockup_addResponse( revisionUrl.c_str( ), "",
+                             "GET", "data/gdrive/allVersions.json", 200, true);
+
+    libcmis::ObjectPtr obj = session.getObject( objectId );
+ 
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( obj );
+    
+    // Method to test
+    vector< libcmis::DocumentPtr > versions = document->getAllVersions( );
+    
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 3 ), versions.size( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( GDriveTest );
