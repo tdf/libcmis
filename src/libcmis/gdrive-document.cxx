@@ -269,11 +269,16 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     Json jsonRes = Json::parse( res );        
     Json::JsonVector objs = jsonRes["items"].getList( );
    
+    string parents = getStringProperty( "cmis:parentId" );
+    Json parentsJson = Json::parse( parents );
+
     // Create document objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
-	{
+	{     
+        objs[i].add( "parents", parentsJson );
 		libcmis::DocumentPtr revision( 
             new GDriveDocument( getSession(), objs[i] ) );
+        
         revisions.push_back( revision );
 	}
     return revisions;
