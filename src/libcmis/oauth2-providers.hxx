@@ -45,6 +45,19 @@ class OAuth2Providers
                                        const std::string& username, const std::string& password );
 
         static OAuth2Parser getOAuth2Parser( const std::string& baseUrl );
+
+        /*
+        * Parse the authorization code from the response page
+        * in the input tag, with id = code
+        */
+        static std::string parseCode ( const char* response );
+
+        /*
+         * Parse input values and redirect link from the response page
+         */
+        static int parseResponse ( const char* response, 
+                                   std::string& post, 
+                                   std::string& link );
 };
 
 #endif /* _OAUTH2_PROVIDERS_HXX_ */

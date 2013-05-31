@@ -26,9 +26,11 @@
  * instead of those above.
  */
 
+#include <libxml/HTMLparser.h>
+#include <libxml/xmlreader.h>
+
 #include "oauth2-providers.hxx"
 #include "base-session.hxx"
-#include "gdrive-utils.hxx"
 
 using namespace std;
 
@@ -48,7 +50,7 @@ string OAuth2Providers::OAuth2Gdrive( BaseSession* session, const string& authUr
     }
 
     string loginPost, loginLink; 
-    if ( !GdriveUtils::parseResponse( res.c_str( ), loginPost, loginLink ) ) 
+    if ( !parseResponse( res.c_str( ), loginPost, loginLink ) ) 
         return string( );
     
     loginPost += "Email=";  
@@ -70,7 +72,7 @@ string OAuth2Providers::OAuth2Gdrive( BaseSession* session, const string& authUr
 
     // STEP 2: allow libcmis to access google drive
     string approvalPost, approvalLink; 
-    if ( !GdriveUtils::parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
+    if ( !parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
         return string( );
     approvalPost += "submit_access=true";
 
@@ -87,7 +89,7 @@ string OAuth2Providers::OAuth2Gdrive( BaseSession* session, const string& authUr
     }
 
     // STEP 3: Take the authentication code from the text bar
-    string code = GdriveUtils::parseCode( approvalRes.c_str( ) );
+    string code = parseCode( approvalRes.c_str( ) );
 
     return code;
 }
@@ -110,7 +112,7 @@ string OAuth2Providers::OAuth2Alfresco( BaseSession* session, const string& auth
 
     string loginPost, loginLink;
 
-    if ( !GdriveUtils::parseResponse( res.c_str( ), loginPost, loginLink ) ) 
+    if ( !parseResponse( res.c_str( ), loginPost, loginLink ) ) 
         return string( );
     
     loginPost += "username=";  
@@ -160,5 +162,101 @@ OAuth2Parser OAuth2Providers::getOAuth2Parser( const std::string& bindingUrl )
         return OAuth2Gdrive;
 
     return OAuth2Gdrive;
+}
+
+int OAuth2Providers::parseResponse ( const char* response, string& post, string& link )
+{
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0,
+            HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
+    if ( doc == NULL ) return 0;
+    xmlTextReaderPtr reader =   xmlReaderWalker( doc );
+    if ( reader == NULL ) return 0;
+    while ( true )
+    {
+        // Go to the next node, quit if not found
+        if ( xmlTextReaderRead ( reader ) != 1) break;
+        xmlChar* nodeName = xmlTextReaderName ( reader );
+        if ( nodeName == NULL ) continue;
+        // Find the redirect link
+        if ( xmlStrEqual( nodeName, BAD_CAST( "form" ) ) )
+        {
+            xmlChar* action = xmlTextReaderGetAttribute( reader, 
+                                                         BAD_CAST( "action" ));
+            if ( action != NULL )
+            {
+                if ( xmlStrlen(action) > 0)
+                    link = string ( (char*) action);
+                xmlFree (action);
+            }
+        }
+        // Find input values
+        if ( !xmlStrcmp( nodeName, BAD_CAST( "input" ) ) )
+        {
+            xmlChar* name = xmlTextReaderGetAttribute( reader, 
+                                                       BAD_CAST( "name" ));
+            xmlChar* value = xmlTextReaderGetAttribute( reader, 
+                                                        BAD_CAST( "value" ));
+            if ( ( name != NULL ) && ( value!= NULL ) )
+            {
+                if ( ( xmlStrlen( name ) > 0) && ( xmlStrlen( value ) > 0) )
+                {
+                    post += libcmis::escape( ( char * ) name ); 
+                    post += string ( "=" ); 
+                    post += libcmis::escape( ( char * ) value ); 
+                    post += string ( "&" );
+                }
+            }
+            xmlFree( name );
+            xmlFree( value );
+        }
+        xmlFree( nodeName );
+    }
+    xmlFreeTextReader( reader );              
+    xmlFreeDoc( doc );
+    if ( link.empty( ) || post.empty () ) 
+        return 0;
+    return 1;
+}
+
+string OAuth2Providers::parseCode( const char* response )
+{
+    string authCode;
+    xmlDoc *doc = htmlReadDoc ( BAD_CAST( response ), NULL, 0,
+            HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
+    if ( doc == NULL ) return authCode;
+    xmlTextReaderPtr reader = xmlReaderWalker( doc );
+    if ( reader == NULL ) return authCode;
+
+    while ( true )
+    {
+        // Go to the next node, quit if not found
+        if ( xmlTextReaderRead ( reader ) != 1) break;
+        xmlChar* nodeName = xmlTextReaderName ( reader );
+        if ( nodeName == NULL ) continue;
+        // Find the code 
+        if ( xmlStrEqual( nodeName, BAD_CAST ( "input" ) ) )
+        { 
+            xmlChar* id = xmlTextReaderGetAttribute( reader, BAD_CAST( "id" ));
+            if ( id != NULL )
+            {
+                if ( xmlStrEqual( id, BAD_CAST ( "code" ) ) )
+                {
+                    xmlChar* code = xmlTextReaderGetAttribute( 
+                        reader, BAD_CAST("value") );
+                    if ( code!= NULL )
+                    {
+                        authCode = string ( (char*) code );
+                        xmlFree( code );
+                    }
+                }
+                xmlFree ( id );
+            }
+        }
+        xmlFree( nodeName );
+    }
+    xmlFreeTextReader( reader );              
+    xmlFreeDoc( doc );
+
+    return authCode;
 }
 
