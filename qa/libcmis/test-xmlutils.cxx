@@ -60,6 +60,8 @@ class XmlTest : public CppUnit::TestFixture
         void parsePropertyDateTimeTest( );
         void parsePropertyBoolTest( );
 
+        void parseEmptyPropertyTest( );
+
         // Writer tests
         void propertyStringAsXmlTest( ); 
         void propertyIntegerAsXmlTest( ); 
@@ -76,6 +78,7 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parsePropertyIntegerTest );
         CPPUNIT_TEST( parsePropertyDateTimeTest );
         CPPUNIT_TEST( parsePropertyBoolTest );
+        CPPUNIT_TEST( parseEmptyPropertyTest );
         CPPUNIT_TEST( propertyStringAsXmlTest );
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST( sha1Test );
@@ -381,6 +384,17 @@ void XmlTest::parsePropertyBoolTest( )
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "BOOL-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 1 ), actual->getBools( ).size( ) );
+}
+
+void XmlTest::parseEmptyPropertyTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyId " << getXmlns( ) << "propertyDefinitionId=\"STR-ID\" />";
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), dummy );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType()->getId( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Should have no value", actual->getStrings( ).empty( ) );
 }
 
 void XmlTest::propertyStringAsXmlTest( )
