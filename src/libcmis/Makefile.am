@@ -75,25 +75,28 @@ libcmis_la_SOURCES = \
 	ws-session.cxx \
 	ws-versioningservice.hxx \
 	ws-versioningservice.cxx \
-    gdrive-property.hxx \
-    gdrive-property.cxx \
-	gdrive-object.hxx \
-	gdrive-object.cxx \
+	gdrive-allowable-actions.hxx \
     gdrive-document.hxx \
     gdrive-document.cxx \
     gdrive-folder.hxx \
     gdrive-folder.cxx \
+	gdrive-object.hxx \
+	gdrive-object.cxx \
+	gdrive-object-type.hxx \
+	gdrive-object-type.cxx \
+    gdrive-property.hxx \
+    gdrive-property.cxx \
+	gdrive-repository.hxx \
 	gdrive-session.hxx \
 	gdrive-session.cxx \
 	gdrive-utils.hxx \
 	gdrive-utils.cxx \
-	gdrive-object-type.hxx \
-	gdrive-object-type.cxx \
 	json-utils.hxx \
 	json-utils.cxx \
 	oauth2-handler.hxx \
 	oauth2-handler.cxx \
 	rendition.cxx \
+	oauth2-providers.hxx \
 	oauth2-providers.cxx
 
 libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0

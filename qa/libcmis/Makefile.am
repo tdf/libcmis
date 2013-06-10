@@ -52,11 +52,12 @@ test_nosrv_mockup_SOURCES =	\
 
 test_nosrv_mockup_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
-	-I$(top_builddir)/qa/mockup \
+	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	$(JSON_CPPFLAGS) \
-	-O0
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_nosrv_mockup_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
@@ -72,11 +73,12 @@ test_nosrv_gdrive_SOURCES =	\
 
 test_nosrv_gdrive_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
-	-I$(top_builddir)/qa/mockup \
+	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	$(JSON_CPPFLAGS) \
-	-O0
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_nosrv_gdrive_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
@@ -95,7 +97,8 @@ test_nosrv_json_CPPFLAGS = \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	$(JSON_CPPFLAGS) \
-	-O0
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_nosrv_json_LDADD = \
 	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \

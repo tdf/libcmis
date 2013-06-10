@@ -33,7 +33,8 @@ EXTRA_DIST = \
 	COPYING.LGPL \
 	src/libcmis/makefile.mk \
 	doc/cmis-client.xml \
-	cppcheck-test.sh
+	cppcheck-test.sh \
+	qa/libcmis/data
 
 if ENABLE_CPPCHECK
 TESTS_ENVIRONMENT = $(SHELL)
@@ -49,6 +50,8 @@ DISTCLEANFILES = \
 	cmis-client.1 \
 	libcmis-@LIBCMIS_API_VERSION@.pc \
 	libcmis-c-@LIBCMIS_API_VERSION@.pc
+
+DISTCHECK_CONFIGURE_FLAGS = "--disable-long-tests"
 
 dist-hook:
 	@if test -d "$(srcdir)/.git"; \

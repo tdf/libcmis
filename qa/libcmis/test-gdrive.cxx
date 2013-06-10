@@ -138,18 +138,18 @@ GDriveSession GDriveTest::getTestSession( string username, string password )
                              string("&response_type=code") +
                              string("&client_id=") + CLIENT_ID;
     curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
-                            "GET", "data/gdrive/login.html", 200, true);
+                            "GET", DATA_DIR "/gdrive/login.html", 200, true);
 
     //authentication response
     curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
-                             "data/gdrive/approve.html", 200, true);
+                             DATA_DIR "/gdrive/approve.html", 200, true);
 
     //approval response
     curl_mockup_addResponse( APPROVAL_URL.c_str( ), empty.c_str( ),
-                             "POST", "data/gdrive/authcode.html", 200, true);
+                             "POST", DATA_DIR "/gdrive/authcode.html", 200, true);
 
     curl_mockup_addResponse ( TOKEN_URL.c_str( ), empty.c_str( ), "POST",
-                              "data/gdrive/token-response.json", 200, true );
+                              DATA_DIR "/gdrive/token-response.json", 200, true );
 
     return GDriveSession( BASE_URL, username, password, oauth2, false );
 }
@@ -216,7 +216,7 @@ void GDriveTest::sessionExpiryTokenGetTest( )
     curl_mockup_addResponse( url.c_str( ),"", "GET", "", 401, false );
 
     curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", "data/gdrive/refresh_response.json", 200, true);
+                             "POST", DATA_DIR "/gdrive/refresh_response.json", 200, true);
     try
     {
         // GET expires, need to refresh then GET again
@@ -249,10 +249,10 @@ void GDriveTest::sessionExpiryTokenPostTest( )
     const string metaUrl = BASE_URL + "/files";
 
     curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", "data/gdrive/refresh_response.json", 200, true);
+                             "POST", DATA_DIR "/gdrive/refresh_response.json", 200, true);
 
     curl_mockup_addResponse( folderUrl.c_str( ), "", 
-                               "GET", "data/gdrive/folder.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder.json", 200, true );
 
     // 401 response, token is expired
     // refresh and then POST again
@@ -292,10 +292,10 @@ void GDriveTest::sessionExpiryTokenDeleteTest( )
     string url = BASE_URL + "/files/" + objectId;
   
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true);
    
     curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", "data/gdrive/refresh_response.json", 200, true);
+                             "POST", DATA_DIR "/gdrive/refresh_response.json", 200, true);
     // 401 response, token is expired
     curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 401, false);
     
@@ -337,10 +337,10 @@ void GDriveTest::sessionExpiryTokenPutTest( )
     string url = BASE_URL + "/files/" + objectId;  
 
     curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", "data/gdrive/refresh_response.json", 200, true);
+                             "POST", DATA_DIR "/gdrive/refresh_response.json", 200, true);
 
     curl_mockup_addResponse( url.c_str( ), "", 
-                               "GET", "data/gdrive/document.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true );
 
     // 401 response, token is expired
     curl_mockup_addResponse( url.c_str( ),"", "PUT", "", 401, false );
@@ -373,7 +373,7 @@ void GDriveTest::getDocumentTest( )
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/document.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true);
 
     libcmis::ObjectPtr obj = session.getObject( objectId );
  
@@ -411,9 +411,9 @@ void GDriveTest::getFolderTest( )
     string parentUrl = BASE_URL + "/files/" + parentId;
 
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
     curl_mockup_addResponse( parentUrl.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
     // Check if we got the Folder object.
     libcmis::FolderPtr folder = session.getFolder( folderId );
     CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
@@ -442,14 +442,14 @@ void GDriveTest::getDocumentParentsTest( )
     static const string parentId2( "aNewFolderId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/document.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true);
 
     string parent1Url = BASE_URL + "/files/" + parentId;
     string parent2Url = BASE_URL + "/files/" + parentId2;
     curl_mockup_addResponse( parent1Url.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
     curl_mockup_addResponse( parent2Url.c_str( ), "",
-                             "GET", "data/gdrive/folder2.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder2.json", 200, true);
 
     libcmis::ObjectPtr object = session.getObject( "aFileId" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
@@ -472,7 +472,7 @@ void GDriveTest::getContentStreamTest( )
     static const string documentId( "aFileId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true);
     string expectedContent( "Test content stream" );
     string downloadUrl = "https://downloadLink";
     curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
@@ -507,13 +507,13 @@ void GDriveTest::setContentStreamTest( )
     string url = BASE_URL + "/files/" + documentId;
     string putUrl = uploadBaseUrl + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true);
        
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     curl_mockup_addResponse( url.c_str( ), "",
-                               "PUT", "data/gdrive/document2.json", 200, true);
+                               "PUT", DATA_DIR "/gdrive/document2.json", 200, true);
     curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
     try
     {
@@ -552,13 +552,13 @@ void GDriveTest::setContentStreamGdocTest( )
     string url = BASE_URL + "/files/" + documentId;
     string putUrl = uploadBaseUrl + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true);
    
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     curl_mockup_addResponse( url.c_str( ), "convert=true",
-                               "PUT", "data/gdrive/document.json", 200, true);
+                               "PUT", DATA_DIR "/gdrive/document.json", 200, true);
     curl_mockup_addResponse( putUrl.c_str( ), "convert=true", "PUT", "Updated", 0, false );
     try
     {
@@ -589,15 +589,15 @@ void GDriveTest::getChildrenTest( )
     static const string folderId ("aFolderId");
     string url = BASE_URL + "/files/" + folderId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
     
     string urlChildFolder = BASE_URL + "/files/" + string ("aChildFolder");
     curl_mockup_addResponse( urlChildFolder.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
 
     string urlChildDocument = BASE_URL + "/files/" + string ("aChildDocument");
     curl_mockup_addResponse( urlChildDocument.c_str( ), "",
-                             "GET", "data/gdrive/document.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true);
     
     libcmis::ObjectPtr obj = session.getObject( folderId );
  
@@ -610,7 +610,7 @@ void GDriveTest::getChildrenTest( )
     string query = "q=\"" + folderId + "\"+in+parents+and+trashed+=+false";
     string childrenUrl = BASE_URL + "/files";
     curl_mockup_addResponse( childrenUrl.c_str( ), query.c_str( ),
-                             "GET", "data/gdrive/folder_children.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder_children.json", 200, true);
 
     vector< libcmis::ObjectPtr > children= folder->getChildren( );
  
@@ -663,7 +663,7 @@ void GDriveTest::getObjectTest()
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse ( url.c_str( ), "",
-                              "GET", "data/gdrive/gdoc-file.json", 200, true);
+                              "GET", DATA_DIR "/gdrive/gdoc-file.json", 200, true);
     libcmis::ObjectPtr object = session.getObject( objectId );
     boost::shared_ptr<GDriveObject> obj = boost::dynamic_pointer_cast
                                             <GDriveObject>(object);
@@ -679,7 +679,7 @@ void GDriveTest::getDocumentAllowableActionsTest( )
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/document.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true);
 
     libcmis::ObjectPtr obj = session.getObject( objectId );
  
@@ -703,7 +703,7 @@ void GDriveTest::getFolderAllowableActionsTest( )
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string url = BASE_URL + "/files/" + folderId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/folder.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/folder.json", 200, true);
 
     libcmis::FolderPtr folder = session.getFolder( folderId );
 
@@ -726,7 +726,7 @@ void GDriveTest::checkOutTest( )
     static const string documentId( "aFileId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true);
     
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
@@ -745,13 +745,13 @@ void GDriveTest::checkInTest( )
     string url = BASE_URL + "/files/" + documentId;
     string putUrl = uploadBaseUrl + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true);
    
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     curl_mockup_addResponse( url.c_str( ), "",
-                               "PUT", "data/gdrive/document2.json", 200, true);
+                               "PUT", DATA_DIR "/gdrive/document2.json", 200, true);
     curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
    
     string expectedContent( "content stream" );
@@ -772,7 +772,7 @@ void GDriveTest::deleteTest( )
 
     string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true);
     curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 204, false);
 
     libcmis::ObjectPtr object = session.getObject( objectId );
@@ -794,13 +794,13 @@ void GDriveTest::moveTest( )
     string sourceUrl = BASE_URL + "/files/" + sourceId;
     string desUrl = BASE_URL + "/files/" + desId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true );
     curl_mockup_addResponse( url.c_str( ), "", 
-                               "PUT", "data/gdrive/document2.json", 200, true );
+                               "PUT", DATA_DIR "/gdrive/document2.json", 200, true );
     curl_mockup_addResponse( sourceUrl.c_str( ), "",
-                               "GET", "data/gdrive/folder.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder.json", 200, true );
     curl_mockup_addResponse( desUrl.c_str( ), "",
-                               "GET", "data/gdrive/folder2.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder2.json", 200, true );
 
     libcmis::ObjectPtr object = session.getObject( objectId );
     
@@ -829,13 +829,13 @@ void GDriveTest::createDocumentTest( )
     string documentUrl = metaUrl + documentId;
 
     curl_mockup_addResponse( folderUrl.c_str( ), "", 
-                               "GET", "data/gdrive/folder.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder.json", 200, true );
     curl_mockup_addResponse( metaUrl.c_str( ), "",
-                               "POST", "data/gdrive/document.json", 200, true );
+                               "POST", DATA_DIR "/gdrive/document.json", 200, true );
     curl_mockup_addResponse( uploadUrl.c_str( ), "",
                                "PUT", "updated", 0, false );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
-                               "GET", "data/gdrive/document2.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document2.json", 200, true);
     
     libcmis::FolderPtr parent = session.getFolder( folderId );
 
@@ -877,9 +877,9 @@ void GDriveTest::createFolderTest( )
     const string metaUrl = BASE_URL + "/files";
    
     curl_mockup_addResponse( folderUrl.c_str( ), "", 
-                               "GET", "data/gdrive/folder.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder.json", 200, true );
     curl_mockup_addResponse( metaUrl.c_str( ), "",
-                               "POST", "data/gdrive/folder2.json", 200, true );    
+                               "POST", DATA_DIR "/gdrive/folder2.json", 200, true );    
     libcmis::FolderPtr parent = session.getFolder( folderId );
     try
     {       
@@ -916,7 +916,7 @@ void GDriveTest::removeTreeTest( )
     const string trashUrl = folderUrl + "/trash";
    
     curl_mockup_addResponse( folderUrl.c_str( ), "", 
-                               "GET", "data/gdrive/folder.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/folder.json", 200, true );
     curl_mockup_addResponse( trashUrl.c_str( ), "",
                                "POST", "", 200, false );    
     libcmis::FolderPtr folder = session.getFolder( folderId );
@@ -933,7 +933,7 @@ void GDriveTest::getContentStreamWithRenditionsTest( )
     static const string documentId( "aFileId" );
     string url = BASE_URL + "/files/" + documentId;
     curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", "data/gdrive/document.json", 200, true);
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true);
     libcmis::ObjectPtr object = session.getObject( documentId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
@@ -1006,9 +1006,9 @@ void GDriveTest::updatePropertiesTest( )
     const string documentUrl = BASE_URL + "/files/" + documentId;
    
     curl_mockup_addResponse( documentUrl.c_str( ), "", 
-                               "GET", "data/gdrive/document.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
-                               "PUT", "data/gdrive/document.json", 200, true );   
+                               "PUT", DATA_DIR "/gdrive/document.json", 200, true );   
  
     libcmis::ObjectPtr document = session.getObject( documentId );
  
@@ -1050,7 +1050,7 @@ void GDriveTest::getThumbnailUrlTest( )
     const string documentUrl = BASE_URL + "/files/" + documentId;
    
     curl_mockup_addResponse( documentUrl.c_str( ), "", 
-                               "GET", "data/gdrive/document.json", 200, true );
+                               "GET", DATA_DIR "/gdrive/document.json", 200, true );
  
     libcmis::ObjectPtr document = session.getObject( documentId );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Thumbnail URL does not match",
@@ -1067,10 +1067,10 @@ void GDriveTest::getAllVersionsTest( )
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string url = BASE_URL + "/files/" + objectId;
     curl_mockup_addResponse( url.c_str( ), "",
-                             "GET", "data/gdrive/document.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true);
     string revisionUrl = url + "/revisions";
     curl_mockup_addResponse( revisionUrl.c_str( ), "",
-                             "GET", "data/gdrive/allVersions.json", 200, true);
+                             "GET", DATA_DIR "/gdrive/allVersions.json", 200, true);
 
     libcmis::ObjectPtr obj = session.getObject( objectId );
  

@@ -2,10 +2,11 @@ if !OS_WIN32
 lib_LTLIBRARIES = libcmis-mockup.la
 
 libcmis_mockup_la_SOURCES = \
-	mockup-config.cxx \
 	curl-mockup.cxx \
-	curl/curl.h \
-	internals.hxx
+	internals.hxx \
+	mockup-config.cxx \
+	mockup-config.h \
+	curl/curl.h
 
 libcmis_mockup_la_LIBADD = \
 	$(top_builddir)/src/libcmis/libcmis.la

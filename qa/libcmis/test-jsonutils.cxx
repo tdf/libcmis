@@ -90,7 +90,7 @@ Json parseFile( string fileName )
 
 void JsonTest::parseTest( )
 {
-    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     string kind = json["kind"].toString( );
     string id = json["id"].toString( );
     string mimeType = json["mimeType"].toString( );
@@ -110,7 +110,7 @@ void JsonTest::parseTest( )
 
 void JsonTest::parseTypeTest( )
 {
-    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     Json::Type stringType = json["kind"].getDataType( );
     Json::Type boolType = json["editable"].getDataType( );
     Json::Type intType = json["intTest"].getDataType( );
@@ -163,7 +163,7 @@ void JsonTest::createFromPropertiesTest( )
 
 void JsonTest::badKeyTest( )
 {
-    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     // just make sure it doesn't crash here
     string notExist = json["nonExistedKey"].toString( );
     CPPUNIT_ASSERT_EQUAL( string( ), notExist);
@@ -171,7 +171,7 @@ void JsonTest::badKeyTest( )
 
 void JsonTest::badIndexTest( )
 {
-    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     // just make sure it doesn't crash here
     string notExist = json[1000].toString( );
     CPPUNIT_ASSERT_EQUAL( string( ), notExist);
@@ -179,7 +179,7 @@ void JsonTest::badIndexTest( )
 
 void JsonTest::addTest( )
 {
-    Json json = parseFile( "data/gdrive/jsontest-good.json" );
+    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     Json addJson("added");
     json.add( "new", addJson);
     CPPUNIT_ASSERT_EQUAL( addJson.toString( ), json["new"].toString( ) );
