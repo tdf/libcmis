@@ -107,7 +107,10 @@ namespace libcmis
         Session* session = createSession( bindingUrl, username, password,
                                           string(), OAuth2DataPtr(), verbose );
         if ( session != NULL )
+        {
             repos = session->getRepositories( );
+            delete session;
+        }
 
         return repos;
     }

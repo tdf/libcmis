@@ -336,6 +336,10 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
         m_headersData = copy.m_headersData;
         m_username = copy.m_username;
         m_password = copy.m_password;
+        m_proxy = copy.m_proxy;
+        m_noProxy = copy.m_noProxy;
+        m_proxyUser = copy.m_proxyUser;
+        m_proxyPass = copy.m_proxyPass;
         m_httpError = copy.m_httpError;
         m_method = copy.m_method;
     }
