@@ -69,13 +69,13 @@ CURL *curl_easy_init( void )
 
 void curl_easy_cleanup( CURL * curl )
 {
-    CurlHandle* handle = ( CurlHandle* ) curl;
+    CurlHandle* handle = static_cast< CurlHandle* >( curl );
     delete( handle );
 }
 
 void curl_easy_reset( CURL * curl )
 {
-    CurlHandle* handle = ( CurlHandle * ) curl;
+    CurlHandle* handle = static_cast< CurlHandle * >( curl );
     handle->reset( );
 }
 
@@ -96,7 +96,7 @@ char *curl_easy_unescape( CURL *, const char *string, int length, int * )
 
 CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle * >( curl );
 
     va_list arg;
     va_start( arg, option );
@@ -223,7 +223,7 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
 
 CURLcode curl_easy_perform( CURL * curl )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle * >( curl );
 
     /* Check the credentials */
     if ( mockup::config->hasCredentials( ) &&
@@ -260,7 +260,7 @@ CURLcode curl_easy_perform( CURL * curl )
 
 CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle * >( curl );
 
     va_list arg;
     va_start( arg, info );

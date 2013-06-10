@@ -30,6 +30,7 @@
 #include "internals.hxx"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 using namespace std;
@@ -141,7 +142,7 @@ namespace mockup
         {
             char* buf = strdup( headers.c_str() );
             handle->m_headersFn( buf, 1, headers.size( ), handle->m_headersData );
-            delete( buf );
+            free( buf );
         }
 
         // If nothing matched, then send a 404 HTTP error instead
@@ -173,7 +174,7 @@ namespace mockup
                 {
                     char* buf = strdup( response.c_str() );
                     handle->m_writeFn( buf, 1, response.size( ), handle->m_writeData );
-                    delete( buf );
+                    free( buf );
                 }
             }
         }
@@ -271,7 +272,7 @@ const char* curl_mockup_getRequestBody( const char* urlBase, const char* matchPa
 
 const char* curl_mockup_getProxy( CURL* curl )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle* >( curl );
     if ( NULL != handle )
         return handle->m_proxy.c_str();
     return NULL;
@@ -279,7 +280,7 @@ const char* curl_mockup_getProxy( CURL* curl )
 
 const char* curl_mockup_getNoProxy( CURL* curl )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle* >( curl );
     if ( NULL != handle )
         return handle->m_noProxy.c_str();
     return NULL;
@@ -287,7 +288,7 @@ const char* curl_mockup_getNoProxy( CURL* curl )
 
 const char* curl_mockup_getProxyUser( CURL* curl )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle* >( curl );
     if ( NULL != handle )
         return handle->m_proxyUser.c_str();
     return NULL;
@@ -295,7 +296,7 @@ const char* curl_mockup_getProxyUser( CURL* curl )
 
 const char* curl_mockup_getProxyPass( CURL* curl )
 {
-    CurlHandle* handle = ( CurlHandle * )curl;
+    CurlHandle* handle = static_cast< CurlHandle* >( curl );
     if ( NULL != handle )
         return handle->m_proxyPass.c_str();
     return NULL;

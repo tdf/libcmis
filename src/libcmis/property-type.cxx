@@ -151,16 +151,9 @@ namespace libcmis
             m_type = Decimal;
         else if ( jsonType == "json_int" )
             m_type = Integer;
-        else if ( jsonType == "json_string" )
-            m_type = String;
         else if ( jsonType == "json_datetime" )
             m_type = DateTime;
-        else if ( jsonType == "json_object" )
-            m_type = String;
-        else if ( jsonType == "json_array" )
-            m_type = String;
         else m_type = String;
-
     }
 
     void PropertyType::setTypeFromXml( string typeStr )

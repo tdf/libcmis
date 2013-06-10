@@ -86,11 +86,6 @@ OAuth2Handler::~OAuth2Handler( )
     
 }
 
-bool OAuth2Handler::isAuthenticated( ) throw ( libcmis::Exception )
-{
-    return !m_access.empty( );
-}
-
 void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 {
     string post =

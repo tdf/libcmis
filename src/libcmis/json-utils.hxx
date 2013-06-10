@@ -69,8 +69,6 @@ class Json
         Type getDataType( ) const ;
         std::string getStrType( ) const ;
 
-        int getLength( ) const;
-
         JsonObject getObjects();
         JsonVector getList();
 

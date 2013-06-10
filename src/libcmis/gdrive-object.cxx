@@ -64,7 +64,7 @@ void GDriveObject::initializeFromJson ( Json json )
 {
     Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
-    for ( it = objs.begin( ); it != objs.end( ); it++)
+    for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
         PropertyPtr property(new GDriveProperty( it->first,it->second) );
         if ( property != NULL ){
@@ -120,7 +120,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( )
             Json renditionJson = Json::parse( exportLinks );
             Json::JsonObject objs = renditionJson.getObjects( );
             Json::JsonObject::iterator it; 
-            for ( it = objs.begin( ); it != objs.end( ); it++)
+            for ( it = objs.begin( ); it != objs.end( ); ++it)
             { 
                 string mimeType = it->first;
                 string url = it->second.toString( );

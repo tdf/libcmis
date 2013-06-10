@@ -227,7 +227,7 @@ namespace libcmis
         string url;
         vector< RenditionPtr > renditions = getRenditions( );
         for ( vector< RenditionPtr >::iterator it = renditions.begin( ); 
-            it != renditions.end( ); it++)
+            it != renditions.end( ); ++it)
                 
         {
             if ( (*it)->getKind( ) == "cmis:thumbnail" ) return (*it)->getUrl( );    

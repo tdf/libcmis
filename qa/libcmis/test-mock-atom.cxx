@@ -958,7 +958,6 @@ void AtomTest::cancelCheckOutTest( )
     libcmis::ObjectPtr object = session.getObject( "working-copy" );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
-    string id = pwc->getId( );
     pwc->cancelCheckout( );
 
     // Check that the DELETE request was sent out

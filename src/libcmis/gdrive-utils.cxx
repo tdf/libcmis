@@ -119,10 +119,8 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
 
 bool GdriveUtils::checkUpdatable( const string& key )
 {
-    bool updatable = false;
-
     // taken from https://developers.google.com/drive/v2/reference/files
-    updatable = ( key == "title" ||
+    bool updatable = ( key == "title" ||
                   key == "mimeType" ||
                   key == "description" ||
                   key == "modifiedDate" ||

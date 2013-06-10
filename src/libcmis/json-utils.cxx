@@ -290,11 +290,6 @@ std::string Json::getStrType( ) const
     return "json_string";   
 }
 
-int Json::getLength( ) const
-{
-    return ::json_object_array_length( m_json );
-}
-
 string Json::toString( ) const
 {
     // Return an empty string if the object doesn't exist
