@@ -34,3 +34,4 @@ test-server
 *.1
 *.swp
 run-test.sh
+cppcheck-test.sh

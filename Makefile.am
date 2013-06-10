@@ -32,7 +32,13 @@ EXTRA_DIST = \
 	COPYING.GPL \
 	COPYING.LGPL \
 	src/libcmis/makefile.mk \
-	doc/cmis-client.xml
+	doc/cmis-client.xml \
+	cppcheck-test.sh
+
+if ENABLE_CPPCHECK
+TESTS_ENVIRONMENT = $(SHELL)
+TESTS = cppcheck-test.sh
+endif
 
 distclean-local:
 	-rm -rf test-server

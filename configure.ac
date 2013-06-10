@@ -89,6 +89,14 @@ AS_IF([test "x$with_man" != "xno"], [
 AC_SUBST(DOCBOOK2MAN)
 AM_CONDITIONAL([WITH_LIBCMIS_MAN], [test "x$build_man" != "xno"])
 
+# ========
+# Cppcheck
+# ========
+AC_PATH_PROG(CPPCHECK,[cppcheck],[])
+AS_IF([test "x$ac_cv_path_CPPCHECK" != "x"], [enable_cppcheck=yes], [enable_cppcheck=no])
+AM_CONDITIONAL(ENABLE_CPPCHECK, [test "x$ac_cv_path_CPPCHECK" != "x"])
+AC_SUBST(CPPCHECK)
+
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
 	[enable_werror="$enableval"],
@@ -160,6 +168,7 @@ AC_CONFIG_FILES([
 	libcmis.pc
 	libcmis-c.pc
     run-test.sh
+    cppcheck-test.sh
 	src/Makefile
 	src/libcmis/Makefile
 	src/libcmis-c/Makefile
@@ -179,5 +188,6 @@ libcmis $VERSION:
               werror: ${enable_werror}
                tests: ${enable_tests}
           long tests: ${enable_long_tests}
+      cppcheck tests: ${enable_cppcheck}
                 mans: ${build_man}
 ])
