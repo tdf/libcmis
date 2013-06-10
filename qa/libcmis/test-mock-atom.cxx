@@ -82,6 +82,7 @@ class AtomTest : public CppUnit::TestFixture
         void deleteFolderTreeTest( );
         void checkOutTest( );
         void cancelCheckOutTest( );
+        void checkInTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -114,6 +115,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteFolderTreeTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
+        CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -620,7 +622,7 @@ void AtomTest::setContentStreamTest( )
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Check the content has been properly uploaded
-        const char* content = curl_mockup_getRequest( "http://mockup/mock/content/", "id=test-document", "PUT" );
+        const char* content = curl_mockup_getRequestBody( "http://mockup/mock/content/", "id=test-document", "PUT" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
@@ -662,7 +664,7 @@ void AtomTest::updatePropertiesTest( )
     // Check that the proper request has been send
     // In order to avoid to check changing strings (containing a timestamp),
     // get the cmisra:object tree and compare it.
-    string request( curl_mockup_getRequest( "http://mockup/mock/id", "id=test-document", "PUT" ) );
+    string request( curl_mockup_getRequestBody( "http://mockup/mock/id", "id=test-document", "PUT" ) );
     string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
 
     string expectedObject = "<cmisra:object>"
@@ -721,7 +723,7 @@ void AtomTest::createFolderTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name", expectedName, created->getName( ) );
 
     // Check that the proper request has been sent
-    string request( curl_mockup_getRequest( "http://mockup/mock/children", "id=root-folder", "POST" ) );
+    string request( curl_mockup_getRequestBody( "http://mockup/mock/children", "id=root-folder", "POST" ) );
     string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
 
     string expectedObject = "<cmisra:object>"
@@ -786,7 +788,7 @@ void AtomTest::createFolderBadTypeTest( )
     }
 
     // Check that the proper request has been sent
-    string request( curl_mockup_getRequest( "http://mockup/mock/children", "id=root-folder", "POST" ) );
+    string request( curl_mockup_getRequestBody( "http://mockup/mock/children", "id=root-folder", "POST" ) );
     string actualObject = test::getXmlNodeAsString( request, "/atom:entry/cmisra:object" );
 
     string expectedObject = "<cmisra:object>"
@@ -855,7 +857,7 @@ void AtomTest::createDocumentTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name set", expectedName, created->getName( ) );
 
     // Check that the request is the expected one
-    string request( curl_mockup_getRequest( "http://mockup/mock/children", "id=root-folder", "POST" ) );
+    string request( curl_mockup_getRequestBody( "http://mockup/mock/children", "id=root-folder", "POST" ) );
     string actualContent = test::getXmlNodeAsString( request, "/atom:entry/cmisra:content" );
     string expectedContent = "<cmisra:content>"
                                 "<cmisra:mediatype>text/plain</cmisra:mediatype>"
@@ -895,7 +897,7 @@ void AtomTest::deleteDocumentTest( )
     document->remove( );
 
     // Test the sent request
-    const char* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=test-document", "DELETE" );
+    const char* request = curl_mockup_getRequestBody( "http://mockup/mock/id", "id=test-document", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
 }
 
@@ -915,8 +917,9 @@ void AtomTest::deleteFolderTreeTest( )
     folder->removeTree( );
 
     // Test the sent request
-    const char* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=valid-object", "DELETE" );
+    const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/descendants", "id=valid-object", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
+    delete request;
 }
 
 void AtomTest::checkOutTest( )
@@ -951,7 +954,7 @@ void AtomTest::cancelCheckOutTest( )
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    // First create a versionable document and check it out
+    // First get a checked out document
     libcmis::ObjectPtr object = session.getObject( "working-copy" );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
@@ -959,8 +962,46 @@ void AtomTest::cancelCheckOutTest( )
     pwc->cancelCheckout( );
 
     // Check that the DELETE request was sent out
-    const char* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=working-copy", "DELETE" );
+    const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=working-copy", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
+}
+
+void AtomTest::checkInTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", "data/atom/type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=working-copy", "GET", "data/atom/working-copy.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=working-copy", "PUT", "data/atom/test-document.xml", 200, true,
+           "Location: http://mockup/mock/id?id=valid-object" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    // First get a checked out document
+    libcmis::ObjectPtr object = session.getObject( "working-copy" );
+    libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    // Do the checkin
+    bool isMajor = true;
+    string comment( "Some check-in comment" );
+    PropertyPtrMap properties;
+    string newContent = "Some New content to check in";
+    boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
+    pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
+
+    // Make sure that the expected request has been sent
+    const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=working-copy", "PUT" );
+    CPPUNIT_ASSERT_MESSAGE( "PUT request not sent", request );
+
+    string actualContent = test::getXmlNodeAsString( request->body, "/atom:entry/cmisra:content" );
+    string expectedContent = "<cmisra:content><cmisra:mediatype>text/plain</cmisra:mediatype><cmisra:base64>U29tZSBOZXcgY29udGVudCB0byBjaGVjayBpbg==</cmisra:base64></cmisra:content>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong content sent", expectedContent, actualContent );
+
+    // Still needs to test that checkin request parameters were OK
+    string url( request->url );
+    CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wroong major parameter", url.find("major=true") != string::npos );
+    CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong checkinComment parameter", url.find( "checkinComment=" + comment ) != string::npos );
+    CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has no checkin parameter", url.find("checkin=true") != string::npos );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

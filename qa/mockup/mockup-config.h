@@ -68,7 +68,14 @@ void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const
 void curl_mockup_setResponse( const char* filepath );
 void curl_mockup_setCredentials( const char* username, const char* password );
 
-const char* curl_mockup_getRequest( const char* baseUrl, const char* matchParam, const char* method );
+struct HttpRequest
+{
+    const char* url;
+    const char* body;
+};
+
+const struct HttpRequest* curl_mockup_getRequest( const char* baseUrl, const char* matchParam, const char* method );
+const char* curl_mockup_getRequestBody( const char* baseUrl, const char* matchParam, const char* method );
 
 const char* curl_mockup_getProxy( CURL* handle );
 const char* curl_mockup_getNoProxy( CURL* handle );

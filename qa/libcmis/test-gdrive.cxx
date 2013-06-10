@@ -160,7 +160,7 @@ void GDriveTest::sessionAuthenticationTest( )
     string empty;
     
     // Check authentication request
-    string authRequest( curl_mockup_getRequest( LOGIN_URL.c_str(), empty.c_str( ),
+    string authRequest( curl_mockup_getRequestBody( LOGIN_URL.c_str(), empty.c_str( ),
                                                 "POST" ) );
     string expectedAuthRequest =
         string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
@@ -170,7 +170,7 @@ void GDriveTest::sessionAuthenticationTest( )
                                   expectedAuthRequest, authRequest );
     
     // Check code request
-    string codeRequest( curl_mockup_getRequest( APPROVAL_URL.c_str(),
+    string codeRequest( curl_mockup_getRequestBody( APPROVAL_URL.c_str(),
                         empty.c_str( ), "POST" ) );
     string expectedCodeRequest = string( "state_wrapper=stateWrapper&submit_access=true" );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request", 
@@ -184,8 +184,8 @@ void GDriveTest::sessionAuthenticationTest( )
         string( "&redirect_uri=") + REDIRECT_URI + 
         string( "&grant_type=authorization_code" );
 
-    string tokenRequest( curl_mockup_getRequest( TOKEN_URL.c_str(), empty.c_str( ),
-                                                 "POST" ));
+    string tokenRequest( curl_mockup_getRequestBody( TOKEN_URL.c_str(), empty.c_str( ),
+                                                 "POST" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request",
                                   expectedTokenRequest, tokenRequest );
 
@@ -317,7 +317,7 @@ void GDriveTest::sessionExpiryTokenDeleteTest( )
                    "wrong access token",
                    string ( "new-access-token" ),
                    session.m_oauth2Handler->getAccessToken( ) );
-            const char* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+            const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
             CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
         }
     }
@@ -525,11 +525,11 @@ void GDriveTest::setContentStreamTest( )
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Check if metadata has been properly uploaded
-        const char* meta = curl_mockup_getRequest( url.c_str( ), "", "PUT" );
+        const char* meta = curl_mockup_getRequestBody( url.c_str( ), "", "PUT" );
         string expectedMeta = "{ \"title\": \"" + filename + "\"" + " }";
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad meta uploaded", expectedMeta, string( meta ) );
         // Check the content has been properly uploaded
-        const char* content = curl_mockup_getRequest( putUrl.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
@@ -570,7 +570,7 @@ void GDriveTest::setContentStreamGdocTest( )
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Check the content has been properly uploaded
-        const char* content = curl_mockup_getRequest( putUrl.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
@@ -778,7 +778,7 @@ void GDriveTest::deleteTest( )
     libcmis::ObjectPtr object = session.getObject( objectId );
     
     object->remove( );
-    const char* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+    const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
 }
 
@@ -808,7 +808,7 @@ void GDriveTest::moveTest( )
     libcmis::FolderPtr destination = session.getFolder( desId );    
 
     object->move( source, destination );
-    const char* moveRequest = curl_mockup_getRequest( url.c_str( ), "", "PUT" );
+    const char* moveRequest = curl_mockup_getRequestBody( url.c_str( ), "", "PUT" );
     Json parentJson = Json::parse( string( moveRequest ) );
     string newParentId = parentJson["parents"][0]["id"].toString( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", 
@@ -849,14 +849,14 @@ void GDriveTest::createDocumentTest( )
         // function to test
         parent->createDocument( properties, os, "text/plain", filename );
 
-        const char* createRequest = curl_mockup_getRequest( metaUrl.c_str( ), "", "POST" );
+        const char* createRequest = curl_mockup_getRequestBody( metaUrl.c_str( ), "", "POST" );
         Json request = Json::parse( string( createRequest ) );
         string sentParentId = request["parents"][0]["id"].toString( );
         string sentFilename = request["title"].toString( );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad parents sent", folderId, sentParentId );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad filename sent", filename, sentFilename );
 
-        const char* content = curl_mockup_getRequest( uploadUrl.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( uploadUrl.c_str( ), "", "PUT" );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
@@ -888,7 +888,7 @@ void GDriveTest::createFolderTest( )
         // function to test
         parent->createFolder( properties );
 
-        const char* createRequest = curl_mockup_getRequest( metaUrl.c_str( ), "", "POST" );
+        const char* createRequest = curl_mockup_getRequestBody( metaUrl.c_str( ), "", "POST" );
         Json request = Json::parse( string( createRequest ) );
 
         string sentParentId = request["parents"][0]["id"].toString( );
@@ -1014,7 +1014,7 @@ void GDriveTest::updatePropertiesTest( )
  
     document->updateProperties( document->getProperties( ) );
     
-    const char* updateRequest = curl_mockup_getRequest( documentUrl.c_str( ), "", "PUT" );
+    const char* updateRequest = curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
 
     // Check if properties keys are properly converted back before sending
     Json json = Json::parse( string( updateRequest ) );

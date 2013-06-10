@@ -226,15 +226,15 @@ void curl_mockup_setCredentials( const char* username, const char* password )
     mockup::config->m_password = string( password );
 }
 
-const char* curl_mockup_getRequest( const char* urlBase, const char* matchParam, const char* method )
+const struct HttpRequest* curl_mockup_getRequest( const char* urlBase, const char* matchParam, const char* method )
 {
-    string request;
+    struct HttpRequest* request = NULL;
 
     string urlBaseString( urlBase );
     string matchParamString( matchParam );
 
     for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
-            it != mockup::config->m_requests.end( ) && request.empty( ); ++it )
+            it != mockup::config->m_requests.end( ) && request == NULL; ++it )
     {
         string url;
         string params;
@@ -247,12 +247,26 @@ const char* curl_mockup_getRequest( const char* urlBase, const char* matchParam,
 
             if ( matchBaseUrl && matchParams )
             {
-                request = it->m_body;
+                request = new HttpRequest;
+                request->url = it->m_url.c_str();
+                request->body = it->m_body.c_str();
             }
         }
     }
 
-    return request.c_str( );
+    return request;
+}
+
+const char* curl_mockup_getRequestBody( const char* urlBase, const char* matchParam, const char* method )
+{
+    const struct HttpRequest* request = curl_mockup_getRequest( urlBase, matchParam, method );
+    if ( request )
+    {
+        const char* body = request->body;
+        delete request;
+        return body;
+    }
+    return NULL;
 }
 
 const char* curl_mockup_getProxy( CURL* curl )
