@@ -93,6 +93,8 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             if ( value[0] == '"' && value[value.length() - 1] == '"' )
                 value = value.substr( 1, value.length( ) - 2 );
 
+            name = libcmis::trim( name );
+
             if ( name == "start" )
             {
                 m_startId = value;

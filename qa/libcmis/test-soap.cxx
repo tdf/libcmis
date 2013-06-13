@@ -359,8 +359,9 @@ void SoapTest::parseMultipartTest( )
                   "\r\n" +
                   part2Content +
                   "\r\n--" + boundary + "--\r\n";
-            
-    string contentType = "multipart/related;start=\"" + rootCid + "\";type=\"" + rootType + "\";" +
+
+    // Added a space before one of the items as it may happen 
+    string contentType = "multipart/related; start=\"" + rootCid + "\";type=\"" + rootType + "\";" +
                          "boundary=\"" + boundary + "\";start-info=\"" + startInfo + "\"";
 
     RelatedMultipart multipart( body, contentType );
