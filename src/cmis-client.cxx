@@ -57,8 +57,12 @@ namespace
 
     class CinAuthProvider : public libcmis::AuthProvider
     {
+        private:
+            string m_user;
+            string m_pass;
+
         public:
-            CinAuthProvider( ) { }
+            CinAuthProvider( ) : m_user( ), m_pass( ) { }
             ~CinAuthProvider( ) { }
 
             virtual bool authenticationQuery( string& username, string& password );
@@ -70,16 +74,34 @@ namespace
         bool askUsername = username.empty();
         if ( askUsername )
         {
-            cout << "Username (empty to cancel): ";
-            getline( cin, username );
-            cancelled = username.empty();
+            if ( m_user.empty() )
+            {
+                cout << "Username (empty to cancel): ";
+                getline( cin, username );
+                cancelled = username.empty();
+                m_user = username;
+            }
+            else
+            {
+                cancelled = false;
+                username = m_user;
+            }
         }
 
         if ( !cancelled && ( askUsername || password.empty( ) ) )
         {
-            cout << "Password (empty to cancel): ";
-            getline( cin, password );
-            cancelled = password.empty();
+            if ( m_pass.empty() )
+            {
+                cout << "Password (empty to cancel): ";
+                getline( cin, password );
+                cancelled = password.empty();
+                m_pass = password;
+            }
+            else
+            {
+                password = m_pass;
+                cancelled = false;
+            }
         }
         return !cancelled;
     }
