@@ -83,6 +83,7 @@ class AtomTest : public CppUnit::TestFixture
         void checkOutTest( );
         void cancelCheckOutTest( );
         void checkInTest( );
+        void getAllVersionsTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -116,6 +117,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -1001,6 +1003,27 @@ void AtomTest::checkInTest( )
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wroong major parameter", url.find("major=true") != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong checkinComment parameter", url.find( "checkinComment=" + comment ) != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has no checkin parameter", url.find("checkin=true") != string::npos );
+}
+
+void AtomTest::getAllVersionsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", DATA_DIR "/atom/test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/versions", "id=test-document", "GET", DATA_DIR "/atom/get-versions.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    // First get a document
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::DocumentPtr doc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    // Get all the versions (method to check)
+    vector< libcmis::DocumentPtr > versions = doc->getAllVersions( ); 
+
+    // Checks
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

@@ -51,39 +51,12 @@ class AtomTest : public CppUnit::TestFixture
 
         // Node operations tests
 
-        void getAllVersionsTest( );
         void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
-        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void AtomTest::getAllVersionsTest( )
-{
-    AtomPubSession session( SERVER_ATOM_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
-
-    // First create a versionable document and check it out
-    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "getAllVersionsTest" );
-    libcmis::DocumentPtr pwc = doc->checkOut( );
-
-    CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
-
-    // Create a version
-    bool isMajor = true;
-    string comment( "Some check-in comment" );
-    PropertyPtrMap properties;
-    string newContent = "Some New content to check in";
-    boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
-    libcmis::DocumentPtr newVersion = pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
-
-    // Get all the versions (method to check)
-    vector< libcmis::DocumentPtr > versions = newVersion->getAllVersions( ); 
-
-    // Checks
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
-}
 
 void AtomTest::moveTest( )
 {

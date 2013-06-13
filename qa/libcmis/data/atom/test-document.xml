@@ -104,7 +104,7 @@
       <cmis:canCancelCheckOut>false</cmis:canCancelCheckOut>
       <cmis:canCheckIn>false</cmis:canCheckIn>
       <cmis:canSetContentStream>true</cmis:canSetContentStream>
-      <cmis:canGetAllVersions>false</cmis:canGetAllVersions>
+      <cmis:canGetAllVersions>true</cmis:canGetAllVersions>
       <cmis:canAddObjectToFolder>true</cmis:canAddObjectToFolder>
       <cmis:canRemoveObjectFromFolder>true</cmis:canRemoveObjectFromFolder>
       <cmis:canGetContentStream>true</cmis:canGetContentStream>
@@ -134,4 +134,5 @@
   <atom:link rel="up" href="http://mockup/mock/parents?id=test-document" type="application/atom+xml;type=feed"/>
   <atom:link rel="edit-media" href="http://mockup/mock/content?id=test-document" type="text/plain"/>
   <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=test-document" type="application/cmisacl+xml"/>
+  <atom:link rel="version-history" href="http://mockup/mock/versions?id=test-document" type="application/atom+xml;type=feed"/>
 </atom:entry>
