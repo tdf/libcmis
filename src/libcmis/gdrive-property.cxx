@@ -50,7 +50,7 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     propertyType->setLocalName( convertedKey );
     propertyType->setLocalNamespace( convertedKey );
     propertyType->setQueryName( convertedKey );
-    propertyType->setDisplayName( convertedKey );
+    propertyType->setDisplayName( key );
     propertyType->setTypeFromJsonType( json.getStrType( ) );
     propertyType->setUpdatable( GdriveUtils::checkUpdatable( key ) );
     setPropertyType( propertyType );    
