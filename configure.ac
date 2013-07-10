@@ -10,7 +10,7 @@ m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])
 
 AC_PREREQ([2.63])
 AC_INIT([libcmis], [libcmis_version])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(serial-tests)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_ARG_ENABLE(client,
