@@ -22,6 +22,7 @@ ChangeLog
 libcmis-*.*.*.tar.gz
 test-nosrv-utils
 test-nosrv-mockup
+test-nosrv-atom
 test-nosrv-gdrive
 test-nosrv-json
 test-atom
