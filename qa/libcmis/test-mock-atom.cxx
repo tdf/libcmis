@@ -84,6 +84,7 @@ class AtomTest : public CppUnit::TestFixture
         void cancelCheckOutTest( );
         void checkInTest( );
         void getAllVersionsTest( );
+        void moveTest( );
 
         CPPUNIT_TEST_SUITE( AtomTest );
         CPPUNIT_TEST( sessionCreationTest );
@@ -118,6 +119,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
@@ -1000,7 +1002,7 @@ void AtomTest::checkInTest( )
 
     // Still needs to test that checkin request parameters were OK
     string url( request->url );
-    CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wroong major parameter", url.find("major=true") != string::npos );
+    CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong major parameter", url.find("major=true") != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong checkinComment parameter", url.find( "checkinComment=" + comment ) != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has no checkin parameter", url.find("checkin=true") != string::npos );
 }
@@ -1024,6 +1026,42 @@ void AtomTest::getAllVersionsTest( )
 
     // Checks
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
+}
+
+void AtomTest::moveTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", DATA_DIR "/atom/test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/parents", "id=test-document", "GET", DATA_DIR "/atom/test-document-parents.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=valid-object", "GET", DATA_DIR "/atom/valid-object.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=valid-object", "POST", DATA_DIR "/atom/test-document.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+
+    string destFolderId = "valid-object";
+    libcmis::FolderPtr src = document->getParents( ).front( );
+    libcmis::FolderPtr dest = session.getFolder( destFolderId );
+
+    document->move( src, dest );
+
+    // Check that the sent request has the expected params
+    const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/children", "id=valid-object", "POST" );
+    string url( request->url );
+    CPPUNIT_ASSERT_MESSAGE( "Sent move request has wrong or missing sourceFolderId", url.find("sourceFolderId=parent1") != string::npos );
+
+    // Check that we had the atom entry in the request body
+    string actualObject = test::getXmlNodeAsString( request->body, "/atom:entry/cmisra:object/cmis:properties/cmis:propertyId[@propertyDefinitionId='cmis:objectId']" );
+    string expectedObject = "<cmis:propertyId propertyDefinitionId=\"cmis:objectId\" localName=\"cmis:objectId\""
+                                            " displayName=\"Object Id\" queryName=\"cmis:objectId\">"
+                                "<cmis:value>test-document</cmis:value>"
+                            "</cmis:propertyId>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request object sent", expectedObject, actualObject );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )

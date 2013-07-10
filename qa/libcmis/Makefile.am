@@ -1,4 +1,5 @@
 if ENABLE_TESTS
+
 #
 # Note that the test names are important here due to the environment test.
 # Some tests will need to have a running CMIS server while some others don't.
@@ -19,7 +20,6 @@ endif
 check_PROGRAMS = \
 	test-nosrv-utils \
 	test-nosrv-json \
-	test-atom \
 	test-ws \
 	${mockup_tests}
 
@@ -107,26 +107,6 @@ test_nosrv_json_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)\
 	$(JSON_LIBS)
 
-test_atom_SOURCES =	\
-	test-atom.cxx \
-	test-helpers.hxx \
-	test-helpers.cxx \
-	test-main.cxx
-
-test_atom_CPPFLAGS = \
-	-I$(top_srcdir)/src/libcmis \
-	$(XML2_CFLAGS) \
-	$(CURL_CFLAGS) \
-	$(BOOST_CPPFLAGS) \
-	-O0
-
-test_atom_LDADD = \
-	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
-	$(XML2_LIBS) \
-	$(CURL_LIBS) \
-	$(CPPUNIT_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)
-
 test_ws_SOURCES =	\
 	test-ws.cxx \
 	test-helpers.hxx \
@@ -148,10 +128,8 @@ test_ws_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 
-
 if ENABLE_LONG_TESTS
 long_tests = \
-	test-atom \
 	test-ws
 endif
 
