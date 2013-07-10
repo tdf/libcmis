@@ -75,7 +75,7 @@ namespace libcmis
                 }
                 catch ( const Exception& e )
                 {
-                    if ( e.getType( ) == "permissionDenied" )
+                    if ( e.getType( ) == "permissionDenied" || !e.getCertificate().empty() )
                         throw;
                 }
                 
@@ -89,7 +89,7 @@ namespace libcmis
                     }
                     catch ( const Exception& e )
                     {
-                        if ( e.getType( ) == "permissionDenied" )
+                        if ( e.getType( ) == "permissionDenied" || !e.getCertificate().empty() )
                             throw;
                     }
                 }

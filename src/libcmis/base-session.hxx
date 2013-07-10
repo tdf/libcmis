@@ -56,16 +56,18 @@ class CurlException : public std::exception
         bool        m_cancelled;
 
         mutable std::string m_errorMessage;
+        std::string m_certificate;
 
     public:
-        CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
+        CurlException( std::string message, CURLcode code, std::string url, long httpStatus, std::string cert = std::string() ) :
             exception( ),
             m_message( message ),
             m_code( code ),
             m_url( url ),
             m_httpStatus( httpStatus ),
             m_cancelled( false ),
-            m_errorMessage( )
+            m_errorMessage( ),
+            m_certificate( cert )
         {
         }
         
@@ -76,7 +78,8 @@ class CurlException : public std::exception
             m_url( ),
             m_httpStatus( 0 ),
             m_cancelled( true ),
-            m_errorMessage( )
+            m_errorMessage( ),
+            m_certificate( )
         {
         }
 
@@ -87,6 +90,7 @@ class CurlException : public std::exception
         std::string getErrorMessage( ) const { return m_message; }
         bool isCancelled( ) const { return m_cancelled; }
         long getHttpStatus( ) const { return m_httpStatus; }
+        std::string getCertificate( ) const { return m_certificate; }
 
         libcmis::Exception getCmisException ( ) const;
 };

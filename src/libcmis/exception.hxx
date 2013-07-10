@@ -38,12 +38,14 @@ namespace libcmis
         private:
             std::string m_message;
             std::string m_type;
+            std::string m_certificate;
 
         public:
-            Exception( std::string message, std::string type = "runtime" ) :
+            Exception( std::string message, std::string type = "runtime", std::string certificate = "" ) :
                 exception( ),
                 m_message( message ),
-                m_type( type )
+                m_type( type ),
+                m_certificate( certificate )
             {
             }
 
@@ -54,6 +56,8 @@ namespace libcmis
             }
 
             std::string getType( ) const { return m_type; }
+
+            std::string getCertificate( ) const { return m_certificate; }
     };
 }
 

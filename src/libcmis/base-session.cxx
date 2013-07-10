@@ -604,6 +604,11 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     if ( m_verbose )
         curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
+    // We want to get the certificate infos in error cases
+#if LIBCURL_VERSION_VALUE >= 0X071301
+    curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
+#endif
+
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
     
@@ -614,9 +619,48 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
+        string base64PEM;
+
+        // If we had a bad certificate, then try to get more details
+        if ( CURLE_SSL_CACERT == errCode )
+        {
+            // We somehow need to rerun the request to get the certificate
+            curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_easy_perform( m_curlHandle );
+
+            union {
+                struct curl_slist    *to_info;
+                struct curl_certinfo *to_certinfo;
+            } ptr;
+         
+            ptr.to_info = NULL;
+         
+            CURLcode res = curl_easy_getinfo(m_curlHandle, CURLINFO_CERTINFO, &ptr.to_info);
+         
+            if ( !res && ptr.to_info )
+            {
+                // We need the first certificate in the chain only
+                if ( ptr.to_certinfo->num_of_certs > 0 )
+                {
+                    struct curl_slist *slist;
+         
+                    string certLineStart( "Cert:" );
+                    for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
+                    {
+                        string data( slist->data );
+                        if ( data.find( certLineStart ) == 0 )
+                        {
+                            base64PEM = data.substr( certLineStart.length() );
+                        }
+                    }
+                }
+            }
+        }
+
         long httpError = 0;
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
-        throw CurlException( string( errBuff ), errCode, url, httpError );
+        throw CurlException( string( errBuff ), errCode, url, httpError, base64PEM );
     }
 }
 
@@ -732,7 +776,7 @@ libcmis::Exception CurlException::getCmisException( ) const
             break;
     }
 
-    return libcmis::Exception( msg, type );
+    return libcmis::Exception( msg, type, getCertificate() );
 }
 
 void BaseSession::initProtocols( )
