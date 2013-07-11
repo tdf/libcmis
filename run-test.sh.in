@@ -30,7 +30,7 @@ function setup_server()
     if test ! -e  ${LIBCMIS_DIR}/${CHEMISTRY_WEBAPPS}; then
         echo "Downloading apache chemistry webapps"
         curl -o  ${LIBCMIS_DIR}/${CHEMISTRY_WEBAPPS} \
-            http://mirror.speednetwork.de/apache/chemistry/opencmis/${CHEMISTRY_VERSION}/${CHEMISTRY_WEBAPPS}
+            http://archive.apache.org/dist/chemistry/opencmis/${CHEMISTRY_VERSION}/${CHEMISTRY_WEBAPPS}
     fi
 
     # Untar it all
