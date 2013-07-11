@@ -15,7 +15,8 @@ libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	session-factory.hxx \
 	session.hxx \
 	xml-utils.hxx \
-	xmlserializable.hxx
+	xmlserializable.hxx \
+	libcmis.hxx
 
 noinst_LTLIBRARIES = libcmis.la
 

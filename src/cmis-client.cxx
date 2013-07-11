@@ -36,8 +36,7 @@
 
 #include <boost/program_options.hpp>
 
-#include <libcmis/session-factory.hxx>
-#include <libcmis/document.hxx>
+#include <libcmis/libcmis.hxx>
 
 using namespace std;
 using namespace ::boost::program_options;
