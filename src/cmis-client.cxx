@@ -1088,6 +1088,15 @@ int main ( int argc, char* argv[] )
         client.printHelp();
         return 1;
     }
+    catch ( const libcmis::Exception& e )
+    {
+        cerr << "------------------------------------------------" << endl;
+        cerr << "ERROR: " << e.what() << endl;
+        if ( !e.getCertificate().empty() )
+            cerr << endl << "Certificate: " << endl << e.getCertificate() << endl;
+        cerr << "------------------------------------------------" << endl;
+        return 1;
+    }
     catch ( const exception& e )
     {
         cerr << "------------------------------------------------" << endl;
