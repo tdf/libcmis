@@ -25,12 +25,25 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#ifndef _LIBCMIS_C_H_
+#define _LIBCMIS_C_H_
 
-#include "libcmis-c.h"
+#include "types.h"
 
-int main ( int argc, char ** argv )
-{
-    ( void )argc;
-    ( void )argv;
-    return 0;
-}
+#include "allowable-actions.h"
+#include "document.h"
+#include "error.h"
+#include "folder.h"
+#include "object.h"
+#include "object-type.h"
+#include "property.h"
+#include "property-type.h"
+#include "oauth2-data.h"
+#include "rendition.h"
+#include "repository.h"
+#include "types.h"
+#include "session.h"
+#include "session-factory.h"
+#include "vectors.h"
+
+#endif

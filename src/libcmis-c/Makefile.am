@@ -16,11 +16,11 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
 	types.h \
 	session.h \
 	session-factory.h \
-	vectors.h 
+	vectors.h \
+	libcmis-c.h
 
 lib_LTLIBRARIES = libcmis-c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
-	$(libcmis_c_headers_public) \
 	allowable-actions.cxx \
 	document.cxx \
 	error.cxx \
