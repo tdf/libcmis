@@ -27,6 +27,7 @@ dist_man_MANS = doc/cmis-client.xml
 
 EXTRA_DIST = \
 	libcmis.pc.in \
+	libcmis-c.pc.in \
 	run-test.sh \
 	COPYING.MPL \
 	COPYING.GPL \
