@@ -46,7 +46,6 @@
 #include "object-type.hxx"
 #include "property.hxx"
 #include "xmlserializable.hxx"
-#include "json-utils.hxx"
 #include "rendition.hxx"
 
 namespace libcmis
