@@ -121,6 +121,7 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
     m_repositories( ),
     m_verbose( verbose ),
     m_noHttpErrors( false ),
+    m_noSSLCheck( false ),
     m_refreshedToken( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
@@ -144,6 +145,7 @@ BaseSession::BaseSession( const BaseSession& copy ) :
     m_repositories( copy.m_repositories ),
     m_verbose( copy.m_verbose ),
     m_noHttpErrors( copy.m_noHttpErrors ),
+    m_noSSLCheck( copy.m_noSSLCheck ),
     m_refreshedToken( false )
 {
     // Not sure how sharing curl handles is safe.
@@ -164,6 +166,7 @@ BaseSession::BaseSession( ) :
     m_repositories( ),
     m_verbose( false ),
     m_noHttpErrors( false ),
+    m_noSSLCheck( false ),
     m_refreshedToken( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
@@ -185,6 +188,7 @@ BaseSession& BaseSession::operator=( const BaseSession& copy )
         m_repositories = copy.m_repositories;
         m_verbose = copy.m_verbose;
         m_noHttpErrors = copy.m_noHttpErrors;
+        m_noSSLCheck = copy.m_noSSLCheck;
         m_refreshedToken = copy.m_refreshedToken;
 
         // Not sure how sharing curl handles is safe.
@@ -609,6 +613,16 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
 #endif
 
+    if ( m_noSSLCheck )
+    {
+#if LIBCURL_VERSION_VALUE >= 0x070801
+        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+#endif
+#if LIBCURL_VERSION_VALUE >= 0x070402
+        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+#endif
+    }
+
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
     
@@ -621,6 +635,7 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     {
         string base64PEM;
 
+#if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
         {
@@ -657,6 +672,7 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                 }
             }
         }
+#endif
 
         long httpError = 0;
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
@@ -704,6 +720,11 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     m_oauth2Handler->fetchTokens( string( authCode ) );
+}
+
+void BaseSession::setNoSSLCertificateCheck( bool noCheck )
+{
+    m_noSSLCheck = noCheck;
 }
 
 vector< libcmis::RepositoryPtr > BaseSession::getRepositories( )

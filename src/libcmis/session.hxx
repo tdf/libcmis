@@ -78,6 +78,18 @@ namespace libcmis
             /** Get a CMIS object type from its ID.
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
+
+            /** Enable or disable the SSL certificate verification.
+
+                By default, SSL certificates are verified and errors are thrown in case of
+                one is invalid. The user may decide to ignore the checks for this CMIS session
+                to workaround self-signed certificates or other similar problems.
+
+                As each session only handles the connection to one CMIS server, it should
+                concern only one SSL certificate and should provide the same feature as the
+                certificate exception feature available on common web browser.
+              */
+            virtual void setNoSSLCertificateCheck( bool noCheck ) = 0;
     };
 }
 

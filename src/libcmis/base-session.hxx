@@ -112,6 +112,7 @@ class BaseSession : public libcmis::Session
 
         bool m_verbose;
         bool m_noHttpErrors;
+        bool m_noSSLCheck;
         bool m_refreshedToken;
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
@@ -154,6 +155,8 @@ class BaseSession : public libcmis::Session
         long getHttpStatus( );
 
         // Session methods
+
+        virtual void setNoSSLCertificateCheck( bool noCheck );
 
         virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
 
