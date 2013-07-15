@@ -108,7 +108,7 @@ namespace
 }
 
 BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
-        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
     Session( ),
     m_curlHandle( NULL ),
     m_no100Continue( false ),
@@ -121,7 +121,7 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
     m_repositories( ),
     m_verbose( verbose ),
     m_noHttpErrors( false ),
-    m_noSSLCheck( false ),
+    m_noSSLCheck( noSslCheck ),
     m_refreshedToken( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );

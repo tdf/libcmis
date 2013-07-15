@@ -243,6 +243,8 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
 
     if ( session == NULL )
     {
+        bool noSslCheck = m_vm.count( "no-ssl-check" ) > 0;
+
         // Should we use OAuth2?
         string oauth2ClientId;
         string oauth2ClientSecret;
@@ -276,7 +278,7 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
             oauth2Data.reset( );
         }
 
-        session = libcmis::SessionFactory::createSession( url, username, password, repoId, oauth2Data, verbose );
+        session = libcmis::SessionFactory::createSession( url, username, password, repoId, noSslCheck, oauth2Data, verbose );
     }
 
     return session;
@@ -963,6 +965,8 @@ options_description CmisClient::getOptionsDescription( )
         ( "repository,r", value< string >(), "Name of the repository to use" )
         ( "username,u", value< string >(), "Username used to authenticate to the repository" )
         ( "password,p", value< string >(), "Password used to authenticate to the repository" )
+        ( "no-ssl-check", "Disable the verification of SSL certificates. This may come handy"
+                          "for self-signed certificates for example, though it lowers the security" )
         ( "proxy", value< string >(), "HTTP proxy url to override the system settings" )
         ( "noproxy", value< string >(), "Coma separated list if host and domain names not going"
                                         "through the proxy" )

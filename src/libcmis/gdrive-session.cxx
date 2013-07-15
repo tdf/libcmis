@@ -44,7 +44,7 @@ GDriveSession::GDriveSession ( string baseUrl,
                                libcmis::OAuth2DataPtr oauth2, 
                                bool verbose )
                                     throw ( libcmis::Exception ) :
-    BaseSession( baseUrl, string(), username, password, 
+    BaseSession( baseUrl, string(), username, password, false, 
                  libcmis::OAuth2DataPtr(), verbose )
 
 {

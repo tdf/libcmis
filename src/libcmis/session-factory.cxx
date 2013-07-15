@@ -52,8 +52,8 @@ namespace libcmis
     }
 
     Session* SessionFactory::createSession( string bindingUrl, string username,
-            string password, string repository, libcmis::OAuth2DataPtr oauth2,
-            bool verbose ) throw ( Exception )
+            string password, string repository, bool noSslCheck,
+            libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
         
@@ -62,8 +62,8 @@ namespace libcmis
             // Try the special cases based on the binding URL
             if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
             {
-                session = new GDriveSession( bindingUrl, username, 
-                                             password, oauth2, verbose );
+                session = new GDriveSession( bindingUrl, username, password,
+                                             oauth2, verbose );
             }
             else
             {
@@ -71,7 +71,7 @@ namespace libcmis
                 try
                 {
                     session = new AtomPubSession( bindingUrl, repository, 
-                                    username, password, oauth2, verbose );
+                                    username, password, noSslCheck, oauth2, verbose );
                 }
                 catch ( const Exception& e )
                 {
@@ -85,7 +85,7 @@ namespace libcmis
                     try
                     {
                         session = new WSSession( bindingUrl, repository,
-                                      username, password, oauth2, verbose );
+                                      username, password, noSslCheck, oauth2, verbose );
                     }
                     catch ( const Exception& e )
                     {
@@ -105,7 +105,7 @@ namespace libcmis
         vector< RepositoryPtr > repos;
 
         Session* session = createSession( bindingUrl, username, password,
-                                          string(), OAuth2DataPtr(), verbose );
+                                          string(), false, OAuth2DataPtr(), verbose );
         if ( session != NULL )
         {
             repos = session->getRepositories( );

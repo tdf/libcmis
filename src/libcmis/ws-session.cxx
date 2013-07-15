@@ -40,8 +40,9 @@
 using namespace std;
 
 WSSession::WSSession( string bindingUrl, string repositoryId, string username,
-        string password, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( bindingUrl, repositoryId, username, password, oauth2, verbose ),
+        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2,
+        bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( bindingUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_servicesUrls( ),
     m_navigationService( NULL ),
     m_objectService( NULL ),

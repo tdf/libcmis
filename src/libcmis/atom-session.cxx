@@ -40,9 +40,9 @@
 using namespace std;
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
-        string username, string password, libcmis::OAuth2DataPtr oauth2,
-        bool verbose ) throw ( libcmis::Exception ) :
-    BaseSession( atomPubUrl, repositoryId, username, password, oauth2, verbose ),
+        string username, string password, bool noSslCheck,
+        libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+    BaseSession( atomPubUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_repository( )
 {
     initialize( );

@@ -214,6 +214,15 @@
           </listitem>
         </varlistentry>
         <varlistentry>
+          <term>--no-ssl-check</term>
+          <listitem>
+            <para>
+                            Disables the SSL certificate verifications. Lowers the security, but may be handy
+                            to work around bad certificates like expired or self-signed ones.
+						</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
           <term>--proxy <replaceable class="parameter">url</replaceable></term>
           <listitem>
             <para>

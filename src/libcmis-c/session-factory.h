@@ -52,6 +52,7 @@ libcmis_SessionPtr libcmis_createSession(
         char* repositoryId,
         char* username,
         char* password,
+        bool noSslCheck,
         libcmis_OAuth2DataPtr oauth2,
         bool  verbose,
         libcmis_ErrorPtr error );

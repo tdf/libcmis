@@ -37,7 +37,7 @@ class GDriveSession : public BaseSession
         GDriveSession( std::string baseUrl,
                        std::string username, 
                        std::string password,
-                       libcmis::OAuth2DataPtr oauth2,            
+                       libcmis::OAuth2DataPtr oauth2,
                        bool verbose = false )
                    throw ( libcmis::Exception );
 

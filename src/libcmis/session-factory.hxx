@@ -95,6 +95,7 @@ namespace libcmis
                     std::string username = std::string( ),
                     std::string password = std::string( ),
                     std::string repositoryId = std::string( ),
+                    bool noSslCheck = false,
                     OAuth2DataPtr oauth2 = OAuth2DataPtr(), bool verbose = false ) throw ( Exception );
 
             /**

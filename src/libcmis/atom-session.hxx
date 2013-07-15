@@ -38,7 +38,7 @@ class AtomPubSession : public BaseSession
 
     public:
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
-                        std::string username, std::string password,
+                        std::string username, std::string password, bool noSslCheck = false,
                         libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                         bool verbose =false ) throw ( libcmis::Exception );
         AtomPubSession( const AtomPubSession& copy );

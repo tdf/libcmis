@@ -58,6 +58,7 @@ namespace dummies
             virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
             virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
             virtual std::string getRefreshToken( ) throw ( libcmis::Exception );
+            virtual void setNoSSLCertificateCheck( bool /*noCheck*/ ) { }
     };
 
     class Repository : public libcmis::Repository

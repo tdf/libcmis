@@ -139,6 +139,7 @@ libcmis_SessionPtr libcmis_createSession(
         char* repositoryId,
         char* username,
         char* password,
+        bool noSslCheck,
         libcmis_OAuth2DataPtr oauth2,
         bool  verbose,
         libcmis_ErrorPtr error )
@@ -155,7 +156,7 @@ libcmis_SessionPtr libcmis_createSession(
                 createString( bindingUrl ),
                 createString( username ),
                 createString( password ),
-                createString( repositoryId ), oauth2Handle, verbose );
+                createString( repositoryId ), noSslCheck, oauth2Handle, verbose );
         session = new libcmis_session( );
         session->handle = handle;
     }
@@ -187,7 +188,7 @@ libcmis_vector_Repository_Ptr libcmis_getRepositories(
         libcmis_ErrorPtr error )
 {
     libcmis_SessionPtr session = libcmis_createSession(
-            bindingUrl, NULL, username, password, NULL, verbose, error );
+            bindingUrl, NULL, username, password, false, NULL, verbose, error );
     libcmis_vector_Repository_Ptr repositories = libcmis_session_getRepositories( session );
     libcmis_session_free( session );
     return repositories;

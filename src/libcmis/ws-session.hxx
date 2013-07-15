@@ -52,6 +52,7 @@ class WSSession : public BaseSession, public SoapSession
     public:
         WSSession( std::string bindingUrl, std::string repositoryId,
                    std::string username, std::string password,
+                   bool noSslCheck = false,
                    libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                    bool verbose = false ) throw ( libcmis::Exception );
         WSSession( const WSSession& copy );
