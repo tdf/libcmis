@@ -117,10 +117,12 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     return object;
 }
 
-libcmis::ObjectPtr GDriveSession::getObjectByPath( string /*path*/ ) 
+libcmis::ObjectPtr GDriveSession::getObjectByPath( string path ) 
     throw ( libcmis::Exception )
 {
-    throw libcmis::Exception( "Google Drive doesn't support get Object by path" );
+    // Google Drive doesn't support get Object by path.
+    // The path here serve as an object ID.
+    return getObject( path );
 }
 
 libcmis::ObjectTypePtr GDriveSession::getType( string id ) 
