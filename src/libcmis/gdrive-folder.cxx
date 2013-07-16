@@ -57,6 +57,8 @@ string GDriveFolder::getParentId( )
 {
     // Folder only has one parent
     string parents = getStringProperty( "cmis:parentId" );
+    if ( parents.empty( ) )
+        return string( );
     Json parentsJson = Json::parse( parents );
     Json firstParent = parentsJson.getList( ).front( );
     string parentId = firstParent["id"].toString( );
