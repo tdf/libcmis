@@ -122,6 +122,8 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
 {
     // Google Drive doesn't support get Object by path.
     // The path here serve as an object ID.
+    if ( path == "/" )
+        path = "root";
     return getObject( path );
 }
 
