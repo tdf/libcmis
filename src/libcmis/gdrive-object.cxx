@@ -200,27 +200,11 @@ void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
     }
 }
 
-void GDriveObject::move( FolderPtr source, FolderPtr destination ) 
+void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination ) 
                                         throw ( libcmis::Exception )
 {  
-    string parents = getStringProperty( "cmis:parentId" );
-    string sourceId = source->getId( );
-    string desId = destination->getId( );
-
-    // Change the parentId from source Id to destination Id
-    int sourcePos = parents.find( sourceId );
-    int notFound = (signed int) string::npos;
-    if ( sourcePos != notFound )
-    {
-        // Remove source Id
-        parents.erase( sourcePos, sourceId.length( ) );
-        // Add destination Id
-        parents.insert( sourcePos, desId.c_str( ) );
-    }
-
-    // Create Json string from the parents string
     Json parentsJson;
-    Json parentsValue = Json::parse( parents );
+    Json parentsValue = GdriveUtils::createJsonFromParentId( destination->getId( ) );
     parentsJson.add( "parents", parentsValue );
     
     istringstream is( parentsJson.toString( ) );
@@ -249,5 +233,14 @@ string GDriveObject::getUrl( )
 string GDriveObject::getUploadUrl( )
 {
     return GDRIVE_UPLOAD_LINKS;
+}
+
+vector< string> GDriveObject::getMultiStringProperty( const string& propertyName )
+{
+    vector< string > values;
+    PropertyPtrMap::const_iterator it = getProperties( ).find( string( propertyName ) );
+    if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getStrings( ).empty( ) )
+        values = it->second->getStrings( );
+    return values; 
 }
 

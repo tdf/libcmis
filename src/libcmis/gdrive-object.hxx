@@ -57,7 +57,9 @@ class GDriveObject : public virtual libcmis::Object
     
         std::string getUrl( );
         std::string getUploadUrl( );
-        
+        std::vector< std::string > getMultiStringProperty(
+                const std::string& propertyName );
+
         virtual std::vector< libcmis::RenditionPtr> getRenditions( );
 
         virtual boost::shared_ptr< Object > updateProperties(

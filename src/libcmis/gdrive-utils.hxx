@@ -54,6 +54,9 @@ class GdriveUtils
 
         // Create a Json array from a ParentId
         static Json createJsonFromParentId( const std::string& parentId );
+        
+        // Parse a Gdrive property value to CMIS values
+        static std::vector< std::string > parseGdriveProperty( std::string key, Json jsonValue );
 };
 
 #endif

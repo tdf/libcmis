@@ -30,7 +30,7 @@
 #include "json-utils.hxx"
 #include "xml-utils.hxx"
 
-using std::string;
+using namespace std;
 using libcmis::PropertyPtrMap;
 
 string GdriveUtils::toCmisKey( const string& key )
@@ -146,4 +146,50 @@ Json GdriveUtils::createJsonFromParentId( const string& parentId )
     return parentsValue;
 }
 
+vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
+{
+    vector< string > values;
+    if ( key == "owners" )
+    {
+        Json::JsonVector owners = json.getList( );
+        for ( Json::JsonVector::iterator it = owners.begin( ); 
+                it != owners.end( ); it++ )
+        {
+            string ownerName = ( *it )["displayName"].toString( );
+            values.push_back( ownerName);
+        }
+    }
+    else if ( key == "lastModifyingUser" )
+    {
+        string ownerName = json["displayName"].toString( );
+        values.push_back( ownerName);
+    }
+    else if ( key == "userPermission" )
+    {
+        string ownerName = json["role"].toString( );
+        values.push_back( ownerName);
+    }
+    else if ( key == "ownerNames" )
+    {
+        Json::JsonVector owners = json.getList( );
+        for ( Json::JsonVector::iterator it = owners.begin( ); 
+                it != owners.end( ); it++ )
+        {
+            string ownerName = ( *it )[""].toString( );
+            values.push_back( ownerName);
+        }
+    }
+    else if ( key == "parents" )
+    {
+        Json::JsonVector owners = json.getList( );
+        for ( Json::JsonVector::iterator it = owners.begin( ); 
+                it != owners.end( ); it++ )
+        {
+            string ownerName = ( *it )["id"].toString( );
+            values.push_back( ownerName);
+        }
+    }
+    else values.push_back( json.toString( ) );
+    return values;
+}
 

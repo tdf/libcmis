@@ -31,6 +31,7 @@
 #include "gdrive-session.hxx"
 #include "json-utils.hxx"
 #include "rendition.hxx"
+#include "gdrive-utils.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -107,14 +108,12 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
 {
     vector< libcmis::FolderPtr > parents;
 
-    string parentsStr = getStringProperty( "cmis:parentId" );
-    Json parentsJson = Json::parse( parentsStr );
-    Json::JsonVector objs = parentsJson.getList( );
+    vector< string > parentsId = getMultiStringProperty( "cmis:parentId" );
    
-    // Create folder objects from Json objects
-    for(unsigned int i = 0; i < objs.size(); i++)
+    // Create folder objects from parent IDs
+    for ( vector< string >::iterator it = parentsId.begin( ); it != parentsId.end( ); it++)
 	{
-        string parentId = objs[i]["id"].toString( );
+        string parentId = ( *it );
 		libcmis::ObjectPtr obj = getSession( )->getObject( parentId );
         libcmis::FolderPtr parent = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
         parents.push_back( parent );
@@ -269,13 +268,12 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     Json jsonRes = Json::parse( res );        
     Json::JsonVector objs = jsonRes["items"].getList( );
    
-    string parents = getStringProperty( "cmis:parentId" );
-    Json parentsJson = Json::parse( parents );
+    string parentId = getStringProperty( "cmis:parentId" );
 
     // Create document objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
 	{     
-        objs[i].add( "parents", parentsJson );
+        objs[i].add( "parents", GdriveUtils::createJsonFromParentId( parentId ) );
 		libcmis::DocumentPtr revision( 
             new GDriveDocument( getSession(), objs[i] ) );
         

@@ -43,8 +43,6 @@ class GDriveFolder : public libcmis::Folder, public GDriveObject
 
         std::string getType( ) { return std::string( "cmis:folder" );}
         std::string getBaseType( ) { return std::string( "cmis:folder" );}        
-        virtual std::string getParentId( );
-
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) 
             throw ( libcmis::Exception );
 
