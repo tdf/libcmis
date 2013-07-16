@@ -33,8 +33,6 @@
 
 #include <string>
 
-class Json;
-
 namespace libcmis
 {
     class PropertyType

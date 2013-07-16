@@ -26,11 +26,10 @@
  * instead of those above.
  */
 
-#include <cassert>
-
-#include <json/json_tokener.h>
-#include <json/linkhash.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
 
 #include "json-utils.hxx"
 #include "exception.hxx"
@@ -38,98 +37,78 @@
 
 using namespace std;
 using namespace libcmis;
-
-template <>
-Json::Json( const std::vector<Json>& arr ) :
-    m_json( ::json_object_new_array( ) ),
-    m_type( json_array )
-{
-    for ( std::vector<Json>::const_iterator i = arr.begin() ; 
-                                        i != arr.end() ; ++i )
-        add( *i ) ;
-}
+using namespace boost;
+using boost::property_tree::ptree;
+using boost::property_tree::json_parser::read_json;
+using boost::property_tree::json_parser::write_json;
 
 Json::Json( ) :
-	m_json( ::json_object_new_object() ),
+	m_tJson( ptree( ) ),
     m_type( json_object )
 {
-	if ( m_json == 0 )
-        throw libcmis::Exception(" Can not create json object " );
 }
 
 Json::Json( const char *str ) :
-    m_json( ::json_object_new_string( str ) ),
+    m_tJson( ptree( ) ),
     m_type( json_string )
 {
-    if ( m_json == 0 )
-        throw libcmis::Exception(" Can not create json object from string " );
+    m_tJson.put_value( str );
     m_type = parseType( );
 }
 
-Json::Json( struct json_object *json ) :
-    m_json( json ),
+Json::Json( ptree tJson ) :
+    m_tJson( tJson ),
     m_type( json_object )
 {
-    try
-    {
-        ::json_object_get( m_json ) ;
-    }
-    catch (...)
-    {
-        throw libcmis::Exception(" Can not create Json object" );
-    }
     m_type = parseType( );
 }
 
 Json::Json( const PropertyPtr& property ):
-    m_json( ::json_object_new_object() ),
+    m_tJson( ),
     m_type( json_object )
 {
     string str = property->toString( );
-    m_json = ::json_object_new_string( str.c_str( ) );
-    m_type = parseType( );
+    m_tJson.put("", str );
 }
 
 Json::Json( const PropertyPtrMap& properties ) :
-    m_json( ::json_object_new_object() ),
+    m_tJson( ptree( ) ),
     m_type( json_array )
 {
-     if ( m_json == 0 )
-        throw libcmis::Exception( string( "cannot create json object" ) ) ;
-
     for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
             it != properties.end() ; ++it )
         {
             string key = it->first;
-            Json value( it->second );
-            add( key, value ) ;
+            string value = it->second->toString( );
+            m_tJson.put( key, value );
         }
 }
 
 Json::Json( const Json& copy ) :
-    m_json( copy.m_json ),
+    m_tJson( copy.m_tJson ),
     m_type( copy.m_type )
 {
-    assert( m_json != 0 ) ;
-    ::json_object_get( m_json ) ;
 }
 
-template <>
 Json::Json( const JsonObject& obj ) :
-    m_json( ::json_object_new_object() ),
+    m_tJson( ptree( ) ),
     m_type( json_array )
 {
-    if ( m_json == 0 )
-        throw libcmis::Exception( string( "cannot create json object" ) ) ;
-
     for ( JsonObject::const_iterator i = obj.begin() ; i != obj.end() ; ++i )
         add( i->first, i->second ) ;
 }
 
+Json::Json( const JsonVector& arr ) :
+    m_tJson( ptree( ) ),
+    m_type( json_array )
+{
+    for ( std::vector<Json>::const_iterator i = arr.begin(); i != arr.end(); ++i )
+        add( *i ) ;
+}
+
+
 Json::~Json( )
 {
-    if ( m_json != 0 )
-        ::json_object_put( m_json ) ;
 }
 
 Json& Json::operator=( const Json& rhs )
@@ -139,132 +118,143 @@ Json& Json::operator=( const Json& rhs )
     return *this ;
 }
 
-void Json::swap( Json& other )
+void Json::swap( Json& rhs )
 {
-    std::swap( m_json, other.m_json ) ;
+    std::swap( m_tJson, rhs.m_tJson );
+    std::swap( m_type, rhs.m_type );
 }
 
-Json Json::operator[]( string key ) const
+Json Json::operator[]( string key ) const 
+    throw ( libcmis::Exception )
 {
-    if ( !m_json ) return Json( );
-    struct json_object *j = ::json_object_object_get( m_json, key.c_str() ) ;
-    return Json( j ) ;
+    ptree tJson;
+    try
+    {    
+        tJson = m_tJson.get_child( key );
+    }
+    catch ( boost::exception const& )
+    {
+        return Json( "" );
+    }
+
+    Json childJson( tJson );
+    string str = childJson.toString( );
+
+    return childJson ;
 }
 
-void Json::add( const std::string& key, const Json& json )
+void Json::add( const std::string& key, const Json& json ) 
+    throw ( libcmis::Exception )
 {
-    assert( m_json != 0 ) ; 
-    assert( json.m_json != 0 ) ; 
-
-    ::json_object_get( json.m_json ) ; 
-    ::json_object_object_add( m_json, key.c_str(), json.m_json ) ; 
-}
-
-Json Json::operator[]( const std::size_t& index ) const
-{
-    if ( !m_json ) return Json( );
-    struct json_object *json = ::json_object_array_get_idx( m_json, index ) ;
-    return Json( json ) ;
-}
-
-std::ostream& operator<<( std::ostream& os, const Json& json )
-{
-    return os << ::json_object_to_json_string( json.m_json ) ;
+    try
+    {
+        m_tJson.add_child( key, json.getTree( ) );
+    }
+    catch ( boost::exception const& )
+    {
+        throw libcmis::Exception( "Couldn't add Json object" );
+    }
 }
 
 Json::JsonVector Json::getList()
 {
-	std::size_t len = ::json_object_array_length( m_json ) ;
-	JsonVector list ;
-	
-	for ( std::size_t i = 0 ; i < len ; ++i )
-		list.push_back( Json( ::json_object_array_get_idx( m_json, i ) ) ) ;
-	
+    JsonVector list;
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, m_tJson.get_child(""))
+    {
+        list.push_back( Json( v.second  ) );
+    }
 	return list ;
 }
 
-void Json::add( const Json& json )
+void Json::add( const Json& json ) throw ( libcmis::Exception )
 {
-    ::json_object_get( json.m_json ) ;
-    ::json_object_array_add( m_json, json.m_json ) ;
+    try
+    {
+        m_tJson.push_back( ptree::value_type( "", json.getTree( )) );
+    }
+    catch ( boost::exception const& )
+    {
+        throw libcmis::Exception( "Couldn't add Json object" );
+    }
 }
 
-Json Json::parse( const string& str )
+Json Json::parse( const string& str ) throw ( libcmis:: Exception )
 {
-    struct json_object *json = ::json_tokener_parse( str.c_str() ) ;
-    return Json( json) ;
+    ptree pTree;
+    std::stringstream ss( str ); 
+    if ( ss.good( ) )
+    {
+        try 
+        {
+            ::property_tree::json_parser::read_json( ss, pTree );
+        }
+        catch ( boost::exception const& )
+        {
+            return Json( str.c_str( ) );
+        }
+    }
+    return Json( pTree );
 }
 
 Json::JsonObject Json::getObjects( )
 {
     JsonObject objs;
-    for(struct lh_entry *entry = json_object_get_object(m_json)->head; entry; 
-                                                        entry = entry->next )
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, m_tJson.get_child(""))
     {
-        if ( entry ) 
-        {     
-            char* key = (char*)entry->k; 
-            struct json_object* val = (struct json_object*)entry->v; 
-            objs.insert( JsonObject::value_type(key, Json( val ) ) );
-        }
+        Json jsonValue( v.second ); 
+        objs.insert( JsonObject::value_type(v.first, jsonValue ) );
     }
     return objs ;
 }
 
 Json::Type Json::parseType( )
 {
-    if ( m_json == NULL ) 
-        return json_null;
-    Type type =static_cast<Type>( ::json_object_get_type( m_json ) );
+    Type type = json_string;
     string str = toString( );
-    if ( type == json_string )
+    boost::posix_time::ptime time = libcmis::parseDateTime( str );
+    if ( !time.is_not_a_date_time( ) )
+        type = json_datetime;
+    else
     {
-        boost::posix_time::ptime time = libcmis::parseDateTime( 
-                                        json_object_get_string( m_json ) );
-        if ( !time.is_not_a_date_time( ) )
-            type = json_datetime;
-        else
+        Type backupType = type;
+        type = json_bool;
+        try
         {
-            Type backupType = type;
-            type = json_bool;
-            try
+            parseBool( str );
+        }
+        catch (...)
+        {
+            type = backupType;
+        }
+        if ( type != json_bool )
+        {
+            if ( str.find('.') == string::npos )
             {
-                parseBool( str );
-            }
-            catch (...)
-            {
-                type = backupType;
-            }
-            if ( type != json_bool )
-            {
-                if ( str.find('.') == string::npos )
+                backupType = type;
+                type = json_int;
+                try
                 {
-                    backupType = type;
-                    type = json_int;
-                    try
-                    {
-                        parseInteger( str );
-                    }
-                    catch(...) 
-                    { 
-                        type = backupType;
-                    }
+                    parseInteger( str );
                 }
-                else
-                {
-                    backupType = type;
-                    type = json_double;
-                    try
-                    {
-                        parseDouble( str );
-                    }
-                    catch(...) 
-                    { 
-                        type = backupType;
-                    }
+                catch(...) 
+                { 
+                    type = backupType;
                 }
             }
-        }   
+            else
+            {
+                backupType = type;
+                type = json_double;
+                try
+                {
+                    parseDouble( str );
+                }
+                catch(...) 
+                { 
+                    type = backupType;
+                }
+            }
+        }
     }
     return type;
 }
@@ -274,7 +264,7 @@ Json::Type Json::getDataType( ) const
     return m_type;
 }
 
-std::string Json::getStrType( ) const
+string Json::getStrType( ) const
 {
     switch ( m_type )
     {
@@ -292,8 +282,19 @@ std::string Json::getStrType( ) const
 
 string Json::toString( ) const
 {
-    // Return an empty string if the object doesn't exist
-    if ( m_json == NULL ) return string( );
-    return ::json_object_get_string( m_json ) ;
+    string str;
+    try 
+    {
+        stringstream ss;
+        write_json( ss, m_tJson );
+        str = ss.str( );
+    }
+    catch ( boost::exception const& )
+    {
+        str = m_tJson.get_value<string>( );
+    }
+    // empty json
+    if ( str == "{\n}\n" ) str = "";
+    return str;
 }
 

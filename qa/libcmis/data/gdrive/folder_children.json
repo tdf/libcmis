@@ -8,13 +8,13 @@
    "id": "aChildFolder",
    "mimeType": "application/vnd.google-apps.folder",
    "selfLink": "aSelfLink",
-   "childLink": "AchildrenLink",
+   "childLink": "AchildrenLink"
   },
   {
    "kind": "drive#childrenReference",
    "id": "aChildDocument",
    "selfLink": "aSelfLink2",
-   "childLink": "AchildrenLink2",
+   "childLink": "AchildrenLink2"
   }
  ]
 }

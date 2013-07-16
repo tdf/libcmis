@@ -526,7 +526,7 @@ void GDriveTest::setContentStreamTest( )
 
         // Check if metadata has been properly uploaded
         const char* meta = curl_mockup_getRequestBody( url.c_str( ), "", "PUT" );
-        string expectedMeta = "{ \"title\": \"" + filename + "\"" + " }";
+        string expectedMeta = "{\n    \"title\": \"aFileName\"\n}\n";
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad meta uploaded", expectedMeta, string( meta ) );
         // Check the content has been properly uploaded
         const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
@@ -810,7 +810,7 @@ void GDriveTest::moveTest( )
     object->move( source, destination );
     const char* moveRequest = curl_mockup_getRequestBody( url.c_str( ), "", "PUT" );
     Json parentJson = Json::parse( string( moveRequest ) );
-    string newParentId = parentJson["parents"][0]["id"].toString( );
+    string newParentId = parentJson["parents"].getList().front()["id"].toString( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", 
                                   desId, newParentId);
 }
@@ -851,7 +851,7 @@ void GDriveTest::createDocumentTest( )
 
         const char* createRequest = curl_mockup_getRequestBody( metaUrl.c_str( ), "", "POST" );
         Json request = Json::parse( string( createRequest ) );
-        string sentParentId = request["parents"][0]["id"].toString( );
+        string sentParentId = request["parents"].getList( ).front( )["id"].toString( );
         string sentFilename = request["title"].toString( );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad parents sent", folderId, sentParentId );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad filename sent", filename, sentFilename );
@@ -891,7 +891,7 @@ void GDriveTest::createFolderTest( )
         const char* createRequest = curl_mockup_getRequestBody( metaUrl.c_str( ), "", "POST" );
         Json request = Json::parse( string( createRequest ) );
 
-        string sentParentId = request["parents"][0]["id"].toString( );
+        string sentParentId = request["parents"].getList( ).front( )["id"].toString( );
         string sentMimeType = request["mimeType"].toString( );
         string expectedMimeType( "application/vnd.google-apps.folder" );
      

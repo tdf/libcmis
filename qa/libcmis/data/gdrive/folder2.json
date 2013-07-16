@@ -31,14 +31,14 @@
   {
    "kind": "drive#user",
    "displayName": "User name",
-   "isAuthenticatedUser": true,
+   "isAuthenticatedUser": true
   }
  ],
  "lastModifyingUserName": "User name of the last person modify",
  "lastModifyingUser": {
   "kind": "drive#user",
   "displayName": "Last mofifying username",
-  "isAuthenticatedUser": true,
+  "isAuthenticatedUser": true
  },
  "editable": true,
  "writersCanShare": true,

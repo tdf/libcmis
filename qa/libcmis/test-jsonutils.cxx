@@ -52,7 +52,6 @@ class JsonTest : public CppUnit::TestFixture
         void createFromPropertyTest( );
         void createFromPropertiesTest( );
         void badKeyTest( );
-        void badIndexTest( );
         void addTest( );
 
         CPPUNIT_TEST_SUITE( JsonTest );
@@ -61,7 +60,6 @@ class JsonTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFromPropertyTest );
         CPPUNIT_TEST( createFromPropertiesTest );  
         CPPUNIT_TEST( badKeyTest );
-        CPPUNIT_TEST( badIndexTest );
         CPPUNIT_TEST( addTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -116,16 +114,12 @@ void JsonTest::parseTypeTest( )
     Json::Type intType = json["intTest"].getDataType( );
     Json::Type doubleType = json["doubleTest"].getDataType( );
     Json::Type dateTimeType = json["createdDate"].getDataType( );
-    Json::Type objectType = json["exportLinks"].getDataType( );
-    Json::Type arrayType = json["parents"].getDataType( );
     
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong string type", Json::json_string, stringType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong bool type", Json::json_bool, boolType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong int type", Json::json_int, intType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong double type", Json::json_double, doubleType );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong datetime type", Json::json_datetime, dateTimeType );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object type", Json::json_object, objectType );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong array type", Json::json_array, arrayType );   
 }
 
 void JsonTest::createFromPropertyTest( )
@@ -166,14 +160,6 @@ void JsonTest::badKeyTest( )
     Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
     // just make sure it doesn't crash here
     string notExist = json["nonExistedKey"].toString( );
-    CPPUNIT_ASSERT_EQUAL( string( ), notExist);
-}
-
-void JsonTest::badIndexTest( )
-{
-    Json json = parseFile( DATA_DIR "/gdrive/jsontest-good.json" );
-    // just make sure it doesn't crash here
-    string notExist = json[1000].toString( );
     CPPUNIT_ASSERT_EQUAL( string( ), notExist);
 }
 

@@ -33,37 +33,44 @@
 #include <map>
 #include <vector>
 
+#include <boost/property_tree/ptree.hpp>
+
 #include "property.hxx"
+#include "exception.hxx"
 
 class Json
 {
     public :
         typedef std::map< std::string, Json > JsonObject ;
         typedef std::vector< Json > JsonVector ;
-        template <typename T> explicit Json( const T& val ) ;
         enum Type { json_null, json_bool, json_double, json_int, json_object, 
             json_array, json_string, json_datetime } ;
 
-        Json( ) ;
-        Json( const Json& copy ) ;
-        Json( const char *str ) ;
-        Json( const libcmis::PropertyPtr& property ) ;
-        Json( const libcmis::PropertyPtrMap& properties ) ;
+        Json( );
+        Json( const Json& copy );
+        Json( const char *str );
+        Json( const libcmis::PropertyPtr& property );
+        Json( const libcmis::PropertyPtrMap& properties );
+        Json( const JsonVector& arr );
+        Json( const JsonObject& obj );
 
         ~Json( ) ;
 
-        Json operator[]( std::string key ) const ;
-        Json operator[]( const std::size_t& index ) const ;
+        Json operator[]( std::string key ) const 
+            throw( libcmis::Exception );
+
         Json& operator=( const Json& rhs ) ;
-        friend std::ostream& operator<<( std::ostream& os, const Json& json ) ;
 
         void swap( Json& other ) ;
 
-        void add( const Json& json);
+        void add( const Json& json)
+            throw( libcmis::Exception );
         
-        void add( const std::string& key, const Json& json);
+        void add( const std::string& key, const Json& json)
+            throw( libcmis::Exception );
 
-        static Json parse( const std::string& str );
+        static Json parse( const std::string& str )
+            throw( libcmis::Exception );
         
         std::string toString( ) const;
         Type getDataType( ) const ;
@@ -72,11 +79,11 @@ class Json
         JsonObject getObjects();
         JsonVector getList();
 
+        boost::property_tree::ptree getTree( ) const{ return m_tJson; }
     private :
-        Json( struct json_object *json ) ;
-        struct json_object *m_json ;
+        Json( boost::property_tree::ptree tJson ) ;
+        boost::property_tree::ptree m_tJson ;
         Type m_type;
-        
         Type parseType( );
 } ;
 

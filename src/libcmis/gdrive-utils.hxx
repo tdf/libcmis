@@ -25,13 +25,13 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+#ifndef _GDRIVE_UTILS_HXX_
+#define _GDRIVE_UTILS_HXX_
 
 #include <string>
 
 #include "property.hxx"
-
-#ifndef _GDRIVE_UTILS_HXX_
-#define _GDRIVE_UTILS_HXX_
+#include "json-utils.hxx"
 
 static const std::string GDRIVE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder" ;
 static const std::string GDRIVE_UPLOAD_LINKS = "https://www.googleapis.com/upload/drive/v2/files/";

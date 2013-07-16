@@ -107,7 +107,6 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)\
-	$(JSON_LIBS)
+	$(BOOST_DATE_TIME_LIBS)
 
 libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis

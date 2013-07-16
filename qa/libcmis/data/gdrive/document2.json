@@ -47,14 +47,14 @@
   {
    "kind": "drive#user",
    "displayName": "Mock file owner",
-   "isAuthenticatedUser": true,
+   "isAuthenticatedUser": true
   }
  ],
  "lastModifyingUserName": "Mock user",
  "lastModifyingUser": {
   "kind": "drive#user",
   "displayName": "User name",
-  "isAuthenticatedUser": false,
+  "isAuthenticatedUser": false
  },
  "editable": true,
  "writersCanShare": true,

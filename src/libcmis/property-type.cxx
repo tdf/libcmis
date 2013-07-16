@@ -28,7 +28,6 @@
 
 #include "property-type.hxx"
 #include "xml-utils.hxx"
-#include "json-utils.hxx"
 
 using namespace std;
 
