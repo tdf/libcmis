@@ -193,7 +193,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         metaUrl += "?convert=true";
 
     // Update file name meta information
-    if ( !fileName.empty( ) )
+    if ( !fileName.empty( ) && fileName != getContentFilename( ) )
     {
         Json metaJson;
         Json fileJson( fileName.c_str( ) );
