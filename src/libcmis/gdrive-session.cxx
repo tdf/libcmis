@@ -48,10 +48,11 @@ GDriveSession::GDriveSession ( string baseUrl,
                  libcmis::OAuth2DataPtr(), verbose )
 
 {
+    // Add the dummy repository, even if we don't have OAuth2
+    m_repositories.push_back( getRepository( ) );
+
     if ( oauth2 && oauth2->isComplete( ) ){
         setOAuth2Data( oauth2 );
-        // Add the repository
-        m_repositories.push_back( getRepository( ) );
     }
 }
 
