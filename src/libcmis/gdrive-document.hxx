@@ -39,7 +39,10 @@ class GDriveDocument : public libcmis::Document, public GDriveObject
 {
     public:
         GDriveDocument( GDriveSession* session );
-        GDriveDocument( GDriveSession* session, Json json );
+
+        // Create a GDrive document from Json properties.
+        // In case it's a revision, keep the ID of the original file.
+        GDriveDocument( GDriveSession* session, Json json, std::string id = std::string( ) );
         ~GDriveDocument( );
         
         std::string getType( ) { return std::string( "cmis:document" );}

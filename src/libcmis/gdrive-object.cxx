@@ -40,10 +40,10 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 {
 }
 
-GDriveObject::GDriveObject( GDriveSession* session, Json json ) :
+GDriveObject::GDriveObject( GDriveSession* session, Json json, string id ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json ); 
+   initializeFromJson( json, id ); 
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -60,14 +60,22 @@ GDriveObject& GDriveObject::operator=( const GDriveObject& copy )
     return *this;
 }
 
-void GDriveObject::initializeFromJson ( Json json )
+void GDriveObject::initializeFromJson ( Json json, string id )
 {
     Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
-        PropertyPtr property(new GDriveProperty( it->first,it->second) );
-        if ( property != NULL ){
+        PropertyPtr property;(new GDriveProperty( it->first,it->second) );
+        if ( !id.empty( ) && it->first == "id" )
+        {
+            Json idJson( id.c_str( ) );
+            property.reset( new GDriveProperty( it->first, idJson ) );
+        }
+        else 
+            property.reset( new GDriveProperty( it->first, it->second ) );
+        if ( property != NULL )
+        {
             m_properties[ property->getPropertyType( )->getId()] = property;
            
             // we map "title" to both "cmis:name" and 

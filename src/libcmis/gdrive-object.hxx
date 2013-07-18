@@ -45,13 +45,17 @@ class GDriveObject : public virtual libcmis::Object
 {
     public:
         GDriveObject( GDriveSession* session );
-        GDriveObject( GDriveSession* session, Json json );
+
+        // Create a GDrive document from Json properties.
+        // In case it's a revision, keep the ID of the original file.
+        GDriveObject( GDriveSession* session, Json json, 
+               std::string id = std::string( ) );
         GDriveObject( const GDriveObject& copy );
         virtual ~GDriveObject( ) { }
 
         GDriveObject& operator=( const GDriveObject& copy );
 
-        void initializeFromJson( Json json );
+        void initializeFromJson( Json json, std::string id = std::string( ));
         void refreshImpl( Json json );
         Json createJsonFromParentId( const std::string& parentId );
     
