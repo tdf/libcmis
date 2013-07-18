@@ -121,11 +121,8 @@ bool GdriveUtils::checkUpdatable( const string& key )
 {
     // taken from https://developers.google.com/drive/v2/reference/files
     bool updatable = ( key == "title" ||
-                  key == "mimeType" ||
                   key == "description" ||
                   key == "modifiedDate" ||
-                  key == "labels" ||
-                  key == "parents" ||
                   key == "lastViewedByMeDate" );
     return updatable;    
 }
@@ -187,6 +184,28 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
         {
             string ownerName = ( *it )["id"].toString( );
             values.push_back( ownerName);
+        }
+    }
+    else if ( key == "exportLinks" )
+    {
+        Json::JsonObject exportLinks = json.getObjects( );
+        for ( Json::JsonObject::iterator it = exportLinks.begin( ); 
+                it != exportLinks.end( ); it++ )
+        {
+            string mimeType = it->first;
+            string link = it->second.toString( );
+            values.push_back( mimeType + ":\"" + link +"\"");
+        }
+    }
+    else if ( key == "labels" )
+    {
+        Json::JsonObject labels = json.getObjects( );
+        for ( Json::JsonObject::iterator it = labels.begin( ); 
+                it != labels.end( ); it++ )
+        {
+            string label = it->first;
+            string isSet = it->second.toString( );
+            values.push_back( label + ": " + isSet );
         }
     }
     else values.push_back( json.toString( ) );

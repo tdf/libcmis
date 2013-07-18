@@ -114,20 +114,16 @@ vector< RenditionPtr> GDriveObject::getRenditions( )
             }
         }
 
-        string exportLinks = getStringProperty( "exportLinks" );
-        if ( !exportLinks.empty( ) )
-        {
-            Json renditionJson = Json::parse( exportLinks );
-            Json::JsonObject objs = renditionJson.getObjects( );
-            Json::JsonObject::iterator it; 
-            for ( it = objs.begin( ); it != objs.end( ); ++it)
-            { 
-                string mimeType = it->first;
-                string url = it->second.toString( );
-                RenditionPtr rendition(
-                    new Rendition( mimeType, mimeType, mimeType, url ) );
-                m_renditions.push_back( rendition );
-            }
+        vector< string > exportLinks = getMultiStringProperty( "exportLinks" );
+        for ( vector<string>::iterator it = exportLinks.begin( ); it != exportLinks.end( ); ++it)
+        { 
+            int pos = (*it).find(":\"");
+            if ( pos == -1 ) continue;
+            string mimeType = (*it).substr( 0, pos );
+            string url = (*it).substr( pos + 2, (*it).length( ) - pos - 3 );
+            RenditionPtr rendition(
+                new Rendition( mimeType, mimeType, mimeType, url ) );
+            m_renditions.push_back( rendition );
         }
 
         // thumbnail link        

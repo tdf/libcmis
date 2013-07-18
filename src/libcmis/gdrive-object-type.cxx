@@ -57,16 +57,49 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
     libcmis::PropertyTypePtr mimeType( new libcmis::PropertyType( ) );
     mimeType->setId( "cmis:contentStreamMimeType" );
     mimeType->setType( libcmis::PropertyType::String );
-    mimeType->setUpdatable( true );
+    mimeType->setUpdatable( false );
     m_propertiesTypes[ mimeType->getId( ) ] = mimeType;
 
     // parents
     libcmis::PropertyTypePtr parentsType( new libcmis::PropertyType( ) );
     parentsType->setId( "cmis:parentId" );
     parentsType->setType( libcmis::PropertyType::String );
-    parentsType->setUpdatable( true );
+    parentsType->setUpdatable( false );
+    parentsType->setMultiValued( true );
     m_propertiesTypes[ parentsType->getId( ) ] = parentsType; 
+    
+    // labels
+    libcmis::PropertyTypePtr labelsType( new libcmis::PropertyType( ) );
+    labelsType->setId( "labels" );
+    labelsType->setType( libcmis::PropertyType::String );
+    labelsType->setUpdatable( false );
+    labelsType->setMultiValued( true );
+    m_propertiesTypes[ labelsType->getId( ) ] = labelsType; 
  
+    // ownerNames
+    libcmis::PropertyTypePtr ownerNamesType( new libcmis::PropertyType( ) );
+    ownerNamesType->setId( "ownerNames" );
+    ownerNamesType->setType( libcmis::PropertyType::String );
+    ownerNamesType->setUpdatable( false );
+    ownerNamesType->setMultiValued( true );
+    m_propertiesTypes[ ownerNamesType->getId( ) ] = ownerNamesType; 
+    
+    // owners
+    libcmis::PropertyTypePtr ownersType( new libcmis::PropertyType( ) );
+    ownersType->setId( "owners" );
+    ownersType->setType( libcmis::PropertyType::String );
+    ownersType->setUpdatable( false );
+    ownersType->setMultiValued( true );
+    m_propertiesTypes[ ownersType->getId( ) ] = ownersType; 
+
+    // export links
+    libcmis::PropertyTypePtr exportLinksType( new libcmis::PropertyType( ) );
+    exportLinksType->setId( "exportLinks" );
+    exportLinksType->setType( libcmis::PropertyType::String );
+    exportLinksType->setUpdatable( false );
+    exportLinksType->setMultiValued( true );
+    m_propertiesTypes[ exportLinksType->getId( ) ] = exportLinksType; 
+
     // description  
     libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
     descriptionType->setId( "cmis:description" );
