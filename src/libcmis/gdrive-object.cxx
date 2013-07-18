@@ -66,7 +66,7 @@ void GDriveObject::initializeFromJson ( Json json, string id )
     Json::JsonObject::iterator it;
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
-        PropertyPtr property;(new GDriveProperty( it->first,it->second) );
+        PropertyPtr property;
         if ( !id.empty( ) && it->first == "id" )
         {
             Json idJson( id.c_str( ) );
