@@ -53,6 +53,8 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     propertyType->setDisplayName( key );
     propertyType->setTypeFromJsonType( json.getStrType( ) );
     propertyType->setUpdatable( GdriveUtils::checkUpdatable( key ) );
+    propertyType->setMultiValued( GdriveUtils::checkMultiValued( key ) );
+
     setPropertyType( propertyType );    
     
     vector< string > values = GdriveUtils::parseGdriveProperty( key, json );

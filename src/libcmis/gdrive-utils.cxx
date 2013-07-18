@@ -127,6 +127,16 @@ bool GdriveUtils::checkUpdatable( const string& key )
     return updatable;    
 }
 
+bool GdriveUtils::checkMultiValued( const string& key )
+{
+    bool bMultiValued = ( key == "parents" ||
+                  key == "exportLinks" ||
+                  key == "labels" ||
+                  key == "ownersName" ||
+                  key == "owners");
+    return bMultiValued;    
+}
+
 Json GdriveUtils::createJsonFromParentId( const string& parentId )
 {
     Json parentValue( parentId.c_str( ) );

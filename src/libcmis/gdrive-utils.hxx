@@ -52,6 +52,9 @@ class GdriveUtils
         // Check if a property is updatable
         static bool checkUpdatable( const std::string& key);
 
+        // Check if a property has multiple values
+        static bool checkMultiValued( const std::string& key);
+
         // Create a Json array from a ParentId
         static Json createJsonFromParentId( const std::string& parentId );
         
