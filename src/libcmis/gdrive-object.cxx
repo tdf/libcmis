@@ -40,10 +40,10 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 {
 }
 
-GDriveObject::GDriveObject( GDriveSession* session, Json json, string id ) :
+GDriveObject::GDriveObject( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, id ); 
+   initializeFromJson( json, id, name ); 
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -60,29 +60,60 @@ GDriveObject& GDriveObject::operator=( const GDriveObject& copy )
     return *this;
 }
 
-void GDriveObject::initializeFromJson ( Json json, string id )
+void GDriveObject::initializeFromJson ( Json json, string id, string name )
 {
     Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
         PropertyPtr property;
+ 
+        // in case of a revision, get the ID and name of the original file
         if ( !id.empty( ) && it->first == "id" )
         {
             Json idJson( id.c_str( ) );
-            property.reset( new GDriveProperty( it->first, idJson ) );
+            property.reset( new GDriveProperty( "id", idJson ) );
+            m_properties[ property->getPropertyType( )->getId()] = property;
+            property.reset( new GDriveProperty( "revisionId", it->second ) );
+            m_properties[ property->getPropertyType( )->getId()] = property;
+
+            Json nameJson( name.c_str( ) );
+            property.reset( new GDriveProperty( "cmis:name", nameJson) );
+            m_properties[ property->getPropertyType( )->getId()] = property;
+            property.reset( new GDriveProperty( "cmis:contentStreamFileName", nameJson) );
+            m_properties[ property->getPropertyType( )->getId()] = property;
         }
         else 
-            property.reset( new GDriveProperty( it->first, it->second ) );
-        if ( property != NULL )
         {
+            property.reset( new GDriveProperty( it->first, it->second ) );
             m_properties[ property->getPropertyType( )->getId()] = property;
            
-            // we map "title" to both "cmis:name" and 
-            // "cmis:getContentStreamFileName"
+            // we map "title" to both "cmis:name" and "cmis:getContentStreamFileName"
             if ( it->first == "title" )
             {
                 property.reset( new GDriveProperty( "cmis:name", it->second) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+            }
+            
+            // some revision keep the original file name.
+            if ( it->first == "originalFilename" )
+            {
+                property.reset( new GDriveProperty( "cmis:name", it->second ) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+                property.reset( new GDriveProperty( "cmis:contentStreamFileName", it->second) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+            }
+
+            // In case of a revision, get the modified date as creation date
+            if ( it->first == "modifiedDate" && !id.empty( ) )
+            {
+                property.reset( new GDriveProperty( "cmis:creationDate", it->second) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+            }
+            // In case of a revision, get the last modifying user and the creator
+            if ( it->first == "lastModifyingUserName" && !id.empty( ) )
+            {
+                property.reset( new GDriveProperty( "cmis:createdBy", it->second) );
                 m_properties[ property->getPropertyType( )->getId()] = property;
             }
         }

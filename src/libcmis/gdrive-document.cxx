@@ -44,10 +44,10 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
 {
 }
 
-GDriveDocument::GDriveDocument( GDriveSession* session, Json json, string id ) :
+GDriveDocument::GDriveDocument( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
     libcmis::Document( session ),
-    GDriveObject( session, json, id ),
+    GDriveObject( session, json, id, name ),
     m_isGoogleDoc( false )
 {
     m_isGoogleDoc = getContentType( ).find( "google" ) != string::npos;
@@ -275,7 +275,7 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
 	{     
         objs[i].add( "parents", GdriveUtils::createJsonFromParentId( parentId ) );
 		libcmis::DocumentPtr revision( 
-            new GDriveDocument( getSession(), objs[i], getId( ) ) );
+            new GDriveDocument( getSession(), objs[i], getId( ), getName( ) ) );
         
         revisions.push_back( revision );
 	}
