@@ -113,8 +113,11 @@ Json::~Json( )
 
 Json& Json::operator=( const Json& rhs )
 {
-    Json tmp( rhs ) ;
-    swap( tmp ) ;
+    if ( this != &rhs )
+    {
+        m_tJson = rhs.m_tJson;
+        m_type = rhs.m_type;
+    }
     return *this ;
 }
 
@@ -138,7 +141,6 @@ Json Json::operator[]( string key ) const
     }
 
     Json childJson( tJson );
-    string str = childJson.toString( );
 
     return childJson ;
 }

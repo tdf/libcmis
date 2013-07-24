@@ -111,7 +111,7 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     vector< string > parentsId = getMultiStringProperty( "cmis:parentId" );
    
     // Create folder objects from parent IDs
-    for ( vector< string >::iterator it = parentsId.begin( ); it != parentsId.end( ); it++)
+    for ( vector< string >::iterator it = parentsId.begin( ); it != parentsId.end( ); ++it)
 	{
         string parentId = ( *it );
 		libcmis::ObjectPtr obj = getSession( )->getObject( parentId );

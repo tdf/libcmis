@@ -160,7 +160,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
     {
         Json::JsonVector owners = json.getList( );
         for ( Json::JsonVector::iterator it = owners.begin( ); 
-                it != owners.end( ); it++ )
+                it != owners.end( ); ++it )
         {
             string ownerName = ( *it )["displayName"].toString( );
             values.push_back( ownerName);
@@ -180,7 +180,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
     {
         Json::JsonVector owners = json.getList( );
         for ( Json::JsonVector::iterator it = owners.begin( ); 
-                it != owners.end( ); it++ )
+                it != owners.end( ); ++it )
         {
             string ownerName = ( *it )[""].toString( );
             values.push_back( ownerName);
@@ -190,7 +190,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
     {
         Json::JsonVector owners = json.getList( );
         for ( Json::JsonVector::iterator it = owners.begin( ); 
-                it != owners.end( ); it++ )
+                it != owners.end( ); ++it )
         {
             string ownerName = ( *it )["id"].toString( );
             values.push_back( ownerName);
@@ -200,7 +200,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
     {
         Json::JsonObject exportLinks = json.getObjects( );
         for ( Json::JsonObject::iterator it = exportLinks.begin( ); 
-                it != exportLinks.end( ); it++ )
+                it != exportLinks.end( ); ++it )
         {
             string mimeType = it->first;
             string link = it->second.toString( );
@@ -211,7 +211,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
     {
         Json::JsonObject labels = json.getObjects( );
         for ( Json::JsonObject::iterator it = labels.begin( ); 
-                it != labels.end( ); it++ )
+                it != labels.end( ); ++it )
         {
             string label = it->first;
             string isSet = it->second.toString( );
