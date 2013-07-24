@@ -1092,8 +1092,8 @@ int main ( int argc, char* argv[] )
     {
         cerr << "------------------------------------------------" << endl;
         cerr << "ERROR: " << e.what() << endl;
-        if ( !e.getCertificate().empty() )
-            cerr << endl << "Certificate: " << endl << e.getCertificate() << endl;
+        if ( !e.getCertificatesChain().empty() )
+            cerr << endl << "Certificate: " << endl << e.getCertificatesChain().front() << endl;
         cerr << "------------------------------------------------" << endl;
         return 1;
     }

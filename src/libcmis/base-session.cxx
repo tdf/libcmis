@@ -633,7 +633,7 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
-        string base64PEM;
+        vector< string > certificates;
 
 #if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
@@ -666,7 +666,7 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                         string data( slist->data );
                         if ( data.find( certLineStart ) == 0 )
                         {
-                            base64PEM = data.substr( certLineStart.length() );
+                            certificates.push_back( data.substr( certLineStart.length() ) );
                         }
                     }
                 }
@@ -676,7 +676,7 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
 
         long httpError = 0;
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
-        throw CurlException( string( errBuff ), errCode, url, httpError, base64PEM );
+        throw CurlException( string( errBuff ), errCode, url, httpError, certificates );
     }
 }
 
@@ -797,7 +797,7 @@ libcmis::Exception CurlException::getCmisException( ) const
             break;
     }
 
-    return libcmis::Exception( msg, type, getCertificate() );
+    return libcmis::Exception( msg, type, getCertificates() );
 }
 
 void BaseSession::initProtocols( )
