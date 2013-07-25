@@ -659,14 +659,20 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                 if ( ptr.to_certinfo->num_of_certs > 0 )
                 {
                     struct curl_slist *slist;
-         
-                    string certLineStart( "Cert:" );
+
+                    string certLineStart( "-----BEGIN CERTIFICATE-----" );
+                    string certLineEnd( "-----END CERTIFICATE-----" );
                     for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
                     {
                         string data( slist->data );
-                        if ( data.find( certLineStart ) == 0 )
+                        cerr <<  data << endl;
+                        size_t startPos = data.find( certLineStart );
+                        if ( startPos != string::npos )
                         {
-                            certificates.push_back( data.substr( certLineStart.length() ) );
+                            startPos += certLineStart.length();
+                            size_t endPos = data.find( certLineEnd, startPos );
+                            data = data.substr( startPos, endPos - startPos );
+                            certificates.push_back( data );
                         }
                     }
                 }
