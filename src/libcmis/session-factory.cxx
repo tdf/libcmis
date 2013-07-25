@@ -42,6 +42,8 @@ namespace libcmis
     string SessionFactory::s_proxyUser;
     string SessionFactory::s_proxyPass;
 
+    CertValidationHandlerPtr SessionFactory::s_certValidationHandler;
+
     void SessionFactory::setProxySettings( string proxy, string noProxy,
             string proxyUser, string proxyPass )
     {
@@ -75,7 +77,7 @@ namespace libcmis
                 }
                 catch ( const Exception& e )
                 {
-                    if ( e.getType( ) == "permissionDenied" || !e.getCertificatesChain().empty() )
+                    if ( e.getType( ) == "permissionDenied" )
                         throw;
                 }
                 
@@ -89,7 +91,7 @@ namespace libcmis
                     }
                     catch ( const Exception& e )
                     {
-                        if ( e.getType( ) == "permissionDenied" || !e.getCertificatesChain().empty() )
+                        if ( e.getType( ) == "permissionDenied" )
                             throw;
                     }
                 }

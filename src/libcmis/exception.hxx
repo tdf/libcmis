@@ -30,7 +30,6 @@
 
 #include <exception>
 #include <string>
-#include <vector>
 
 namespace libcmis
 {
@@ -39,15 +38,12 @@ namespace libcmis
         private:
             std::string m_message;
             std::string m_type;
-            std::vector< std::string > m_certificatesChain;
 
         public:
-            Exception( std::string message, std::string type = "runtime",
-                       std::vector< std::string > certificatesChain = std::vector< std::string > ( ) ) :
+            Exception( std::string message, std::string type = "runtime" ) :
                 exception( ),
                 m_message( message ),
-                m_type( type ),
-                m_certificatesChain( certificatesChain )
+                m_type( type )
             {
             }
 
@@ -58,7 +54,6 @@ namespace libcmis
             }
 
             std::string getType( ) const { return m_type; }
-            std::vector< std::string > getCertificatesChain() const { return m_certificatesChain; }
     };
 }
 

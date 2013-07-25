@@ -104,6 +104,30 @@ namespace
         }
         return !cancelled;
     }
+
+    class CinCertValidationHandler : public libcmis::CertValidationHandler
+    {
+        public:
+            CinCertValidationHandler( ) { }
+            ~CinCertValidationHandler( ) { }
+
+            virtual bool validateCertificate( vector< string > certificates )
+            {
+                if ( certificates.empty( ) )
+                    return false; // Should never happen
+
+                // Show the first certificate (even base64-encoded)
+                string cert = certificates.front();
+                cout << "Invalid SSL certificate: " << cert << endl;
+
+                // Ask whether to validate
+                cout << "Do you want to ignore this problem and go on? yes/no [default: no]: ";
+                string answer;
+                getline( cin, answer );
+
+                return answer == "yes";
+            }
+    };
 }
 
 class CommandException : public exception
@@ -175,6 +199,9 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
     // Setup the authentication provider in case we have missing credentials
     libcmis::AuthProviderPtr provider( new CinAuthProvider( ) );
     libcmis::SessionFactory::setAuthenticationProvider( provider );
+
+    libcmis::CertValidationHandlerPtr certValidator( new CinCertValidationHandler( ) );
+    libcmis::SessionFactory::setCertificateValidationHandler( certValidator );
     
     string url = m_vm["url"].as<string>();
 
@@ -1092,8 +1119,6 @@ int main ( int argc, char* argv[] )
     {
         cerr << "------------------------------------------------" << endl;
         cerr << "ERROR: " << e.what() << endl;
-        if ( !e.getCertificatesChain().empty() )
-            cerr << endl << "Certificate: " << endl << e.getCertificatesChain().front() << endl;
         cerr << "------------------------------------------------" << endl;
         return 1;
     }

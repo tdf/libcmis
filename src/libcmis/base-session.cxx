@@ -633,16 +633,20 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
     if ( CURLE_OK != errCode && !( m_noHttpErrors && isHttpError ) )
     {
-        vector< string > certificates;
+        long httpError = 0;
+        curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
 
+        bool errorFixed = false;
 #if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
         {
+            vector< string > certificates;
+
             // We somehow need to rerun the request to get the certificate
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_easy_perform( m_curlHandle );
+            errCode = curl_easy_perform( m_curlHandle );
 
             union {
                 struct curl_slist    *to_info;
@@ -665,7 +669,6 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                     for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
                     {
                         string data( slist->data );
-                        cerr <<  data << endl;
                         size_t startPos = data.find( certLineStart );
                         if ( startPos != string::npos )
                         {
@@ -677,12 +680,31 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                     }
                 }
             }
+
+            if ( !certificates.empty() )
+            {
+                libcmis::CertValidationHandlerPtr validationHandler =
+                    libcmis::SessionFactory::getCertificateValidationHandler( );
+                bool ignoreCert = validationHandler && validationHandler->validateCertificate( certificates );
+                if ( ignoreCert )
+                {
+                    m_noSSLCheck = true;
+
+                    isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
+                    errorFixed = ( CURLE_OK == errCode || ( m_noHttpErrors && isHttpError ) );
+                    if ( !errorFixed )
+                        curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
+                }
+                else
+                {
+                    throw CurlException( "Invalid SSL certificate" );
+                }
+            }
         }
 #endif
 
-        long httpError = 0;
-        curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
-        throw CurlException( string( errBuff ), errCode, url, httpError, certificates );
+        if ( !errorFixed )
+            throw CurlException( string( errBuff ), errCode, url, httpError );
     }
 }
 
@@ -800,10 +822,12 @@ libcmis::Exception CurlException::getCmisException( ) const
             msg = what();
             if ( !isCancelled( ) )
                 msg += ": " + m_url;
+            else
+                type = "permissionDenied";
             break;
     }
 
-    return libcmis::Exception( msg, type, getCertificates() );
+    return libcmis::Exception( msg, type );
 }
 
 void BaseSession::initProtocols( )

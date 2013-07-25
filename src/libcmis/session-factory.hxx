@@ -54,7 +54,27 @@ namespace libcmis
             virtual bool authenticationQuery( std::string& username, std::string& password ) = 0;
     };
     typedef ::boost::shared_ptr< AuthProvider > AuthProviderPtr;
-    
+  
+    /** Handler class used to request user input when an invalid SSL certificate is encountered.
+     */ 
+    class CertValidationHandler
+    {
+        public:
+             virtual ~CertValidationHandler( ){ };
+
+             /** This function is provided a vector of X509 certificates encoded in base64, with
+                 the first certificate being the one to validate, and the others are the issuers
+                 chain.
+
+                 The result will be stored in the session object to avoid asking several times
+                 to validate the same certificate.
+
+                 \result true if the certificate should be ignored, false to fail the request.
+               */
+             virtual bool validateCertificate( std::vector< std::string > certificatesChain ) = 0;
+    };
+    typedef ::boost::shared_ptr< CertValidationHandler > CertValidationHandlerPtr;
+
     class SessionFactory
     {
         private:
@@ -68,6 +88,8 @@ namespace libcmis
 
             static OAuth2AuthCodeProvider s_oauth2AuthCodeProvider;
 
+            static CertValidationHandlerPtr s_certValidationHandler;
+
         public:
 
             static void setAuthenticationProvider( AuthProviderPtr provider ) { s_authProvider = provider; }
@@ -75,6 +97,12 @@ namespace libcmis
             
             static void setOAuth2AuthCodeProvider( OAuth2AuthCodeProvider provider ) { s_oauth2AuthCodeProvider = provider; }
             static OAuth2AuthCodeProvider getOAuth2AuthCodeProvider( ) { return s_oauth2AuthCodeProvider; }
+
+            /** Set the handler to ask the user what to do with invalid SSL certificates. If not set,
+                every invalid certificate will raise an exception.
+              */
+            static void setCertificateValidationHandler( CertValidationHandlerPtr handler ) { s_certValidationHandler = handler; }
+            static CertValidationHandlerPtr getCertificateValidationHandler( ) { return s_certValidationHandler; }
 
             static void setProxySettings( std::string proxy,
                     std::string noProxy,
