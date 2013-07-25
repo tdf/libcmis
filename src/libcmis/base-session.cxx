@@ -664,17 +664,15 @@ void BaseSession::httpRunRequest( string url, vector< string > headers, bool red
                 {
                     struct curl_slist *slist;
 
-                    string certLineStart( "-----BEGIN CERTIFICATE-----" );
-                    string certLineEnd( "-----END CERTIFICATE-----" );
+                    string certStart( "Cert:" );
                     for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
                     {
                         string data( slist->data );
-                        size_t startPos = data.find( certLineStart );
-                        if ( startPos != string::npos )
+                        size_t startPos = data.find( certStart );
+                        if ( startPos == 0 )
                         {
-                            startPos += certLineStart.length();
-                            size_t endPos = data.find( certLineEnd, startPos );
-                            data = data.substr( startPos, endPos - startPos );
+                            startPos = certStart.length();
+                            data = data.substr( startPos );
                             certificates.push_back( data );
                         }
                     }

@@ -118,7 +118,8 @@ namespace
 
                 // Show the first certificate (even base64-encoded)
                 string cert = certificates.front();
-                cout << "Invalid SSL certificate: " << cert << endl;
+                cout << "Invalid SSL certificate:" << endl << cert << endl;
+                cout << "'openssl x509 -noout -text' can show you the details of this certificate." << endl << endl;
 
                 // Ask whether to validate
                 cout << "Do you want to ignore this problem and go on? yes/no [default: no]: ";
