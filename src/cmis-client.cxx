@@ -44,14 +44,14 @@ using libcmis::PropertyPtrMap;
 
 namespace
 {
-    string lcl_queryAuthCode( const char* url, const char* /*username*/, const char* /*password*/ )
+    char* lcl_queryAuthCode( const char* url, const char* /*username*/, const char* /*password*/ )
     {
         string code;
         cout << "Copy the following link to your browser and take the code: " << endl << endl << url << endl << endl;
         cout << "Enter the code:" << endl;
         cin >> code;
 
-        return code;
+        return strdup( code.c_str() );
     }
 
     class CinAuthProvider : public libcmis::AuthProvider

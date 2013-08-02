@@ -39,7 +39,11 @@
 
 namespace libcmis
 {
-    typedef std::string ( *OAuth2AuthCodeProvider )( const char* authUrl,
+    /** This callback provides the OAuth2 code or NULL.
+
+        The resulting char* will be freed later.
+      */
+    typedef char* ( *OAuth2AuthCodeProvider )( const char* authUrl,
         const char* username, const char* password );
 
     class AuthProvider 

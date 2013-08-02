@@ -35,6 +35,7 @@
 #include "internals.hxx"
 #include "session.h"
 #include "session-factory.h"
+#include "vectors.h"
 
 using namespace std;
 
@@ -90,6 +91,33 @@ namespace
 
         return result;
     }
+
+
+    class WrapperCertHandler : public libcmis::CertValidationHandler
+    {
+        private:
+            libcmis_certValidationCallback m_callback;
+        public:
+            WrapperCertHandler( libcmis_certValidationCallback callback ) :
+                m_callback( callback )
+            {
+            }
+            virtual ~WrapperCertHandler( ) { };
+
+            virtual bool validateCertificate( vector< string > certificatesChain );
+    };
+
+    bool WrapperCertHandler::validateCertificate( vector< string > certificatesChain )
+    {
+        libcmis_vector_string_Ptr chain = new ( nothrow ) libcmis_vector_string( );
+        if ( chain )
+            chain->handle = certificatesChain;
+
+        bool result = m_callback( chain );
+
+        libcmis_vector_string_free( chain );
+        return result;
+    }
 }
 
 std::string createString( char* str )
@@ -105,6 +133,23 @@ void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback 
     libcmis::AuthProviderPtr provider( new ( nothrow ) WrapperAuthProvider( callback ) );
     if ( provider )
         libcmis::SessionFactory::setAuthenticationProvider( provider );
+}
+
+void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback )
+{
+    libcmis::CertValidationHandlerPtr handler( new ( nothrow )WrapperCertHandler( callback ) );
+    if ( handler )
+        libcmis::SessionFactory::setCertificateValidationHandler( handler );
+}
+
+void libcmis_setOAuth2AuthCodeProvider( libcmis_oauth2AuthCodeProvider callback )
+{
+    libcmis::SessionFactory::setOAuth2AuthCodeProvider( callback );
+}
+
+libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( )
+{
+    return libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
 }
 
 void libcmis_setProxySettings( char* proxy, char* noProxy,

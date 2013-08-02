@@ -35,6 +35,9 @@ extern "C" {
 #include "types.h"
 
 void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );
+void libcmis_setOAuth2AuthCodeProvider( libcmis_oauth2AuthCodeProvider callback );
+libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( );
 
 void libcmis_setProxySettings(
         char* proxy,

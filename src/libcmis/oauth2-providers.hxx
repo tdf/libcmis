@@ -33,7 +33,7 @@
 
 class BaseSession;
 
-typedef std::string ( *OAuth2Parser) ( BaseSession* session, const std::string& authUrl, 
+typedef std::string ( *OAuth2Parser ) ( BaseSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
 
 class OAuth2Providers

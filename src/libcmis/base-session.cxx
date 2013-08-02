@@ -732,7 +732,14 @@ void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis
         {
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
             if ( fallbackProvider != NULL )
-                authCode = string( fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() ) ); 
+            {
+                char * code = fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
+                if ( code != NULL )
+                {
+                    authCode = string( code );
+                    free( code );
+                }
+            }
         }
     }
     catch ( const CurlException& e )

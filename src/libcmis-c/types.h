@@ -36,6 +36,23 @@ extern "C" {
 
 #include <stddef.h>
 
+
+/* Vectors of simple types */
+
+
+typedef struct libcmis_vector_bool* libcmis_vector_bool_Ptr;
+
+typedef struct libcmis_vector_string* libcmis_vector_string_Ptr;
+
+typedef struct libcmis_vector_long* libcmis_vector_long_Ptr;
+
+typedef struct libcmis_vector_double* libcmis_vector_double_Ptr;
+
+typedef struct libcmis_vector_time* libcmis_vector_time_Ptr;
+
+typedef struct libcmis_vector_repository* libcmis_vector_Repository_Ptr;
+
+
 /* AllowableActions */
 
     
@@ -166,6 +183,8 @@ typedef struct libcmis_repository* libcmis_RepositoryPtr;
 typedef struct libcmis_session* libcmis_SessionPtr;
 
 typedef bool ( *libcmis_authenticationCallback )( char* username, char* password );
+typedef bool ( *libcmis_certValidationCallback )( libcmis_vector_string* certificatesChain );
+typedef char * ( *libcmis_oauth2AuthCodeProvider ) ( const char* authUrl, const char* username, const char* password );
 
 
 /* OAuth2Data */
@@ -182,23 +201,6 @@ typedef char* ( *libcmis_OAuth2AuthCodeProvider )( const char* authUrl,
 
 typedef struct libcmis_rendition* libcmis_RenditionPtr;
 typedef struct libcmis_vector_rendition* libcmis_vector_rendition_Ptr;
-
-
-/* Vectors of simple types */
-
-
-typedef struct libcmis_vector_bool* libcmis_vector_bool_Ptr;
-
-typedef struct libcmis_vector_string* libcmis_vector_string_Ptr;
-
-typedef struct libcmis_vector_long* libcmis_vector_long_Ptr;
-
-typedef struct libcmis_vector_double* libcmis_vector_double_Ptr;
-
-typedef struct libcmis_vector_time* libcmis_vector_time_Ptr;
-
-typedef struct libcmis_vector_repository* libcmis_vector_Repository_Ptr;
-
 
 #ifdef __cplusplus
 }
