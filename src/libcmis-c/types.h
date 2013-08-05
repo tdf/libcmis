@@ -183,7 +183,7 @@ typedef struct libcmis_repository* libcmis_RepositoryPtr;
 typedef struct libcmis_session* libcmis_SessionPtr;
 
 typedef bool ( *libcmis_authenticationCallback )( char* username, char* password );
-typedef bool ( *libcmis_certValidationCallback )( libcmis_vector_string* certificatesChain );
+typedef bool ( *libcmis_certValidationCallback )( libcmis_vector_string_Ptr certificatesChain );
 typedef char * ( *libcmis_oauth2AuthCodeProvider ) ( const char* authUrl, const char* username, const char* password );
 
 
