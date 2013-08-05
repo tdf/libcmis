@@ -50,3 +50,12 @@
   * Session factory automatically detects which binding to use
   * C wrapper API
   * Unit tests are now split between quick ones and the ones needing a CMIS server
+
+0.4.0
+
+  * Support for Google Drive protocol as a binding
+  * Support for Alfresco in the cloud
+  * Added OAuth2 authentication support
+  * Added API to configure HTTP proxy
+  * Handle invalid SSL certificate problems
+  * Added API for renditions
