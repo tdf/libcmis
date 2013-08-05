@@ -59,3 +59,4 @@
   * Added API to configure HTTP proxy
   * Handle invalid SSL certificate problems
   * Added API for renditions
+  * Moved the CMIS Atom binding unit tests to use libcurl mockup
