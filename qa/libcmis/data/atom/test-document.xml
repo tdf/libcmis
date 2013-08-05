@@ -135,4 +135,6 @@
   <atom:link rel="edit-media" href="http://mockup/mock/content?id=test-document" type="text/plain"/>
   <atom:link rel="http://docs.oasis-open.org/ns/cmis/link/200908/acl" href="http://mockup/mock/acl?id=test-document" type="application/cmisacl+xml"/>
   <atom:link rel="version-history" href="http://mockup/mock/versions?id=test-document" type="application/atom+xml;type=feed"/>
+  <atom:link rel="alternate" href="http://mockup/mock/renditions?id=test-document-rendition1" type="image/png" cmisra:renditionKind="cmis:thumbnail" title="picture" length="40385"/>
+  <atom:link rel="alternate" href="http://mockup/mock/renditions?id=test-document-rendition2" type="application/pdf" cmisra:renditionKind="pdf" title="Doc as PDF"/>
 </atom:entry>

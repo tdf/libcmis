@@ -32,6 +32,7 @@
 #include <string>
 
 #include <boost/shared_ptr.hpp>
+#include <libxml/tree.h>
 
 namespace libcmis
 {  
@@ -44,17 +45,40 @@ namespace libcmis
             std::string m_mimeType;
             std::string m_kind;
             std::string m_href;
+            std::string m_title;
+            long m_length;
+            long m_width;
+            long m_height;
+            std::string m_renditionDocumentId;
+
         public:
             Rendition( std::string streamId, std::string mimeType, 
-                       std::string kind, std::string href);
+                       std::string kind, std::string href,
+                       std::string title = std::string( ),
+                       long length = -1, long width = -1, long height = -1,
+                       std::string renditionDocumentId = std::string( ) );
+
+            /** Parse an XML node of type cmisRenditionType
+              */
+            Rendition( xmlNodePtr node );
             ~Rendition( );
             
             bool isThumbnail( ) { return m_kind == "cmis:thumbnail"; }
 
-            std::string getStreamId( ) { return m_streamId; }
-            std::string getMimeType( ) { return m_mimeType; }
-            std::string getKind( ) { return m_kind; }                            
-            std::string getUrl( ) { return m_href; }            
+            std::string getStreamId( ) const { return m_streamId; }
+            std::string getMimeType( ) const { return m_mimeType; }
+            std::string getKind( ) const { return m_kind; }
+            std::string getUrl( ) const { return m_href; }
+            std::string getTitle( ) const { return m_title; }
+
+            /** Provides the stream length in bytes or a negative value if missing.
+              */
+            long getLength( ) const { return m_length; }
+            long getWidth( ) const { return m_width; }
+            long getHeight( ) const { return m_height; }
+            std::string getRenditionDocumentId( ) { return m_renditionDocumentId; }
+
+            std::string toString( );
     };
 
     typedef ::boost::shared_ptr< Rendition > RenditionPtr;

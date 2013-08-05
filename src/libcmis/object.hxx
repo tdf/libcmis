@@ -60,17 +60,18 @@ namespace libcmis
         protected:
             Session* m_session;
 
-            libcmis::ObjectTypePtr m_typeDescription;
+            ObjectTypePtr m_typeDescription;
             time_t m_refreshTimestamp;
 
             /** Type id used as cache before we get it as a property
               */
             std::string m_typeId;
 
-            std::map< std::string, libcmis::PropertyPtr > m_properties;
-            boost::shared_ptr< libcmis::AllowableActions > m_allowableActions;
-            std::vector< libcmis::RenditionPtr > m_renditions;
+            std::map< std::string, PropertyPtr > m_properties;
+            boost::shared_ptr< AllowableActions > m_allowableActions;
+            std::vector< RenditionPtr > m_renditions;
             void initializeFromNode( xmlNodePtr node );
+
         public:
 
             Object( Session* session );
@@ -117,11 +118,16 @@ namespace libcmis
             
             
             /** Get the renditions of the object.
+
+                \param filter is defined by the CMIS spec section 2.2.1.2.4.1.
+                              By default, this value is just ignored, but some bindings and servers 
+                              may use it.
     
                 \attention
                     The streamId of the rendition is used in getContentStream( )
               */
-            virtual std::vector< libcmis::RenditionPtr> getRenditions( ) { return m_renditions; }
+            virtual std::vector< RenditionPtr> getRenditions( std::string filter = std::string( ) )
+                throw ( Exception );
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
             /** Update the object properties and return the updated object.
@@ -132,7 +138,7 @@ namespace libcmis
                     instances to ease memory handling.
               */
             virtual boost::shared_ptr< Object > updateProperties(
-                        const libcmis::PropertyPtrMap& properties ) throw ( Exception ) = 0;
+                        const PropertyPtrMap& properties ) throw ( Exception ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( );
 

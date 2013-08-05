@@ -276,6 +276,7 @@ void GetObject::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_id.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
     xmlTextWriterEndElement( writer );
 }
@@ -692,6 +693,34 @@ void SetContentStream::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer ); // cmism:contentStream
 
     xmlTextWriterEndElement( writer );
+}
+
+void GetRenditions::toXml( xmlTextWriterPtr writer )
+{
+    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRenditions" ) );
+    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( m_filter.c_str( ) ) );
+
+    xmlTextWriterEndElement( writer );
+}
+
+SoapResponsePtr GetRenditionsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
+{
+    GetRenditionsResponse* response = new GetRenditionsResponse( );
+
+    for ( xmlNodePtr child = node->children; child; child = child->next )
+    {
+        if ( xmlStrEqual( child->name, BAD_CAST( "renditions" ) ) )
+        {
+            libcmis::RenditionPtr rendition( new libcmis::Rendition( child ) );
+            response->m_renditions.push_back( rendition );
+        }
+    }
+
+    return SoapResponsePtr( response );
 }
 
 void CheckOut::toXml( xmlTextWriterPtr writer )

@@ -68,6 +68,7 @@ class AtomTest : public CppUnit::TestFixture
         void getFolderBadTypeTest( );
         void getByPathValidTest( );
         void getByPathInvalidTest( );
+        void getRenditionsTest( );
         void getAllowableActionsTest( );
         void getAllowableActionsNotIncludedTest( );
         void getChildrenTest( );
@@ -103,6 +104,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderBadTypeTest );
         CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
+        CPPUNIT_TEST( getRenditionsTest );
         CPPUNIT_TEST( getAllowableActionsTest );
         CPPUNIT_TEST( getAllowableActionsNotIncludedTest );
         CPPUNIT_TEST( getChildrenTest );
@@ -477,6 +479,31 @@ void AtomTest::getByPathInvalidTest( )
                 string( "No node corresponding to path: /some/invalid/path" ), string( e.what() ) );
     }
 
+}
+
+void AtomTest::getRenditionsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", DATA_DIR "/atom/test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string expectedId( "test-document" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    std::vector< libcmis::RenditionPtr > renditions = actual->getRenditions( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad renditions count", size_t( 2 ), renditions.size( ) );
+
+    libcmis::RenditionPtr rendition = renditions[1];
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition mime type", string( "application/pdf" ), rendition->getMimeType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition href", string( "http://mockup/mock/renditions?id=test-document-rendition2" ), rendition->getUrl() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - default case", long( -1 ), rendition->getLength( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition Title", string( "Doc as PDF" ), rendition->getTitle( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition kind", string( "pdf" ), rendition->getKind( ) );
+    
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - filled case", long( 40385 ), renditions[0]->getLength( ) );
 }
 
 void AtomTest::getAllowableActionsTest( )

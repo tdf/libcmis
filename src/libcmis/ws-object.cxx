@@ -61,6 +61,17 @@ WSObject& WSObject::operator=( const WSObject& copy )
     return *this;
 }
 
+vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter ) throw ( libcmis::Exception )
+{
+    // TODO Check that the server supports that optional feature
+    if ( m_renditions.empty() )
+    {
+        string repoId = getSession( )->getRepositoryId( );
+        m_renditions = getSession( )->getObjectService( ).getRenditions( repoId, this->getId( ), filter );
+    }
+    return m_renditions;
+}
+
 libcmis::ObjectPtr WSObject::updateProperties(
         const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {

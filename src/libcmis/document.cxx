@@ -96,17 +96,6 @@ namespace libcmis
         buf << "Content Type: " << getContentType( ) << endl;
         buf << "Content Length: " << getContentLength( ) << endl;
         buf << "Content Filename: " << getContentFilename( ) << endl;
-        
-        vector< libcmis::RenditionPtr > renditions = getRenditions( );
-        buf << "Renditions: " << endl;
-        for ( vector< libcmis::RenditionPtr >::iterator it = renditions.begin(); 
-               it != renditions.end(); ++it )
-        {
-            buf << " ID: " << ( *it )->getStreamId( ) << endl;
-            buf << " Kind: " << ( *it )->getKind( ) << endl;
-            buf << " MimeType: " << ( *it )->getMimeType( ) << endl;
-            buf << " URL: " << ( *it )->getUrl( ) << endl << endl;
-        }
 
         return buf.str();
     }

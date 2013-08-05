@@ -61,6 +61,8 @@ class XmlTest : public CppUnit::TestFixture
         void parsePropertyBoolTest( );
 
         void parseEmptyPropertyTest( );
+        
+        void parseRenditionTest( );
 
         // Writer tests
         void propertyStringAsXmlTest( ); 
@@ -79,6 +81,7 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parsePropertyDateTimeTest );
         CPPUNIT_TEST( parsePropertyBoolTest );
         CPPUNIT_TEST( parseEmptyPropertyTest );
+        CPPUNIT_TEST( parseRenditionTest );
         CPPUNIT_TEST( propertyStringAsXmlTest );
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST( sha1Test );
@@ -395,6 +398,31 @@ void XmlTest::parseEmptyPropertyTest( )
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_MESSAGE( "Should have no value", actual->getStrings( ).empty( ) );
+}
+
+void XmlTest::parseRenditionTest( )
+{
+    stringstream buf;
+    buf << "<cmis:rendition " << getXmlns( ) << ">"
+        <<     "<cmis:streamId>STREAM-ID</cmis:streamId>"
+        <<     "<cmis:mimetype>MIME</cmis:mimetype>"
+        <<     "<cmis:length>123456</cmis:length>"
+        <<     "<cmis:kind>KIND</cmis:kind>"
+        <<     "<cmis:title>TITLE</cmis:title>"
+        <<     "<cmis:height>123</cmis:height>"
+        <<     "<cmis:width>456</cmis:width>"
+        <<     "<cmis:renditionDocumentId>DOC-ID</cmis:renditionDocumentId>"
+        << "</cmis:rendition>";
+    libcmis::RenditionPtr actual( new libcmis::Rendition( getXmlNode( buf.str( ) ) ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong stream id parsed", string( "STREAM-ID" ), actual->getStreamId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong mime type parsed", string( "MIME" ), actual->getMimeType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong length parsed", long( 123456 ), actual->getLength( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong kind parsed", string( "KIND" ), actual->getKind( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong title parsed", string( "TITLE" ), actual->getTitle( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong height parsed", long( 123 ), actual->getHeight( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong width parsed", long( 456 ), actual->getWidth( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong rendition doc id parsed", string( "DOC-ID" ), actual->getRenditionDocumentId( ) );
 }
 
 void XmlTest::propertyStringAsXmlTest( )

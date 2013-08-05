@@ -137,7 +137,7 @@ void GDriveObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
-vector< RenditionPtr> GDriveObject::getRenditions( )
+vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ ) throw ( libcmis::Exception )
 {
     if ( m_renditions.empty( ) )
     {

@@ -72,3 +72,38 @@ const char* libcmis_rendition_getUrl( libcmis_RenditionPtr rendition )
     return NULL;
 }
 
+const char* libcmis_rendition_getTitle( libcmis_RenditionPtr rendition )
+{
+    if ( rendition != NULL && rendition->handle != NULL )
+        return rendition->handle->getTitle().c_str();
+    return NULL;
+}
+
+long libcmis_rendition_getLength( libcmis_RenditionPtr rendition )
+{
+    if ( rendition != NULL && rendition->handle != NULL )
+        return rendition->handle->getLength();
+    return -1;
+}
+
+long libcmis_rendition_getWidth( libcmis_RenditionPtr rendition )
+{
+    if ( rendition != NULL && rendition->handle != NULL )
+        return rendition->handle->getWidth();
+    return -1;
+}
+
+long libcmis_rendition_getHeight( libcmis_RenditionPtr rendition )
+{
+    if ( rendition != NULL && rendition->handle != NULL )
+        return rendition->handle->getHeight();
+    return -1;
+}
+
+const char* libcmis_rendition_getRenditionDocumentId( libcmis_RenditionPtr rendition )
+{
+    if ( rendition != NULL && rendition->handle != NULL )
+        return rendition->handle->getRenditionDocumentId().c_str();
+    return NULL;
+}
+

@@ -122,6 +122,16 @@ namespace libcmis
                 }
             }
             xmlXPathFreeObject( xpathObj );
+
+            // Get the renditions 
+            xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:rendition" ), xpathCtx );
+            if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
+            {
+                xmlNodePtr renditionNode = xpathObj->nodesetval->nodeTab[0];
+                libcmis::RenditionPtr rendition( new libcmis::Rendition( renditionNode ) );
+                m_renditions.push_back( rendition );
+            }
+            xmlXPathFreeObject( xpathObj );
         }
 
         xmlXPathFreeContext( xpathCtx );
@@ -222,7 +232,12 @@ namespace libcmis
         return m_typeDescription;
     }
 
-    string Object::getThumbnailUrl( ) throw ( libcmis::Exception )
+    vector< RenditionPtr> Object::getRenditions( string /*filter*/ ) throw ( Exception )
+    {
+        return m_renditions;
+    }
+
+    string Object::getThumbnailUrl( ) throw ( Exception )
     {
         string url;
         vector< RenditionPtr > renditions = getRenditions( );
@@ -285,6 +300,17 @@ namespace libcmis
                         buf << "\t" << *valueIt << endl; 
                     }
                 }
+            }
+        }
+        
+        vector< libcmis::RenditionPtr > renditions = getRenditions( );
+        if ( !renditions.empty() )
+        {
+            buf << "Renditions: " << endl;
+            for ( vector< libcmis::RenditionPtr >::iterator it = renditions.begin(); 
+                   it != renditions.end(); ++it )
+            {
+                buf << ( *it )->toString( ) << endl;
             }
         }
 

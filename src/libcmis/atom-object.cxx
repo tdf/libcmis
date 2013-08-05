@@ -196,7 +196,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
     m_properties.clear( );
     m_allowableActions.reset( );
     m_links.clear( );
-
+    m_renditions.clear( );
 
     extractInfos( doc );
 
@@ -319,7 +319,32 @@ void AtomObject::extractInfos( xmlDocPtr doc )
                 try
                 {
                     AtomLink link( node );
-                    m_links.push_back( node );
+                    // Add to renditions if alternate link
+                    if ( link.getRel( ) == "alternate" )
+                    {
+                        string kind;
+                        map< string, string >::iterator it = link.getOthers().find( "renditionKind" );
+                        if ( it != link.getOthers( ).end() )
+                            kind = it->second;
+
+                        string title;
+                        it = link.getOthers().find( "title" );
+                        if ( it != link.getOthers( ).end( ) )
+                            title = it->second;
+
+                        long length = -1;
+                        it = link.getOthers( ).find( "length" );
+                        if ( it != link.getOthers( ).end( ) )
+                            length = libcmis::parseInteger( it->second );
+
+                        libcmis::RenditionPtr rendition( new libcmis::Rendition(
+                                    string(), link.getType(), kind,
+                                    link.getHref( ), title, length ) );
+
+                        m_renditions.push_back( rendition );
+                    }
+                    else
+                        m_links.push_back( node );
                 }
                 catch ( const libcmis::Exception& )
                 {
@@ -415,19 +440,26 @@ AtomLink* AtomObject::getLink( std::string rel, std::string type )
 }
 
 AtomLink::AtomLink( xmlNodePtr node ) throw ( libcmis::Exception ):
-    m_rel( libcmis::getXmlNodeAttributeValue( node, "rel" ) ),
-    m_type( ),
-    m_id( ),
-    m_href( libcmis::getXmlNodeAttributeValue( node, "href" ) )
+    m_rel( ), m_type( ), m_id( ), m_href( ), m_others( )
 {
-    try
+    xmlAttrPtr prop = node->properties;
+    while ( prop != NULL )
     {
-        m_type = libcmis::getXmlNodeAttributeValue( node, "type" );
-        m_id = libcmis::getXmlNodeAttributeValue( node, "id" );
-    }
-    catch ( const libcmis::Exception & )
-    {
-        // id attribute can be missing
-        // type attribute is missing in some implementations (SharePoint)
+        xmlChar* xmlStr = xmlGetProp( node, prop->name );
+        string value( ( char * ) xmlStr );
+
+        if ( xmlStrEqual( prop->name, BAD_CAST( "id" ) ) )
+            m_id = value;
+        else if ( xmlStrEqual( prop->name, BAD_CAST( "type" ) ) )
+            m_type = value;
+        else if ( xmlStrEqual( prop->name, BAD_CAST( "rel" ) ) )
+            m_rel = value;
+        else if ( xmlStrEqual( prop->name, BAD_CAST( "href" ) ) )
+            m_href = value;
+        else
+            m_others[ string( ( char * ) prop->name ) ] = value;
+
+        free( xmlStr );
+        prop = prop->next;
     }
 }

@@ -66,7 +66,8 @@ class GDriveObject : public virtual libcmis::Object
         std::vector< std::string > getMultiStringProperty(
                 const std::string& propertyName );
 
-        virtual std::vector< libcmis::RenditionPtr> getRenditions( );
+        virtual std::vector< libcmis::RenditionPtr> getRenditions( std::string filter = std::string( ) )
+            throw ( libcmis::Exception );
 
         virtual boost::shared_ptr< Object > updateProperties(
             const libcmis::PropertyPtrMap& properties )

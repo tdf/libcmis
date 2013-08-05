@@ -43,6 +43,11 @@ const char* libcmis_rendition_getStreamId( libcmis_RenditionPtr rendition );
 const char* libcmis_rendition_getMimeType( libcmis_RenditionPtr rendition );
 const char* libcmis_rendition_getKind( libcmis_RenditionPtr rendition );
 const char* libcmis_rendition_getUrl( libcmis_RenditionPtr rendition );
+const char* libcmis_rendition_getTitle( libcmis_RenditionPtr rendition );
+long libcmis_rendition_getLength( libcmis_RenditionPtr rendition );
+long libcmis_rendition_getWidth( libcmis_RenditionPtr rendition );
+long libcmis_rendition_getHeight( libcmis_RenditionPtr rendition );
+const char* libcmis_rendition_getRenditionDocumentId( libcmis_RenditionPtr rendition );
 
 #ifdef __cplusplus
 }

@@ -285,6 +285,7 @@ map< string, SoapResponseCreator > WSSession::getResponseMapping( )
     mapping[ "{" + string( NS_CMISM_URL ) + "}checkOutResponse" ] = &CheckOutResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}checkInResponse" ] = &CheckInResponse::create;
     mapping[ "{" + string( NS_CMISM_URL ) + "}getAllVersionsResponse" ] = &GetAllVersionsResponse::create;
+    mapping[ "{" + string( NS_CMISM_URL ) + "}getRenditionsResponse" ] = &GetRenditionsResponse::create;
 
     return mapping;
 }

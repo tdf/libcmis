@@ -57,6 +57,9 @@ class ObjectService
         libcmis::ObjectPtr getObject( std::string repoId, std::string id ) throw ( libcmis::Exception );
 
         libcmis::ObjectPtr getObjectByPath( std::string repoId, std::string path ) throw ( libcmis::Exception );
+
+        std::vector< libcmis::RenditionPtr > getRenditions(
+                std::string repoId, std::string objectId, std::string filter ) throw ( libcmis::Exception );
         
         libcmis::ObjectPtr updateProperties(
                 std::string repoId,

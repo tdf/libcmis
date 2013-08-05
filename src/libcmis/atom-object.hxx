@@ -28,6 +28,7 @@
 #ifndef _ATOM_OBJECT_HXX_
 #define _ATOM_OBJECT_HXX_
 
+#include <map>
 #include <ostream>
 
 #include "object.hxx"
@@ -41,6 +42,7 @@ class AtomLink
         std::string m_type;
         std::string m_id;
         std::string m_href;
+        std::map< std::string, std::string > m_others;
 
     public:
         AtomLink( xmlNodePtr node ) throw ( libcmis::Exception );
@@ -50,6 +52,7 @@ class AtomLink
         std::string getId( ) { return m_id; }
         bool hasId( ) { return !m_id.empty( ); }
         std::string getHref( ) { return m_href; }
+        std::map< std::string, std::string >& getOthers( ) { return m_others; }
 };
 
 class AtomObject : public virtual libcmis::Object

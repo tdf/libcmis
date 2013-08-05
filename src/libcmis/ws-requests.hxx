@@ -601,6 +601,44 @@ class SetContentStream : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
+class GetRenditions : public SoapRequest
+{
+    private:
+        std::string m_repositoryId;
+        std::string m_objectId;
+        std::string m_filter;
+
+    public:
+        GetRenditions( std::string repoId, std::string objectId, std::string filter ) :
+            m_repositoryId( repoId ),
+            m_objectId( objectId ),
+            m_filter( filter )
+        {
+        }
+
+        ~GetRenditions( ) { }
+
+        void toXml( xmlTextWriterPtr writer );
+};
+
+class GetRenditionsResponse : public SoapResponse
+{
+    private:
+        std::vector< libcmis::RenditionPtr > m_renditions;
+
+        GetRenditionsResponse( ) : SoapResponse( ), m_renditions( ) { }
+
+    public:
+
+        /** Parse cmism:getRenditionsResponse. This function
+            assumes that the node is the expected one: this is
+            normally ensured by the SoapResponseFactory.
+          */
+        static SoapResponsePtr create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* session );
+
+        std::vector< libcmis::RenditionPtr > getRenditions( ) { return m_renditions; }
+};
+
 class CheckOut : public SoapRequest
 {
     private:
