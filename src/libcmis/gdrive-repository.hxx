@@ -34,15 +34,7 @@
 class GdriveRepository: public libcmis::Repository
 {
     public:
-        GdriveRepository ( ): Repository( )
-        {
-             m_id = "GoogleDrive";
-             m_name = "Google Drive";
-             m_description = "Google Drive repository";
-             m_productName = "Google Drive";
-             m_productVersion = "v2";
-             m_rootId = "root";
-        }
+        GdriveRepository( );
 };
 
 #endif

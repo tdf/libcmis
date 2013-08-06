@@ -88,6 +88,7 @@ libcmis_la_SOURCES = \
     gdrive-property.hxx \
     gdrive-property.cxx \
 	gdrive-repository.hxx \
+	gdrive-repository.cxx \
 	gdrive-session.hxx \
 	gdrive-session.cxx \
 	gdrive-utils.hxx \
