@@ -276,6 +276,9 @@ void GetObject::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_id.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+
+    // Ask for renditions... some servers like Alfresco are providing them only this way
+    // and it saves time (another HTTP request) anyway.
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
     xmlTextWriterEndElement( writer );

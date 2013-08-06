@@ -63,8 +63,12 @@ WSObject& WSObject::operator=( const WSObject& copy )
 
 vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter ) throw ( libcmis::Exception )
 {
-    // TODO Check that the server supports that optional feature
-    if ( m_renditions.empty() )
+    // Check that the server supports that optional feature. There is no need to check it
+    // when getting the object as we may get them by shear luck
+    libcmis::RepositoryPtr repo = getSession( )->getRepository( );
+    bool isCapable = repo && repo->getCapability( libcmis::Repository::Renditions ) == "read";
+
+    if ( m_renditions.empty() && isCapable )
     {
         string repoId = getSession( )->getRepositoryId( );
         m_renditions = getSession( )->getObjectService( ).getRenditions( repoId, this->getId( ), filter );
