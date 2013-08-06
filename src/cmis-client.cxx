@@ -107,8 +107,11 @@ namespace
 
     class CinCertValidationHandler : public libcmis::CertValidationHandler
     {
+        private:
+            map< string, bool > m_answers;
+
         public:
-            CinCertValidationHandler( ) { }
+            CinCertValidationHandler( ) : m_answers( ) { }
             ~CinCertValidationHandler( ) { }
 
             virtual bool validateCertificate( vector< string > certificates )
@@ -118,6 +121,10 @@ namespace
 
                 // Show the first certificate (even base64-encoded)
                 string cert = certificates.front();
+                map< string, bool >::iterator it = m_answers.find( cert );
+                if ( it != m_answers.end( ) )
+                    return it->second;
+
                 cout << "Invalid SSL certificate:" << endl << cert << endl;
                 cout << "'openssl x509 -noout -text' can show you the details of this certificate." << endl << endl;
 
@@ -125,6 +132,8 @@ namespace
                 cout << "Do you want to ignore this problem and go on? yes/no [default: no]: ";
                 string answer;
                 getline( cin, answer );
+
+                m_answers[cert] = answer == "yes";
 
                 return answer == "yes";
             }
