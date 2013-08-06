@@ -39,7 +39,7 @@ GdriveRepository::GdriveRepository( ) :
     m_rootId = "root";
  
     m_capabilities[ ACL ] = "discover";
-    m_capabilities[ AllVersionSearchable ] = "true";
+    m_capabilities[ AllVersionsSearchable ] = "true";
     m_capabilities[ Changes ] = "all";
     m_capabilities[ GetDescendants ] = "true";
     m_capabilities[ GetFolderTree ] = "true";
