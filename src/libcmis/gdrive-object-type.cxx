@@ -38,6 +38,9 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
     m_description = "GoogleDrive Object Type";
     m_parentTypeId = id;
     m_baseTypeId = id;
+    m_creatable = true;
+    m_versionable = true;
+    m_fulltextIndexed = true;
 
     libcmis::PropertyTypePtr idType(new libcmis::PropertyType( ) );
     idType->setId( "cmis:objectTypeId" );
