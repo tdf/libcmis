@@ -89,6 +89,16 @@ char* libcmis_repository_getPrincipalAnonymous( libcmis_RepositoryPtr repository
   */
 char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository );
 
+/** The resulting value needs to be freed.
+  */
+char* libcmis_repository_getCapability(
+        libcmis_RepositoryPtr repository,
+        libcmis_repository_capability_Type capability );
+
+bool libcmis_repository_getCapabilityAsBool(
+        libcmis_RepositoryPtr repository,
+        libcmis_repository_capability_Type capability );
+
 #ifdef __cplusplus
 }
 #endif

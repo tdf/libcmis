@@ -173,6 +173,24 @@ typedef enum
 
 /* Repository */
 
+typedef enum
+{
+    libcmis_capability_ACL,
+    libcmis_capability_AllVersionsSearchable,
+    libcmis_capability_Changes,
+    libcmis_capability_ContentStreamUpdatability,
+    libcmis_capability_GetDescendants,
+    libcmis_capability_GetFolderTree,
+    libcmis_capability_OrderBy,
+    libcmis_capability_Multifiling,
+    libcmis_capability_PWCSearchable,
+    libcmis_capability_PWCUpdatable,
+    libcmis_capability_Query,
+    libcmis_capability_Renditions,
+    libcmis_capability_Unfiling,
+    libcmis_capability_VersionSpecificFiling,
+    libcmis_capability_Join
+} libcmis_repository_capability_Type;
 
 typedef struct libcmis_repository* libcmis_RepositoryPtr;
 

@@ -181,3 +181,27 @@ char* libcmis_repository_getPrincipalAnyone( libcmis_RepositoryPtr repository )
         return NULL;
 }
 
+char* libcmis_repository_getCapability(
+        libcmis_RepositoryPtr repository,
+        libcmis_repository_capability_Type capability )
+{
+    if ( repository != NULL && repository->handle != NULL )
+    {
+        std::string value = repository->handle->getCapability( ( libcmis::Repository::Capability ) capability );
+        return strdup( value.c_str( ) );
+    }
+    else
+        return NULL;
+}
+
+bool libcmis_repository_getCapabilityAsBool(
+        libcmis_RepositoryPtr repository,
+        libcmis_repository_capability_Type capability )
+{
+    if ( repository != NULL && repository->handle != NULL )
+    {
+        return repository->handle->getCapabilityAsBool( ( libcmis::Repository::Capability ) capability );
+    }
+    else
+        return false;
+}
