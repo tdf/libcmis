@@ -38,6 +38,15 @@
       <arg choice="opt">-p <replaceable>secret</replaceable></arg>
       <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
       <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
+      <arg choice="plain">repo-infos</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>cmis-client</command>
+      <arg choice="opt">-v</arg>
+      <arg choice="opt">-u <replaceable>login</replaceable></arg>
+      <arg choice="opt">-p <replaceable>secret</replaceable></arg>
+      <arg choice="plain">--url <replaceable>url://to/binding</replaceable></arg>
+      <arg choice="plain">-r <replaceable>repo-id</replaceable></arg>
       <arg choice="plain">show-root</arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -389,6 +398,14 @@
             <listitem>
             <para>
                                                     List the repositories available on the server.
+                                            </para>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>repo-infos</term>
+            <listitem>
+            <para>
+                                                    Displays the informations and capabilities of the selected repository
                                             </para>
             </listitem>
         </varlistentry>

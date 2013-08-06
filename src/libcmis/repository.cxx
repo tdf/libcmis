@@ -26,7 +26,10 @@
  * instead of those above.
  */
 
+#include <sstream>
+
 #include "repository.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 
@@ -43,7 +46,8 @@ namespace libcmis
         m_cmisVersionSupported( ),
         m_thinClientUri( ),
         m_principalAnonymous( ),
-        m_principalAnyone( )
+        m_principalAnyone( ),
+        m_capabilities( )
     {
     }
 
@@ -58,7 +62,8 @@ namespace libcmis
         m_cmisVersionSupported( ),
         m_thinClientUri( ),
         m_principalAnonymous( ),
-        m_principalAnyone( )
+        m_principalAnyone( ),
+        m_capabilities( )
     {
         initializeFromNode( node );
     }
@@ -95,6 +100,136 @@ namespace libcmis
                 m_principalAnonymous.reset( new string( value ) );
             else if ( localName == "principalAnyone" )
                 m_principalAnyone.reset( new string( value ) );
+            else if ( localName == "capabilities" )
+            {
+                m_capabilities = parseCapabilities( child );
+            }
         }
+    }
+
+    string Repository::getCapability( Capability capability ) const
+    {
+        string result;
+
+        map< Capability, string >::const_iterator it = m_capabilities.find( capability );
+        if ( it != m_capabilities.end() )
+            result = it->second;
+
+        return result;
+    }
+    
+    bool Repository::getCapabilityAsBool( Capability capability ) const
+   {
+       string value = getCapability( capability );
+       bool result = false;
+       try
+       {
+           result = libcmis::parseBool( value );
+       }
+       catch ( Exception )
+       {
+       }
+       return result;
+   }
+
+    string Repository::toString( ) const
+    {
+        stringstream buf;
+
+        buf << "Id:          " << getId( ) << endl;
+        buf << "Name:        " << getName( ) << endl;
+        buf << "Description: " << getDescription( ) << endl;
+        buf << "Vendor:      " << getVendorName( ) << endl;
+        buf << "Product:     " << getProductName( ) << " - version " << getProductVersion( )  << endl;
+        buf << "Root Id:     " << getRootId( ) << endl;
+        buf << "Supported CMIS Version: " << getCmisVersionSupported( ) << endl;
+        if ( getThinClientUri( ) )
+            buf << "Thin Client URI:        " << *getThinClientUri( ) << endl;
+        if ( getPrincipalAnonymous( ) )
+            buf << "Anonymous user:         " << *getPrincipalAnonymous( ) << endl;
+        if ( getPrincipalAnyone( ) )
+            buf << "Anyone user:            " << *getPrincipalAnyone( ) << endl;
+        buf << endl;
+        buf << "Capabilities:" << endl;
+
+        static string capabilitiesNames[] = 
+        {
+            "ACL",
+            "AllVersionsSearchable",
+            "Changes",
+            "ContentStreamUpdatability",
+            "GetDescendants",
+            "GetFolderTree",
+            "OrderBy",
+            "Multifiling",
+            "PWCSearchable",
+            "PWCUpdatable",
+            "Query",
+            "Renditions",
+            "Unfiling",
+            "VersionSpecificFiling",
+            "Join"
+        };
+
+        for ( int i = ACL; i < Join; ++i )
+        {
+            buf << "\t" << capabilitiesNames[i] << ": " << getCapability( ( Capability )i ) << endl;
+        }
+
+        return buf.str();
+    }
+
+    map< Repository::Capability, string > Repository::parseCapabilities( xmlNodePtr node )
+    {
+        map< Capability, string > capabilities;
+
+        for ( xmlNodePtr child = node->children; child; child = child->next )
+        {
+            string localName( ( char* ) child->name );
+
+            xmlChar* content = xmlNodeGetContent( child );
+            string value( ( char* )content );
+            xmlFree( content );
+
+            Capability capability = ACL;
+            bool ignore = false;
+            if ( localName == "capabilityACL" )
+                capability = ACL;
+            else if ( localName == "capabilityAllVersionsSearchable" )
+                capability = AllVersionsSearchable;
+            else if ( localName == "capabilityChanges" )
+                capability = Changes;
+            else if ( localName == "capabilityContentStreamUpdatability" )
+                capability = ContentStreamUpdatability;
+            else if ( localName == "capabilityGetDescendants" )
+                capability = GetDescendants;
+            else if ( localName == "capabilityGetFolderTree" )
+                capability = GetFolderTree;
+            else if ( localName == "capabilityOrderBy" )
+                capability = OrderBy;
+            else if ( localName == "capabilityMultifiling" )
+                capability = Multifiling;
+            else if ( localName == "capabilityPWCSearchable" )
+                capability = PWCSearchable;
+            else if ( localName == "capabilityPWCUpdatable" )
+                capability = PWCUpdatable;
+            else if ( localName == "capabilityQuery" )
+                capability = Query;
+            else if ( localName == "capabilityRenditions" )
+                capability = Renditions;
+            else if ( localName == "capabilityUnfiling" )
+                capability = Unfiling;
+            else if ( localName == "capabilityVersionSpecificFiling" )
+                capability = VersionSpecificFiling;
+            else if ( localName == "capabilityJoin" )
+                capability = Join;
+            else
+                ignore = true;
+        
+            if ( !ignore )
+                capabilities[capability] = value;
+        }
+
+        return capabilities;
     }
 }

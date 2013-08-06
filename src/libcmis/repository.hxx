@@ -28,6 +28,7 @@
 #ifndef _REPOSITORY_HXX_
 #define _REPOSITORY_HXX_
 
+#include <map>
 #include <string>
 
 #include <boost/shared_ptr.hpp>
@@ -41,6 +42,27 @@ namespace libcmis
       */
     class Repository
     {
+        public:
+
+            enum Capability
+            {
+                ACL,
+                AllVersionsSearchable,
+                Changes,
+                ContentStreamUpdatability,
+                GetDescendants,
+                GetFolderTree,
+                OrderBy,
+                Multifiling,
+                PWCSearchable,
+                PWCUpdatable,
+                Query,
+                Renditions,
+                Unfiling,
+                VersionSpecificFiling,
+                Join
+            };
+
         protected:
             std::string m_id;
             std::string m_name;
@@ -54,6 +76,8 @@ namespace libcmis
             boost::shared_ptr< std::string > m_principalAnonymous;
             boost::shared_ptr< std::string > m_principalAnyone;
 
+            std::map< Capability, std::string > m_capabilities ;
+
             Repository( );
             void initializeFromNode( xmlNodePtr node );
 
@@ -61,17 +85,30 @@ namespace libcmis
             Repository( xmlNodePtr node );
             virtual ~Repository( ) { };
 
-            std::string getId( ) { return m_id; }
-            std::string getName( ) { return m_name; }
-            std::string getDescription( ) { return m_description; }
-            std::string getVendorName( ) { return m_vendorName; }
-            std::string getProductName( ) { return m_productName; }
-            std::string getProductVersion( ) { return m_productVersion; }
-            std::string getRootId( ) { return m_rootId; }
-            std::string getCmisVersionSupported( ) { return m_cmisVersionSupported; }
-            boost::shared_ptr< std::string > getThinClientUri( ) { return m_thinClientUri; }
-            boost::shared_ptr< std::string > getPrincipalAnonymous( ) { return m_principalAnonymous; }
-            boost::shared_ptr< std::string > getPrincipalAnyone( ) { return m_principalAnyone; }
+            std::string getId( ) const { return m_id; }
+            std::string getName( ) const { return m_name; }
+            std::string getDescription( ) const { return m_description; }
+            std::string getVendorName( ) const { return m_vendorName; }
+            std::string getProductName( ) const { return m_productName; }
+            std::string getProductVersion( ) const { return m_productVersion; }
+            std::string getRootId( ) const { return m_rootId; }
+            std::string getCmisVersionSupported( ) const { return m_cmisVersionSupported; }
+            boost::shared_ptr< std::string > getThinClientUri( ) const { return m_thinClientUri; }
+            boost::shared_ptr< std::string > getPrincipalAnonymous( ) const { return m_principalAnonymous; }
+            boost::shared_ptr< std::string > getPrincipalAnyone( ) const { return m_principalAnyone; }
+
+            std::string getCapability( Capability capability ) const;
+
+            /** Wrapper function providing the capability as a boolean value.
+                If the capability value is not a boolean, returns false.
+             */
+            bool getCapabilityAsBool( Capability capability ) const;
+
+            std::string toString( ) const;
+
+        private:
+
+            static std::map< Capability, std::string > parseCapabilities( xmlNodePtr node );
     };
     
     typedef ::boost::shared_ptr< Repository > RepositoryPtr;

@@ -352,6 +352,21 @@ void CmisClient::execute( ) throw ( exception )
 
             delete session;
         }
+        else if ( "repo-infos" == command )
+        {
+            libcmis::Session* session = getSession( );
+            libcmis::RepositoryPtr repo = session->getRepository( );
+
+            if ( repo )
+            {
+                cout << "------------------------------------------------" << endl;
+                cout << repo->toString() << endl;
+            }
+            else
+                throw CommandException( "Please select a repository" );
+
+            delete session;
+        }
         else if ( "type-by-id" == command )
         {
             libcmis::Session* session = getSession( );
@@ -1033,6 +1048,8 @@ void CmisClient::printHelp( )
     cerr << endl << "Commands" << endl;
     cerr << "   list-repos\n"
             "           Lists the repositories available on the server" << endl;
+    cerr << "   repo-infos\n"
+            "           Show the informations and capabilities of the selected repository" << endl;
     cerr << "   show-root\n"
             "           Dump the root node of the repository." << endl;
     cerr << "   type-by-id <Type Id 1> [... <Type Id N>]\n"

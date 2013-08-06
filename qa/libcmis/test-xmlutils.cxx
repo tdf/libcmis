@@ -35,6 +35,8 @@
 #include <cppunit/ui/text/TestRunner.h>
 #include <libxml/tree.h>
 
+#define private public
+
 #include "object-type.hxx"
 #include "property.hxx"
 #include "property-type.hxx"
@@ -63,6 +65,7 @@ class XmlTest : public CppUnit::TestFixture
         void parseEmptyPropertyTest( );
         
         void parseRenditionTest( );
+        void parseRepositoryCapabilitiesTest( );
 
         // Writer tests
         void propertyStringAsXmlTest( ); 
@@ -82,6 +85,7 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parsePropertyBoolTest );
         CPPUNIT_TEST( parseEmptyPropertyTest );
         CPPUNIT_TEST( parseRenditionTest );
+        CPPUNIT_TEST( parseRepositoryCapabilitiesTest );
         CPPUNIT_TEST( propertyStringAsXmlTest );
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST( sha1Test );
@@ -423,6 +427,56 @@ void XmlTest::parseRenditionTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong height parsed", long( 123 ), actual->getHeight( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong width parsed", long( 456 ), actual->getWidth( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong rendition doc id parsed", string( "DOC-ID" ), actual->getRenditionDocumentId( ) );
+}
+
+string lcl_findCapability( map< libcmis::Repository::Capability, string > store, libcmis::Repository::Capability capability )
+{
+    string result;
+    map< libcmis::Repository::Capability, string >::iterator it = store.find( capability );
+    if ( it != store.end( ) )
+        result = it->second;
+
+    return result;
+}
+
+void XmlTest::parseRepositoryCapabilitiesTest( )
+{
+    stringstream buf;
+    buf << "<cmis:capabilities " << getXmlns( ) << ">"
+        <<    "<cmis:capabilityACL>manage</cmis:capabilityACL>"
+        <<    "<cmis:capabilityAllVersionsSearchable>false</cmis:capabilityAllVersionsSearchable>"
+        <<    "<cmis:capabilityChanges>none</cmis:capabilityChanges>"
+        <<    "<cmis:capabilityContentStreamUpdatability>anytime</cmis:capabilityContentStreamUpdatability>"
+        <<    "<cmis:capabilityGetDescendants>true</cmis:capabilityGetDescendants>"
+        <<    "<cmis:capabilityGetFolderTree>true</cmis:capabilityGetFolderTree>"
+        <<    "<cmis:capabilityOrderBy>common</cmis:capabilityOrderBy>"
+        <<    "<cmis:capabilityMultifiling>true</cmis:capabilityMultifiling>"
+        <<    "<cmis:capabilityPWCSearchable>false</cmis:capabilityPWCSearchable>"
+        <<    "<cmis:capabilityPWCUpdatable>true</cmis:capabilityPWCUpdatable>"
+        <<    "<cmis:capabilityQuery>bothcombined</cmis:capabilityQuery>"
+        <<    "<cmis:capabilityRenditions>read</cmis:capabilityRenditions>"
+        <<    "<cmis:capabilityUnfiling>false</cmis:capabilityUnfiling>"
+        <<    "<cmis:capabilityVersionSpecificFiling>false</cmis:capabilityVersionSpecificFiling>"
+        <<    "<cmis:capabilityJoin>none</cmis:capabilityJoin>"
+        << "</cmis:capabilities>";
+
+    map< libcmis::Repository::Capability, string > capabilities = libcmis::Repository::parseCapabilities( getXmlNode( buf.str( ) ) );
+
+    CPPUNIT_ASSERT_EQUAL( string( "manage" ), lcl_findCapability( capabilities, libcmis::Repository::ACL ) );
+    CPPUNIT_ASSERT_EQUAL( string( "false" ), lcl_findCapability( capabilities, libcmis::Repository::AllVersionsSearchable ) );
+    CPPUNIT_ASSERT_EQUAL( string( "none" ), lcl_findCapability( capabilities, libcmis::Repository::Changes ) );
+    CPPUNIT_ASSERT_EQUAL( string( "anytime" ), lcl_findCapability( capabilities, libcmis::Repository::ContentStreamUpdatability ) );
+    CPPUNIT_ASSERT_EQUAL( string( "true" ), lcl_findCapability( capabilities, libcmis::Repository::GetDescendants ) );
+    CPPUNIT_ASSERT_EQUAL( string( "true" ), lcl_findCapability( capabilities, libcmis::Repository::GetFolderTree ) );
+    CPPUNIT_ASSERT_EQUAL( string( "common" ), lcl_findCapability( capabilities, libcmis::Repository::OrderBy ) );
+    CPPUNIT_ASSERT_EQUAL( string( "true" ), lcl_findCapability( capabilities, libcmis::Repository::Multifiling ) );
+    CPPUNIT_ASSERT_EQUAL( string( "false" ), lcl_findCapability( capabilities, libcmis::Repository::PWCSearchable ) );
+    CPPUNIT_ASSERT_EQUAL( string( "true" ), lcl_findCapability( capabilities, libcmis::Repository::PWCUpdatable ) );
+    CPPUNIT_ASSERT_EQUAL( string( "bothcombined" ), lcl_findCapability( capabilities, libcmis::Repository::Query ) );
+    CPPUNIT_ASSERT_EQUAL( string( "read" ), lcl_findCapability( capabilities, libcmis::Repository::Renditions ) );
+    CPPUNIT_ASSERT_EQUAL( string( "false" ), lcl_findCapability( capabilities, libcmis::Repository::Unfiling ) );
+    CPPUNIT_ASSERT_EQUAL( string( "false" ), lcl_findCapability( capabilities, libcmis::Repository::VersionSpecificFiling ) );
+    CPPUNIT_ASSERT_EQUAL( string( "none" ), lcl_findCapability( capabilities, libcmis::Repository::Join ) );
 }
 
 void XmlTest::propertyStringAsXmlTest( )
