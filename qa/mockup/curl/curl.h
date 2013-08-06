@@ -84,7 +84,10 @@ typedef enum
     CURLOPT_PROXYAUTH = CURLOPTTYPE_LONG + 111,
     CURLOPT_PROXYUSERNAME = CURLOPTTYPE_OBJECTPOINT + 175,
     CURLOPT_PROXYPASSWORD = CURLOPTTYPE_OBJECTPOINT + 176,
-    CURLOPT_NOPROXY = CURLOPTTYPE_OBJECTPOINT + 177
+    CURLOPT_NOPROXY = CURLOPTTYPE_OBJECTPOINT + 177,
+    CURLOPT_SSL_VERIFYPEER = CURLOPTTYPE_LONG + 64,
+    CURLOPT_SSL_VERIFYHOST = CURLOPTTYPE_LONG + 81,
+    CURLOPT_CERTINFO = CURLOPTTYPE_LONG + 172
 } CURLoption;
 
 #define CURLAUTH_DIGEST_IE    (((unsigned long)1)<<4)
@@ -94,6 +97,7 @@ typedef enum
 {
   CURLE_OK = 0,
   CURLE_HTTP_RETURNED_ERROR = 22,
+  CURLE_SSL_CACERT = 60,
   /* TODO Add some more error codes from curl? */
   CURL_LAST
 } CURLcode;
@@ -119,12 +123,20 @@ char *curl_easy_unescape( CURL *handle, const char *string, int length, int *out
 CURLcode curl_easy_perform( CURL *curl );
 void curl_easy_reset( CURL *curl );
 
+struct curl_certinfo
+{
+    int num_of_certs;
+    struct curl_slist **certinfo;
+};
+
 #define CURLINFO_LONG     0x200000
+#define CURLINFO_SLIST    0x400000
 
 typedef enum
 {
   CURLINFO_NONE,
   CURLINFO_RESPONSE_CODE    = CURLINFO_LONG   + 2,
+  CURLINFO_CERTINFO         = CURLINFO_SLIST  + 34,
   CURLINFO_LASTONE          = 42
 } CURLINFO;
 

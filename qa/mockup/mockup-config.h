@@ -82,6 +82,11 @@ const char* curl_mockup_getNoProxy( CURL* handle );
 const char* curl_mockup_getProxyUser( CURL* handle );
 const char* curl_mockup_getProxyPass( CURL* handle );
 
+/** Set a fake invalid certificate to raise CURLE_SSL_CACERT. Setting it
+    to an empty string will reset to no certificate.
+  */
+void curl_mockup_setSSLBadCertificate( const char* certificate );
+
 #ifdef __cplusplus
 }
 #endif

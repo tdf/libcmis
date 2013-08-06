@@ -28,6 +28,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sstream>
 
@@ -41,15 +42,57 @@ namespace mockup
     extern Configuration* config;
 }
 
-struct curl_slist *curl_slist_append( struct curl_slist *, const char * )
+/** Code mostly coming from curl
+  */
+struct curl_slist *curl_slist_append( struct curl_slist * list, const char * data )
 {
-    /* TODO Implement me */
-    return NULL;
+    struct curl_slist* new_item = ( struct curl_slist* ) malloc( sizeof( struct curl_slist ) );
+
+    if( new_item )
+    {
+        char *dupdata = strdup(data);
+        if ( dupdata )
+        {
+            new_item->next = NULL;
+            new_item->data = dupdata;
+        }
+        else
+        {
+            free(new_item);
+            return NULL;
+        }
+    }
+    else
+        return NULL;
+
+    if ( list )
+    {
+        curl_slist* last = list;
+        while ( last->next )
+            last = last->next;
+        last->next = new_item;
+        return list;
+    }
+
+    /* if this is the first item, then new_item *is* the list */
+    return new_item;
 }
 
-void curl_slist_free_all( struct curl_slist * )
+void curl_slist_free_all( struct curl_slist * list )
 {
-    /* TODO Implement me */
+    if ( list )
+    {
+        struct curl_slist* item = list;
+        struct curl_slist* next = NULL;
+        do
+        {
+            next = item->next;
+            if ( item->data )
+                free( item->data );
+            free(item);
+            item = next;
+        } while ( next );
+    }
 }
 
 void curl_free( void * /*p*/ )
@@ -211,7 +254,22 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
             }
             break;
         }
-       default:
+        case CURLOPT_SSL_VERIFYHOST:
+        {
+            handle->m_verifyHost = va_arg( arg, long ) != 0;
+            break;
+        }
+        case CURLOPT_SSL_VERIFYPEER:
+        {
+            handle->m_verifyPeer = va_arg( arg, long ) != 0;
+            break;
+        }
+        case CURLOPT_CERTINFO:
+        {
+            handle->m_certInfo = va_arg( arg, long ) != 0;
+            break;
+        }
+        default:
         {
             // We surely don't want to break the test for that.
         }
@@ -224,6 +282,26 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
 CURLcode curl_easy_perform( CURL * curl )
 {
     CurlHandle* handle = static_cast< CurlHandle * >( curl );
+
+    /* Fake a bad SSL Certificate? */
+    if ( !mockup::config->m_badSSLCertificate.empty( ) && handle->m_verifyPeer && handle->m_verifyHost )
+    {
+        return CURLE_SSL_CACERT;
+    }
+
+    /* Populate the certificate infos */
+    if ( handle->m_certInfo && !mockup::config->m_badSSLCertificate.empty( ) )
+    {
+        curl_slist * certData = NULL;
+        string cert( "Cert:" + mockup::config->m_badSSLCertificate );
+        char* c_cert = strdup( cert.c_str( ) );
+        certData = curl_slist_append( certData, c_cert );
+        free( c_cert );
+
+        handle->m_certs.num_of_certs = 1;
+        handle->m_certs.certinfo = ( struct curl_slist** )calloc( ( size_t )1, sizeof( struct curl_slist * ) );
+        handle->m_certs.certinfo[0] = certData;
+    }
 
     /* Check the credentials */
     if ( mockup::config->hasCredentials( ) &&
@@ -272,6 +350,23 @@ CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
             *buf = handle->m_httpError;
             break;
         }
+        case CURLINFO_CERTINFO:
+        {
+            struct curl_slist** param = va_arg( arg, struct curl_slist** );
+            if ( NULL != param )
+            {
+                union
+                {
+                    struct curl_certinfo * to_certinfo;
+                    struct curl_slist * to_slist;
+                } ptr;
+
+                // Fill it
+                ptr.to_certinfo = &handle->m_certs;
+                *param = ptr.to_slist;
+            }
+            break;
+        }
         default:
         {
             // We surely don't want to break the test for that.
@@ -297,6 +392,10 @@ CurlHandle::CurlHandle( ) :
     m_noProxy( ),
     m_proxyUser( ),
     m_proxyPass( ),
+    m_verifyHost( true ),
+    m_verifyPeer( true ),
+    m_certInfo( false ),
+    m_certs( ),
     m_httpError( 0 ),
     m_method( "GET" )
 {
@@ -317,6 +416,10 @@ CurlHandle::CurlHandle( const CurlHandle& copy ) :
     m_noProxy( copy.m_noProxy ),
     m_proxyUser( copy.m_proxyUser ),
     m_proxyPass( copy.m_proxyPass ),
+    m_verifyHost( copy.m_verifyHost ),
+    m_verifyPeer( copy.m_verifyPeer ),
+    m_certInfo( copy.m_certInfo ),
+    m_certs( copy.m_certs ),
     m_httpError( copy.m_httpError ),
     m_method( copy.m_method )
 {
@@ -340,6 +443,10 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
         m_noProxy = copy.m_noProxy;
         m_proxyUser = copy.m_proxyUser;
         m_proxyPass = copy.m_proxyPass;
+        m_verifyHost = copy.m_verifyHost;
+        m_verifyPeer = copy.m_verifyPeer;
+        m_certInfo = copy.m_certInfo;
+        m_certs = copy.m_certs;
         m_httpError = copy.m_httpError;
         m_method = copy.m_method;
     }
@@ -356,5 +463,22 @@ void CurlHandle::reset( )
     m_readSize = 0;
     m_username = string( );
     m_password = string( );
+    m_proxy = string( );
+    m_noProxy = string( );
+    m_proxyUser = string( );
+    m_proxyPass = string( );
+    m_verifyHost = true;
+    m_verifyPeer = true;
+    m_certInfo = false;
+
+    for ( int i = 0; i < m_certs.num_of_certs; ++i )
+    {
+        curl_slist_free_all( m_certs.certinfo[i] );
+        m_certs.certinfo[i] = NULL;
+    }
+    free( m_certs.certinfo );
+    m_certs.certinfo = NULL;
+    m_certs.num_of_certs = 0;
+
     m_method = "GET";
 }

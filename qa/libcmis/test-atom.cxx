@@ -56,6 +56,7 @@ class AtomTest : public CppUnit::TestFixture
         void sessionCreationBadAuthTest( );
         void sessionCreationProxyTest( );
         void authCallbackTest( );
+        void invalidSSLTest( );
         void getRepositoriesTest( );
         void getTypeTest( );
         void getUnexistantTypeTest( );
@@ -92,6 +93,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionCreationBadAuthTest );
         CPPUNIT_TEST( sessionCreationProxyTest );
         CPPUNIT_TEST( authCallbackTest );
+        CPPUNIT_TEST( invalidSSLTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
@@ -138,6 +140,22 @@ class TestAuthProvider : public libcmis::AuthProvider
         bool authenticationQuery( std::string&, std::string& password )
         {
             password = SERVER_PASSWORD;
+            return !m_fail;
+        }
+};
+
+class TestCertValidationHandler : public libcmis::CertValidationHandler
+{
+    public:
+
+        bool m_fail;
+        vector< string > m_chain;
+
+        TestCertValidationHandler( bool fail ) : m_fail( fail ), m_chain() { }
+
+        bool validateCertificate( vector< string > chain )
+        {
+            m_chain = chain;
             return !m_fail;
         }
 };
@@ -256,6 +274,44 @@ void AtomTest::authCallbackTest( )
         libcmis::AuthProviderPtr authProvider( new TestAuthProvider( false ) );
         libcmis::SessionFactory::setAuthenticationProvider( authProvider );
         AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, string( ) );
+    }
+}
+
+void AtomTest::invalidSSLTest( )
+{
+    // Response showing one mock repository
+    curl_mockup_reset( );
+    curl_mockup_setResponse( DATA_DIR "/atom/workspaces.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    string badCert( "A really invalid SSL Certificate" );
+    curl_mockup_setSSLBadCertificate( badCert.c_str() );
+  
+    // Test validated certificate case
+    {
+        libcmis::CertValidationHandlerPtr handler( new TestCertValidationHandler( false ) );
+        libcmis::SessionFactory::setCertificateValidationHandler( handler );
+        AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+
+        TestCertValidationHandler* handler_impl = static_cast< TestCertValidationHandler* >( handler.get( ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of certificates provided", size_t( 1 ), handler_impl->m_chain.size( ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad certificate provided", badCert, handler_impl->m_chain.front() );
+    }
+
+    // Test cancelled validation case
+    {
+        libcmis::CertValidationHandlerPtr handler( new TestCertValidationHandler( true ) );
+        libcmis::SessionFactory::setCertificateValidationHandler( handler );
+        try
+        {
+            AtomPubSession session( SERVER_URL, SERVER_REPOSITORY, SERVER_USERNAME, SERVER_PASSWORD );
+            CPPUNIT_FAIL( "Should raise an exception saying the user didn't validate the SSL certificate" );
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
+                    string( "Invalid SSL certificate" ), string( e.what() ) );
+        }
     }
 }
 

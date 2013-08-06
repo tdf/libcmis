@@ -94,7 +94,8 @@ namespace mockup
         m_responses( ),
         m_requests( ),
         m_username( ),
-        m_password( )
+        m_password( ),
+        m_badSSLCertificate( )
     {
     }
 
@@ -300,4 +301,9 @@ const char* curl_mockup_getProxyPass( CURL* curl )
     if ( NULL != handle )
         return handle->m_proxyPass.c_str();
     return NULL;
+}
+
+void curl_mockup_setSSLBadCertificate( const char* certificate )
+{
+    mockup::config->m_badSSLCertificate = string( certificate );
 }

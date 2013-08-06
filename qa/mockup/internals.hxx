@@ -58,6 +58,12 @@ class CurlHandle
         std::string m_proxyUser;
         std::string m_proxyPass;
 
+        bool m_verifyHost;
+        bool m_verifyPeer;
+        bool m_certInfo;
+
+        struct curl_certinfo m_certs;
+
         long m_httpError;
         std::string m_method;
        
@@ -111,5 +117,6 @@ namespace mockup
             std::vector< Request > m_requests;
             std::string m_username;
             std::string m_password;
+            std::string m_badSSLCertificate;
     };
 }
