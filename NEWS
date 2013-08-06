@@ -60,3 +60,5 @@
   * Handle invalid SSL certificate problems
   * Added API for renditions
   * Moved the CMIS Atom binding unit tests to use libcurl mockup
+  * Added repository capabilities support (still missing
+    capabilityCreatablePropertyTypes and capabilityNewTypeSettableAttributes)
