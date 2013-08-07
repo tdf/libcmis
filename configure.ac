@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 m4_define([libcmis_major_version], [0])
-m4_define([libcmis_minor_version], [4])
+m4_define([libcmis_minor_version], [5])
 m4_define([libcmis_micro_version], [0])
 m4_define([libcmis_api_version], [libcmis_major_version.libcmis_minor_version])
 m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])

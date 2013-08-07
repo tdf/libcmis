@@ -37,7 +37,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	oauth2-data.cxx \
 	rendition.cxx
 
-libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
+libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 5:0:0
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	../libcmis/libcmis-@LIBCMIS_API_VERSION@.la \

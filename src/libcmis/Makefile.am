@@ -101,7 +101,7 @@ libcmis_la_SOURCES = \
 	oauth2-providers.hxx \
 	oauth2-providers.cxx
 
-libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 4:0:0
+libcmis_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 5:0:0
 
 libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	libcmis.la \
