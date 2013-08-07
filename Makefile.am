@@ -32,7 +32,6 @@ EXTRA_DIST = \
 	COPYING.MPL \
 	COPYING.GPL \
 	COPYING.LGPL \
-	src/libcmis/makefile.mk \
 	doc/cmis-client.xml \
 	cppcheck-test.sh \
 	qa/libcmis/data
