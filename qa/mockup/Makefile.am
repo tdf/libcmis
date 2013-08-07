@@ -1,5 +1,5 @@
 if !OS_WIN32
-lib_LTLIBRARIES = libcmis-mockup.la
+noinst_LTLIBRARIES = libcmis-mockup.la
 
 libcmis_mockup_la_SOURCES = \
 	curl-mockup.cxx \
