@@ -127,7 +127,6 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 
         AtomPubSession getTestSession( string username = string( ), string password = string( ) );
-        void loadFromFile( const char* path, string& buf );
 };
 
 class TestAuthProvider : public libcmis::AuthProvider
@@ -1151,27 +1150,11 @@ AtomPubSession AtomTest::getTestSession( string username, string password )
 {
     AtomPubSession session;
     string buf;
-    loadFromFile( DATA_DIR "/atom/workspaces.xml", buf );
+    test::loadFromFile( DATA_DIR "/atom/workspaces.xml", buf );
     session.parseServiceDocument( buf );
     
     session.m_username = username;
     session.m_password = password;
 
     return session;
-}
-
-void AtomTest::loadFromFile( const char* path, string& buf )
-{
-    ifstream in( path );
-
-    in.seekg( 0, ios::end );
-    int length = in.tellg( );
-    in.seekg( 0, ios::beg );
-
-    char* buffer = new char[length];
-    in.read( buffer, length );
-    in.close( );
-
-    buf = string( buffer, length );
-    delete[] buffer;
 }

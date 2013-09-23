@@ -25,6 +25,7 @@ test-nosrv-mockup
 test-nosrv-atom
 test-nosrv-gdrive
 test-nosrv-json
+test-nosrv-ws
 test-atom
 test-ws
 test-api

@@ -45,6 +45,6 @@ namespace test
 
     std::string getXmlNodeAsString( const std::string& xmlDoc, const std::string& xpath );
 
-    // Helper functions to populate the test repository
     libcmis::DocumentPtr createVersionableDocument( libcmis::Session* session, std::string docName );
+    void loadFromFile( const char* path, std::string& buf );
 }

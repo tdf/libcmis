@@ -101,6 +101,12 @@ class WSSession : public BaseSession, public SoapSession
 
     private:
 
+        // Default constructor shouldn't be called
+        WSSession( );
+
+        void parseWsdl( std::string buf ) throw ( libcmis::Exception );
+        void initializeResponseFactory( );
+        void initializeRepositories( ) throw ( libcmis::Exception );
         void initialize( ) throw ( libcmis::Exception );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );

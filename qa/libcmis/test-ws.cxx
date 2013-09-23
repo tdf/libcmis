@@ -67,7 +67,6 @@ class WSTest : public CppUnit::TestFixture
 
         // Generic session factory tests
 
-        void getRepositoriesTest( );
         void sessionCreationTest( );
         void getRepositoryTest( );
         void getRepositoryBadTest( );
@@ -101,7 +100,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getRepositoryTest );
         CPPUNIT_TEST( getRepositoryBadTest );
@@ -128,13 +126,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getRepositoriesTest()
-{
-    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD );
-    vector< libcmis::RepositoryPtr > actual = session.getRepositories( );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
-}
 
 void WSTest::sessionCreationTest( )
 {

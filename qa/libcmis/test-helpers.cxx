@@ -141,4 +141,20 @@ namespace test
 
         return parent->createDocument( props, os, contentType, filename );
     }
+
+    void loadFromFile( const char* path, string& buf )
+    {
+        ifstream in( path );
+
+        in.seekg( 0, ios::end );
+        int length = in.tellg( );
+        in.seekg( 0, ios::beg );
+
+        char* buffer = new char[length];
+        in.read( buffer, length );
+        in.close( );
+
+        buf = string( buffer, length );
+        delete[] buffer;
+    }
 }

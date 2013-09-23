@@ -14,7 +14,8 @@ if ENABLE_TESTS
 if !OS_WIN32
 mockup_tests = \
 	test-nosrv-atom \
-	test-nosrv-gdrive
+	test-nosrv-gdrive \
+	test-nosrv-ws
 endif
 
 check_PROGRAMS = \
@@ -78,6 +79,25 @@ test_nosrv_gdrive_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_nosrv_gdrive_LDADD = \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+test_nosrv_ws_SOURCES =	\
+	test-ws-mockup.cxx \
+	test-helpers.cxx \
+	test-main.cxx
+
+test_nosrv_ws_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_srcdir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
+
+test_nosrv_ws_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \

@@ -67,6 +67,18 @@ WSSession::WSSession( const WSSession& copy ) :
 {
 }
 
+WSSession::WSSession( ) :
+    BaseSession( ),
+    m_servicesUrls( ),
+    m_navigationService( NULL ),
+    m_objectService( NULL ),
+    m_repositoryService( NULL ),
+    m_versioningService( NULL ),
+    m_responseFactory( )
+{
+    setNoHttpErrors( true );
+}
+
 
 WSSession& WSSession::operator=( const WSSession& copy )
 {
@@ -177,6 +189,82 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
     return responses;
 }
 
+void WSSession::parseWsdl( string buf ) throw ( libcmis::Exception )
+{
+    // parse the content
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 );
+
+    if ( NULL != doc )
+    {
+        // Check that we have a WSDL document
+        xmlNodePtr root = xmlDocGetRootElement( doc );
+        if ( !xmlStrEqual( root->name, BAD_CAST( "definitions" ) ) )
+            throw libcmis::Exception( "Not a WSDL document" );
+
+        // Get all the services soap URLs
+        m_servicesUrls.clear( );
+
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        libcmis::registerCmisWSNamespaces( xpathCtx );
+
+        if ( NULL != xpathCtx )
+        {
+            string serviceXPath( "//wsdl:service" );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( serviceXPath.c_str() ), xpathCtx );
+
+            if ( xpathObj != NULL )
+            {
+                int nbServices = 0;
+                if ( xpathObj->nodesetval )
+                    nbServices = xpathObj->nodesetval->nodeNr;
+
+                for ( int i = 0; i < nbServices; i++ )
+                {
+                    // What service do we have here?
+                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                    string name = libcmis::getXmlNodeAttributeValue( node, "name" );
+
+                    // Gimme you soap:address location attribute
+                    string locationXPath = serviceXPath + "[@name='" + name + "']/wsdl:port/soap:address/attribute::location";
+                    string location = libcmis::getXPathValue( xpathCtx, locationXPath );
+
+                    m_servicesUrls[name] = location;
+                }
+            }
+        }
+        xmlXPathFreeContext( xpathCtx );
+    }
+    else
+        throw libcmis::Exception( "Failed to parse service document" );
+
+    xmlFreeDoc( doc );
+}
+
+void WSSession::initializeResponseFactory( )
+{
+    map< string, string > ns;
+    ns[ "wsssecurity" ] = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+    ns[ NS_SOAP_ENV_PREFIX ] = NS_SOAP_ENV_URL;
+    ns[ "cmism" ] = NS_CMISM_URL;
+    ns[ "cmisw" ] = NS_CMISW_URL;
+    ns[ "cmis" ] = NS_CMIS_URL;
+    m_responseFactory.setNamespaces( ns );
+    m_responseFactory.setMapping( getResponseMapping() );
+    m_responseFactory.setDetailMapping( getDetailMapping( ) );
+    m_responseFactory.setSession( this );
+}
+
+void WSSession::initializeRepositories( ) throw ( libcmis::Exception )
+{
+    map< string, string > repositories = getRepositoryService( ).getRepositories( );
+    for ( map< string, string >::iterator it = repositories.begin( );
+          it != repositories.end( ); ++it )
+    {
+        string repoId = it->first;
+        m_repositories.push_back( getRepositoryService( ).getRepositoryInfo( repoId ) );
+    }
+}
+
 void WSSession::initialize( ) throw ( libcmis::Exception )
 {
     if ( m_repositories.empty() )
@@ -191,75 +279,10 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         {
             throw e.getCmisException( );
         }
-       
-        // parse the content
-        xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 );
 
-        if ( NULL != doc )
-        {
-            // Check that we have a WSDL document
-            xmlNodePtr root = xmlDocGetRootElement( doc );
-            if ( !xmlStrEqual( root->name, BAD_CAST( "definitions" ) ) )
-                throw libcmis::Exception( "Not a WSDL document" );
-
-            // Get all the services soap URLs
-            m_servicesUrls.clear( );
-
-            xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-            libcmis::registerCmisWSNamespaces( xpathCtx );
-
-            if ( NULL != xpathCtx )
-            {
-                string serviceXPath( "//wsdl:service" );
-                xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( serviceXPath.c_str() ), xpathCtx );
-
-                if ( xpathObj != NULL )
-                {
-                    int nbServices = 0;
-                    if ( xpathObj->nodesetval )
-                        nbServices = xpathObj->nodesetval->nodeNr;
-
-                    for ( int i = 0; i < nbServices; i++ )
-                    {
-                        // What service do we have here?
-                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                        string name = libcmis::getXmlNodeAttributeValue( node, "name" );
-
-                        // Gimme you soap:address location attribute
-                        string locationXPath = serviceXPath + "[@name='" + name + "']/wsdl:port/soap:address/attribute::location";
-                        string location = libcmis::getXPathValue( xpathCtx, locationXPath );
-
-                        m_servicesUrls[name] = location;
-                    }
-                }
-            }
-            xmlXPathFreeContext( xpathCtx );
-        }
-        else
-            throw libcmis::Exception( "Failed to parse service document" );
-
-        xmlFreeDoc( doc );
-
-        // Initialize the response factory
-        map< string, string > ns;
-        ns[ "wsssecurity" ] = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
-        ns[ NS_SOAP_ENV_PREFIX ] = NS_SOAP_ENV_URL;
-        ns[ "cmism" ] = NS_CMISM_URL;
-        ns[ "cmisw" ] = NS_CMISW_URL;
-        ns[ "cmis" ] = NS_CMIS_URL;
-        m_responseFactory.setNamespaces( ns );
-        m_responseFactory.setMapping( getResponseMapping() );
-        m_responseFactory.setDetailMapping( getDetailMapping( ) );
-        m_responseFactory.setSession( this );
-
-        // Get all repositories
-        map< string, string > repositories = getRepositoryService( ).getRepositories( );
-        for ( map< string, string >::iterator it = repositories.begin( );
-              it != repositories.end( ); ++it )
-        {
-            string repoId = it->first;
-            m_repositories.push_back( getRepositoryService( ).getRepositoryInfo( repoId ) );
-        }
+        parseWsdl( buf );
+        initializeResponseFactory( ); 
+        initializeRepositories( );
     }
 }
 
