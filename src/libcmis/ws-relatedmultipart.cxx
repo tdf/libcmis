@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include <algorithm>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
@@ -119,64 +120,87 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
     string bodyFixed( body );
     if ( bodyFixed.find( "--" + m_boundary + "\r\n" ) == 0 )
         bodyFixed = "\r\n" + bodyFixed;
-    
-    string boundaryString( "\r\n--" + m_boundary + "\r\n" );
-    string endBoundaryString( "\r\n--" + m_boundary + "--" );
-    string headerSeparator( "\r\n\r\n" );
+
+    if ( bodyFixed[bodyFixed.length() - 1 ] != '\n' )
+        bodyFixed += '\n';
+
+    string lineEnd( "\n" );
+    string boundaryString( "--" + m_boundary + "" );
+    string endBoundaryString( "--" + m_boundary + "--" );
+    pos = bodyFixed.find( lineEnd );
     lastPos = 0;
-    pos = bodyFixed.find( boundaryString );
+    bool inPart = false;
+    bool inHeaders = false;
+    string cid;
+    string name;
+    string type;
+    string partBody;
 
     while ( pos != string::npos )
     {
-        string part = bodyFixed.substr( lastPos, pos - lastPos );
-
-        size_t bodyPos = part.find( headerSeparator );
-        if ( bodyPos != string::npos )
-        { 
-            string headers = part.substr( 0, bodyPos );
-            string partBody = part.substr( bodyPos + headerSeparator.length( ) );
-
-            string cid;
-            string type;
-
-            do
-            {
-                string headerSep( "\r\n" );
-                size_t headerEndPos = headers.find( headerSep );
-                string header = headers.substr( 0, headerEndPos );
-                if ( headerEndPos != string::npos )
-                    headers = headers.substr( headerEndPos + headerSep.length( ) );
-                else
-                    headers.clear( );
-
-                size_t colonPos = header.find( ":" );
-                string headerName = header.substr( 0, colonPos );
-                string headerValue = header.substr( colonPos + 1 );
-                if ( libcmis::tolower( headerName ) == libcmis::tolower( "Content-Id" ) )
-                {
-                    cid = libcmis::trim( headerValue );
-                    // Remove the '<' '>' around the id if any
-                    if ( cid[0] == '<' && cid[cid.size()-1] == '>' )
-                        cid = cid.substr( 1, cid.size() - 2 );
-                }
-                else if ( headerName == "Content-Type" )
-                    type = libcmis::trim( headerValue );
-                // TODO Handle the Content-Transfer-Encoding
-            }
-            while ( !headers.empty( ) );
+        string line = bodyFixed.substr( lastPos, pos - lastPos );
+        if ( line.find( boundaryString ) == 0 )
+        {
+            // Found a part start
+            inPart = true;
 
             if ( !cid.empty() && !type.empty( ) )
             {
-                string name;
+                // Remove potential \r at the end of the body part
+                if ( partBody[partBody.length() - 1] == '\r' )
+                    partBody = partBody.substr( 0, partBody.length() - 1 );
+
                 RelatedPartPtr relatedPart( new RelatedPart( name, type, partBody ) );
                 m_parts[cid] = relatedPart;
+
+            }
+            cid.clear( );
+            type.clear( );
+            name.clear( );
+            partBody.clear( );
+            inHeaders = true;
+        }
+        else if ( inPart )
+        {
+            if ( inHeaders )
+            {
+                // Remove potential \r at the end
+                if ( line[line.length() - 1] == '\r' )
+                    line = line.substr( 0, line.length() - 1 );
+
+                if ( line.empty( ) )
+                    inHeaders = false;
+                else
+                {
+                    size_t colonPos = line.find( ":" );
+                    string headerName = line.substr( 0, colonPos );
+                    string headerValue = line.substr( colonPos + 1 );
+                    if ( libcmis::tolower( headerName ) == libcmis::tolower( "Content-Id" ) )
+                    {
+                        cid = libcmis::trim( headerValue );
+                        // Remove the '<' '>' around the id if any
+                        if ( cid[0] == '<' && cid[cid.size()-1] == '>' )
+                            cid = cid.substr( 1, cid.size() - 2 );
+                    }
+                    else if ( headerName == "Content-Type" )
+                        type = libcmis::trim( headerValue );
+                    // TODO Handle the Content-Transfer-Encoding
+                }
+            }
+            else
+            {
+                if ( !partBody.empty() )
+                    partBody += lineEnd;
+                partBody += line;
             }
         }
 
-        lastPos = pos + boundaryString.length( );
-        pos = bodyFixed.find( boundaryString, lastPos );
-        if ( pos == string::npos )
-            pos = bodyFixed.find( endBoundaryString, lastPos );
+        // If we found the end of the multipart, no need to continue looping
+        if ( line.find( endBoundaryString ) == 0 )
+            break;
+
+        lastPos = pos + lineEnd.length();
+        pos = bodyFixed.find( lineEnd, lastPos );
     }
 }
 

@@ -340,7 +340,7 @@ void SoapTest::parseMultipartTest( )
 
     string part2Cid = "part2-cid";
     string part2Type = "application/octet-stream";
-    string part2Content = "Some content 2";
+    string part2Content = "Some content 2\r\nwith windows-style line endings\r\n";
     
     string startInfo = "some info";
 
