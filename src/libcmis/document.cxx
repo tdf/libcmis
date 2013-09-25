@@ -44,6 +44,8 @@ namespace libcmis
                  it != parents.end(); ++it )
             {
                 string path = ( *it )->getPath( );
+                if ( path.empty() )
+                    continue;
                 if ( path[path.size() - 1] != '/' )
                     path += "/";
                 path += getName( );
