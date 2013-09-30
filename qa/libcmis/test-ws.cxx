@@ -67,7 +67,6 @@ class WSTest : public CppUnit::TestFixture
 
         // Generic session factory tests
 
-        void sessionCreationTest( );
         void getRepositoryTest( );
         void getRepositoryBadTest( );
 
@@ -100,7 +99,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( sessionCreationTest );
         CPPUNIT_TEST( getRepositoryTest );
         CPPUNIT_TEST( getRepositoryBadTest );
         CPPUNIT_TEST( getTypeDefinitionTest );
@@ -126,12 +124,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::sessionCreationTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_MESSAGE( "No RepositoryService URL", !session.getServiceUrl( "RepositoryService" ).empty( ) );
-}
 
 void WSTest::getRepositoryTest( )
 {

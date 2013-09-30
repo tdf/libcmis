@@ -101,6 +101,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST_SUITE_END( );
 
+        libcmis::RepositoryPtr getTestRepository( );
         WSSession getTestSession( string username, string password, bool noRepos = false );
 };
 
@@ -110,6 +111,7 @@ void WSTest::getRepositoriesTest()
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     map< string, string > actual = session.getRepositoryService().getRepositories( );
@@ -118,8 +120,6 @@ void WSTest::getRepositoriesTest()
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
 {
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
-
     WSSession session;
     session.m_username = username;
     session.m_password = password;
@@ -132,10 +132,39 @@ WSSession WSTest::getTestSession( string username, string password, bool noRepos
     // Manually define the repositories to avoid the HTTP query
     if ( !noRepos )
     {
-        map< string, string > repositories;
-        repositories["mock"] = "Mockup";
-        session.initializeRepositories( repositories );
+        session.m_repositories.push_back( getTestRepository() );
     }
 
     return session;
+}
+
+libcmis::RepositoryPtr WSTest::getTestRepository()
+{
+    libcmis::RepositoryPtr repo( new libcmis::Repository( ) );
+    repo->m_id = "mock";
+    repo->m_name = "Mockup";
+    repo->m_description = "Repository sent by mockup server";
+    repo->m_vendorName = "libcmis";
+    repo->m_productName = "Libcmis mockup";
+    repo->m_productVersion = "some-version";
+    repo->m_cmisVersionSupported = "1.1";
+
+    map< libcmis::Repository::Capability, string > capabilities;
+    capabilities[libcmis::Repository::ACL] = "manage";
+    capabilities[libcmis::Repository::AllVersionsSearchable] = "false";
+    capabilities[libcmis::Repository::Changes] = "none";
+    capabilities[libcmis::Repository::ContentStreamUpdatability] = "anytime";
+    capabilities[libcmis::Repository::GetDescendants] = "true";
+    capabilities[libcmis::Repository::GetFolderTree] = "true";
+    capabilities[libcmis::Repository::Multifiling] = "true";
+    capabilities[libcmis::Repository::PWCSearchable] = "false";
+    capabilities[libcmis::Repository::PWCUpdatable] = "true";
+    capabilities[libcmis::Repository::Query] = "bothcombined";
+    capabilities[libcmis::Repository::Renditions] = "none";
+    capabilities[libcmis::Repository::Unfiling] = "true";
+    capabilities[libcmis::Repository::VersionSpecificFiling] = "false";
+    capabilities[libcmis::Repository::Join] = "none";
+    repo->m_capabilities = capabilities;
+
+    return repo;
 }
