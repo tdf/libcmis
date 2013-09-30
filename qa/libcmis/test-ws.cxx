@@ -67,7 +67,6 @@ class WSTest : public CppUnit::TestFixture
 
         // Generic session factory tests
 
-        void getRepositoryTest( );
         void getRepositoryBadTest( );
 
         // Types tests
@@ -99,7 +98,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getRepositoryTest );
         CPPUNIT_TEST( getRepositoryBadTest );
         CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
@@ -124,12 +122,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getRepositoryTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Repository info badly retrieved", string( "100" ), session.getRepository()->getRootId( ) );
-}
 
 void WSTest::getRepositoryBadTest( )
 {

@@ -125,7 +125,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         bodyFixed += '\n';
 
     string lineEnd( "\n" );
-    string boundaryString( "--" + m_boundary + "" );
+    string boundaryString( "--" + m_boundary );
     string endBoundaryString( "--" + m_boundary + "--" );
     pos = bodyFixed.find( lineEnd );
     lastPos = 0;

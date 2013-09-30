@@ -71,13 +71,12 @@ namespace
         char* buf = new char[bufSize];
 
         size_t read = 0;
-        size_t written = 0;
         string outBuf;
         do
         {
             read = fread( buf, 1, bufSize, fd );
-            outBuf += buf;
-        } while ( read == bufSize && written == read );
+            outBuf += string( buf, read );
+        } while ( read == bufSize );
 
         fclose( fd );
         delete[] buf;
@@ -96,9 +95,11 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         void getRepositoriesTest( );
+        void getRepositoryInfosTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getRepositoryInfosTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -118,6 +119,18 @@ void WSTest::getRepositoriesTest()
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
 }
 
+void WSTest::getRepositoryInfosTest()
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    string validId = "mock";
+    libcmis::RepositoryPtr actual = session.getRepositoryService().getRepositoryInfo( validId );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Root folder is wrong", string( "root-folder" ), actual->getRootId( ) );
+}
+
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
 {
     WSSession session;
@@ -132,7 +145,9 @@ WSSession WSTest::getTestSession( string username, string password, bool noRepos
     // Manually define the repositories to avoid the HTTP query
     if ( !noRepos )
     {
-        session.m_repositories.push_back( getTestRepository() );
+        libcmis::RepositoryPtr repo = getTestRepository( );
+        session.m_repositories.push_back( repo );
+        session.m_repositoryId = repo->getId( );
     }
 
     return session;
