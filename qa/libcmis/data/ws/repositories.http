@@ -17,7 +17,7 @@ Content-Transfer-Encoding: binary
     </S:Header>
     <S:Body>
         <ns2:getRepositoriesResponse xmlns="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:ns2="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
-            <ns2:repositories><ns2:repositoryId>A1</ns2:repositoryId><ns2:repositoryName>Apache Chemistry OpenCMIS InMemory Repository</ns2:repositoryName></ns2:repositories>
+            <ns2:repositories><ns2:repositoryId>mock</ns2:repositoryId><ns2:repositoryName>Mockup</ns2:repositoryName></ns2:repositories>
         </ns2:getRepositoriesResponse>
     </S:Body>
 </S:Envelope>

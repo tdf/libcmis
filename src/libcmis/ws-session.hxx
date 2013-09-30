@@ -106,7 +106,8 @@ class WSSession : public BaseSession, public SoapSession
 
         void parseWsdl( std::string buf ) throw ( libcmis::Exception );
         void initializeResponseFactory( );
-        void initializeRepositories( ) throw ( libcmis::Exception );
+        void initializeRepositories( std::map< std::string, std::string > repositories )
+            throw ( libcmis::Exception );
         void initialize( ) throw ( libcmis::Exception );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );

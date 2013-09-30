@@ -254,9 +254,8 @@ void WSSession::initializeResponseFactory( )
     m_responseFactory.setSession( this );
 }
 
-void WSSession::initializeRepositories( ) throw ( libcmis::Exception )
+void WSSession::initializeRepositories( map< string, string > repositories ) throw ( libcmis::Exception )
 {
-    map< string, string > repositories = getRepositoryService( ).getRepositories( );
     for ( map< string, string >::iterator it = repositories.begin( );
           it != repositories.end( ); ++it )
     {
@@ -282,7 +281,8 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
 
         parseWsdl( buf );
         initializeResponseFactory( ); 
-        initializeRepositories( );
+        map< string, string > repositories = getRepositoryService( ).getRepositories( );
+        initializeRepositories( repositories );
     }
 }
 

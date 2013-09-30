@@ -101,7 +101,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST_SUITE_END( );
 
-        WSSession getTestSession( string username, string password );
+        WSSession getTestSession( string username, string password, bool noRepos = false );
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );
@@ -111,12 +111,12 @@ void WSTest::getRepositoriesTest()
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
-    vector< libcmis::RepositoryPtr > actual = session.getRepositories( );
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    map< string, string > actual = session.getRepositoryService().getRepositories( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
 }
 
-WSSession WSTest::getTestSession( string username, string password )
+WSSession WSTest::getTestSession( string username, string password, bool noRepos )
 {
     lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
 
@@ -128,7 +128,14 @@ WSSession WSTest::getTestSession( string username, string password )
     test::loadFromFile( DATA_DIR "/ws/CMISWS-Service.wsdl", buf );
     session.parseWsdl( buf );
     session.initializeResponseFactory( );
-    session.initializeRepositories( );
+
+    // Manually define the repositories to avoid the HTTP query
+    if ( !noRepos )
+    {
+        map< string, string > repositories;
+        repositories["mock"] = "Mockup";
+        session.initializeRepositories( repositories );
+    }
 
     return session;
 }
