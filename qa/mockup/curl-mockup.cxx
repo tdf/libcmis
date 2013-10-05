@@ -266,7 +266,18 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         }
         case CURLOPT_CERTINFO:
         {
-            handle->m_certInfo = va_arg( arg, long ) != 0;
+            handle->m_certInfo = va_arg( arg, long );
+            break;
+        }
+        case CURLOPT_HTTPHEADER:
+        {
+            handle->m_headers.clear();
+            struct curl_slist* headers = va_arg( arg, struct curl_slist* );
+            while ( headers != NULL )
+            {
+                handle->m_headers.push_back( string( headers->data ) );
+                headers = headers->next;
+            }
             break;
         }
         default:
@@ -315,7 +326,6 @@ CURLcode curl_easy_perform( CURL * curl )
     
     // Store the requests for later verifications
     stringstream body;
-
     if ( handle->m_readFn && handle->m_readData )
     {
         size_t bufSize = 2048;
@@ -330,7 +340,8 @@ CURLcode curl_easy_perform( CURL * curl )
 
         delete[] buf;
     }
-    mockup::config->m_requests.push_back( mockup::Request( handle->m_url, handle->m_method, body.str( ) ) );
+
+    mockup::config->m_requests.push_back( mockup::Request( handle->m_url, handle->m_method, body.str( ), handle->m_headers ) );
     
 
     return mockup::config->writeResponse( handle );
@@ -397,7 +408,8 @@ CurlHandle::CurlHandle( ) :
     m_certInfo( false ),
     m_certs( ),
     m_httpError( 0 ),
-    m_method( "GET" )
+    m_method( "GET" ),
+    m_headers( )
 {
 }
 
@@ -421,7 +433,8 @@ CurlHandle::CurlHandle( const CurlHandle& copy ) :
     m_certInfo( copy.m_certInfo ),
     m_certs( copy.m_certs ),
     m_httpError( copy.m_httpError ),
-    m_method( copy.m_method )
+    m_method( copy.m_method ),
+    m_headers( copy.m_headers )
 {
 }
 
@@ -449,6 +462,7 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
         m_certs = copy.m_certs;
         m_httpError = copy.m_httpError;
         m_method = copy.m_method;
+        m_headers = copy.m_headers;
     }
     return *this;
 }
@@ -481,4 +495,5 @@ void CurlHandle::reset( )
     m_certs.num_of_certs = 0;
 
     m_method = "GET";
+    m_headers.clear( );
 }

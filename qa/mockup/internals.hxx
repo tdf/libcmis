@@ -66,6 +66,7 @@ class CurlHandle
 
         long m_httpError;
         std::string m_method;
+        std::vector< std::string > m_headers;
        
         void reset( ); 
 };
@@ -87,11 +88,13 @@ namespace mockup
     class Request
     {
         public:
-            Request( std::string url, std::string method, std::string body );
+            Request( std::string url, std::string method, std::string body,
+                     std::vector< std::string > headers );
 
             std::string m_url;
             std::string m_method;
             std::string m_body;
+            std::vector< std::string > m_headers;
     };
 
     class RequestMatcher

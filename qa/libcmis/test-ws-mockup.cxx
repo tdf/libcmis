@@ -88,6 +88,26 @@ namespace
 
         curl_mockup_addResponse( url, "", "POST", body.c_str(), status, false, headers.c_str() );
     }
+
+    string lcl_getCmisRequestXml( string url )
+    {
+        const struct HttpRequest* request = curl_mockup_getRequest( url.c_str(), "", "POST" );
+        char* contentType = curl_mockup_HttpRequest_getHeader( request, "Content-Type" );
+        RelatedMultipart multipart( request->body, string( contentType ) );
+        RelatedPartPtr part = multipart.getPart( multipart.getStartId() );
+        string xml = part->getContent( );
+        curl_mockup_HttpRequest_free( request );
+        free( contentType );
+
+        return test::getXmlNodeAsString( xml, "/soap-env:Envelope/soap-env:Body/child::*" );
+    }
+
+    string lcl_getExpectedNs( )
+    {
+        string ns = " xmlns=\"http://docs.oasis-open.org/ns/cmis/core/200908/\""
+                    " xmlns:cmism=\"http://docs.oasis-open.org/ns/cmis/messaging/200908/\"";
+        return ns;
+    }
 }
 
 class WSTest : public CppUnit::TestFixture
@@ -117,6 +137,11 @@ void WSTest::getRepositoriesTest()
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     map< string, string > actual = session.getRepositoryService().getRepositories( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
+
+    // Test the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+    string expectedRequest = "<cmism:getRepositories" + lcl_getExpectedNs() + "/>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
 void WSTest::getRepositoryInfosTest()
@@ -129,6 +154,13 @@ void WSTest::getRepositoryInfosTest()
     string validId = "mock";
     libcmis::RepositoryPtr actual = session.getRepositoryService().getRepositoryInfo( validId );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Root folder is wrong", string( "root-folder" ), actual->getRootId( ) );
+
+    // Test the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+    string expectedRequest = "<cmism:getRepositoryInfo" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>" + validId + "</cmism:repositoryId>"
+                             "</cmism:getRepositoryInfo>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )

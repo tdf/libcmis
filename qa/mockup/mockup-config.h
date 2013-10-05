@@ -72,10 +72,19 @@ struct HttpRequest
 {
     const char* url;
     const char* body;
+    ///< NULL terminated array of headers.
+    const char** headers;
 };
 
 const struct HttpRequest* curl_mockup_getRequest( const char* baseUrl, const char* matchParam, const char* method );
 const char* curl_mockup_getRequestBody( const char* baseUrl, const char* matchParam, const char* method );
+
+void curl_mockup_HttpRequest_free( const struct HttpRequest* request );
+
+/** The resulting value is either NULL (no such header found) or the value
+    of the header. In such a case, the result needs to be freed by the caller.
+  */
+char* curl_mockup_HttpRequest_getHeader( const struct HttpRequest* request, const char* name );
 
 const char* curl_mockup_getProxy( CURL* handle );
 const char* curl_mockup_getNoProxy( CURL* handle );

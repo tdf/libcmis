@@ -47,6 +47,15 @@ namespace
             params = url.substr( pos + 1 );
         }
     }
+
+    const char** lcl_toStringArray( vector< string > vect )
+    {
+        const char** array = new const char*[vect.size() + 1];
+        for ( size_t i = 0; i < vect.size( ); i++ )
+            array[i] = vect[i].c_str();
+        array[vect.size()] = NULL;
+        return array;
+    }
 }
 
 namespace mockup
@@ -59,10 +68,11 @@ namespace mockup
     {
     }
 
-    Request::Request( string url, string method, string body ) :
+    Request::Request( string url, string method, string body, vector< string > headers ) :
         m_url( url ),
         m_method( method ),
-        m_body( body )
+        m_body( body ),
+        m_headers( headers )
     {
     }
 
@@ -252,6 +262,7 @@ const struct HttpRequest* curl_mockup_getRequest( const char* urlBase, const cha
                 request = new HttpRequest;
                 request->url = it->m_url.c_str();
                 request->body = it->m_body.c_str();
+                request->headers = lcl_toStringArray( it->m_headers );
             }
         }
     }
@@ -265,10 +276,33 @@ const char* curl_mockup_getRequestBody( const char* urlBase, const char* matchPa
     if ( request )
     {
         const char* body = request->body;
-        delete request;
+        curl_mockup_HttpRequest_free( request );
         return body;
     }
     return NULL;
+}
+
+void curl_mockup_HttpRequest_free( const struct HttpRequest* request )
+{
+    delete[] request->headers;
+    delete request;
+}
+
+char* curl_mockup_HttpRequest_getHeader( const struct HttpRequest* request, const char* name )
+{
+    char* value = NULL;
+    size_t i = 0;
+    while ( request->headers[i] != NULL )
+    {
+        string header = request->headers[i];
+        size_t pos = header.find( string( name ) + ":" );
+        if ( pos == 0 )
+        {
+            value = strdup( header.substr( pos + 1 ).c_str() );
+        }
+        ++i;
+    }
+    return value;
 }
 
 const char* curl_mockup_getProxy( CURL* curl )

@@ -79,6 +79,7 @@ namespace test
         {
             xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
             libcmis::registerNamespaces( xpathCtx );
+            libcmis::registerCmisWSNamespaces( xpathCtx );
 
             if ( NULL != xpathCtx )
             {
@@ -90,12 +91,12 @@ namespace test
                     if ( xpathObj->nodesetval )
                         nbResults = xpathObj->nodesetval->nodeNr;
 
-                    if ( nbResults > 0 )
+                    for ( int i = 0; i < nbResults; ++i )
                     {
-                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
+                        xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
                         xmlBufferPtr buf = xmlBufferCreate( );
                         xmlNodeDump( buf, doc, node, 0, 0 );
-                        result = string( ( char * )xmlBufferContent( buf ) );
+                        result += string( ( char * )xmlBufferContent( buf ) );
                         xmlBufferFree( buf );
                     }
                 }
