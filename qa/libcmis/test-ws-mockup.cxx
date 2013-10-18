@@ -124,6 +124,7 @@ class WSTest : public CppUnit::TestFixture
         void getTypeChildrenTest( );
 
         void getObjectTest( );
+        void getDocumentTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -134,6 +135,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeParentsTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -306,6 +308,7 @@ void WSTest::getTypeChildrenTest( )
 
 void WSTest::getObjectTest( )
 {
+    // Setup the mockup
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
@@ -313,6 +316,7 @@ void WSTest::getObjectTest( )
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
+    // Run the tested method
     string expectedId( "valid-object" );
     libcmis::ObjectPtr actual = session.getObject( expectedId );
 
@@ -321,6 +325,48 @@ void WSTest::getObjectTest( )
             expectedId, actual->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type for fetched object",
             string( "cmis:folder" ), actual->getType() );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService" );
+    string expectedRequest = "<cmism:getObject" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + expectedId + "</cmism:objectId>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                                 "<cmism:renditionFilter>*</cmism:renditionFilter>"
+                             "</cmism:getObject>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getDocumentTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string expectedId( "test-document" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    // Do we have a document?
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( actual );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
+
+    // Check the document properties
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", expectedId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name", string( "Test Document" ), document->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document type", string( "text/plain" ), document->getContentType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !document->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !document->getChangeToken( ).empty( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "Content length is missing", 12345 == document->getContentLength( ) );
 
     // Check the sent request
     string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService" );

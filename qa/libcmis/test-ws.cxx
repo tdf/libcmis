@@ -66,7 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void getObjectDocumentTest( );
         void getObjectParentsTest( );
         void getChildrenTest( );
         void getByPathValidTest( );
@@ -87,7 +86,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getObjectDocumentTest );
         CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getByPathValidTest );
@@ -106,21 +104,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getObjectDocumentTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "114" );
-    libcmis::ObjectPtr actual = session.getObject( id );
-
-    CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
-            NULL != actual->getTypeDescription( ).get( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), actual->getBaseType( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Not a libcmis::Document instance",
-            boost::dynamic_pointer_cast< libcmis::Document >( actual ).get( ) != NULL );
-    CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
-}
 
 void WSTest::getObjectParentsTest( )
 {
