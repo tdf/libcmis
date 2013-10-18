@@ -125,6 +125,7 @@ class WSTest : public CppUnit::TestFixture
 
         void getObjectTest( );
         void getDocumentTest( );
+        void getFolderTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -136,6 +137,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getDocumentTest );
+        CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -377,6 +379,38 @@ void WSTest::getDocumentTest( )
                                  "<cmism:renditionFilter>*</cmism:renditionFilter>"
                              "</cmism:getObject>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getFolderTest( )
+{
+    // Setup the mockup
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // Run the method under test
+    string expectedId( "valid-object" );
+    libcmis::FolderPtr actual = session.getFolder( expectedId );
+
+    // Check the returned folder
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", expectedId, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "Valid Object" ), actual->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", string( "/Valid Object" ), actual->getPath( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Missing folder parent ID",
+            string( "root-folder" ), actual->getParentId() );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !actual->isRootFolder() );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !actual->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !actual->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModifiedBy is missing", !actual->getLastModifiedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !actual->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !actual->getChangeToken( ).empty( ) );
+
+    // No need to check the request: we do the same one in another test
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
