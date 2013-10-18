@@ -67,7 +67,6 @@ class WSTest : public CppUnit::TestFixture
 
         // Types tests
 
-        void getTypeDefinitionTest( );
         void getTypeDefinitionErrorTest( );
         void getTypeChildrenTest( );
 
@@ -94,7 +93,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST( getTypeChildrenTest );
         CPPUNIT_TEST( getObjectTest );
@@ -117,17 +115,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getTypeDefinitionTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "ComplexType" );
-    libcmis::ObjectTypePtr actual = session.getType( id );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent type", string( "cmis:document" ), actual->getParentType( )->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), actual->getBaseType( )->getId( ) );
-}
 
 void WSTest::getTypeDefinitionErrorTest( )
 {

@@ -118,10 +118,13 @@ class WSTest : public CppUnit::TestFixture
         void getRepositoryInfosTest( );
         void getRepositoryInfosBadTest( );
 
+        void getTypeDefinitionTest( );
+
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoryInfosTest );
         CPPUNIT_TEST( getRepositoryInfosBadTest );
+        CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -192,6 +195,28 @@ void WSTest::getRepositoryInfosBadTest()
 
 }
 
+void WSTest::getTypeDefinitionTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    string id( "cmis:folder" );
+    libcmis::ObjectTypePtr actual = session.getType( id );
+
+    // Check the returned type
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+    string expectedRequest = "<cmism:getTypeDefinition" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:typeId>" + id + "</cmism:typeId>"
+                             "</cmism:getTypeDefinition>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
 {
     WSSession session;
@@ -204,7 +229,7 @@ WSSession WSTest::getTestSession( string username, string password, bool noRepos
     session.initializeResponseFactory( );
 
     // Manually define the repositories to avoid the HTTP query
-    if ( !noRepos )
+    if ( noRepos )
     {
         libcmis::RepositoryPtr repo = getTestRepository( );
         session.m_repositories.push_back( repo );

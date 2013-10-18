@@ -1,0 +1,232 @@
+Content-Type: multipart/related;start="<rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:846b7f14-435a-4809-845f-b98822f936ab";start-info="text/xml"
+
+--uuid:846b7f14-435a-4809-845f-b98822f936ab
+Content-Id: <rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <Timestamp xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <Created>2013-09-16T13:34:16Z</Created>
+                <Expires>2013-09-17T13:34:16Z</Expires>
+            </Timestamp>
+        </Security>
+    </S:Header>
+    <S:Body>
+        <cmism:getTypeDefinitionResponse xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+            <cmism:type>
+                <cmis:id>cmis:folder</cmis:id>
+                <cmis:localName>cmis:folder</cmis:localName>
+                <cmis:localNamespace>local</cmis:localNamespace>
+                <cmis:displayName>CMIS Folder</cmis:displayName>
+                <cmis:queryName>cmis:folder</cmis:queryName>
+                <cmis:description>Description of CMIS Folder Type</cmis:description>
+                <cmis:baseId>cmis:folder</cmis:baseId>
+                <cmis:creatable>true</cmis:creatable>
+                <cmis:fileable>true</cmis:fileable>
+                <cmis:queryable>false</cmis:queryable>
+                <cmis:fulltextIndexed>false</cmis:fulltextIndexed>
+                <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+                <cmis:controllablePolicy>false</cmis:controllablePolicy>
+                <cmis:controllableACL>true</cmis:controllableACL>
+                <cmis:propertyIdDefinition>
+                  <cmis:id>cmis:allowedChildObjectTypeIds</cmis:id>
+                  <cmis:localName>cmis:allowedChildObjectTypeIds</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Allowed Child Types</cmis:displayName>
+                  <cmis:queryName>cmis:allowedChildObjectTypeIds</cmis:queryName>
+                  <cmis:description>This is a Allowed Child Types property.</cmis:description>
+                  <cmis:propertyType>id</cmis:propertyType>
+                  <cmis:cardinality>multi</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyIdDefinition>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>cmis:path</cmis:id>
+                  <cmis:localName>cmis:path</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Path</cmis:displayName>
+                  <cmis:queryName>cmis:path</cmis:queryName>
+                  <cmis:description>This is a Path property.</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>cmis:lastModifiedBy</cmis:id>
+                  <cmis:localName>cmis:lastModifiedBy</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Modified By</cmis:displayName>
+                  <cmis:queryName>cmis:lastModifiedBy</cmis:queryName>
+                  <cmis:description>This is a Modified By property.</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+                <cmis:propertyIdDefinition>
+                  <cmis:id>cmis:objectTypeId</cmis:id>
+                  <cmis:localName>cmis:objectTypeId</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Type-Id</cmis:displayName>
+                  <cmis:queryName>cmis:objectTypeId</cmis:queryName>
+                  <cmis:description>This is a Type-Id property.</cmis:description>
+                  <cmis:propertyType>id</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>oncreate</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>true</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyIdDefinition>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>cmis:createdBy</cmis:id>
+                  <cmis:localName>cmis:createdBy</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Created By</cmis:displayName>
+                  <cmis:queryName>cmis:createdBy</cmis:queryName>
+                  <cmis:description>This is a Created By property.</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>cmis:name</cmis:id>
+                  <cmis:localName>cmis:name</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Name</cmis:displayName>
+                  <cmis:queryName>cmis:name</cmis:queryName>
+                  <cmis:description>This is a Name property.</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readwrite</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>true</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+                <cmis:propertyIdDefinition>
+                  <cmis:id>cmis:objectId</cmis:id>
+                  <cmis:localName>cmis:objectId</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Object Id</cmis:displayName>
+                  <cmis:queryName>cmis:objectId</cmis:queryName>
+                  <cmis:description>This is a Object Id property.</cmis:description>
+                  <cmis:propertyType>id</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyIdDefinition>
+                <cmis:propertyDateTimeDefinition>
+                  <cmis:id>cmis:creationDate</cmis:id>
+                  <cmis:localName>cmis:creationDate</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Creation Date</cmis:displayName>
+                  <cmis:queryName>cmis:creationDate</cmis:queryName>
+                  <cmis:description>This is a Creation Date property.</cmis:description>
+                  <cmis:propertyType>datetime</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyDateTimeDefinition>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>cmis:changeToken</cmis:id>
+                  <cmis:localName>cmis:changeToken</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Change Token</cmis:displayName>
+                  <cmis:queryName>cmis:changeToken</cmis:queryName>
+                  <cmis:description>This is a Change Token property.</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+                <cmis:propertyIdDefinition>
+                  <cmis:id>cmis:baseTypeId</cmis:id>
+                  <cmis:localName>cmis:baseTypeId</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Base-Type-Id</cmis:displayName>
+                  <cmis:queryName>cmis:baseTypeId</cmis:queryName>
+                  <cmis:description>This is a Base-Type-Id property.</cmis:description>
+                  <cmis:propertyType>id</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyIdDefinition>
+                <cmis:propertyIdDefinition>
+                  <cmis:id>cmis:parentId</cmis:id>
+                  <cmis:localName>cmis:parentId</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Parent Id</cmis:displayName>
+                  <cmis:queryName>cmis:parentId</cmis:queryName>
+                  <cmis:description>This is a Parent Id property.</cmis:description>
+                  <cmis:propertyType>id</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyIdDefinition>
+                <cmis:propertyDateTimeDefinition>
+                  <cmis:id>cmis:lastModificationDate</cmis:id>
+                  <cmis:localName>cmis:lastModificationDate</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>Modification Date</cmis:displayName>
+                  <cmis:queryName>cmis:lastModificationDate</cmis:queryName>
+                  <cmis:description>This is a Modification Date property.</cmis:description>
+                  <cmis:propertyType>datetime</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readonly</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyDateTimeDefinition>
+            </cmism:type>
+        </cmism:getTypeDefinitionResponse>
+    </S:Body>
+</S:Envelope>
+--uuid:846b7f14-435a-4809-845f-b98822f936ab--
+
