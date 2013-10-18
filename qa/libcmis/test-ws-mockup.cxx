@@ -121,6 +121,9 @@ class WSTest : public CppUnit::TestFixture
         void getTypeTest( );
         void getUnexistantTypeTest( );
         void getTypeParentsTest( );
+        void getTypeChildrenTest( );
+
+        void getObjectTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -129,6 +132,8 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getUnexistantTypeTest );
         CPPUNIT_TEST( getTypeParentsTest );
+        CPPUNIT_TEST( getTypeChildrenTest );
+        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -269,6 +274,62 @@ void WSTest::getTypeParentsTest( )
                                  "<cmism:repositoryId>mock</cmism:repositoryId>"
                                  "<cmism:typeId>" + id + "</cmism:typeId>"
                              "</cmism:getTypeDefinition>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getTypeChildrenTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/typechildren-document.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "cmis:document";
+    vector< libcmis::ObjectTypePtr > children = session.getRepositoryService().
+                                                    getTypeChildren(
+                                                            session.m_repositoryId,
+                                                            id );
+
+    // Check the actual children returned
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 1 ), children.size( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+    string expectedRequest = "<cmism:getTypeChildren" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:typeId>" + id + "</cmism:typeId>"
+                                 "<cmism:includePropertyDefinitions>true</cmism:includePropertyDefinitions>"
+                             "</cmism:getTypeChildren>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getObjectTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string expectedId( "valid-object" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    // Check the returned object
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object",
+            expectedId, actual->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type for fetched object",
+            string( "cmis:folder" ), actual->getType() );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService" );
+    string expectedRequest = "<cmism:getObject" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + expectedId + "</cmism:objectId>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                                 "<cmism:renditionFilter>*</cmism:renditionFilter>"
+                             "</cmism:getObject>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 

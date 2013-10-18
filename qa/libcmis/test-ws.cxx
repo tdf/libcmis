@@ -65,12 +65,7 @@ class WSTest : public CppUnit::TestFixture
 {
     public:
 
-        // Types tests
-
-        void getTypeChildrenTest( );
-
         // Object tests
-        void getObjectTest( );
         void getObjectDocumentTest( );
         void getObjectParentsTest( );
         void getChildrenTest( );
@@ -92,8 +87,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getTypeChildrenTest );
-        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getObjectDocumentTest );
         CPPUNIT_TEST( getObjectParentsTest );
         CPPUNIT_TEST( getChildrenTest );
@@ -113,31 +106,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getTypeChildrenTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectTypePtr actual = session.getType( "cmis:document" );
-
-    vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children imported", size_t( 10 ), children.size() );
-}
-
-void WSTest::getObjectTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "101" );
-    libcmis::ObjectPtr actual = session.getObject( id );
-
-    CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
-            NULL != actual->getTypeDescription( ).get( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
-    CPPUNIT_ASSERT_MESSAGE( "Not a libcmis::Folder instance",
-            boost::dynamic_pointer_cast< libcmis::Folder >( actual ).get( ) != NULL );
-    CPPUNIT_ASSERT( 0 != actual->getRefreshTimestamp( ) );
-}
 
 void WSTest::getObjectDocumentTest( )
 {

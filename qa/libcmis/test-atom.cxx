@@ -191,7 +191,7 @@ void AtomTest::sessionCreationTest( )
             !session.getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath ).empty() );
     CPPUNIT_ASSERT_MESSAGE( "typebyid URI template URL missing",
             !session.getAtomRepository()->getUriTemplate( UriTemplate::TypeById ).empty() );
-    
+
     // The optional URI template URL is present on InMemory, so check it
     CPPUNIT_ASSERT_MESSAGE( "query URI template URL missing",
             !session.getAtomRepository()->getUriTemplate( UriTemplate::Query ).empty() );
@@ -239,7 +239,7 @@ void AtomTest::sessionCreationProxyTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "NoProxy not set", noProxy, string( curl_mockup_getNoProxy( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy User not set", proxyUser, string( curl_mockup_getProxyUser( session.m_curlHandle ) ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Proxy Pass not set", proxyPass, string( curl_mockup_getProxyPass( session.m_curlHandle ) ) );
-    
+
     // Reset proxy settings to default for next tests
     libcmis::SessionFactory::setProxySettings( string(), string(), string(), string() );
 }
@@ -267,7 +267,7 @@ void AtomTest::authCallbackTest( )
                     string( "User cancelled authentication request" ), string( e.what() ) );
         }
     }
-    
+
     // Test provided authentication
     {
         libcmis::AuthProviderPtr authProvider( new TestAuthProvider( false ) );
@@ -285,7 +285,7 @@ void AtomTest::invalidSSLTest( )
 
     string badCert( "A really invalid SSL Certificate" );
     curl_mockup_setSSLBadCertificate( badCert.c_str() );
-  
+
     // Test validated certificate case
     {
         libcmis::CertValidationHandlerPtr handler( new TestCertValidationHandler( false ) );
@@ -557,7 +557,7 @@ void AtomTest::getRenditionsTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - default case", long( -1 ), rendition->getLength( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition Title", string( "Doc as PDF" ), rendition->getTitle( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition kind", string( "pdf" ), rendition->getKind( ) );
-    
+
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - filled case", long( 40385 ), renditions[0]->getLength( ) );
 }
 
@@ -647,7 +647,7 @@ void AtomTest::getDocumentParentsTest( )
 
     libcmis::ObjectPtr object = session.getObject( "test-document" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
     vector< libcmis::FolderPtr > actual = document->getParents( );
 
@@ -704,7 +704,7 @@ void AtomTest::setContentStreamTest( )
         boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
         string filename( "name.txt" );
         document->setContentStream( os, "text/plain", filename );
-        
+
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Check the content has been properly uploaded
@@ -792,8 +792,8 @@ void AtomTest::createFolderTest( )
     nameValues.push_back( expectedName );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
+
+    // set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     vector< string > typeValues;
     typeValues.push_back( "cmis:folder" );
@@ -852,8 +852,8 @@ void AtomTest::createFolderBadTypeTest( )
     nameValues.push_back( expectedName );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
+
+    // set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     vector< string > typeValues;
     typeValues.push_back( "cmis:document" );
@@ -920,8 +920,8 @@ void AtomTest::createDocumentTest( )
     nameValues.push_back( expectedName );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
+
+    // set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     vector< string > typeValues;
     typeValues.push_back( "cmis:document" );
@@ -1022,7 +1022,7 @@ void AtomTest::checkOutTest( )
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     libcmis::DocumentPtr pwc = document->checkOut( );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
 
     PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
@@ -1104,7 +1104,7 @@ void AtomTest::getAllVersionsTest( )
     libcmis::DocumentPtr doc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     // Get all the versions (method to check)
-    vector< libcmis::DocumentPtr > versions = doc->getAllVersions( ); 
+    vector< libcmis::DocumentPtr > versions = doc->getAllVersions( );
 
     // Checks
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
@@ -1122,7 +1122,7 @@ void AtomTest::moveTest( )
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
-    
+
     libcmis::ObjectPtr object = session.getObject( "test-document" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
@@ -1152,7 +1152,7 @@ AtomPubSession AtomTest::getTestSession( string username, string password )
     string buf;
     test::loadFromFile( DATA_DIR "/atom/workspaces.xml", buf );
     session.parseServiceDocument( buf );
-    
+
     session.m_username = username;
     session.m_password = password;
 
