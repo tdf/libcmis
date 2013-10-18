@@ -118,13 +118,17 @@ class WSTest : public CppUnit::TestFixture
         void getRepositoryInfosTest( );
         void getRepositoryInfosBadTest( );
 
-        void getTypeDefinitionTest( );
+        void getTypeTest( );
+        void getUnexistantTypeTest( );
+        void getTypeParentsTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoryInfosTest );
         CPPUNIT_TEST( getRepositoryInfosBadTest );
-        CPPUNIT_TEST( getTypeDefinitionTest );
+        CPPUNIT_TEST( getTypeTest );
+        CPPUNIT_TEST( getUnexistantTypeTest );
+        CPPUNIT_TEST( getTypeParentsTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -195,7 +199,7 @@ void WSTest::getRepositoryInfosBadTest()
 
 }
 
-void WSTest::getTypeDefinitionTest( )
+void WSTest::getTypeTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
@@ -207,6 +211,57 @@ void WSTest::getTypeDefinitionTest( )
 
     // Check the returned type
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+    string expectedRequest = "<cmism:getTypeDefinition" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:typeId>" + id + "</cmism:typeId>"
+                             "</cmism:getTypeDefinition>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getUnexistantTypeTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-bad.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    string id( "bad_type" );
+    try
+    {
+        session.getType( id );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        // Check the caught exception
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "objectNotFound" ), e.getType() );
+
+        // Check the sent request
+        string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+        string expectedRequest = "<cmism:getTypeDefinition" + lcl_getExpectedNs() + ">"
+                                     "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                     "<cmism:typeId>" + id + "</cmism:typeId>"
+                                 "</cmism:getTypeDefinition>";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+    }
+}
+
+void WSTest::getTypeParentsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "DocumentLevel2";
+    libcmis::ObjectTypePtr actual = session.getType( id );
+
+    // Check the resulting type
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Parent type", string( "DocumentLevel1" ), actual->getParentTypeId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Base type", string( "cmis:document" ), actual->getBaseTypeId( ) );
 
     // Check the sent request
     string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
