@@ -116,10 +116,12 @@ class WSTest : public CppUnit::TestFixture
 
         void getRepositoriesTest( );
         void getRepositoryInfosTest( );
+        void getRepositoryInfosBadTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoryInfosTest );
+        CPPUNIT_TEST( getRepositoryInfosBadTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -161,6 +163,33 @@ void WSTest::getRepositoryInfosTest()
                                  "<cmism:repositoryId>" + validId + "</cmism:repositoryId>"
                              "</cmism:getRepositoryInfo>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getRepositoryInfosBadTest()
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos-bad.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    string badId = "bad";
+    try
+    {
+        session.getRepositoryService().getRepositoryInfo( badId );
+    }
+    catch( const libcmis::Exception& e )
+    {
+        // Test the caught exception
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "invalidArgument" ), e.getType( ) );
+
+        // Test the sent request
+        string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/RepositoryService" );
+        string expectedRequest = "<cmism:getRepositoryInfo" + lcl_getExpectedNs() + ">"
+                                     "<cmism:repositoryId>" + badId + "</cmism:repositoryId>"
+                                 "</cmism:getRepositoryInfo>";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+    }
+
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )

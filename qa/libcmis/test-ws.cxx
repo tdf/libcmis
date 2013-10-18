@@ -65,10 +65,6 @@ class WSTest : public CppUnit::TestFixture
 {
     public:
 
-        // Generic session factory tests
-
-        void getRepositoryBadTest( );
-
         // Types tests
 
         void getTypeDefinitionTest( );
@@ -98,7 +94,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getRepositoryBadTest );
         CPPUNIT_TEST( getTypeDefinitionTest );
         CPPUNIT_TEST( getTypeDefinitionErrorTest );
         CPPUNIT_TEST( getTypeChildrenTest );
@@ -123,26 +118,10 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 };
 
-void WSTest::getRepositoryBadTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "", SERVER_USERNAME, SERVER_PASSWORD );
-    try
-    {
-        session.getRepositoryService( ).getRepositoryInfo( "bad" );
-        CPPUNIT_FAIL( "Should have thrown SoapFault" );
-    }
-    catch( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "invalidArgument" ), e.getType( ) );
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                string( "Unknown repository id: bad" ), string( e.what( ) ) );
-    }
-}
-
 void WSTest::getTypeDefinitionTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "ComplexType" ); 
+    string id( "ComplexType" );
     libcmis::ObjectTypePtr actual = session.getType( id );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
@@ -153,7 +132,7 @@ void WSTest::getTypeDefinitionTest( )
 void WSTest::getTypeDefinitionErrorTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    
+
     string id( "bad_type" );
     try
     {
@@ -180,7 +159,7 @@ void WSTest::getTypeChildrenTest( )
 void WSTest::getObjectTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "101" ); 
+    string id( "101" );
     libcmis::ObjectPtr actual = session.getObject( id );
 
     CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
@@ -195,7 +174,7 @@ void WSTest::getObjectTest( )
 void WSTest::getObjectDocumentTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    string id( "114" ); 
+    string id( "114" );
     libcmis::ObjectPtr actual = session.getObject( id );
 
     CPPUNIT_ASSERT_MESSAGE( "getTypeDescription doesn't work: properties are likely to be empty",
@@ -212,7 +191,7 @@ void WSTest::getObjectParentsTest( )
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
     vector< libcmis::FolderPtr > actual = document->getParents( );
 
@@ -280,12 +259,12 @@ void WSTest::getByPathInvalidTest( )
 void WSTest::updatePropertiesTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    
+
     // Values for the test
     libcmis::ObjectPtr object = session.getObject( "114" );
-    string propertyName( "cmis:name" ); 
+    string propertyName( "cmis:name" );
     string expectedValue( "New name" );
-    
+
     // Fill the map of properties to change
     PropertyPtrMap newProperties;
 
@@ -321,8 +300,8 @@ void WSTest::createFolderTest( )
     nameValues.push_back( "createFolderTest" );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
+
+    // set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
     vector< string > typeValues;
@@ -356,7 +335,7 @@ void WSTest::createFolderBadTypeTest( )
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
 
-    // Set the object type 
+    // Set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
     vector< string > typeValues;
@@ -393,8 +372,8 @@ void WSTest::createDocumentTest( )
     nameValues.push_back( "createDocumentTest" );
     libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-   
-    // set the object type 
+
+    // set the object type
     it = propTypes.find( string( "cmis:objectTypeId" ) );
     CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
     vector< string > typeValues;
@@ -467,7 +446,7 @@ void WSTest::deleteTreeTest( )
 void WSTest::moveTest( )
 {
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    
+
     string id( "135" );
     libcmis::ObjectPtr object = session.getObject( id );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
@@ -488,7 +467,7 @@ void WSTest::getContentStreamTest( )
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
 
     try
@@ -512,7 +491,7 @@ void WSTest::setContentStreamTest( )
     WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
     libcmis::ObjectPtr object = session.getObject( "116" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
 
     string expectedContent( "Some content to upload" );
@@ -522,7 +501,7 @@ void WSTest::setContentStreamTest( )
         boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
         string filename( "name.txt" );
         document->setContentStream( os, expectedType, filename );
-        
+
         CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
 
         // Get the new content to check is has been properly uploaded
@@ -531,9 +510,9 @@ void WSTest::setContentStreamTest( )
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded",
                 expectedContent, content );
-    
+
         // Testing other values like LastModifiedBy or LastModificationTime
-        // is server dependent... don't do it. 
+        // is server dependent... don't do it.
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Node not properly refreshed",
                 ( long )expectedContent.size(), document->getContentLength() );
     }
@@ -554,7 +533,7 @@ void WSTest::checkOutTest( )
     CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
 
     libcmis::DocumentPtr pwc = doc->checkOut( );
-    
+
     CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
 
     PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
@@ -612,7 +591,7 @@ void WSTest::checkInTest( )
         PropertyPtrMap::iterator it = actualProperties.find( "cmis:isLatestVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isLatestVersion isn't true", it->second->getBools().front( ) );
     }
-    
+
     {
         PropertyPtrMap::iterator it = actualProperties.find( "cmis:isMajorVersion" );
         CPPUNIT_ASSERT_MESSAGE( "cmis:isMajorVersion isn't true", it->second->getBools().front( ) );
@@ -643,7 +622,7 @@ void WSTest::getAllVersionsTest( )
     libcmis::DocumentPtr newVersion = pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
 
     // Get all the versions (method to check)
-    vector< libcmis::DocumentPtr > versions = newVersion->getAllVersions( ); 
+    vector< libcmis::DocumentPtr > versions = newVersion->getAllVersions( );
 
     // Checks
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
