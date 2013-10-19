@@ -41,7 +41,7 @@ void curl_mockup_reset( );
         the base URL of the request without parameters
     \param matchParam
         a string to find in the parameters part of the URL to match
-    \param response 
+    \param response
         a string corresponding either to the file path of the request
         body to send or directly the content to send. This value has
         a different meaning depending on isFilePath parameter.
@@ -57,10 +57,12 @@ void curl_mockup_reset( );
     \param headers
         the HTTP headers block to send with the response. By default
         no header is sent.
+    \param matchBody
+        a string to find in the request body to match
   */
 void curl_mockup_addResponse( const char* baseUrl, const char* matchParam, const char* method,
                               const char* response, unsigned int status = 0, bool isFilePath = true,
-                              const char* headers = 0 );
+                              const char* headers = 0, const char* matchBody = 0 );
 
 /** Set the HTTP response the server is supposed to send.
     This will reset all already defined responses.

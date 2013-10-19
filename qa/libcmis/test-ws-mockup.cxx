@@ -63,7 +63,7 @@ namespace
     }
 
     void lcl_addWsResponse( const char* url, const char* filename,
-                            unsigned int status = 0 )
+                            const char* bodyMatch = 0 )
     {
         FILE* fd = fopen( filename, "r" );
 
@@ -81,12 +81,13 @@ namespace
         fclose( fd );
         delete[] buf;
 
-        string emptyLine = ("\n\n" );
+        string emptyLine = ( "\n\n" );
         size_t pos = outBuf.find( emptyLine );
         string headers = outBuf.substr( 0, pos );
         string body = outBuf.substr( pos + emptyLine.size() );
 
-        curl_mockup_addResponse( url, "", "POST", body.c_str(), status, false, headers.c_str() );
+        curl_mockup_addResponse( url, "", "POST", body.c_str(), 0, false,
+                                 headers.c_str(), bodyMatch );
     }
 
     string lcl_getCmisRequestXml( string url )
@@ -104,7 +105,7 @@ namespace
 
     string lcl_getExpectedNs( )
     {
-        string ns = " xmlns=\"http://docs.oasis-open.org/ns/cmis/core/200908/\""
+        string ns = " xmlns:cmis=\"http://docs.oasis-open.org/ns/cmis/core/200908/\""
                     " xmlns:cmism=\"http://docs.oasis-open.org/ns/cmis/messaging/200908/\"";
         return ns;
     }
@@ -126,6 +127,8 @@ class WSTest : public CppUnit::TestFixture
         void getObjectTest( );
         void getDocumentTest( );
         void getFolderTest( );
+        void getDocumentParentsTest( );
+        void getChildrenTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -138,6 +141,8 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getDocumentParentsTest );
+        CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -411,6 +416,77 @@ void WSTest::getFolderTest( )
     CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !actual->getChangeToken( ).empty( ) );
 
     // No need to check the request: we do the same one in another test
+}
+
+void WSTest::getDocumentParentsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "test-document";
+    vector< libcmis::FolderPtr > actual = session.getNavigationService().
+                                            getObjectParents( session.m_repositoryId,
+                                                              id );
+
+    // Check the actual parents
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 2 ), actual.size() );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/NavigationService" );
+    string expectedRequest = "<cmism:getObjectParents" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                                 "<cmism:renditionFilter>*</cmism:renditionFilter>"
+                             "</cmism:getObjectParents>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getChildrenTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/root-children.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+
+    string id = "root-folder";
+    vector< libcmis::ObjectPtr > children = session.getNavigationService().
+                                                getChildren( session.m_repositoryId,
+                                                             id );
+
+    // Check the returned children
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 5 ), children.size() );
+
+    int folderCount = 0;
+    int documentCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); ++it )
+    {
+        if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
+            ++folderCount;
+        else if ( NULL != boost::dynamic_pointer_cast< libcmis::Document >( *it ) )
+            ++documentCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 2, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of document children", 3, documentCount );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/NavigationService" );
+    string expectedRequest = "<cmism:getChildren" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:folderId>" + id + "</cmism:folderId>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                                 "<cmism:renditionFilter>*</cmism:renditionFilter>"
+                             "</cmism:getChildren>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )

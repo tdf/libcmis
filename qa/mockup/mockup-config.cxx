@@ -76,28 +76,30 @@ namespace mockup
     {
     }
 
-    RequestMatcher::RequestMatcher( string baseUrl, string matchParam, string method ) :
+    RequestMatcher::RequestMatcher( string baseUrl, string matchParam, string method, string matchBody ) :
         m_baseUrl( baseUrl ),
         m_matchParam( matchParam ),
-        m_method( method )
+        m_method( method ),
+        m_matchBody( matchBody )
     {
     }
 
     bool RequestMatcher::operator< ( const RequestMatcher& compare ) const
     {
         int cmpBaseUrl = m_baseUrl.compare( compare.m_baseUrl ) ;
-        bool result = cmpBaseUrl;
-        if ( cmpBaseUrl == 0 )
-        {
-            int cmpMatchParam = m_matchParam.compare( compare.m_matchParam );
-            result = cmpMatchParam < 0;
-            if ( cmpMatchParam == 0 )
-            {
-                int cmpMatchMethod = m_method.compare( compare.m_method );
-                result = cmpMatchMethod;
-            }
-        }
-        return result;
+        if ( cmpBaseUrl != 0 )
+            return cmpBaseUrl < 0;
+
+        int cmpMatchParam = m_matchParam.compare( compare.m_matchParam );
+        if ( cmpMatchParam != 0 )
+            return cmpMatchParam < 0;
+
+        int cmpMatchMethod = m_method.compare( compare.m_method );
+        if ( cmpMatchMethod != 0 )
+            return cmpMatchMethod < 0;
+
+        int cmpMatchBody = m_matchBody.compare( compare.m_matchBody );
+        return cmpMatchBody < 0;
     }
 
     Configuration::Configuration( ) :
@@ -128,17 +130,19 @@ namespace mockup
         string params;
         lcl_splitUrl( url, urlBase, params );
         string method = handle->m_method;
+        string body = m_requests.back().m_body;
 
         for ( map< RequestMatcher, Response >::iterator it = m_responses.begin( );
                 it != m_responses.end( ) && response.empty( ); ++it )
         {
             RequestMatcher matcher = it->first;
             string& paramFind = matcher.m_matchParam;
-            bool matchBaseUrl = matcher.m_baseUrl.empty() || ( urlBase.find( matcher.m_baseUrl ) == 0 );
+            bool matchBaseUrl = matcher.m_baseUrl.empty() || ( urlBase == matcher.m_baseUrl );
             bool matchParams = paramFind.empty( ) || ( params.find( paramFind ) != string::npos );
             bool matchMethod = it->first.m_method.empty( ) || ( it->first.m_method == method );
+            bool matchBody = matcher.m_matchBody.empty( ) || ( body.find( matcher.m_matchBody ) != string::npos );
 
-            if ( matchBaseUrl && matchParams && matchMethod )
+            if ( matchBaseUrl && matchParams && matchMethod && matchBody )
             {
                 foundResponse = true;
                 response = it->second.m_response;
@@ -212,9 +216,12 @@ void curl_mockup_reset( )
 
 void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* method,
                               const char* response, unsigned int status, bool isFilePath,
-                              const char* headers )
+                              const char* headers, const char* matchBody )
 {
-    mockup::RequestMatcher matcher( urlBase, matchParam, method );
+    string matchBodyStr;
+    if ( matchBody )
+        matchBodyStr = matchBody;
+    mockup::RequestMatcher matcher( urlBase, matchParam, method, matchBodyStr );
     map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
