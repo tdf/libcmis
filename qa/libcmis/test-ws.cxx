@@ -66,7 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void getByPathInvalidTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
@@ -83,7 +82,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
@@ -98,21 +96,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getByPathInvalidTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    try
-    {
-        libcmis::ObjectPtr object = session.getObjectByPath( "/some/dummy/path" );
-        CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "objectNotFound" ), e.getType() );
-        CPPUNIT_ASSERT_MESSAGE( "Empty error message", !string( e.what() ).empty( ) );
-    }
-}
 
 void WSTest::updatePropertiesTest( )
 {
