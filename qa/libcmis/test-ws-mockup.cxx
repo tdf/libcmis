@@ -127,6 +127,7 @@ class WSTest : public CppUnit::TestFixture
         void getObjectTest( );
         void getDocumentTest( );
         void getFolderTest( );
+        void getByPathValidTest( );
         void getDocumentParentsTest( );
         void getChildrenTest( );
 
@@ -141,6 +142,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -416,6 +418,32 @@ void WSTest::getFolderTest( )
     CPPUNIT_ASSERT_MESSAGE( "ChangeToken is missing", !actual->getChangeToken( ).empty( ) );
 
     // No need to check the request: we do the same one in another test
+}
+
+void WSTest::getByPathValidTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string path = "/Valid Object";
+    libcmis::ObjectPtr actual = session.getObjectByPath( path );
+
+    // Check the returned object
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", string( "valid-object" ), actual->getId( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService" );
+    string expectedRequest = "<cmism:getObjectByPath" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:path>" + path + "</cmism:path>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                                 "<cmism:renditionFilter>*</cmism:renditionFilter>"
+                             "</cmism:getObjectByPath>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
 void WSTest::getDocumentParentsTest( )

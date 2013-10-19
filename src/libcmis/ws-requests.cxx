@@ -324,6 +324,7 @@ void GetObjectByPath::toXml( xmlTextWriterPtr writer )
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:path" ), BAD_CAST( m_path.c_str( ) ) );
     xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
     xmlTextWriterEndElement( writer );
 }

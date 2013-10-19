@@ -66,7 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void getByPathValidTest( );
         void getByPathInvalidTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
@@ -84,7 +83,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( getByPathValidTest );
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
@@ -100,23 +98,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::getByPathValidTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    try
-    {
-        libcmis::ObjectPtr object = session.getObjectByPath( "/My_Folder-0-0/My_Document-1-2" );
-
-        CPPUNIT_ASSERT_MESSAGE( "Missing return object", object.get() );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
-    }
-}
 
 void WSTest::getByPathInvalidTest( )
 {
