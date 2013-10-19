@@ -66,7 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
         void createDocumentTest( );
@@ -82,7 +81,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
@@ -96,33 +94,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::updatePropertiesTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-
-    // Values for the test
-    libcmis::ObjectPtr object = session.getObject( "114" );
-    string propertyName( "cmis:name" );
-    string expectedValue( "New name" );
-
-    // Fill the map of properties to change
-    PropertyPtrMap newProperties;
-
-    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
-    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
-    vector< string > values;
-    values.push_back( expectedValue );
-    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
-    newProperties[ propertyName ] = property;
-
-    // Update the properties (method to test)
-    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
-
-    // Checks
-    PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
-}
 
 void WSTest::createFolderTest( )
 {

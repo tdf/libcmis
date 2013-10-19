@@ -245,12 +245,19 @@ void curl_mockup_setCredentials( const char* username, const char* password )
     mockup::config->m_password = string( password );
 }
 
-const struct HttpRequest* curl_mockup_getRequest( const char* urlBase, const char* matchParam, const char* method )
+const struct HttpRequest* curl_mockup_getRequest( const char* urlBase,
+                                                  const char* matchParam,
+                                                  const char* method,
+                                                  const char* matchBody )
 {
     struct HttpRequest* request = NULL;
 
     string urlBaseString( urlBase );
     string matchParamString( matchParam );
+
+    string matchBodyStr;
+    if ( matchBody )
+        matchBodyStr = matchBody;
 
     for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
             it != mockup::config->m_requests.end( ) && request == NULL; ++it )
@@ -263,8 +270,9 @@ const struct HttpRequest* curl_mockup_getRequest( const char* urlBase, const cha
 
             bool matchBaseUrl = urlBaseString.empty() || ( url.find( urlBaseString ) == 0 );
             bool matchParams = matchParamString.empty( ) || ( params.find( matchParamString ) != string::npos );
+            bool matchBodyPart = !matchBody || ( it->m_body.find( matchBodyStr ) != string::npos );
 
-            if ( matchBaseUrl && matchParams )
+            if ( matchBaseUrl && matchParams && matchBodyPart )
             {
                 request = new HttpRequest;
                 request->url = it->m_url.c_str();
@@ -277,9 +285,12 @@ const struct HttpRequest* curl_mockup_getRequest( const char* urlBase, const cha
     return request;
 }
 
-const char* curl_mockup_getRequestBody( const char* urlBase, const char* matchParam, const char* method )
+const char* curl_mockup_getRequestBody( const char* urlBase,
+                                        const char* matchParam,
+                                        const char* method,
+                                        const char* matchBody )
 {
-    const struct HttpRequest* request = curl_mockup_getRequest( urlBase, matchParam, method );
+    const struct HttpRequest* request = curl_mockup_getRequest( urlBase, matchParam, method, matchBody );
     if ( request )
     {
         const char* body = request->body;

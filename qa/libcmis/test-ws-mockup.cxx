@@ -90,9 +90,9 @@ namespace
                                  headers.c_str(), bodyMatch );
     }
 
-    string lcl_getCmisRequestXml( string url )
+    string lcl_getCmisRequestXml( string url, const char* bodyMatch = NULL )
     {
-        const struct HttpRequest* request = curl_mockup_getRequest( url.c_str(), "", "POST" );
+        const struct HttpRequest* request = curl_mockup_getRequest( url.c_str(), "", "POST", bodyMatch );
         char* contentType = curl_mockup_HttpRequest_getHeader( request, "Content-Type" );
         RelatedMultipart multipart( request->body, string( contentType ) );
         RelatedPartPtr part = multipart.getPart( multipart.getStartId() );
@@ -131,6 +131,7 @@ class WSTest : public CppUnit::TestFixture
         void getByPathInvalidTest( );
         void getDocumentParentsTest( );
         void getChildrenTest( );
+        void updatePropertiesTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -147,6 +148,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -480,7 +482,6 @@ void WSTest::getByPathInvalidTest( )
 
 }
 
-
 void WSTest::getDocumentParentsTest( )
 {
     curl_mockup_reset( );
@@ -550,6 +551,58 @@ void WSTest::getChildrenTest( )
                                  "<cmism:renditionFilter>*</cmism:renditionFilter>"
                              "</cmism:getChildren>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::updatePropertiesTest( )
+{
+    curl_mockup_reset( );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // Values for the test
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    string propertyName( "cmis:name" );
+    string expectedValue( "New name" );
+
+    // Fill the map of properties to change
+    PropertyPtrMap newProperties;
+
+    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
+    vector< string > values;
+    values.push_back( expectedValue );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
+
+    // Change the object response to provide the updated values
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document-updated.http", "<cmism:getObject " );
+
+    // Update the properties (method to test)
+    libcmis::ObjectPtr updated = object->updateProperties( newProperties );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:updateProperties " );
+    string expectedRequest = "<cmism:updateProperties" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                                 "<cmism:changeToken>some-change-token</cmism:changeToken>"
+                                 "<cmism:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>New name</cmis:value>"
+                                    "</cmis:propertyString>"
+                                 "</cmism:properties>"
+                             "</cmism:updateProperties>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+
+    // Check that the properties are updated after the call
+    PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )

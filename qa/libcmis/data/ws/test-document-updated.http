@@ -59,7 +59,7 @@ Content-Transfer-Encoding: binary
                   </cmis:propertyBoolean>
                   <cmis:propertyString queryName="cmis:contentStreamId" displayName="Stream Id" localName="cmis:contentStreamId" propertyDefinitionId="cmis:contentStreamId"/>
                   <cmis:propertyString queryName="cmis:name" displayName="Name" localName="cmis:name" propertyDefinitionId="cmis:name">
-                    <cmis:value>Test Document</cmis:value>
+                    <cmis:value>New name</cmis:value>
                   </cmis:propertyString>
                   <cmis:propertyString queryName="cmis:contentStreamMimeType" displayName="Mime Type" localName="cmis:contentStreamMimeType" propertyDefinitionId="cmis:contentStreamMimeType">
                     <cmis:value>text/plain</cmis:value>
@@ -71,7 +71,7 @@ Content-Transfer-Encoding: binary
                     <cmis:value>2013-01-28T14:10:06.736Z</cmis:value>
                   </cmis:propertyDateTime>
                   <cmis:propertyString queryName="cmis:changeToken" displayName="Change Token" localName="cmis:changeToken" propertyDefinitionId="cmis:changeToken">
-                    <cmis:value>some-change-token</cmis:value>
+                    <cmis:value>some-new-change-token</cmis:value>
                   </cmis:propertyString>
                   <cmis:propertyDecimal queryName="DecimalPropMV" displayName="Sample Decimal multi-value Property" localName="DecimalPropMV" propertyDefinitionId="DecimalPropMV"/>
                   <cmis:propertyDateTime queryName="DateTimeProp" displayName="Sample DateTime Property" localName="DateTimeProp" propertyDefinitionId="DateTimeProp"/>

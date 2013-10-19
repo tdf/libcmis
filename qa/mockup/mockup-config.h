@@ -78,8 +78,14 @@ struct HttpRequest
     const char** headers;
 };
 
-const struct HttpRequest* curl_mockup_getRequest( const char* baseUrl, const char* matchParam, const char* method );
-const char* curl_mockup_getRequestBody( const char* baseUrl, const char* matchParam, const char* method );
+const struct HttpRequest* curl_mockup_getRequest( const char* baseUrl,
+                                                  const char* matchParam,
+                                                  const char* method,
+                                                  const char* matchBody = 0 );
+const char* curl_mockup_getRequestBody( const char* baseUrl,
+                                        const char* matchParam,
+                                        const char* method,
+                                        const char* matchBody = 0 );
 
 void curl_mockup_HttpRequest_free( const struct HttpRequest* request );
 

@@ -1,0 +1,26 @@
+Content-Type: multipart/related;start="<rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:846b7f14-435a-4809-845f-b98822f936ab";start-info="text/xml"
+
+--uuid:846b7f14-435a-4809-845f-b98822f936ab
+Content-Id: <rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <Timestamp xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <Created>2013-09-16T13:34:16Z</Created>
+                <Expires>2013-09-17T13:34:16Z</Expires>
+            </Timestamp>
+        </Security>
+    </S:Header>
+    <S:Body>
+        <cmism:updatePropertiesResponse xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+            <cmism:objectId>test-document</cmism:objectId>
+            <cmism:changeToken>some-new-changeToken</cmism:changeToken>
+        </cmism:updatePropertiesResponse>
+    </S:Body>
+</S:Envelope>
+--uuid:846b7f14-435a-4809-845f-b98822f936ab--
+
