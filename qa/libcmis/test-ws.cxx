@@ -66,7 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void createFolderTest( );
         void createFolderBadTypeTest( );
         void createDocumentTest( );
         void deleteObjectTest( );
@@ -81,7 +80,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteObjectTest );
@@ -94,40 +92,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::createFolderTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::FolderPtr parent = session.getFolder( session.getRootId( ) );
-
-    // Prepare the properties for the new object, object type is cmis:folder
-    PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
-    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
-
-    // Set the object name
-    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:name property type not found on parent type", it != propTypes.end( ) );
-    vector< string > nameValues;
-    nameValues.push_back( "createFolderTest" );
-    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-
-    // set the object type
-    it = propTypes.find( string( "cmis:objectTypeId" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:objectTypeId property type not found on parent type", it != propTypes.end( ) );
-    vector< string > typeValues;
-    typeValues.push_back( "cmis:folder" );
-    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
-    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
-
-    // Actually send the folder creation request
-    libcmis::FolderPtr created = parent->createFolder( props );
-
-    // Check that something came back
-    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
-            !created->getChangeToken( ).empty() );
-}
 
 void WSTest::createFolderBadTypeTest( )
 {

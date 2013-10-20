@@ -92,7 +92,7 @@ WSSession& WSSession::operator=( const WSSession& copy )
         m_versioningService = NULL;
         m_responseFactory = copy.m_responseFactory;
     }
-    
+
     return *this;
 }
 
@@ -161,7 +161,7 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
             if ( string::npos != responseType.find( "multipart/related" ) )
             {
                 RelatedMultipart answer( response->getStream( )->str( ), responseType );
-            
+
                 responses = getResponseFactory( ).parseResponse( answer );
             }
             else if ( string::npos != responseType.find( "text/xml" ) )
@@ -280,7 +280,7 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         }
 
         parseWsdl( buf );
-        initializeResponseFactory( ); 
+        initializeResponseFactory( );
         map< string, string > repositories = getRepositoryService( ).getRepositories( );
         initializeRepositories( repositories );
     }
@@ -363,7 +363,25 @@ VersioningService& WSSession::getVersioningService( )
 
 libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
 {
-    return getRepositoryService( ).getRepositoryInfo( m_repositoryId );
+    // Check if we already have the repository
+    libcmis::RepositoryPtr repo;
+    vector< libcmis::RepositoryPtr >::iterator it = m_repositories.begin();
+    while ( !repo && it != m_repositories.end() )
+    {
+        if ( ( *it )->getId() == m_repositoryId )
+            repo = *it;
+        ++it;
+    }
+
+    // We found nothing cached, so try to get it from the server
+    if ( !repo )
+    {
+        repo = getRepositoryService( ).getRepositoryInfo( m_repositoryId );
+        if ( repo )
+            m_repositories.push_back( repo );
+    }
+
+    return repo;
 }
 
 bool WSSession::setRepository( string repositoryId )

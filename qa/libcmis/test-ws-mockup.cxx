@@ -132,6 +132,7 @@ class WSTest : public CppUnit::TestFixture
         void getDocumentParentsTest( );
         void getChildrenTest( );
         void updatePropertiesTest( );
+        void createFolderTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -149,6 +150,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -605,6 +607,68 @@ void WSTest::updatePropertiesTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
+void WSTest::createFolderTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder.http", "<cmism:createFolder " );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    libcmis::FolderPtr parent = session.getRootFolder( );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    PropertyPtrMap props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    string expectedName( "create folder" );
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    vector< string > nameValues;
+    nameValues.push_back( expectedName );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+
+    // set the object type
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:folder" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Set the mockup to send the updated folder now that we had the parent
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-folder.http", "<cmism:getObject " );
+
+    // Actually send the folder creation request
+    libcmis::FolderPtr created = parent->createFolder( props );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name", expectedName, created->getName( ) );
+
+    // Check that the proper request has been sent
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:createFolder " );
+    string expectedRequest = "<cmism:createFolder" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>create folder</cmis:value>"
+                                    "</cmis:propertyString>"
+                                    "<cmis:propertyId propertyDefinitionId=\"cmis:objectTypeId\" localName=\"cmis:objectTypeId\""
+                                                          " displayName=\"Type-Id\" queryName=\"cmis:objectTypeId\">"
+                                        "<cmis:value>cmis:folder</cmis:value>"
+                                    "</cmis:propertyId>"
+                                 "</cmism:properties>"
+                                 "<cmism:folderId>root-folder</cmism:folderId>"
+                             "</cmism:createFolder>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
 {
     WSSession session;
@@ -637,6 +701,7 @@ libcmis::RepositoryPtr WSTest::getTestRepository()
     repo->m_productName = "Libcmis mockup";
     repo->m_productVersion = "some-version";
     repo->m_cmisVersionSupported = "1.1";
+    repo->m_rootId = "root-folder";
 
     map< libcmis::Repository::Capability, string > capabilities;
     capabilities[libcmis::Repository::ACL] = "manage";

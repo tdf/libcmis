@@ -26,10 +26,10 @@
         <cmis:value>Admin</cmis:value>
       </cmis:propertyString>
       <cmis:propertyString queryName="cmis:name" displayName="Name" localName="cmis:name" propertyDefinitionId="cmis:name">
-        <cmis:value>Valid Object</cmis:value>
+        <cmis:value>Root Folder</cmis:value>
       </cmis:propertyString>
       <cmis:propertyId queryName="cmis:objectId" displayName="Object Id" localName="cmis:objectId" propertyDefinitionId="cmis:objectId">
-        <cmis:value>valid-object</cmis:value>
+        <cmis:value>root-folder</cmis:value>
       </cmis:propertyId>
       <cmis:propertyDateTime queryName="cmis:creationDate" displayName="Creation Date" localName="cmis:creationDate" propertyDefinitionId="cmis:creationDate">
         <cmis:value>2012-11-29T16:14:47.019Z</cmis:value>
