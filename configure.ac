@@ -13,6 +13,19 @@ AC_INIT([libcmis], [libcmis_version])
 AM_INIT_AUTOMAKE(serial-tests)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
+LT_INIT([win32-dll disable-static pic-only])
+AC_CANONICAL_HOST
+
+
+# Check the options
 AC_ARG_ENABLE(client,
 	AC_HELP_STRING([--disable-client],[Compile only the library, not the client tool]),
 	enable_client=$enableval, enable_client=yes)
@@ -24,6 +37,35 @@ AC_ARG_ENABLE([tests],
 	[enable_tests=yes]
 )
 AM_CONDITIONAL(ENABLE_TESTS, test "x$enable_tests" != "xno")
+
+AC_ARG_ENABLE([coverage],
+    [AS_HELP_STRING([--enable-coverage], [Extract test coverage data])],
+    [enable_coverage="$enableval"],
+    [enable_coverage=no]
+)
+AM_CONDITIONAL(ENABLE_COVERAGE, test "x$enable_coverage" != "xno")
+
+AS_IF([test "x$enable_coverage" != "xno"], [
+       enable_tests=yes
+
+       # Make sure we have gcc
+       if test "x$GCC" != "xyes"; then
+           AC_MSG_ERROR([GCC is required for --enable-coverage])
+       fi
+
+       AC_CHECK_PROG(LCOV, lcov, lcov)
+       AC_CHECK_PROG(GENHTML, genhtml, genhtml)
+
+       AS_IF([test "x$ac_cv_prog_LCOV" = "x"], [
+           AC_MSG_ERROR([lcov is required for --enable-coverage])
+       ])
+       AS_IF([test "x$ac_cv_prog_GENHTML" = "x"], [
+           AC_MSG_ERROR([genhtml is required for --enable-coverage])
+       ])
+
+       CFLAGS="-g -O0 --coverage"
+       CXXFLAGS="-g -O0 --coverage"
+])
 
 AS_IF([test "x$enable_tests" != "xno"], [
 	AC_ARG_ENABLE([long-tests],
@@ -48,17 +90,6 @@ SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
 AC_LANG([C++])
-
-# Checks for programs.
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
-LT_INIT([win32-dll disable-static pic-only])
-AC_CANONICAL_HOST
 
 # ==========================
 # Platform check for windows
@@ -188,5 +219,6 @@ libcmis $VERSION:
                tests: ${enable_tests}
           long tests: ${enable_long_tests}
       cppcheck tests: ${enable_cppcheck}
+       test coverage: ${enable_coverage}
                 mans: ${build_man}
 ])

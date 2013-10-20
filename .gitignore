@@ -37,3 +37,7 @@ test-server
 *.swp
 run-test.sh
 cppcheck-test.sh
+*.gcda
+*.gcno
+*.info
+libcmis-lcov

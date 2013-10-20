@@ -1,3 +1,5 @@
+include $(top_srcdir)/coverage.mk
+
 SUBDIRS = src qa
 ACLOCAL_AMFLAGS = -I m4
 
