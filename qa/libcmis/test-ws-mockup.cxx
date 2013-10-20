@@ -100,7 +100,20 @@ namespace
         curl_mockup_HttpRequest_free( request );
         free( contentType );
 
-        return test::getXmlNodeAsString( xml, "/soap-env:Envelope/soap-env:Body/child::*" );
+        string requestStr = test::getXmlNodeAsString( xml, "/soap-env:Envelope/soap-env:Body/child::*" );
+
+        // Obfuscate the xop:Include ids
+        string xopSearch = "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:";
+        size_t pos = requestStr.find( xopSearch );
+        if ( pos != string::npos )
+        {
+            pos = pos + xopSearch.size();
+            size_t endPos = requestStr.find( "\"", pos );
+            requestStr = requestStr.replace( pos,
+                                             endPos - pos,
+                                             "obfuscated" );
+        }
+        return requestStr;
     }
 
     string lcl_getExpectedNs( )
@@ -134,6 +147,7 @@ class WSTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
+        void createDocumentTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -153,6 +167,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -732,6 +747,87 @@ void WSTest::createFolderBadTypeTest( )
                                  "</cmism:createFolder>";
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
     }
+}
+
+void WSTest::createDocumentTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-document.http", "<cmism:createDocument " );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    libcmis::FolderPtr parent = session.getRootFolder( );
+
+    // Make the mockup know about cmis:document now
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-document.http" );
+
+    // Prepare the properties for the new object, object type is cmis:folder
+    PropertyPtrMap props;
+    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
+
+    // Set the object name
+    string expectedName( "create document" );
+
+    map< string, libcmis::PropertyTypePtr >::iterator it = propTypes.find( string( "cmis:name" ) );
+    vector< string > nameValues;
+    nameValues.push_back( expectedName );
+    libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
+
+    // set the object type
+    it = propTypes.find( string( "cmis:objectTypeId" ) );
+    vector< string > typeValues;
+    typeValues.push_back( "cmis:document" );
+    libcmis::PropertyPtr typeProperty( new libcmis::Property( it->second, typeValues ) );
+    props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
+
+    // Make the mockup able to send the response to update the object
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-document.http", "<cmism:getObject " );
+
+    // Actually send the document creation request
+    string content = "Some content";
+    boost::shared_ptr< ostream > os ( new stringstream( content ) );
+    string contentType = "text/plain";
+    string filename( "name.txt" );
+    libcmis::DocumentPtr created = parent->createDocument( props, os, contentType, filename );
+
+    // Check that something came back
+    CPPUNIT_ASSERT_MESSAGE( "Change token shouldn't be empty: object should have been refreshed",
+            !created->getChangeToken( ).empty() );
+
+    // Check that the name is ok
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name set", expectedName, created->getName( ) );
+
+    // Check that the sent equest is the expected one
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:createDocument " );
+    string expectedRequest = "<cmism:createDocument" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:name\" localName=\"cmis:name\" "
+                                                          "displayName=\"Name\" queryName=\"cmis:name\">"
+                                        "<cmis:value>create document</cmis:value>"
+                                    "</cmis:propertyString>"
+                                    "<cmis:propertyId propertyDefinitionId=\"cmis:objectTypeId\" localName=\"cmis:objectTypeId\""
+                                                          " displayName=\"Type-Id\" queryName=\"cmis:objectTypeId\">"
+                                        "<cmis:value>cmis:document</cmis:value>"
+                                    "</cmis:propertyId>"
+                                 "</cmism:properties>"
+                                 "<cmism:folderId>root-folder</cmism:folderId>"
+                                 "<cmism:contentStream>"
+                                    "<cmism:length>12</cmism:length>"
+                                    "<cmism:mimeType>" + contentType + "</cmism:mimeType>"
+                                    "<cmism:filename>" + filename + "</cmism:filename>"
+                                    "<cmism:stream>"
+                                        "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" "
+                                                      "href=\"cid:obfuscated\"/>"
+                                    "</cmism:stream>"
+                                 "</cmism:contentStream>"
+                             "</cmism:createDocument>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
