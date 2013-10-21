@@ -152,6 +152,7 @@ class WSTest : public CppUnit::TestFixture
         void createDocumentTest( );
         void deleteDocumentTest( );
         void deleteFolderTreeTest( );
+        void moveTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -176,6 +177,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteFolderTreeTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -984,6 +986,42 @@ void WSTest::deleteFolderTreeTest( )
                                  "<cmism:unfileObjects>delete</cmism:unfileObjects>"
                                  "<cmism:continueOnFailure>false</cmism:continueOnFailure>"
                              "</cmism:deleteTree>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::moveTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/move-object.http", "<cmism:moveObject " );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+
+    string destFolderId = "valid-object";
+    libcmis::FolderPtr src = document->getParents( ).front( );
+    
+    // Tell the mockup about the destination folder
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
+    libcmis::FolderPtr dest = session.getFolder( destFolderId );
+
+    document->move( src, dest );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:moveObject " );
+    string expectedRequest = "<cmism:moveObject" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                                 "<cmism:targetFolderId>" + destFolderId + "</cmism:targetFolderId>"
+                                 "<cmism:sourceFolderId>" + src->getId( ) + "</cmism:sourceFolderId>"
+                             "</cmism:moveObject>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
