@@ -145,6 +145,7 @@ class WSTest : public CppUnit::TestFixture
         void getDocumentParentsTest( );
         void getChildrenTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
@@ -168,6 +169,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
@@ -609,6 +611,63 @@ void WSTest::getContentStreamTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
+void WSTest::setContentStreamTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/set-content-stream.http", "<cmism:setContentStream " );
+    curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "PUT", "Updated", 0, false );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        string oldChangeToken = object->getChangeToken( );
+        string expectedContent( "Some content stream to set" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "name.txt" );
+        string contentType( "text/plain" );
+        document->setContentStream( os, contentType, filename, true );
+
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+        // We do not check the change token as we are lazy
+        // That would require to write another answer file for the refresh
+
+        // Check the sent request
+        ostringstream converter;
+        converter << expectedContent.size( );
+        string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:setContentStream " );
+        string expectedRequest = "<cmism:setContentStream" + lcl_getExpectedNs() + ">"
+                                     "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                     "<cmism:objectId>" + id + "</cmism:objectId>"
+                                     "<cmism:overwriteFlag>true</cmism:overwriteFlag>"
+                                     "<cmism:changeToken>" + oldChangeToken + "</cmism:changeToken>"
+                                     "<cmism:contentStream>"
+                                         "<cmism:length>" + converter.str() + "</cmism:length>"
+                                         "<cmism:mimeType>" + contentType + "</cmism:mimeType>"
+                                         "<cmism:filename>" + filename + "</cmism:filename>"
+                                         "<cmism:stream>"
+                                             "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" "
+                                                           "href=\"cid:obfuscated\"/>"
+                                         "</cmism:stream>"
+                                     "</cmism:contentStream>"
+                                 "</cmism:setContentStream>";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
 void WSTest::updatePropertiesTest( )
 {
     curl_mockup_reset( );
@@ -840,6 +899,8 @@ void WSTest::createDocumentTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong name set", expectedName, created->getName( ) );
 
     // Check that the sent request is the expected one
+    ostringstream converter;
+    converter << content.size( );
     string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:createDocument " );
     string expectedRequest = "<cmism:createDocument" + lcl_getExpectedNs() + ">"
                                  "<cmism:repositoryId>mock</cmism:repositoryId>"
@@ -855,7 +916,7 @@ void WSTest::createDocumentTest( )
                                  "</cmism:properties>"
                                  "<cmism:folderId>root-folder</cmism:folderId>"
                                  "<cmism:contentStream>"
-                                    "<cmism:length>12</cmism:length>"
+                                    "<cmism:length>" + converter.str( ) + "</cmism:length>"
                                     "<cmism:mimeType>" + contentType + "</cmism:mimeType>"
                                     "<cmism:filename>" + filename + "</cmism:filename>"
                                     "<cmism:stream>"
