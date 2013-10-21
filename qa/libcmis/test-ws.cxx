@@ -50,37 +50,17 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void checkOutTest( );
         void cancelCheckOutTest( );
         void checkInTest( );
         void getAllVersionsTest( );
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::checkOutTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-
-    // First create a document of type VersionableType
-    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkOutTest" );
-    CPPUNIT_ASSERT_MESSAGE( "Failed to create versionable document", doc.get() != NULL );
-
-    libcmis::DocumentPtr pwc = doc->checkOut( );
-
-    CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
-
-    PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut property is missing", it != pwc->getProperties( ).end( ) );
-    vector< bool > values = it->second->getBools( );
-    CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
-}
 
 void WSTest::cancelCheckOutTest( )
 {

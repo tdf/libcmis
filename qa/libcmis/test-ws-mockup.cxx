@@ -154,6 +154,8 @@ class WSTest : public CppUnit::TestFixture
         void deleteFolderTreeTest( );
         void moveTest( );
 
+        void checkOutTest( );
+
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoryInfosTest );
@@ -178,6 +180,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteFolderTreeTest );
         CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -1022,6 +1025,39 @@ void WSTest::moveTest( )
                                  "<cmism:targetFolderId>" + destFolderId + "</cmism:targetFolderId>"
                                  "<cmism:sourceFolderId>" + src->getId( ) + "</cmism:sourceFolderId>"
                              "</cmism:moveObject>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::checkOutTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:objectId>test-document</cmism:objectId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkout.http" );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
+
+    libcmis::DocumentPtr pwc = document->checkOut( );
+
+    // Check that we have a PWC
+    CPPUNIT_ASSERT_MESSAGE( "Missing returned Private Working Copy", pwc.get( ) != NULL );
+
+    PropertyPtrMap::iterator it = pwc->getProperties( ).find( string( "cmis:isVersionSeriesCheckedOut" ) );
+    vector< bool > values = it->second->getBools( );
+    CPPUNIT_ASSERT_MESSAGE( "cmis:isVersionSeriesCheckedOut isn't true", values.front( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/VersioningService" );
+    string expectedRequest = "<cmism:checkOut" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                             "</cmism:checkOut>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
