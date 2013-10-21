@@ -144,6 +144,7 @@ class WSTest : public CppUnit::TestFixture
         void getByPathInvalidTest( );
         void getDocumentParentsTest( );
         void getChildrenTest( );
+        void getContentStreamTest( );
         void updatePropertiesTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
@@ -166,6 +167,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getByPathInvalidTest );
         CPPUNIT_TEST( getDocumentParentsTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
@@ -573,6 +575,37 @@ void WSTest::getChildrenTest( )
                                  "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
                                  "<cmism:renditionFilter>*</cmism:renditionFilter>"
                              "</cmism:getChildren>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getContentStreamTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-content-stream.http", "<cmism:getContentStream " );
+
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    boost::shared_ptr< istream >  is = document->getContentStream( );
+
+    // Check the fetched content
+    string actualContent = lcl_getStreamAsString( is );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match",
+                                  string( "Some content stream" ), actualContent );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:getContentStream " );
+    string expectedRequest = "<cmism:getContentStream" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                             "</cmism:getContentStream>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 

@@ -67,7 +67,6 @@ class WSTest : public CppUnit::TestFixture
 
         // Object tests
         void moveTest( );
-        void getContentStreamTest( );
         void setContentStreamTest( );
         void checkOutTest( );
         void cancelCheckOutTest( );
@@ -77,7 +76,6 @@ class WSTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( moveTest );
-        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
@@ -103,30 +101,6 @@ void WSTest::moveTest( )
     vector< libcmis::FolderPtr > parents = document->getParents( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parents size", size_t( 1 ), parents.size( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent", string( "101" ), parents.front( )->getId( ) );
-}
-
-void WSTest::getContentStreamTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-    libcmis::ObjectPtr object = session.getObject( "116" );
-    libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
-
-    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
-
-    try
-    {
-        boost::shared_ptr< istream >  is = document->getContentStream( );
-        string content = lcl_getStreamAsString( is );
-
-        CPPUNIT_ASSERT_MESSAGE( "Content stream should be returned", NULL != is.get() );
-        CPPUNIT_ASSERT_MESSAGE( "Non-empty content stream should be returned", !content.empty( ) );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
-    }
 }
 
 void WSTest::setContentStreamTest( )
