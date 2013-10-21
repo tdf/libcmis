@@ -66,8 +66,6 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void deleteObjectTest( );
-        void deleteTreeTest( );
         void moveTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
@@ -78,7 +76,6 @@ class WSTest : public CppUnit::TestFixture
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( deleteObjectTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
@@ -88,51 +85,6 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::deleteObjectTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-
-    // Get the object to remove
-    string id( "130" );
-    libcmis::ObjectPtr object = session.getObject( id );
-
-    // Remove the object (method to test)
-    object->remove( false );
-
-    // Check that the node doesn't exist anymore
-    try
-    {
-        libcmis::ObjectPtr newObject = session.getObject( id );
-        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type", string( "objectNotFound" ), e.getType( ) );
-    }
-}
-
-void WSTest::deleteTreeTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-
-    string id( "117" );
-    libcmis::ObjectPtr object = session.getObject( id );
-    libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( object.get() );
-    CPPUNIT_ASSERT_MESSAGE( "Document to remove is missing", folder != NULL );
-
-    folder->removeTree( );
-
-    try
-    {
-        libcmis::ObjectPtr newObject = session.getObject( id );
-        CPPUNIT_FAIL( "Should be removed, exception should have been thrown" );
-    }
-    catch ( const libcmis::Exception& e )
-    {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message", string( "No such node: " + id ) , string( e.what() ) );
-    }
-}
 
 void WSTest::moveTest( )
 {
