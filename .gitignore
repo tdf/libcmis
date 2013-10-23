@@ -20,13 +20,11 @@ missing
 tags
 ChangeLog
 libcmis-*.*.*.tar.gz
-test-nosrv-utils
-test-nosrv-mockup
-test-nosrv-atom
-test-nosrv-gdrive
-test-nosrv-json
-test-nosrv-ws
+test-utils
+test-mockup
 test-atom
+test-gdrive
+test-json
 test-ws
 test-api
 test-c-build
