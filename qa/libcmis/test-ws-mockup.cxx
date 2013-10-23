@@ -155,6 +155,7 @@ class WSTest : public CppUnit::TestFixture
         void moveTest( );
 
         void checkOutTest( );
+        void cancelCheckOutTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -181,6 +182,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteFolderTreeTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( checkOutTest );
+        CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -1058,6 +1060,32 @@ void WSTest::checkOutTest( )
                                  "<cmism:repositoryId>mock</cmism:repositoryId>"
                                  "<cmism:objectId>" + id + "</cmism:objectId>"
                              "</cmism:checkOut>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::cancelCheckOutTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/cancel-checkout.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // First get a checked out document
+    string id = "working-copy";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    pwc->cancelCheckout( );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/VersioningService" );
+    string expectedRequest = "<cmism:cancelCheckOut" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                             "</cmism:cancelCheckOut>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 
