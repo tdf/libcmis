@@ -156,6 +156,7 @@ class WSTest : public CppUnit::TestFixture
 
         void checkOutTest( );
         void cancelCheckOutTest( );
+        void checkInTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -183,6 +184,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
+        CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -1012,7 +1014,7 @@ void WSTest::moveTest( )
 
     string destFolderId = "valid-object";
     libcmis::FolderPtr src = document->getParents( ).front( );
-    
+
     // Tell the mockup about the destination folder
     lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
     libcmis::FolderPtr dest = session.getFolder( destFolderId );
@@ -1086,6 +1088,62 @@ void WSTest::cancelCheckOutTest( )
                                  "<cmism:repositoryId>mock</cmism:repositoryId>"
                                  "<cmism:objectId>" + id + "</cmism:objectId>"
                              "</cmism:cancelCheckOut>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::checkInTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/checked-in.http", "<cmism:objectId>test-document</cmism:objectId>" );
+    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkin.http" );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // First get a checked out document
+    string id = "working-copy";
+    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    // Do the checkin
+    bool isMajor = true;
+    string comment( "Some check-in comment" );
+    PropertyPtrMap properties;
+    string newContent = "Some New content to check in";
+    boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
+    string contentType = "text/plain";
+    string filename = "filename.txt";
+    libcmis::DocumentPtr updated = pwc->checkIn( isMajor, comment, properties,
+                                                 stream, contentType, filename );
+
+    // Check that we had the new version
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong filename: probably not the new version",
+                                  filename, updated->getContentFilename() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong commit comment: not the new version",
+                                  comment, updated->getStringProperty( "cmis:checkinComment" ) );
+
+    // Check the sent request
+    ostringstream converter;
+    converter << newContent.size( );
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/VersioningService" );
+    string expectedRequest = "<cmism:checkIn" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                                 "<cmism:major>true</cmism:major>"
+                                 "<cmism:properties/>"
+                                 "<cmism:contentStream>"
+                                         "<cmism:length>" + converter.str() + "</cmism:length>"
+                                         "<cmism:mimeType>" + contentType + "</cmism:mimeType>"
+                                         "<cmism:filename>" + filename + "</cmism:filename>"
+                                         "<cmism:stream>"
+                                             "<xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" "
+                                                           "href=\"cid:obfuscated\"/>"
+                                         "</cmism:stream>"
+                                 "</cmism:contentStream>"
+                                 "<cmism:checkinComment>" + comment + "</cmism:checkinComment>"
+                             "</cmism:checkIn>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 

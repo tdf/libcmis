@@ -50,51 +50,13 @@ class WSTest : public CppUnit::TestFixture
     public:
 
         // Object tests
-        void checkInTest( );
         void getAllVersionsTest( );
 
 
         CPPUNIT_TEST_SUITE( WSTest );
-        CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 };
-
-void WSTest::checkInTest( )
-{
-    WSSession session( SERVER_WSDL_URL, "A1", SERVER_USERNAME, SERVER_PASSWORD );
-
-    // First create a versionable document and check it out
-    libcmis::DocumentPtr doc = test::createVersionableDocument( &session, "checkInTest" );
-    libcmis::DocumentPtr pwc = doc->checkOut( );
-
-    CPPUNIT_ASSERT_MESSAGE( "Failed to create Private Working Copy document", pwc.get() != NULL );
-
-    // Do the checkin
-    bool isMajor = true;
-    string comment( "Some check-in comment" );
-    PropertyPtrMap properties;
-    string newContent = "Some New content to check in";
-    boost::shared_ptr< ostream > stream ( new stringstream( newContent ) );
-    pwc->checkIn( isMajor, comment, properties, stream, "text/plain", "filename.txt" );
-
-    PropertyPtrMap actualProperties = pwc->getProperties( );
-
-    {
-        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isLatestVersion" );
-        CPPUNIT_ASSERT_MESSAGE( "cmis:isLatestVersion isn't true", it->second->getBools().front( ) );
-    }
-
-    {
-        PropertyPtrMap::iterator it = actualProperties.find( "cmis:isMajorVersion" );
-        CPPUNIT_ASSERT_MESSAGE( "cmis:isMajorVersion isn't true", it->second->getBools().front( ) );
-    }
-
-    {
-        PropertyPtrMap::iterator it = actualProperties.find( "cmis:checkinComment" );
-        CPPUNIT_ASSERT_EQUAL_MESSAGE( "cmis:checkinComment doesn't match", comment, it->second->getStrings().front( ) );
-    }
-}
 
 void WSTest::getAllVersionsTest( )
 {
