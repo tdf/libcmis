@@ -31,7 +31,9 @@ Content-Transfer-Encoding: binary
                   <cmis:propertyId queryName="IdProp" displayName="Sample Id Property" localName="IdProp" propertyDefinitionId="IdProp"/>
                   <cmis:propertyUri queryName="UriProp" displayName="Sample Uri Property" localName="UriProp" propertyDefinitionId="UriProp"/>
                   <cmis:propertyDateTime queryName="DateTimePropMV" displayName="Sample DateTime multi-value Property" localName="DateTimePropMV" propertyDefinitionId="DateTimePropMV"/>
-                  <cmis:propertyId queryName="cmis:versionSeriesId" displayName="Version Series Id" localName="cmis:versionSeriesId" propertyDefinitionId="cmis:versionSeriesId"/>
+                  <cmis:propertyId queryName="cmis:versionSeriesId" displayName="Version Series Id" localName="cmis:versionSeriesId" propertyDefinitionId="cmis:versionSeriesId">
+                    <cmis:value>series-id</cmis:value>
+                  </cmis:propertyId>
                   <cmis:propertyDecimal queryName="DecimalProp" displayName="Sample Decimal Property" localName="DecimalProp" propertyDefinitionId="DecimalProp"/>
                   <cmis:propertyUri queryName="UriPropMV" displayName="Sample Uri multi-value Property" localName="UriPropMV" propertyDefinitionId="UriPropMV"/>
                   <cmis:propertyBoolean queryName="cmis:isLatestVersion" displayName="Is Latest Version" localName="cmis:isLatestVersion" propertyDefinitionId="cmis:isLatestVersion">

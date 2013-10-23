@@ -67,15 +67,6 @@ AS_IF([test "x$enable_coverage" != "xno"], [
        CXXFLAGS="-g -O0 --coverage"
 ])
 
-AS_IF([test "x$enable_tests" != "xno"], [
-	AC_ARG_ENABLE([long-tests],
-		[AS_HELP_STRING([--disable-long-tests], [Do not build the unit tests needing to start a server])],
-		[enable_long_tests="$enableval"],
-		[enable_long_tests=yes]
-	)
-], [enable_long_tests=no])
-AM_CONDITIONAL(ENABLE_LONG_TESTS, test "x$enable_long_tests" != "xno")
-
 
 LIBCMIS_API_VERSION=libcmis_api_version
 AC_SUBST(LIBCMIS_API_VERSION)
@@ -197,7 +188,6 @@ AC_CONFIG_FILES([
 	Makefile
 	libcmis.pc
 	libcmis-c.pc
-    run-test.sh
     cppcheck-test.sh
 	src/Makefile
 	src/libcmis/Makefile
@@ -217,7 +207,6 @@ libcmis $VERSION:
               client: ${enable_client}
               werror: ${enable_werror}
                tests: ${enable_tests}
-          long tests: ${enable_long_tests}
       cppcheck tests: ${enable_cppcheck}
        test coverage: ${enable_coverage}
                 mans: ${build_man}

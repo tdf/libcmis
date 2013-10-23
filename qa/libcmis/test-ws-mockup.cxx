@@ -157,6 +157,7 @@ class WSTest : public CppUnit::TestFixture
         void checkOutTest( );
         void cancelCheckOutTest( );
         void checkInTest( );
+        void getAllVersionsTest( );
 
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -185,6 +186,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -1144,6 +1146,38 @@ void WSTest::checkInTest( )
                                  "</cmism:contentStream>"
                                  "<cmism:checkinComment>" + comment + "</cmism:checkinComment>"
                              "</cmism:checkIn>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::getAllVersionsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
+    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/get-versions.http" );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // First get a document
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    string seriesId = object->getStringProperty( "cmis:versionSeriesId" );
+    libcmis::DocumentPtr doc = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    // Get all the versions (method to check)
+    vector< libcmis::DocumentPtr > versions = doc->getAllVersions( );
+
+    // Checks
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of versions", size_t( 2 ), versions.size( ) );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/VersioningService" );
+    string expectedRequest = "<cmism:getAllVersions" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + seriesId + "</cmism:objectId>"
+                                 "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
+                             "</cmism:getAllVersions>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
 }
 

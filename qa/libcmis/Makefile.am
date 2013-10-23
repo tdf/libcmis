@@ -21,7 +21,6 @@ endif
 check_PROGRAMS = \
 	test-nosrv-utils \
 	test-nosrv-json \
-	test-ws \
 	${mockup_tests}
 
 test_nosrv_utils_SOURCES =	\
@@ -121,33 +120,7 @@ test_nosrv_json_LDADD = \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
-test_ws_SOURCES =	\
-	test-ws.cxx \
-	test-helpers.hxx \
-	test-helpers.cxx \
-	test-main.cxx
 
-test_ws_CPPFLAGS = \
-	-I$(top_srcdir)/src/libcmis \
-	$(XML2_CFLAGS) \
-	$(CURL_CFLAGS) \
-	$(BOOST_CPPFLAGS) \
-	-O0
-
-test_ws_LDADD = \
-	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
-	$(XML2_LIBS) \
-	$(CURL_LIBS) \
-	$(CPPUNIT_LIBS) \
-	$(BOOST_DATE_TIME_LIBS)
-
-
-if ENABLE_LONG_TESTS
-long_tests = \
-	test-ws
-endif
-
-TESTS_ENVIRONMENT = $(SHELL) $(top_builddir)/run-test.sh
-TESTS = test-nosrv-utils test-nosrv-json ${mockup_tests} ${long_tests}
+TESTS = test-nosrv-utils test-nosrv-json ${mockup_tests}
 
 endif
