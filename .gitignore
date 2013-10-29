@@ -40,3 +40,6 @@ cppcheck-test.sh
 *.info
 libcmis-lcov
 *.pyc
+*.trs
+*.log
+test-driver

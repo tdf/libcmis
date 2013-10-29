@@ -10,7 +10,7 @@ m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])
 
 AC_PREREQ([2.63])
 AC_INIT([libcmis], [libcmis_version])
-AM_INIT_AUTOMAKE(serial-tests)
+AM_INIT_AUTOMAKE()
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 # Checks for programs.
@@ -90,7 +90,6 @@ AS_CASE([$host], [*-*-mingw*], [native_win32=yes], [native_win32=no])
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 
-# TODO Check for docbook-to-man
 # =============
 # Documentation
 # =============
