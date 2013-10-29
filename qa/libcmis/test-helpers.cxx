@@ -126,8 +126,8 @@ namespace test
         nameValues.push_back( docName );
         libcmis::PropertyPtr nameProperty( new libcmis::Property( it->second, nameValues ) );
         props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
-       
-        // set the object type 
+
+        // set the object type
         it = propTypes.find( string( "cmis:objectTypeId" ) );
         vector< string > typeValues;
         typeValues.push_back( "VersionableType" );

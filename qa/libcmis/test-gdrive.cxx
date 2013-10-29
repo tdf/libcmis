@@ -56,6 +56,7 @@ static const string TOKEN_URL ( "https://token/url" );
 static const string SCOPE ( "https://scope/url" );
 static const string REDIRECT_URI ("redirect:uri" );
 static const string BASE_URL ( "https://base/url" );
+
 class GDriveTest : public CppUnit::TestFixture
 {
     public:

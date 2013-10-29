@@ -37,6 +37,7 @@
 
 #include <mockup-config.h>
 #include <test-helpers.hxx>
+#include <test-mockup-helpers.hxx>
 
 #define SERVER_URL string( "http://mockup/ws" )
 #define SERVER_REPOSITORY string( "mock" )
@@ -60,34 +61,6 @@ namespace
         delete[ ] buf;
 
         return content;
-    }
-
-    void lcl_addWsResponse( const char* url, const char* filename,
-                            const char* bodyMatch = 0 )
-    {
-        FILE* fd = fopen( filename, "r" );
-
-        size_t bufSize = 2048;
-        char* buf = new char[bufSize];
-
-        size_t read = 0;
-        string outBuf;
-        do
-        {
-            read = fread( buf, 1, bufSize, fd );
-            outBuf += string( buf, read );
-        } while ( read == bufSize );
-
-        fclose( fd );
-        delete[] buf;
-
-        string emptyLine = ( "\n\n" );
-        size_t pos = outBuf.find( emptyLine );
-        string headers = outBuf.substr( 0, pos );
-        string body = outBuf.substr( pos + emptyLine.size() );
-
-        curl_mockup_addResponse( url, "", "POST", body.c_str(), 0, false,
-                                 headers.c_str(), bodyMatch );
     }
 
     string lcl_getCmisRequestXml( string url, const char* bodyMatch = NULL )
@@ -199,7 +172,7 @@ void WSTest::getRepositoriesTest()
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     map< string, string > actual = session.getRepositoryService().getRepositories( );
@@ -215,7 +188,7 @@ void WSTest::getRepositoryInfosTest()
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string validId = "mock";
@@ -234,7 +207,7 @@ void WSTest::getRepositoryInfosBadTest()
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos-bad.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos-bad.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string badId = "bad";
@@ -261,7 +234,7 @@ void WSTest::getTypeTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "cmis:folder" );
@@ -283,7 +256,7 @@ void WSTest::getUnexistantTypeTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-bad.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-bad.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "bad_type" );
@@ -310,7 +283,7 @@ void WSTest::getTypeParentsTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -334,7 +307,7 @@ void WSTest::getTypeChildrenTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/typechildren-document.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/typechildren-document.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -362,8 +335,8 @@ void WSTest::getObjectTest( )
     // Setup the mockup
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -392,8 +365,8 @@ void WSTest::getDocumentTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -435,8 +408,8 @@ void WSTest::getFolderTest( )
     // Setup the mockup
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -466,8 +439,8 @@ void WSTest::getByPathValidTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -492,7 +465,7 @@ void WSTest::getByPathInvalidTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/getbypath-bad.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/getbypath-bad.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -524,8 +497,8 @@ void WSTest::getDocumentParentsTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -552,9 +525,9 @@ void WSTest::getChildrenTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/root-children.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/root-children.http" );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -595,9 +568,9 @@ void WSTest::getContentStreamTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-content-stream.http", "<cmism:getContentStream " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-content-stream.http", "<cmism:getContentStream " );
 
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
@@ -626,9 +599,9 @@ void WSTest::setContentStreamTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/set-content-stream.http", "<cmism:setContentStream " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/set-content-stream.http", "<cmism:setContentStream " );
     curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "PUT", "Updated", 0, false );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
@@ -682,9 +655,9 @@ void WSTest::setContentStreamTest( )
 void WSTest::updatePropertiesTest( )
 {
     curl_mockup_reset( );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
@@ -706,7 +679,7 @@ void WSTest::updatePropertiesTest( )
     newProperties[ propertyName ] = property;
 
     // Change the object response to provide the updated values
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document-updated.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document-updated.http", "<cmism:getObject " );
 
     // Update the properties (method to test)
     libcmis::ObjectPtr updated = object->updateProperties( newProperties );
@@ -735,9 +708,9 @@ void WSTest::createFolderTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder.http", "<cmism:createFolder " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder.http", "<cmism:createFolder " );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -764,7 +737,7 @@ void WSTest::createFolderTest( )
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
 
     // Set the mockup to send the updated folder now that we had the parent
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-folder.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-folder.http", "<cmism:getObject " );
 
     // Actually send the folder creation request
     libcmis::FolderPtr created = parent->createFolder( props );
@@ -797,9 +770,9 @@ void WSTest::createFolderBadTypeTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder-bad-type.http", "<cmism:createFolder " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder-bad-type.http", "<cmism:createFolder " );
 
     WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -860,16 +833,16 @@ void WSTest::createDocumentTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-document.http", "<cmism:createDocument " );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-document.http", "<cmism:createDocument " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     libcmis::FolderPtr parent = session.getRootFolder( );
 
     // Make the mockup know about cmis:document now
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-document.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-document.http" );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
@@ -893,7 +866,7 @@ void WSTest::createDocumentTest( )
     props.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeProperty ) );
 
     // Make the mockup able to send the response to update the object
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/created-document.http", "<cmism:getObject " );
 
     // Actually send the document creation request
     string content = "Some content";
@@ -943,9 +916,9 @@ void WSTest::deleteDocumentTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-object.http", "<cmism:deleteObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-object.http", "<cmism:deleteObject " );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -970,9 +943,9 @@ void WSTest::deleteFolderTreeTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-tree.http", "<cmism:deleteTree " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-tree.http", "<cmism:deleteTree " );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -1002,11 +975,11 @@ void WSTest::moveTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
-    lcl_addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/move-object.http", "<cmism:moveObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http", "<cmism:typeId>cmis:folder</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/move-object.http", "<cmism:moveObject " );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -1018,7 +991,7 @@ void WSTest::moveTest( )
     libcmis::FolderPtr src = document->getParents( ).front( );
 
     // Tell the mockup about the destination folder
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
     libcmis::FolderPtr dest = session.getFolder( destFolderId );
 
     document->move( src, dest );
@@ -1038,10 +1011,10 @@ void WSTest::checkOutTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:objectId>test-document</cmism:objectId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkout.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:objectId>test-document</cmism:objectId>" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkout.http" );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -1071,9 +1044,9 @@ void WSTest::cancelCheckOutTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/cancel-checkout.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http" );
+    test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/cancel-checkout.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -1097,10 +1070,10 @@ void WSTest::checkInTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/checked-in.http", "<cmism:objectId>test-document</cmism:objectId>" );
-    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkin.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/working-copy.http", "<cmism:objectId>working-copy</cmism:objectId>" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/checked-in.http", "<cmism:objectId>test-document</cmism:objectId>" );
+    test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkin.http" );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
@@ -1153,9 +1126,9 @@ void WSTest::getAllVersionsTest( )
 {
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
-    lcl_addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
-    lcl_addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/get-versions.http" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
+    test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/get-versions.http" );
 
     WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 

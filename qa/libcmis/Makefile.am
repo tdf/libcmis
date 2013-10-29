@@ -4,7 +4,8 @@ if !OS_WIN32
 mockup_tests = \
 	test-atom \
 	test-gdrive \
-	test-ws
+	test-ws \
+	test-factory
 endif
 
 check_PROGRAMS = \
@@ -37,6 +38,7 @@ test_utils_LDADD = \
 test_atom_SOURCES =	\
 	test-atom.cxx \
 	test-helpers.cxx \
+	test-helpers.hxx \
 	test-main.cxx
 
 test_atom_CPPFLAGS = \
@@ -55,6 +57,7 @@ test_atom_LDADD = \
 
 test_gdrive_SOURCES =	\
 	test-helpers.cxx \
+	test-helpers.hxx \
 	test-main.cxx \
 	test-gdrive.cxx
 
@@ -75,6 +78,9 @@ test_gdrive_LDADD = \
 test_ws_SOURCES =	\
 	test-ws.cxx \
 	test-helpers.cxx \
+	test-helpers.hxx \
+	test-mockup-helpers.cxx \
+	test-mockup-helpers.hxx \
 	test-main.cxx
 
 test_ws_CPPFLAGS = \
@@ -93,6 +99,7 @@ test_ws_LDADD = \
 
 test_json_SOURCES =	\
 	test-helpers.cxx \
+	test-helpers.hxx \
 	test-main.cxx \
 	test-jsonutils.cxx
 
@@ -109,6 +116,28 @@ test_json_LDADD = \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
+
+test_factory_SOURCES =	\
+	test-factory.cxx \
+	test-helpers.cxx \
+	test-helpers.hxx \
+	test-mockup-helpers.cxx \
+	test-mockup-helpers.hxx \
+	test-main.cxx
+
+test_factory_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_srcdir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
+
+test_factory_LDADD = \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
 
 TESTS = test-utils test-json ${mockup_tests}
 

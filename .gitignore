@@ -26,6 +26,7 @@ test-atom
 test-gdrive
 test-json
 test-ws
+test-factory
 test-api
 test-c-build
 cmis-client
