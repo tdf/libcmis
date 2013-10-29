@@ -31,17 +31,17 @@
 
 #include <string>
 
-class BaseSession;
+class HttpSession;
 
-typedef std::string ( *OAuth2Parser ) ( BaseSession* session, const std::string& authUrl, 
+typedef std::string ( *OAuth2Parser ) ( HttpSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
 
 class OAuth2Providers
 {
     public :
-        static std::string OAuth2Gdrive( BaseSession* session, const std::string& authUrl, 
+        static std::string OAuth2Gdrive( HttpSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
-        static std::string OAuth2Alfresco( BaseSession* session, const std::string& authUrl, 
+        static std::string OAuth2Alfresco( HttpSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
 
         static OAuth2Parser getOAuth2Parser( const std::string& baseUrl );

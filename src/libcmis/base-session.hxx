@@ -41,75 +41,19 @@
 #include "exception.hxx"
 #include "oauth2-data.hxx"
 #include "session.hxx"
+#include "http-session.hxx"
 #include "xml-utils.hxx"
 
 class OAuth2Handler;
 
-class CurlException : public std::exception
+class BaseSession : public libcmis::Session,
+                    public HttpSession
 {
-    private:
-        std::string m_message;
-        CURLcode    m_code;
-        std::string m_url;
-        long        m_httpStatus;
-
-        bool        m_cancelled;
-
-        mutable std::string m_errorMessage;
-
-    public:
-        CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
-            exception( ),
-            m_message( message ),
-            m_code( code ),
-            m_url( url ),
-            m_httpStatus( httpStatus ),
-            m_cancelled( false ),
-            m_errorMessage( )
-        {
-        }
-        
-        CurlException( std::string message ) :
-            exception( ),
-            m_message( message ),
-            m_code( CURLE_OK ),
-            m_url( ),
-            m_httpStatus( 0 ),
-            m_cancelled( true ),
-            m_errorMessage( )
-        {
-        }
-
-        ~CurlException( ) throw () { }
-        virtual const char* what( ) const throw ();
-
-        CURLcode getErrorCode( ) const { return m_code; }
-        std::string getErrorMessage( ) const { return m_message; }
-        bool isCancelled( ) const { return m_cancelled; }
-        long getHttpStatus( ) const { return m_httpStatus; }
-
-        libcmis::Exception getCmisException ( ) const;
-};
-
-class BaseSession : public libcmis::Session
-{
-    private:
-        CURL* m_curlHandle;
-        bool  m_no100Continue;
-    protected: 
-        OAuth2Handler* m_oauth2Handler;
+    protected:
         std::string m_bindingUrl;
         std::string m_repositoryId;
-        std::string m_username;
-        std::string m_password;
-        bool m_authProvided;
 
         std::vector< libcmis::RepositoryPtr > m_repositories;
-
-        bool m_verbose;
-        bool m_noHttpErrors;
-        bool m_noSSLCheck;
-        bool m_refreshedToken;
     public:
         BaseSession( std::string sBindingUrl, std::string repository,
                      std::string username, std::string password,
@@ -122,34 +66,20 @@ class BaseSession : public libcmis::Session
 
         BaseSession& operator=( const BaseSession& copy );
 
-        std::string& getUsername( ) throw ( CurlException );
-
-        std::string& getPassword( ) throw ( CurlException );
-
         std::string& getRepositoryId( ) { return m_repositoryId; }
 
-        /** Don't throw the HTTP errors as CurlExceptions. 
-          */
-        void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }
-        
-        /** Set the OAuth2 data and get the access / refresh tokens.
-          */
-        void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception );
-
         // Utility methods
-       
+
         std::string getRootId( ) throw ( libcmis::Exception ) { return getRepository()->getRootId( ); }
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
-        
-        std::string getBindingUrl( ) { return m_bindingUrl; }
 
-        libcmis::HttpResponsePtr httpGetRequest( std::string url ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPutRequest( std::string url, std::istream& is, std::vector< std::string > headers ) throw ( CurlException );
-        libcmis::HttpResponsePtr httpPostRequest( const std::string& url, std::istream& is, const std::string& contentType, bool redirect = true ) throw ( CurlException );
-        void httpDeleteRequest( std::string url ) throw ( CurlException );
+        std::string getBindingUrl( ) { return m_bindingUrl; }
         
-        long getHttpStatus( );
+        // HttpSession overridden methods
+
+        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
+            throw ( libcmis::Exception );
 
         // Session methods
 
@@ -158,17 +88,11 @@ class BaseSession : public libcmis::Session
         virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
 
         virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
-        
+
         virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
-        
-        virtual std::string getRefreshToken( ) throw ( libcmis::Exception );    
+
     protected:
         BaseSession( );
-
-    private:
-        void checkCredentials( ) throw ( CurlException );
-        void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ), bool redirect = true ) throw ( CurlException );
-        void initProtocols( );
 };
 
 #endif

@@ -34,7 +34,7 @@
 
 using namespace std;
 
-OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
+OAuth2Handler::OAuth2Handler(HttpSession* session, libcmis::OAuth2DataPtr data)
     throw ( libcmis::Exception ) :
         m_session( session ),
         m_data( data ),
@@ -42,11 +42,9 @@ OAuth2Handler::OAuth2Handler(BaseSession* session, libcmis::OAuth2DataPtr data)
         m_refresh( ),
         m_oauth2Parser( )
 {
-    m_oauth2Parser = OAuth2Providers::getOAuth2Parser( m_session->getBindingUrl( ) );
-
     if ( !m_data )
         m_data.reset( new libcmis::OAuth2Data() );
-    
+
 }
 
 OAuth2Handler::OAuth2Handler( const OAuth2Handler& copy ) :
@@ -83,7 +81,7 @@ OAuth2Handler& OAuth2Handler::operator=( const OAuth2Handler& copy )
 
 OAuth2Handler::~OAuth2Handler( )
 {
-    
+
 }
 
 void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
@@ -101,7 +99,7 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
 
     try
     {
-        resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is, 
+        resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is,
                                         "application/x-www-form-urlencoded" );
     }
     catch ( const CurlException& e )
@@ -142,10 +140,10 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
 
 string OAuth2Handler::getAuthURL( )
 {
-    return m_data->getAuthUrl() + 
+    return m_data->getAuthUrl() +
             "?scope=" + libcmis::escape( m_data->getScope( ) ) +
             "&redirect_uri="+ m_data->getRedirectUri( ) +
-            "&response_type=code" + 
+            "&response_type=code" +
             "&client_id=" + m_data->getClientId( );
 }
 
@@ -169,8 +167,12 @@ string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )
 
 string OAuth2Handler::oauth2Authenticate( )
 {
-    return m_oauth2Parser( m_session, getAuthURL( ), 
-                           m_session->getUsername( ), 
+    return m_oauth2Parser( m_session, getAuthURL( ),
+                           m_session->getUsername( ),
                            m_session->getPassword( ) );
 }
 
+void OAuth2Handler::setOAuth2Parser( OAuth2Parser parser )
+{
+    m_oauth2Parser = parser;
+}

@@ -30,11 +30,11 @@
 #include <libxml/xmlreader.h>
 
 #include "oauth2-providers.hxx"
-#include "base-session.hxx"
+#include "http-session.hxx"
 
 using namespace std;
 
-string OAuth2Providers::OAuth2Gdrive( BaseSession* session, const string& authUrl,
+string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUrl,
                                       const string& username, const string& password )
 {
     static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
@@ -94,7 +94,7 @@ string OAuth2Providers::OAuth2Gdrive( BaseSession* session, const string& authUr
     return code;
 }
 
-string OAuth2Providers::OAuth2Alfresco( BaseSession* session, const string& authUrl,
+string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& authUrl,
                                         const string& username, const string& password )
 {
     static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );

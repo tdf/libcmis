@@ -29,7 +29,7 @@
 #define _OAUTH2_HANDLER_HXX_
 
 #include <string>
-#include "base-session.hxx"
+#include "http-session.hxx"
 #include "oauth2-providers.hxx"
 
 namespace libcmis
@@ -40,7 +40,7 @@ namespace libcmis
 class OAuth2Handler
 {
     private:
-        BaseSession* m_session;
+        HttpSession* m_session;
         libcmis::OAuth2DataPtr m_data;
 
         std::string m_access;
@@ -49,7 +49,7 @@ class OAuth2Handler
         OAuth2Parser m_oauth2Parser;
     public:
 
-        OAuth2Handler( BaseSession* session, libcmis::OAuth2DataPtr data ) 
+        OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data ) 
             throw ( libcmis::Exception );
 
         OAuth2Handler( const OAuth2Handler& copy );
@@ -86,6 +86,8 @@ class OAuth2Handler
                 If no code is found, an empty string is returned.
           */
         std::string oauth2Authenticate( );
+
+        void setOAuth2Parser( OAuth2Parser parser );
 
     protected:
         OAuth2Handler( );

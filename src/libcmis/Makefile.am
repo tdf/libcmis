@@ -33,6 +33,8 @@ libcmis_la_SOURCES = \
 	allowable-actions.cxx \
 	document.cxx \
 	folder.cxx \
+	http-session.hxx \
+	http-session.cxx \
 	oauth2-data.cxx \
 	object.cxx \
 	object-type.cxx \
