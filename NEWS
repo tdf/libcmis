@@ -66,3 +66,4 @@
 0.5.0
 
   * Completely removed the dependency on InMemory server for unit tests
+  * Minimized the number of HTTP requests sent by SessionFactory::createSession
