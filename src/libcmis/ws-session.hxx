@@ -55,6 +55,14 @@ class WSSession : public BaseSession, public SoapSession
                    bool noSslCheck = false,
                    libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                    bool verbose = false ) throw ( libcmis::Exception );
+
+        /** This constructor uses the response of an HTTP request made
+            before to spare some HTTP request. This constructor has mostly
+            been designed for the SessionFactory use.
+          */
+        WSSession( std::string bindingUrl, std::string repositoryId,
+                   const HttpSession& HttpSession,
+                   libcmis::HttpResponsePtr response ) throw ( libcmis::Exception );
         WSSession( const WSSession& copy );
         ~WSSession( );
 
@@ -68,8 +76,9 @@ class WSSession : public BaseSession, public SoapSession
         SoapResponseFactory& getResponseFactory( ) { return m_responseFactory; }
 
         /** Try hard to get a WSDL file at the given URL (tries to add ?wsdl if needed)
-          */        
-        std::string getWsdl( std::string url ) throw ( CurlException );
+          */
+        std::string getWsdl( std::string url, libcmis::HttpResponsePtr response )
+            throw ( CurlException );
 
         std::vector< SoapResponsePtr > soapRequest( std::string& url, SoapRequest& request )
             throw ( libcmis::Exception );
@@ -94,7 +103,7 @@ class WSSession : public BaseSession, public SoapSession
         virtual bool setRepository( std::string repositoryId );
 
         virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
-        
+
         virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
@@ -108,7 +117,8 @@ class WSSession : public BaseSession, public SoapSession
         void initializeResponseFactory( );
         void initializeRepositories( std::map< std::string, std::string > repositories )
             throw ( libcmis::Exception );
-        void initialize( ) throw ( libcmis::Exception );
+        void initialize( libcmis::HttpResponsePtr response = libcmis::HttpResponsePtr() )
+            throw ( libcmis::Exception );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );
         std::map< std::string, SoapFaultDetailCreator > getDetailMapping( );

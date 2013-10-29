@@ -49,6 +49,16 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
 {
 }
 
+BaseSession::BaseSession( string sBindingUrl, string repository,
+             const HttpSession& httpSession ) throw ( libcmis::Exception ) :
+    Session( ),
+    HttpSession( httpSession ),
+    m_bindingUrl( sBindingUrl ),
+    m_repositoryId( repository ),
+    m_repositories( )
+{
+}
+
 BaseSession::BaseSession( const BaseSession& copy ) :
     Session( ),
     HttpSession( copy ),

@@ -61,6 +61,14 @@ class BaseSession : public libcmis::Session,
                      libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false )
             throw ( libcmis::Exception );
 
+        /** This constructor copies an existing http session.
+            This has been mostly designed for SessionFactory to save
+            a few HTTP requests when guessing the binding to use.
+          */
+        BaseSession( std::string sBindingUrl, std::string repository,
+                     const HttpSession& httpSession )
+            throw ( libcmis::Exception );
+
         BaseSession( const BaseSession& copy );
         ~BaseSession( );
 
@@ -75,7 +83,7 @@ class BaseSession : public libcmis::Session,
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 
         std::string getBindingUrl( ) { return m_bindingUrl; }
-        
+
         // HttpSession overridden methods
 
         virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )

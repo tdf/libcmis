@@ -45,7 +45,17 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
     BaseSession( atomPubUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_repository( )
 {
-    initialize( );
+    libcmis::HttpResponsePtr response;
+    initialize( response );
+}
+
+AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
+        const HttpSession& httpSession, libcmis::HttpResponsePtr response )
+            throw ( libcmis::Exception ) :
+    BaseSession( atomPubUrl, repositoryId, httpSession ),
+    m_repository( )
+{
+    initialize( response );
 }
 
 AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
@@ -68,7 +78,7 @@ AtomPubSession& AtomPubSession::operator=( const AtomPubSession& copy )
         BaseSession::operator=( copy );
         m_repository = copy.m_repository;
     }
-    
+
     return *this;
 }
 
@@ -135,22 +145,30 @@ void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::
     xmlFreeDoc( doc );
 }
 
-void AtomPubSession::initialize( ) throw ( libcmis::Exception )
+void AtomPubSession::initialize( libcmis::HttpResponsePtr response )
+    throw ( libcmis::Exception )
 {
     if ( m_repositories.empty() )
     {
         // Pull the content from sAtomPubUrl
         string buf;
-        try
+        if ( response )
         {
-            buf = httpGetRequest( m_bindingUrl )->getStream( )->str( );
+            buf = response->getStream( )->str( );
         }
-        catch ( const CurlException& e )
+        else
         {
-            throw e.getCmisException( );
+            try
+            {
+                buf = httpGetRequest( m_bindingUrl )->getStream( )->str( );
+            }
+            catch ( const CurlException& e )
+            {
+                throw e.getCmisException( );
+            }
         }
-    
-        parseServiceDocument( buf );   
+
+        parseServiceDocument( buf );
     }
 }
 

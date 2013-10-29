@@ -58,7 +58,7 @@ namespace libcmis
             libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( Exception )
     {
         Session* session = NULL;
-        
+
         if ( !bindingUrl.empty( ) )
         {
             // Try the special cases based on the binding URL
@@ -69,30 +69,41 @@ namespace libcmis
             }
             else
             {
+                libcmis::HttpResponsePtr response;
+                boost::shared_ptr< HttpSession> httpSession(
+                        new HttpSession( username, password,
+                                         noSslCheck, oauth2, verbose ) );
+
+                try
+                {
+                    response = httpSession->httpGetRequest( bindingUrl );
+                }
+                catch ( const CurlException& e )
+                {
+                    throw e.getCmisException( );
+                }
+
+
                 // Try the CMIS cases: we need to autodetect the binding type
                 try
                 {
-                    session = new AtomPubSession( bindingUrl, repository, 
-                                    username, password, noSslCheck, oauth2, verbose );
+                    session = new AtomPubSession( bindingUrl, repository,
+                                    *httpSession, response );
                 }
                 catch ( const Exception& e )
                 {
-                    if ( e.getType( ) == "permissionDenied" )
-                        throw;
                 }
-                
+
                 if ( session == NULL )
                 {
                     // We couldn't get an AtomSession, we may have an URL for the WebService binding
                     try
                     {
                         session = new WSSession( bindingUrl, repository,
-                                      username, password, noSslCheck, oauth2, verbose );
+                                      *httpSession, response );
                     }
                     catch ( const Exception& e )
                     {
-                        if ( e.getType( ) == "permissionDenied" )
-                            throw;
                     }
                 }
             }

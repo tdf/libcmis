@@ -56,6 +56,23 @@ WSSession::WSSession( string bindingUrl, string repositoryId, string username,
     initialize( );
 }
 
+WSSession::WSSession( string bindingUrl, string repositoryId,
+                      const HttpSession& httpSession,
+                      libcmis::HttpResponsePtr response ) throw ( libcmis::Exception ) :
+    BaseSession( bindingUrl, repositoryId, httpSession ),
+    m_servicesUrls( ),
+    m_navigationService( NULL ),
+    m_objectService( NULL ),
+    m_repositoryService( NULL ),
+    m_versioningService( NULL ),
+    m_responseFactory( )
+{
+    // We don't want to have the HTTP exceptions as the errors are coming
+    // back as SoapFault elements.
+    setNoHttpErrors( true );
+    initialize( response );
+}
+
 WSSession::WSSession( const WSSession& copy ) :
     BaseSession( copy ),
     m_servicesUrls( copy.m_servicesUrls ),
@@ -104,9 +121,14 @@ WSSession::~WSSession( )
     delete m_versioningService;
 }
 
-string WSSession::getWsdl( string url ) throw ( CurlException )
+string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
+    throw ( CurlException )
 {
-    string buf = httpGetRequest( url )->getStream( )->str( );
+    string buf;
+    if ( response )
+        buf = response->getStream( )->str( );
+    else
+        buf = httpGetRequest( url )->getStream( )->str( );
 
     // Do we have a wsdl file?
     bool isWsdl = false;
@@ -264,7 +286,8 @@ void WSSession::initializeRepositories( map< string, string > repositories ) thr
     }
 }
 
-void WSSession::initialize( ) throw ( libcmis::Exception )
+void WSSession::initialize( libcmis::HttpResponsePtr response )
+    throw ( libcmis::Exception )
 {
     if ( m_repositories.empty() )
     {
@@ -272,7 +295,7 @@ void WSSession::initialize( ) throw ( libcmis::Exception )
         string buf;
         try
         {
-            buf = getWsdl( m_bindingUrl );
+            buf = getWsdl( m_bindingUrl, response );
         }
         catch ( const CurlException& e )
         {
