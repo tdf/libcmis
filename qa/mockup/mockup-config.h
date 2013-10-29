@@ -86,6 +86,7 @@ const char* curl_mockup_getRequestBody( const char* baseUrl,
                                         const char* matchParam,
                                         const char* method,
                                         const char* matchBody = 0 );
+int curl_mockup_getRequestsCount( const char* url );
 
 void curl_mockup_HttpRequest_free( const struct HttpRequest* request );
 

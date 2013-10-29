@@ -300,6 +300,21 @@ const char* curl_mockup_getRequestBody( const char* urlBase,
     return NULL;
 }
 
+int curl_mockup_getRequestsCount( const char* url )
+{
+    int count = 0;
+
+    for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
+            it != mockup::config->m_requests.end( ); ++it )
+    {
+        if ( it->m_url == url )
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
 void curl_mockup_HttpRequest_free( const struct HttpRequest* request )
 {
     delete[] request->headers;

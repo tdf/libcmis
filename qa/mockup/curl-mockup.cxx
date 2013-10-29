@@ -168,7 +168,7 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         }
         case CURLOPT_WRITEFUNCTION:
         {
-            handle->m_writeFn = va_arg( arg, write_callback ); 
+            handle->m_writeFn = va_arg( arg, write_callback );
             break;
         }
         case CURLOPT_WRITEDATA:
@@ -178,7 +178,7 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         }
         case CURLOPT_READFUNCTION:
         {
-            handle->m_readFn = va_arg( arg, read_callback ); 
+            handle->m_readFn = va_arg( arg, read_callback );
             break;
         }
         case CURLOPT_READDATA:
@@ -193,7 +193,7 @@ CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
         }
         case CURLOPT_HEADERFUNCTION:
         {
-            handle->m_headersFn = va_arg( arg, headers_callback ); 
+            handle->m_headersFn = va_arg( arg, headers_callback );
             break;
         }
         case CURLOPT_WRITEHEADER:
@@ -323,7 +323,7 @@ CURLcode curl_easy_perform( CURL * curl )
         handle->m_httpError = 401;
         return CURLE_HTTP_RETURNED_ERROR;
     }
-    
+
     // Store the requests for later verifications
     stringstream body;
     if ( handle->m_readFn && handle->m_readData )
@@ -342,7 +342,7 @@ CURLcode curl_easy_perform( CURL * curl )
     }
 
     mockup::config->m_requests.push_back( mockup::Request( handle->m_url, handle->m_method, body.str( ), handle->m_headers ) );
-    
+
 
     return mockup::config->writeResponse( handle );
 }
@@ -357,7 +357,7 @@ CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
     {
         case CURLINFO_RESPONSE_CODE:
         {
-            long* buf = va_arg( arg, long* ); 
+            long* buf = va_arg( arg, long* );
             *buf = handle->m_httpError;
             break;
         }
