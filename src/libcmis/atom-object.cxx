@@ -100,6 +100,23 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
         throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
 
+    // No need to send HTTP request if there is nothing to update
+    if ( properties.empty( ) )
+    {
+        libcmis::ObjectPtr object;
+        if ( getBaseType( ) == "cmis:document" )
+        {
+            AtomDocument* thisDoc = dynamic_cast< AtomDocument* >( this );
+            object.reset( new AtomDocument( *thisDoc ) );
+        }
+        else if ( getBaseType( ) == "cmis:folder" )
+        {
+            AtomFolder* thisFolder = dynamic_cast< AtomFolder* >( this );
+            object.reset( new AtomFolder( *thisFolder ) );
+        }
+        return object;
+    }
+
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
@@ -216,7 +233,7 @@ void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
             deleteUrl += "&";
         else
             deleteUrl += "?";
-        
+
         string allVersionsStr = "TRUE";
         if ( !allVersions )
             allVersionsStr = "FALSE";

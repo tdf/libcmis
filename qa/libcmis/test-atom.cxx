@@ -77,6 +77,7 @@ class AtomTest : public CppUnit::TestFixture
         void getContentStreamTest( );
         void setContentStreamTest( );
         void updatePropertiesTest( );
+        void updatePropertiesEmptyTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
         void createDocumentTest( );
@@ -114,6 +115,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( updatePropertiesEmptyTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
@@ -766,6 +768,31 @@ void AtomTest::updatePropertiesTest( )
     // Check that the properties are updated after the call
     PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
+}
+
+void AtomTest::updatePropertiesEmptyTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "GET", DATA_DIR "/atom/test-document.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+
+    // Values for the test
+    libcmis::ObjectPtr object = session.getObject( "test-document" );
+
+    // Just leave the map empty and update
+    PropertyPtrMap emptyProperties;
+    libcmis::ObjectPtr updated = object->updateProperties( emptyProperties );
+
+    // Check that no HTTP request was sent
+    int count = curl_mockup_getRequestsCount( "http://mockup/mock/id",
+                                              "id=test-document", "PUT" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "No HTTP request should have been sent", 0, count );
+
+    // Check that the object we got is the same than previous one
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong change token", object->getChangeToken(), updated->getChangeToken() );
 }
 
 void AtomTest::createFolderTest( )

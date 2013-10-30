@@ -120,6 +120,7 @@ class WSTest : public CppUnit::TestFixture
         void getContentStreamTest( );
         void setContentStreamTest( );
         void updatePropertiesTest( );
+        void updatePropertiesEmptyTest( );
         void createFolderTest( );
         void createFolderBadTypeTest( );
         void createDocumentTest( );
@@ -150,6 +151,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( updatePropertiesEmptyTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createFolderBadTypeTest );
         CPPUNIT_TEST( createDocumentTest );
@@ -702,6 +704,32 @@ void WSTest::updatePropertiesTest( )
     // Check that the properties are updated after the call
     PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
+}
+
+void WSTest::updatePropertiesEmptyTest( )
+{
+    curl_mockup_reset( );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // Values for the test
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+
+    // Just leave the map empty and update
+    PropertyPtrMap emptyProperties;
+    libcmis::ObjectPtr updated = object->updateProperties( emptyProperties );
+
+    // Check that no HTTP request was sent
+    int count = curl_mockup_getRequestsCount( "http://mockup/ws/services/ObjectService",
+                                              "", "POST", "<cmism:updateProperties" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "No HTTP request should have been sent", 0, count );
+
+    // Check that the object we got is the same than previous one
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong change token", object->getChangeToken(), updated->getChangeToken() );
 }
 
 void WSTest::createFolderTest( )

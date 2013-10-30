@@ -27,6 +27,8 @@
  */
 
 #include "ws-object.hxx"
+#include "ws-document.hxx"
+#include "ws-folder.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;
@@ -79,6 +81,22 @@ vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter ) throw (
 libcmis::ObjectPtr WSObject::updateProperties(
         const PropertyPtrMap& properties ) throw ( libcmis::Exception )
 {
+    // No need to send HTTP request if there is nothing to update
+    if ( properties.empty( ) )
+    {
+        libcmis::ObjectPtr object;
+        if ( getBaseType( ) == "cmis:document" )
+        {
+            WSDocument* thisDoc = dynamic_cast< WSDocument* >( this );
+            object.reset( new WSDocument( *thisDoc ) );
+        }
+        else if ( getBaseType( ) == "cmis:folder" )
+        {
+            WSFolder* thisFolder = dynamic_cast< WSFolder* >( this );
+            object.reset( new WSFolder( *thisFolder ) );
+        }
+        return object;
+    }
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).updateProperties( repoId, this->getId( ), properties, this->getChangeToken( ) );
 }

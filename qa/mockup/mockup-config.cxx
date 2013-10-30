@@ -300,16 +300,37 @@ const char* curl_mockup_getRequestBody( const char* urlBase,
     return NULL;
 }
 
-int curl_mockup_getRequestsCount( const char* url )
+int curl_mockup_getRequestsCount( const char* urlBase,
+                                  const char* matchParam,
+                                  const char* method,
+                                  const char* matchBody )
 {
     int count = 0;
+
+    string urlBaseString( urlBase );
+    string matchParamString( matchParam );
+    string matchBodyStr( matchBody );
 
     for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
             it != mockup::config->m_requests.end( ); ++it )
     {
-        if ( it->m_url == url )
+        string url;
+        string params;
+        if ( it->m_method == string( method ) )
         {
-            count++;
+            lcl_splitUrl( it->m_url, url, params );
+
+            bool matchBaseUrl = urlBaseString.empty() ||
+                                  ( url.find( urlBaseString ) == 0 );
+            bool matchParams = matchParamString.empty( ) ||
+                                  ( params.find( matchParamString ) != string::npos );
+            bool matchBodyPart = !matchBody ||
+                                  ( it->m_body.find( matchBodyStr ) != string::npos );
+
+            if ( matchBaseUrl && matchParams && matchBodyPart )
+            {
+                count++;
+            }
         }
     }
     return count;

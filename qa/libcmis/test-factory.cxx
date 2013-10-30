@@ -140,7 +140,7 @@ void FactoryTest::createSessionAtomTest( )
     CPPUNIT_ASSERT_MESSAGE( "Not an AtomPubSession",
             dynamic_cast< AtomPubSession* >( session ) != NULL );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "More than one request for the binding",
-            int( 1 ), curl_mockup_getRequestsCount( BINDING_ATOM.c_str( ) ) );
+            int( 1 ), curl_mockup_getRequestsCount( BINDING_ATOM.c_str( ), "", "GET" ) );
 }
 
 void FactoryTest::createSessionAtomBadAuthTest( )
@@ -171,7 +171,7 @@ void FactoryTest::createSessionWSTest( )
     CPPUNIT_ASSERT_MESSAGE( "Not a WSSession",
             dynamic_cast< WSSession* >( session ) != NULL );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "More than one request for the binding",
-            int( 1 ), curl_mockup_getRequestsCount( BINDING_WS.c_str( ) ) );
+            int( 1 ), curl_mockup_getRequestsCount( BINDING_WS.c_str( ), "", "GET" ) );
 }
 
 void FactoryTest::createSessionWSBadAuthTest( )
