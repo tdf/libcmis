@@ -71,6 +71,10 @@ libcmis_ObjectTypePtr libcmis_session_getType(
         const char* id,
         libcmis_ErrorPtr error );
 
+libcmis_vector_object_type_Ptr libcmis_session_getBaseTypes(
+        libcmis_SessionPtr session,
+        libcmis_ErrorPtr error );
+
 #ifdef __cplusplus
 }
 #endif

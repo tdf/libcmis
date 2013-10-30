@@ -29,7 +29,7 @@
 #include "gdrive-object-type.hxx"
 
 GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
-{   
+{
     m_id = id;
     m_localName = "GoogleDrive Object Type";
     m_localNamespace = "GoogleDrive Object Type";
@@ -48,15 +48,15 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
     m_propertiesTypes[ idType->getId( ) ] = idType;
 
     // create PropertyTypes which are updatable.
-    
-    // title    
+
+    // title
     libcmis::PropertyTypePtr nameType( new libcmis::PropertyType( ) );
     nameType->setId( "cmis:name" );
     nameType->setType( libcmis::PropertyType::String );
     nameType->setUpdatable( true );
     m_propertiesTypes[ nameType->getId( ) ] = nameType;
 
-    // mimeType  
+    // mimeType
     libcmis::PropertyTypePtr mimeType( new libcmis::PropertyType( ) );
     mimeType->setId( "cmis:contentStreamMimeType" );
     mimeType->setType( libcmis::PropertyType::String );
@@ -69,31 +69,31 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
     parentsType->setType( libcmis::PropertyType::String );
     parentsType->setUpdatable( false );
     parentsType->setMultiValued( true );
-    m_propertiesTypes[ parentsType->getId( ) ] = parentsType; 
-    
+    m_propertiesTypes[ parentsType->getId( ) ] = parentsType;
+
     // labels
     libcmis::PropertyTypePtr labelsType( new libcmis::PropertyType( ) );
     labelsType->setId( "labels" );
     labelsType->setType( libcmis::PropertyType::String );
     labelsType->setUpdatable( false );
     labelsType->setMultiValued( true );
-    m_propertiesTypes[ labelsType->getId( ) ] = labelsType; 
- 
+    m_propertiesTypes[ labelsType->getId( ) ] = labelsType;
+
     // ownerNames
     libcmis::PropertyTypePtr ownerNamesType( new libcmis::PropertyType( ) );
     ownerNamesType->setId( "ownerNames" );
     ownerNamesType->setType( libcmis::PropertyType::String );
     ownerNamesType->setUpdatable( false );
     ownerNamesType->setMultiValued( true );
-    m_propertiesTypes[ ownerNamesType->getId( ) ] = ownerNamesType; 
-    
+    m_propertiesTypes[ ownerNamesType->getId( ) ] = ownerNamesType;
+
     // owners
     libcmis::PropertyTypePtr ownersType( new libcmis::PropertyType( ) );
     ownersType->setId( "owners" );
     ownersType->setType( libcmis::PropertyType::String );
     ownersType->setUpdatable( false );
     ownersType->setMultiValued( true );
-    m_propertiesTypes[ ownersType->getId( ) ] = ownersType; 
+    m_propertiesTypes[ ownersType->getId( ) ] = ownersType;
 
     // export links
     libcmis::PropertyTypePtr exportLinksType( new libcmis::PropertyType( ) );
@@ -101,40 +101,40 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
     exportLinksType->setType( libcmis::PropertyType::String );
     exportLinksType->setUpdatable( false );
     exportLinksType->setMultiValued( true );
-    m_propertiesTypes[ exportLinksType->getId( ) ] = exportLinksType; 
+    m_propertiesTypes[ exportLinksType->getId( ) ] = exportLinksType;
 
-    // description  
+    // description
     libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
     descriptionType->setId( "cmis:description" );
     descriptionType->setType( libcmis::PropertyType::String );
     descriptionType->setUpdatable( true );
     m_propertiesTypes[ descriptionType->getId( ) ] = descriptionType;
 
-    // modifiedDate  
+    // modifiedDate
     libcmis::PropertyTypePtr modifiedDateType( new libcmis::PropertyType( ) );
     modifiedDateType->setId( "cmis:lastModificationDate" );
     modifiedDateType->setType( libcmis::PropertyType::DateTime );
     modifiedDateType->setUpdatable( true );
-    m_propertiesTypes[ modifiedDateType->getId( ) ] = modifiedDateType; 
+    m_propertiesTypes[ modifiedDateType->getId( ) ] = modifiedDateType;
 
     // lastViewedByMeDate
     libcmis::PropertyTypePtr lastViewedByMeDateType( new libcmis::PropertyType( ) );
     lastViewedByMeDateType->setId( "lastViewedByMeDate" );
     lastViewedByMeDateType->setType( libcmis::PropertyType::DateTime );
     lastViewedByMeDateType->setUpdatable( true );
-    m_propertiesTypes[ lastViewedByMeDateType->getId( ) ] = lastViewedByMeDateType; 
+    m_propertiesTypes[ lastViewedByMeDateType->getId( ) ] = lastViewedByMeDateType;
 
 }
 
 
-libcmis::ObjectTypePtr GdriveObjectType::getParentType( ) 
+libcmis::ObjectTypePtr GdriveObjectType::getParentType( )
                                             throw( libcmis::Exception )
-{            
+{
     libcmis::ObjectTypePtr parentTypePtr( new GdriveObjectType( m_parentTypeId ) );
     return parentTypePtr;
 }
 
-libcmis::ObjectTypePtr GdriveObjectType::getBaseType( ) 
+libcmis::ObjectTypePtr GdriveObjectType::getBaseType( )
                                             throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr baseTypePtr( new GdriveObjectType( m_baseTypeId ) );

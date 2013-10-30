@@ -438,3 +438,8 @@ libcmis::ObjectTypePtr WSSession::getType( string id ) throw ( libcmis::Exceptio
     return getRepositoryService( ).getTypeDefinition( m_repositoryId, id );
 }
 
+vector< libcmis::ObjectTypePtr > WSSession::getBaseTypes( )
+    throw ( libcmis::Exception )
+{
+    return getRepositoryService().getTypeChildren( m_repositoryId, "" );
+}

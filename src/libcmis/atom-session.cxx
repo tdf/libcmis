@@ -308,3 +308,58 @@ libcmis::ObjectTypePtr AtomPubSession::getType( string id ) throw ( libcmis::Exc
     libcmis::ObjectTypePtr type( new AtomObjectType( this, id ) );
     return type;
 }
+
+vector< libcmis::ObjectTypePtr > AtomPubSession::getBaseTypes( ) throw ( libcmis::Exception )
+{
+    string url = getAtomRepository( )->getCollectionUrl( Collection::Types );
+    return getChildrenTypes( url );
+}
+
+vector< libcmis::ObjectTypePtr > AtomPubSession::getChildrenTypes( string url )
+    throw ( libcmis::Exception )
+{
+    vector< libcmis::ObjectTypePtr > children;
+    string buf;
+    try
+    {
+        buf = httpGetRequest( url )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), url.c_str(), NULL, 0 );
+    if ( NULL != doc )
+    {
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        libcmis::registerNamespaces( xpathCtx );
+        if ( NULL != xpathCtx )
+        {
+            const string& entriesReq( "//atom:entry" );
+            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
+
+            if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
+            {
+                int size = xpathObj->nodesetval->nodeNr;
+                for ( int i = 0; i < size; i++ )
+                {
+                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
+                    libcmis::ObjectTypePtr type( new AtomObjectType( this, node ) );
+                    children.push_back( type );
+                }
+            }
+
+            xmlXPathFreeObject( xpathObj );
+        }
+
+        xmlXPathFreeContext( xpathCtx );
+    }
+    else
+    {
+        throw libcmis::Exception( "Failed to parse type children infos" );
+    }
+    xmlFreeDoc( doc );
+
+    return children;
+}

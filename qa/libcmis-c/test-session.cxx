@@ -31,8 +31,7 @@
 #include <cppunit/TestAssert.h>
 
 #include "internals.hxx"
-#include "repository.h"
-#include "session.h"
+#include "libcmis-c.h"
 #include "test-dummies.hxx"
 
 using namespace std;
@@ -44,9 +43,11 @@ class SessionTest : public CppUnit::TestFixture
 
     public:
         void getRepositoriesTest( );
+        void getBaseTypesTest( );
 
         CPPUNIT_TEST_SUITE( SessionTest );
         CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getBaseTypesTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -67,5 +68,20 @@ void SessionTest::getRepositoriesTest( )
     size_t actualSize = libcmis_vector_repository_size( repos );
     CPPUNIT_ASSERT_EQUAL( size_t( 2 ), actualSize );
     libcmis_vector_repository_free( repos );
+    libcmis_session_free( session );
+}
+
+void SessionTest::getBaseTypesTest( )
+{
+    libcmis_SessionPtr session = getTested( );
+    libcmis_ErrorPtr error = libcmis_error_create( );
+
+    libcmis_vector_object_type_Ptr types = libcmis_session_getBaseTypes( session, error );
+    
+    size_t size = libcmis_vector_object_type_size( types );
+    CPPUNIT_ASSERT_EQUAL( size_t( 1 ), size );
+
+    libcmis_error_free( error );
+    libcmis_vector_object_type_free( types );
     libcmis_session_free( session );
 }

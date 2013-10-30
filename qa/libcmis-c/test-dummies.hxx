@@ -57,6 +57,7 @@ namespace dummies
             virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
             virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
             virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
+            virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( ) throw ( libcmis::Exception );
             virtual std::string getRefreshToken( ) throw ( libcmis::Exception );
             virtual void setNoSSLCertificateCheck( bool /*noCheck*/ ) { }
     };

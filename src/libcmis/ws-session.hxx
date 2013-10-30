@@ -108,6 +108,8 @@ class WSSession : public BaseSession, public SoapSession
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
 
+        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( ) throw ( libcmis::Exception );
+
     private:
 
         // Default constructor shouldn't be called

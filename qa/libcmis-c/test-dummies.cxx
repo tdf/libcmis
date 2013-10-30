@@ -66,7 +66,7 @@ namespace dummies
         return repo;
     }
 
-    
+
     bool Session::setRepository( std::string )
     {
         return true;
@@ -110,6 +110,14 @@ namespace dummies
         return type;
     }
 
+    vector< libcmis::ObjectTypePtr > Session::getBaseTypes( ) throw ( libcmis::Exception )
+    {
+        vector< libcmis::ObjectTypePtr > types;
+        libcmis::ObjectTypePtr type( new ObjectType( true, false ) );
+        types.push_back( type );
+        return types;
+    }
+
     std::string Session::getRefreshToken( ) throw ( libcmis::Exception )
     {
         return string( );
@@ -145,7 +153,7 @@ namespace dummies
         setQueryName( string( "PropertyType::QueryName" ) );
         setTypeFromXml( xmlType );
 
-        // Setting true for the tests to see a difference with 
+        // Setting true for the tests to see a difference with
         // the default false result of the tested functions
         setMultiValued( true );
         setUpdatable( true );
@@ -159,7 +167,7 @@ namespace dummies
     PropertyType::~PropertyType( )
     {
     }
-    
+
     AllowableActions::AllowableActions( ) :
         libcmis::AllowableActions( )
     {
@@ -208,14 +216,14 @@ namespace dummies
 
     void ObjectType::initMembers( )
     {
-        
+
         m_id = m_typeId + "::Id";
         m_localName = m_typeId + "::LocalName";
         m_localNamespace = m_typeId + "::LocalNamespace";
         m_displayName = m_typeId + "::DisplayName";
         m_queryName = m_typeId + "::QueryName";
         m_description = m_typeId + "::Description";
-            
+
         m_creatable = true;
         m_fileable = true;
         m_queryable = true;
@@ -230,7 +238,7 @@ namespace dummies
     ObjectType::~ObjectType( )
     {
     }
-    
+
     libcmis::ObjectTypePtr  ObjectType::getParentType( )
         throw ( libcmis::Exception )
     {
@@ -299,11 +307,11 @@ namespace dummies
 
             libcmis::ObjectTypePtr result( child );
             children.push_back( result );
-        } 
+        }
 
-        return children; 
+        return children;
     }
-    
+
     string ObjectType::toString( )
     {
         return m_typeId + "::toString";
@@ -496,7 +504,7 @@ namespace dummies
         failed.push_back( "failed 1" );
         return failed;
     }
-            
+
     Document::Document( bool isFiled, bool triggersFaults ) :
         libcmis::Object( NULL ),
         libcmis::Document( NULL ),
@@ -505,7 +513,7 @@ namespace dummies
         m_contentString( "Document::ContentStream" )
     {
     }
-            
+
     vector< libcmis::FolderPtr > Document::getParents( ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
@@ -522,7 +530,7 @@ namespace dummies
 
         return parents;
     }
-    
+
     boost::shared_ptr< istream > Document::getContentStream( string /*streamId*/ ) throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
@@ -562,7 +570,7 @@ namespace dummies
     {
         return "Document::ContentType";
     }
-    
+
     string Document::getContentFilename( )
     {
         return "Document::ContentFilename";

@@ -60,6 +60,9 @@ class AtomPubSession : public BaseSession
 
         libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
 
+        std::vector< libcmis::ObjectTypePtr > getChildrenTypes( std::string url )
+            throw ( libcmis::Exception );
+
         // Override session methods
 
         virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
@@ -71,6 +74,8 @@ class AtomPubSession : public BaseSession
         virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
 
         virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
+
+        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( ) throw ( libcmis::Exception );
 
     protected:
 

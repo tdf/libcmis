@@ -93,50 +93,7 @@ libcmis::ObjectTypePtr AtomObjectType::getBaseType( ) throw ( libcmis::Exception
 
 vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis::Exception )
 {
-    vector< libcmis::ObjectTypePtr > children;
-    string buf;
-    try
-    {
-        buf = m_session->httpGetRequest( m_childrenUrl )->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_childrenUrl.c_str(), NULL, 0 );
-    if ( NULL != doc )
-    {
-        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
-        libcmis::registerNamespaces( xpathCtx );
-        if ( NULL != xpathCtx )
-        {
-            const string& entriesReq( "//atom:entry" );
-            xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( entriesReq.c_str() ), xpathCtx );
-
-            if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
-            {
-                int size = xpathObj->nodesetval->nodeNr;
-                for ( int i = 0; i < size; i++ )
-                {
-                    xmlNodePtr node = xpathObj->nodesetval->nodeTab[i];
-                    libcmis::ObjectTypePtr type( new AtomObjectType( m_session, node ) );
-                    children.push_back( type );
-                }
-            }
-
-            xmlXPathFreeObject( xpathObj );
-        }
-
-        xmlXPathFreeContext( xpathCtx );
-    }
-    else
-    {
-        throw libcmis::Exception( "Failed to parse type children infos" );
-    }
-    xmlFreeDoc( doc );
-
-    return children;
+    return m_session->getChildrenTypes( m_childrenUrl );
 }
 
 void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )

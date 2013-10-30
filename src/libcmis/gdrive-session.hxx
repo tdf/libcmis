@@ -58,6 +58,9 @@ class GDriveSession : public BaseSession
 
         virtual libcmis::ObjectTypePtr getType( std::string id )             
             throw ( libcmis::Exception );
+        
+        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( )
+            throw ( libcmis::Exception );
 
     private:
         GDriveSession( );

@@ -79,6 +79,10 @@ namespace libcmis
               */
             virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
 
+            /** Get all the CMIS base object types known by the server.
+              */
+            virtual std::vector< ObjectTypePtr > getBaseTypes( ) throw ( Exception ) = 0;
+
             /** Enable or disable the SSL certificate verification.
 
                 By default, SSL certificates are verified and errors are thrown in case of
