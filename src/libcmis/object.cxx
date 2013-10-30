@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <algorithm>
+
 #include "object.hxx"
 #include "session.hxx"
 #include "xml-utils.hxx"
@@ -104,6 +106,10 @@ namespace libcmis
             }
             xmlXPathFreeObject( xpathObj );
 
+            // TODO Get rid of this request:
+            //   * Too time consuming
+            //   * Makes secondary aspect properties annoying to create
+            //   * Prevents from getting Alfresco additional properties
             // First get the type id as it will give us the property definitions
             string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
             m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
@@ -227,6 +233,65 @@ namespace libcmis
             types = it->second->getStrings( );
 
         return types;
+    }
+
+    ObjectPtr Object::addSecondaryType( string id, PropertyPtrMap properties )
+        throw ( Exception )
+    {
+        // First make sure the cmis:secondaryObjectTypeIds property can be defined
+        map< string, PropertyTypePtr >& propertyTypes = getTypeDescription( )->
+            getPropertiesTypes();
+
+        map< string, PropertyTypePtr >::iterator it = propertyTypes.find( "cmis:secondaryObjectTypeIds" );
+        if ( it == propertyTypes.end() )
+            throw ( Exception( "Secondary Types not supported", "constraint" ) );
+
+        // Copy all the new properties without checking they are
+        // defined in the secondary type definition: that would
+        // require one more HTTP request and the server will complain
+        // anyway if it's not good.
+        PropertyPtrMap newProperties( properties );
+
+        // Prepare the new cmis:secondaryObjectTypeIds property
+        vector< string > secTypes = getSecondaryTypes( );
+        if ( find( secTypes.begin(), secTypes.end(), id ) == secTypes.end( ) )
+        {
+            secTypes.push_back( id );
+            PropertyPtr newSecTypes( new Property( it->second, secTypes ) );
+            newProperties["cmis:secondaryObjectTypeIds"] = newSecTypes;
+        }
+        return updateProperties( newProperties );
+    }
+
+    ObjectPtr Object::removeSecondaryType( string id ) throw ( Exception )
+    {
+        // First make sure the cmis:secondaryObjectTypeIds property can be defined
+        map< string, PropertyTypePtr >& propertyTypes = getTypeDescription( )->
+            getPropertiesTypes();
+
+        map< string, PropertyTypePtr >::iterator it = propertyTypes.find( "cmis:secondaryObjectTypeIds" );
+        if ( it == propertyTypes.end() )
+            throw ( Exception( "Secondary Types not supported", "constraint" ) );
+
+        // Prepare the new cmis:secondaryObjectTypeIds property
+        PropertyPtrMap newProperties;
+        vector< string > secTypes = getSecondaryTypes( );
+        vector< string > newSecTypes;
+        for ( vector< string >::iterator idIt = secTypes.begin( );
+                idIt != secTypes.end( ); ++idIt )
+        {
+            if ( *idIt != id )
+                newSecTypes.push_back( *idIt );
+        }
+
+        // No need to update the property if it didn't change
+        if ( newSecTypes.size( ) != secTypes.size( ) )
+        {
+            PropertyPtr property ( new Property( it->second, newSecTypes ) );
+            newProperties["cmis:secondaryObjectTypeIds"] = property;
+        }
+
+        return updateProperties( newProperties );
     }
 
     PropertyPtrMap& Object::getProperties( )

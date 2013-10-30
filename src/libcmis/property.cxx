@@ -114,7 +114,7 @@ namespace libcmis
         {
             string xmlType = string( "cmis:property" ) + getPropertyType()->getXmlType( );
             xmlTextWriterStartElement( writer, BAD_CAST( xmlType.c_str( ) ) );
-            
+
             // Write the attributes
             xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "propertyDefinitionId" ),
                     "%s", BAD_CAST( getPropertyType()->getId( ).c_str( ) ) );
@@ -124,7 +124,7 @@ namespace libcmis
                     "%s", BAD_CAST( getPropertyType()->getDisplayName( ).c_str( ) ) );
             xmlTextWriterWriteFormatAttribute( writer, BAD_CAST( "queryName" ),
                     "%s", BAD_CAST( getPropertyType()->getQueryName( ).c_str( ) ) );
-            
+
             // Write the values
             for ( vector< string >::iterator it = m_strValues.begin( ); it != m_strValues.end( ); ++it )
             {
@@ -134,13 +134,13 @@ namespace libcmis
             xmlTextWriterEndElement( writer );
         }
     }
-    
+
     string Property::toString( )
     {
         string res;
         if ( getPropertyType( ) != NULL )
         {
-            for ( vector< string >::iterator it = m_strValues.begin( ); 
+            for ( vector< string >::iterator it = m_strValues.begin( );
                     it != m_strValues.end( ); ++it )
             {
                 res.append( *it );
@@ -148,7 +148,7 @@ namespace libcmis
         }
         return res;
     }
-    
+
     PropertyPtr parseProperty( xmlNodePtr node, ObjectTypePtr objectType )
     {
         PropertyPtr property;

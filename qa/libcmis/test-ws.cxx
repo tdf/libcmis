@@ -127,6 +127,7 @@ class WSTest : public CppUnit::TestFixture
         void deleteDocumentTest( );
         void deleteFolderTreeTest( );
         void moveTest( );
+        void addSecondaryTypeTest( );
 
         void checkOutTest( );
         void cancelCheckOutTest( );
@@ -158,6 +159,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( deleteDocumentTest );
         CPPUNIT_TEST( deleteFolderTreeTest );
         CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( addSecondaryTypeTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
@@ -1033,6 +1035,72 @@ void WSTest::moveTest( )
                                  "<cmism:sourceFolderId>" + src->getId( ) + "</cmism:sourceFolderId>"
                              "</cmism:moveObject>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::addSecondaryTypeTest( )
+{
+    curl_mockup_reset( );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/secondary-type.http",
+                         "<cmism:typeId>secondary-type</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2-secondary.http",
+                         "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+
+    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    // Values for the test
+    string id = "test-document";
+    libcmis::ObjectPtr object = session.getObject( id );
+    string secondaryType = "secondary-type";
+    string propertyName = "secondary-prop";
+    string expectedValue = "some-value";
+
+    // Fill the map of properties to change
+    PropertyPtrMap newProperties;
+
+    libcmis::ObjectTypePtr objectType = session.getType( secondaryType );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
+    vector< string > values;
+    values.push_back( expectedValue );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
+
+    // Change the object response to provide the updated values
+    test::addWsResponse( "http://mockup/ws/services/ObjectService",
+                         DATA_DIR "/ws/test-document-add-secondary.http",
+                         "<cmism:getObject " );
+
+    // add the secondary type (method to test)
+    libcmis::ObjectPtr updated = object->addSecondaryType( secondaryType, newProperties );
+
+    // Check the sent request
+    string xmlRequest = lcl_getCmisRequestXml( "http://mockup/ws/services/ObjectService", "<cmism:updateProperties " );
+    string expectedRequest = "<cmism:updateProperties" + lcl_getExpectedNs() + ">"
+                                 "<cmism:repositoryId>mock</cmism:repositoryId>"
+                                 "<cmism:objectId>" + id + "</cmism:objectId>"
+                                 "<cmism:changeToken>some-change-token</cmism:changeToken>"
+                                 "<cmism:properties>"
+                                    "<cmis:propertyString propertyDefinitionId=\"cmis:secondaryObjectTypeIds\""
+                                                        " localName=\"cmis:secondaryObjectTypeIds\""
+                                                        " displayName=\"cmis:secondaryObjectTypeIds\""
+                                                        " queryName=\"cmis:secondaryObjectTypeIds\">"
+                                        "<cmis:value>" + secondaryType + "</cmis:value>"
+                                    "</cmis:propertyString>"
+                                    "<cmis:propertyString propertyDefinitionId=\"" + propertyName +  "\""
+                                                        " localName=\"" + propertyName + "\""
+                                                        " displayName=\"" + propertyName + "\""
+                                                        " queryName=\"" + propertyName + "\">"
+                                        "<cmis:value>" + expectedValue + "</cmis:value>"
+                                    "</cmis:propertyString>"
+                                 "</cmism:properties>"
+                             "</cmism:updateProperties>";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+
+    // Check that the properties are updated after the call
+    PropertyPtrMap::iterator propIt = updated->getProperties( ).find( propertyName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong value after refresh", expectedValue, propIt->second->getStrings().front( ) );
 }
 
 void WSTest::checkOutTest( )

@@ -1,0 +1,57 @@
+Content-Type: multipart/related;start="<rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:846b7f14-435a-4809-845f-b98822f936ab";start-info="text/xml"
+
+--uuid:846b7f14-435a-4809-845f-b98822f936ab
+Content-Id: <rootpart*846b7f14-435a-4809-845f-b98822f936ab@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Header>
+        <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <Timestamp xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <Created>2013-09-16T13:34:16Z</Created>
+                <Expires>2013-09-17T13:34:16Z</Expires>
+            </Timestamp>
+        </Security>
+    </S:Header>
+    <S:Body>
+        <cmism:getTypeDefinitionResponse xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200908/">
+            <cmism:type>
+                <cmis:id>secondary-type</cmis:id>
+                <cmis:localName>secondary-type</cmis:localName>
+                <cmis:localNamespace>local</cmis:localNamespace>
+                <cmis:displayName>Secondary Type</cmis:displayName>
+                <cmis:queryName>secondary-type</cmis:queryName>
+                <cmis:description>Description of Secondary Type</cmis:description>
+                <cmis:baseId>cmis:secondary</cmis:baseId>
+                <cmis:parentId>cmis:secondary</cmis:parentId>
+                <cmis:creatable>false</cmis:creatable>
+                <cmis:fileable>false</cmis:fileable>
+                <cmis:queryable>false</cmis:queryable>
+                <cmis:fulltextIndexed>false</cmis:fulltextIndexed>
+                <cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+                <cmis:controllablePolicy>false</cmis:controllablePolicy>
+                <cmis:controllableACL>false</cmis:controllableACL>
+                <cmis:propertyStringDefinition>
+                  <cmis:id>secondary-prop</cmis:id>
+                  <cmis:localName>secondary-prop</cmis:localName>
+                  <cmis:localNamespace>local</cmis:localNamespace>
+                  <cmis:displayName>secondary-prop</cmis:displayName>
+                  <cmis:queryName>secondary-prop</cmis:queryName>
+                  <cmis:description>This is a Secondary type property</cmis:description>
+                  <cmis:propertyType>string</cmis:propertyType>
+                  <cmis:cardinality>single</cmis:cardinality>
+                  <cmis:updatability>readwrite</cmis:updatability>
+                  <cmis:inherited>false</cmis:inherited>
+                  <cmis:required>false</cmis:required>
+                  <cmis:queryable>true</cmis:queryable>
+                  <cmis:orderable>true</cmis:orderable>
+                  <cmis:openChoice>false</cmis:openChoice>
+                </cmis:propertyStringDefinition>
+            </cmism:type>
+        </cmism:getTypeDefinitionResponse>
+    </S:Body>
+</S:Envelope>
+--uuid:846b7f14-435a-4809-845f-b98822f936ab--
+
