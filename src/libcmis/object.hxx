@@ -104,6 +104,8 @@ namespace libcmis
             virtual std::string getChangeToken( );
             virtual bool isImmutable( );
 
+            virtual std::vector< std::string > getSecondaryTypes();
+
             /** Gives access to the properties of the object.
 
                 \attention
@@ -115,14 +117,14 @@ namespace libcmis
                 \sa updateProperties to change properties on the server
               */
             virtual libcmis::PropertyPtrMap& getProperties( );
-            
-            
+
+
             /** Get the renditions of the object.
 
                 \param filter is defined by the CMIS spec section 2.2.1.2.4.1.
-                              By default, this value is just ignored, but some bindings and servers 
+                              By default, this value is just ignored, but some bindings and servers
                               may use it.
-    
+
                 \attention
                     The streamId of the rendition is used in getContentStream( )
               */

@@ -123,7 +123,7 @@ namespace libcmis
             }
             xmlXPathFreeObject( xpathObj );
 
-            // Get the renditions 
+            // Get the renditions
             xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:rendition" ), xpathCtx );
             if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
             {
@@ -138,7 +138,7 @@ namespace libcmis
         xmlFreeDoc( doc );
 
         m_refreshTimestamp = time( NULL );
-    } 
+    }
 
     string Object::getStringProperty( const string& propertyName )
     {
@@ -175,7 +175,7 @@ namespace libcmis
     string Object::getCreatedBy( )
     {
         return getStringProperty( "cmis:createdBy" );
-    }    
+    }
 
     string Object::getLastModifiedBy( )
     {
@@ -199,7 +199,7 @@ namespace libcmis
         if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getDateTimes( ).empty( ) )
             value = it->second->getDateTimes( ).front( );
         return value;
-    } 
+    }
 
     boost::posix_time::ptime Object::getLastModificationDate( )
     {
@@ -217,6 +217,16 @@ namespace libcmis
         if ( it != getProperties( ).end( ) && it->second != NULL && !it->second->getBools( ).empty( ) )
             value = it->second->getBools( ).front( );
         return value;
+    }
+
+    vector< string > Object::getSecondaryTypes( )
+    {
+        vector< string > types;
+        PropertyPtrMap::const_iterator it = getProperties( ).find( string( "cmis:secondaryObjectTypeIds" ) );
+        if ( it != getProperties( ).end( ) && it->second != NULL )
+            types = it->second->getStrings( );
+
+        return types;
     }
 
     PropertyPtrMap& Object::getProperties( )
@@ -241,13 +251,13 @@ namespace libcmis
     {
         string url;
         vector< RenditionPtr > renditions = getRenditions( );
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ); 
+        for ( vector< RenditionPtr >::iterator it = renditions.begin( );
             it != renditions.end( ); ++it)
-                
+
         {
-            if ( (*it)->getKind( ) == "cmis:thumbnail" ) return (*it)->getUrl( );    
+            if ( (*it)->getKind( ) == "cmis:thumbnail" ) return (*it)->getUrl( );
         }
-        
+
         return url;
     }
 
@@ -297,17 +307,17 @@ namespace libcmis
                     for ( vector< string >::iterator valueIt = strValues.begin( );
                           valueIt != strValues.end( ); ++valueIt )
                     {
-                        buf << "\t" << *valueIt << endl; 
+                        buf << "\t" << *valueIt << endl;
                     }
                 }
             }
         }
-        
+
         vector< libcmis::RenditionPtr > renditions = getRenditions( );
         if ( !renditions.empty() )
         {
             buf << "Renditions: " << endl;
-            for ( vector< libcmis::RenditionPtr >::iterator it = renditions.begin(); 
+            for ( vector< libcmis::RenditionPtr >::iterator it = renditions.begin();
                    it != renditions.end(); ++it )
             {
                 buf << ( *it )->toString( ) << endl;

@@ -81,6 +81,10 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object );
 
 /** The resulting value needs to be free'd.
   */
+libcmis_vector_string_Ptr libcmis_object_getSecondaryTypes( libcmis_ObjectPtr object );
+
+/** The resulting value needs to be free'd.
+  */
 char* libcmis_object_getThumbnailUrl( libcmis_ObjectPtr object );
 
 libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object, libcmis_ErrorPtr error );

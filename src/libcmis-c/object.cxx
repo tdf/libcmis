@@ -174,7 +174,7 @@ char* libcmis_object_getThumbnailUrl( libcmis_ObjectPtr object )
         return NULL;
 }
 
-libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object, 
+libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object,
                                                            libcmis_ErrorPtr error )
 {
     libcmis_vector_rendition_Ptr result = NULL;
@@ -186,7 +186,7 @@ libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr obj
             result = new libcmis_vector_rendition( );
             result->handle = handles;
         }
-       
+
         catch ( const bad_alloc& e )
         {
             if ( error != NULL )
@@ -205,6 +205,19 @@ bool libcmis_object_isImmutable( libcmis_ObjectPtr object )
         return object->handle->isImmutable( );
     else
         return true;
+}
+
+libcmis_vector_string_Ptr libcmis_object_getSecondaryTypes( libcmis_ObjectPtr object )
+{
+    libcmis_vector_string_Ptr c_types = NULL;
+    if ( object != NULL && object->handle != NULL )
+    {
+        vector< string > types = object->handle->getSecondaryTypes( );
+        c_types = new ( nothrow ) libcmis_vector_string( );
+        if ( c_types )
+            c_types->handle = types;
+    }
+    return c_types;
 }
 
 
