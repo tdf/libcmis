@@ -89,7 +89,7 @@ namespace libcmis
 
                 Note that folders will have only path, documents may have
                 several ones and there may be cases where there is no path
-                at all (unfiled objects);
+                at all (unfilled objects);
               */
             virtual std::vector< std::string > getPaths( );
 
