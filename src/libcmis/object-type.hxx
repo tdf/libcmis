@@ -90,7 +90,7 @@ namespace libcmis
 
             /** Reload the data from the server.
 
-                \attention 
+                \attention
                     This method needs to be implemented in subclasses or it will
                     do nothing
              */
@@ -114,14 +114,14 @@ namespace libcmis
                 \since libcmis 0.4
               */
             std::string getParentTypeId( ) { return m_parentTypeId; }
-            
+
             /** Get the base type id without extracting the complete base type from
                 the repository. This is mainly provided for performance reasons.
 
                 \since libcmis 0.4
               */
             std::string getBaseTypeId( ) { return m_baseTypeId; }
-            
+
             bool isCreatable( ) { return m_creatable; }
             bool isFileable( ) { return m_fileable; }
             bool isQueryable( ) { return m_queryable; }
@@ -134,7 +134,7 @@ namespace libcmis
 
             std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
 
-            virtual std::string toString( ); 
+            virtual std::string toString( );
     };
 
     typedef ::boost::shared_ptr< ObjectType > ObjectTypePtr;

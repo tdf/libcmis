@@ -188,3 +188,13 @@ bool libcmis_property_type_isOpenChoice( libcmis_PropertyTypePtr type )
         value = type->handle->isOpenChoice( );
     return value;
 }
+
+void libcmis_property_type_update( libcmis_PropertyTypePtr propDef,
+                                   libcmis_vector_object_type_Ptr types )
+{
+    if ( propDef != NULL && propDef->handle.get( ) != NULL && types != NULL )
+    {
+        std::vector< libcmis::ObjectTypePtr > typesHandle = types->handle;
+        propDef->handle->update( typesHandle );
+    }
+}

@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "object-type.hxx"
 #include "property-type.hxx"
 #include "xml-utils.hxx"
 
@@ -218,4 +219,34 @@ namespace libcmis
             m_xmlType = string( "Uri" );
     }
 
+    void PropertyType::update( vector< ObjectTypePtr > typesDefs )
+    {
+        for ( vector< ObjectTypePtr >::iterator it = typesDefs.begin();
+                it != typesDefs.end( ) && m_temporary; ++it )
+        {
+            map< string, PropertyTypePtr >& propertyTypes =
+                ( *it )->getPropertiesTypes( );
+            map< string, PropertyTypePtr >::iterator propIt =
+                propertyTypes.find( getId( ) );
+            if ( propIt != propertyTypes.end() )
+            {
+                PropertyTypePtr complete = propIt->second;
+
+                m_localName = complete->m_localName;
+                m_localNamespace = complete->m_localNamespace;
+                m_displayName = complete->m_displayName;
+                m_queryName = complete->m_queryName;
+                m_type = complete->m_type;
+                m_xmlType = complete->m_xmlType;
+                m_multiValued = complete->m_multiValued;
+                m_updatable = complete->m_updatable;
+                m_inherited = complete->m_inherited;
+                m_required = complete->m_required;
+                m_queryable = complete->m_queryable;
+                m_orderable = complete->m_orderable;
+                m_openChoice = complete->m_openChoice;
+                m_temporary = false;
+            }
+        }
+    }
 }

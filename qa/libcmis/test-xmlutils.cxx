@@ -56,23 +56,25 @@ class XmlTest : public CppUnit::TestFixture
         void parseBoolTest( );
         void parseIntegerTest( );
         void parseDoubleTest( );
-        
+
         void parsePropertyStringTest( );
         void parsePropertyIntegerTest( );
         void parsePropertyDateTimeTest( );
         void parsePropertyBoolTest( );
 
         void parseEmptyPropertyTest( );
-        
+        void parsePropertyNoTypeTest( );
+
         void parseRenditionTest( );
         void parseRepositoryCapabilitiesTest( );
 
         // Writer tests
-        void propertyStringAsXmlTest( ); 
-        void propertyIntegerAsXmlTest( ); 
+        void propertyStringAsXmlTest( );
+        void propertyIntegerAsXmlTest( );
 
-        // Other utilities tests
+        // Other tests
         void sha1Test( );
+        void propertyTypeUpdateTest( );
 
         CPPUNIT_TEST_SUITE( XmlTest );
         CPPUNIT_TEST( parseDateTimeTest );
@@ -84,11 +86,13 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parsePropertyDateTimeTest );
         CPPUNIT_TEST( parsePropertyBoolTest );
         CPPUNIT_TEST( parseEmptyPropertyTest );
+        CPPUNIT_TEST( parsePropertyNoTypeTest );
         CPPUNIT_TEST( parseRenditionTest );
         CPPUNIT_TEST( parseRepositoryCapabilitiesTest );
         CPPUNIT_TEST( propertyStringAsXmlTest );
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST( sha1Test );
+        CPPUNIT_TEST( propertyTypeUpdateTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -114,7 +118,7 @@ ObjectTypeDummy::ObjectTypeDummy( )
 
         m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
-    
+
     // Integer Property
     {
         libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
@@ -126,7 +130,7 @@ ObjectTypeDummy::ObjectTypeDummy( )
 
         m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
-    
+
     // DateTime Property
     {
         libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
@@ -138,7 +142,7 @@ ObjectTypeDummy::ObjectTypeDummy( )
 
         m_propertiesTypes.insert( pair< string, libcmis::PropertyTypePtr >( prop->getId( ), prop ) );
     }
-    
+
     // Boolean Property
     {
         libcmis::PropertyTypePtr prop ( new libcmis::PropertyType( ) );
@@ -174,13 +178,13 @@ void XmlTest::parseDateTimeTest( )
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "No time zone case failed", expected, t );
     }
-    
+
     // Z time zone test
     {
         char toParse[50];
         strftime( toParse, sizeof( toParse ), "%FT%TZ", &basis );
         posix_time::ptime t = libcmis::parseDateTime( string( toParse ) );
-        
+
         gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
         posix_time::time_duration expTime( basis.tm_hour, basis.tm_min, basis.tm_sec );
         posix_time::ptime expected( expDate, expTime );
@@ -193,7 +197,7 @@ void XmlTest::parseDateTimeTest( )
         char toParse[50];
         strftime( toParse, sizeof( toParse ), "%FT%T+02:00", &basis );
         posix_time::ptime t = libcmis::parseDateTime( string( toParse ) );
-        
+
         gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
         posix_time::time_duration expTime( basis.tm_hour + 2, basis.tm_min, basis.tm_sec );
         posix_time::ptime expected( expDate, expTime );
@@ -206,7 +210,7 @@ void XmlTest::parseDateTimeTest( )
         char toParse[50];
         strftime( toParse, sizeof( toParse ), "%FT%T-02:00", &basis );
         posix_time::ptime t = libcmis::parseDateTime( string( toParse ) );
-        
+
         gregorian::date expDate( basis.tm_year + 1900, basis.tm_mon + 1, basis.tm_mday );
         posix_time::time_duration expTime( basis.tm_hour - 2, basis.tm_min, basis.tm_sec );
         posix_time::ptime expected( expDate, expTime );
@@ -228,7 +232,7 @@ void XmlTest::parseBoolTest( )
         bool result = libcmis::parseBool( string( "true" ) );
         CPPUNIT_ASSERT_MESSAGE( "'true' can't be parsed properly", result );
     }
-    
+
     // '1' test
     {
         bool result = libcmis::parseBool( string( "1" ) );
@@ -240,7 +244,7 @@ void XmlTest::parseBoolTest( )
         bool result = libcmis::parseBool( string( "false" ) );
         CPPUNIT_ASSERT_MESSAGE( "'false' can't be parsed properly", !result );
     }
-    
+
     // '0' test
     {
         bool result = libcmis::parseBool( string( "0" ) );
@@ -269,13 +273,13 @@ void XmlTest::parseIntegerTest( )
         long result = libcmis::parseInteger( string( "123" ) );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Positive integer can't be parsed properly", 123L, result );
     }
-    
+
     // Negative value test
     {
         long result = libcmis::parseInteger( string( "-123" ) );
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Negative integer can't be parsed properly", -123L, result );
     }
-    
+
     // Overflow error test
     {
         try
@@ -312,7 +316,7 @@ void XmlTest::parseDoubleTest( )
         double result = libcmis::parseDouble( string( "123.456" ) );
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE( "Positive decimal can't be parsed properly", 123.456, result, 0.000001 );
     }
-    
+
     // Negative value test
     {
         double result = libcmis::parseDouble( string( "-123.456" ) );
@@ -402,6 +406,21 @@ void XmlTest::parseEmptyPropertyTest( )
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "STR-ID" ), actual->getPropertyType()->getId( ) );
     CPPUNIT_ASSERT_MESSAGE( "Should have no value", actual->getStrings( ).empty( ) );
+}
+
+void XmlTest::parsePropertyNoTypeTest( )
+{
+    stringstream buf;
+    buf << "<cmis:propertyDateTime " << getXmlns( )
+        <<            "propertyDefinitionId=\"DATE-ID\">"
+        <<      "<cmis:value>2012-01-19T09:06:57.388Z</cmis:value>"
+        <<      "<cmis:value>2011-01-19T09:06:57.388Z</cmis:value>"
+        << "</cmis:propertyDateTime>";
+    libcmis::ObjectTypePtr noType;
+    libcmis::PropertyPtr actual = libcmis::parseProperty( getXmlNode( buf.str( ) ), noType );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id parsed", string( "DATE-ID" ), actual->getPropertyType()->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of values parsed", vector<string>::size_type( 2 ), actual->getDateTimes( ).size( ) );
 }
 
 void XmlTest::parseRenditionTest( )
@@ -537,6 +556,22 @@ void XmlTest::sha1Test( )
         string actual = libcmis::sha1( "35969137" );
         CPPUNIT_ASSERT_EQUAL( string( "0d93546909cfeb5c00089202104df3980000ec9f" ), actual );
     }
+}
+
+void XmlTest::propertyTypeUpdateTest( )
+{
+    libcmis::PropertyType propDef( "datetime", "DATE-ID", "", "", "" );
+
+    libcmis::ObjectTypePtr dummy( new ObjectTypeDummy( ) );
+    vector< libcmis::ObjectTypePtr > typeDefs;
+    typeDefs.push_back( dummy );
+
+    propDef.update( typeDefs );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Not updated",
+           string( "LOCAL" ), propDef.getLocalName( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Property Type still marked temporary",
+           !propDef.m_temporary );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );

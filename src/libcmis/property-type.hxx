@@ -35,6 +35,9 @@
 
 namespace libcmis
 {
+    class ObjectType;
+    typedef boost::shared_ptr< ObjectType > ObjectTypePtr;
+
     class PropertyType
     {
         public:
@@ -113,6 +116,8 @@ namespace libcmis
 
             void setTypeFromXml( std::string typeStr );
             void setTypeFromJsonType( std::string jsonType );
+
+            void update( std::vector< ObjectTypePtr > typesDefs );
     };
     typedef ::boost::shared_ptr< PropertyType > PropertyTypePtr;
 }

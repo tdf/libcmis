@@ -75,6 +75,9 @@ bool libcmis_property_type_isQueryable( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isOrderable( libcmis_PropertyTypePtr type );
 bool libcmis_property_type_isOpenChoice( libcmis_PropertyTypePtr type );
 
+void libcmis_property_type_update( libcmis_PropertyTypePtr propDef,
+                                   libcmis_vector_object_type_Ptr types );
+
 #ifdef __cplusplus
 }
 #endif

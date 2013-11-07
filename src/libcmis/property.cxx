@@ -189,8 +189,10 @@ namespace libcmis
                     string xmlType( ( char * )node->name );
                     string propStr( "property" );
                     size_t pos = xmlType.find( propStr );
-                    if ( pos == 0 )
+                    if ( pos == 0 ) {
                         xmlType = xmlType.substr( propStr.length( ) );
+                        xmlType = libcmis::tolower( xmlType );
+                    }
 
                     propType.reset( new PropertyType( xmlType, propDefinitionId,
                                                       localName, displayName,
