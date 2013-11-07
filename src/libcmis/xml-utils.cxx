@@ -302,7 +302,7 @@ namespace libcmis
             xmlXPathRegisterNs( xpathCtx, BAD_CAST( "type" ), BAD_CAST( "cmis:cmisTypeDocumentDefinitionType" ) );
         }
     }
-    
+
     void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx )
     {
         if ( xpathCtx != NULL )
@@ -315,7 +315,7 @@ namespace libcmis
             registerSoapNamespaces( xpathCtx );
         }
     }
-    
+
     void registerSoapNamespaces( xmlXPathContextPtr xpathCtx )
     {
         if ( xpathCtx != NULL )
@@ -328,7 +328,7 @@ namespace libcmis
             xmlXPathRegisterNs( xpathCtx, BAD_CAST( "xsd" ), BAD_CAST ( "http://www.w3.org/2001/XMLSchema" ) );
         }
     }
-    
+
     string getXPathValue( xmlXPathContextPtr xpathCtx, string req )
     {
         string value;
@@ -358,11 +358,19 @@ namespace libcmis
         return doc;
     }
 
-    string getXmlNodeAttributeValue( xmlNodePtr node, const char* attributeName ) throw ( Exception )
+    string getXmlNodeAttributeValue( xmlNodePtr node,
+                                     const char* attributeName,
+                                     const char* defaultValue )
+        throw ( Exception )
     {
         xmlChar* xmlStr = xmlGetProp( node, BAD_CAST( attributeName ) );
         if ( xmlStr == NULL )
-            throw Exception( "Missing attribute" );
+        {
+            if ( !defaultValue )
+                throw Exception( "Missing attribute" );
+            else
+                return string( defaultValue );
+        }
         string value( ( char * ) xmlStr );
         xmlFree( xmlStr );
         return value;
@@ -393,7 +401,7 @@ namespace libcmis
             if ( tzPos != string::npos )
             {
                 noTzStr += timeStr.substr( 0, tzPos );
-                
+
                 // Check the validity of the TZ value
                 string tzStr = timeStr.substr( tzPos );
                 try
@@ -402,7 +410,7 @@ namespace libcmis
                 }
                 catch ( const std::exception& )
                 {
-                    // Error converting, not a datetime 
+                    // Error converting, not a datetime
                     return t;
                 }
 
@@ -472,7 +480,7 @@ namespace libcmis
 
         return value;
     }
-    
+
     double parseDouble( string doubleStr ) throw ( Exception )
     {
         char* end;
@@ -490,7 +498,7 @@ namespace libcmis
 
         return value;
     }
-    
+
     string trim( const string& str )
     {
         string spaces = " \t\r\n";

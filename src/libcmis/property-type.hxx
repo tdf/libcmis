@@ -64,13 +64,20 @@ namespace libcmis
             bool m_queryable;
             bool m_orderable;
             bool m_openChoice;
-            
+            bool m_temporary;
+
         public:
-            
+
             /// Default constructor, mostly present for testing.
             PropertyType( );
             PropertyType( xmlNodePtr node );
             PropertyType( const PropertyType& copy );
+            /// constructor for temporary type definitions
+            PropertyType( std::string type,
+                          std::string id,
+                          std::string localName,
+                          std::string displayName,
+                          std::string queryName );
             virtual ~PropertyType( ) { };
 
             PropertyType& operator=( const PropertyType& copy );
@@ -89,7 +96,7 @@ namespace libcmis
             bool isQueryable( ) { return m_queryable; }
             bool isOrderable( ) { return m_orderable; }
             bool isOpenChoice( ) { return m_openChoice; }
-            
+
             void setId( std::string id ) { m_id = id; }
             void setLocalName( std::string localName ) { m_localName = localName; }
             void setLocalNamespace( std::string localNamespace ) { m_localNamespace = localNamespace; }

@@ -47,7 +47,8 @@ namespace libcmis
         m_required( false ),
         m_queryable( false ),
         m_orderable( false ),
-        m_openChoice( false )
+        m_openChoice( false ),
+        m_temporary( false )
     {
     }
 
@@ -65,7 +66,8 @@ namespace libcmis
         m_required( false ),
         m_queryable( false ),
         m_orderable( false ),
-        m_openChoice( false )
+        m_openChoice( false ),
+        m_temporary( false )
     {
         for ( xmlNodePtr child = node->children; child; child = child->next )
         {
@@ -115,8 +117,33 @@ namespace libcmis
         m_required ( copy.m_required ),
         m_queryable ( copy.m_queryable ),
         m_orderable ( copy.m_orderable ),
-        m_openChoice ( copy.m_openChoice )
+        m_openChoice ( copy.m_openChoice ),
+        m_temporary( copy.m_temporary )
     {
+    }
+
+    PropertyType::PropertyType( string type,
+                                string id,
+                                string localName,
+                                string displayName,
+                                string queryName ) :
+        m_id ( id ),
+        m_localName ( localName ),
+        m_localNamespace ( ),
+        m_displayName ( displayName ),
+        m_queryName ( queryName ),
+        m_type ( ),
+        m_xmlType( type ),
+        m_multiValued( false ),
+        m_updatable( false ),
+        m_inherited( false ),
+        m_required( false ),
+        m_queryable( false ),
+        m_orderable( false ),
+        m_openChoice( false ),
+        m_temporary( true )
+    {
+        setTypeFromXml( m_xmlType );
     }
 
     PropertyType& PropertyType::operator=( const PropertyType& copy )
@@ -137,6 +164,7 @@ namespace libcmis
             m_queryable = copy.m_queryable;
             m_orderable = copy.m_orderable;
             m_openChoice = copy.m_openChoice;
+            m_temporary = copy.m_temporary;
         }
 
         return *this;

@@ -94,7 +94,7 @@ namespace libcmis
             void decodeBase64( const char* buf, size_t len );
             void encodeBase64( const char* buf, size_t len );
     };
-    
+
     class HttpResponse
     {
         private:
@@ -113,25 +113,30 @@ namespace libcmis
     typedef boost::shared_ptr< HttpResponse > HttpResponsePtr;
 
     void registerNamespaces( xmlXPathContextPtr xpathCtx );
-    
+
     /** Register the CMIS and WSDL / SOAP namespaces
       */
     void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx );
-    
+
     /** Register only the WSD / SOAP namespaces.
       */
     void registerSoapNamespaces( xmlXPathContextPtr xpathCtx );
 
-    std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req ); 
+    std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req );
 
     xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
+
     /** Utility extracting an attribute value from an Xml Node,
-        based on the attribute name.
+        based on the attribute name. If the defaultValue is NULL and
+        the attribute can't be found then throw an exception.
       */
-    std::string getXmlNodeAttributeValue( xmlNodePtr node, const char* attributeName ) throw ( Exception );
+    std::string getXmlNodeAttributeValue( xmlNodePtr node,
+                                          const char* attributeName,
+                                          const char* defaultValue = NULL )
+        throw ( Exception );
 
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
-     */ 
+     */
     boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
 
     /// Write a UTC time object to an xsd:dateTime string
@@ -142,9 +147,9 @@ namespace libcmis
     long parseInteger( std::string str ) throw ( Exception );
 
     double parseDouble( std::string str ) throw ( Exception );
-   
+
     /** Trim spaces on the left and right of a string.
-     */ 
+     */
     std::string trim( const std::string& str );
 
     std::string base64encode( const std::string& str );

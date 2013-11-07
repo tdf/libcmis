@@ -153,33 +153,72 @@ namespace libcmis
     {
         PropertyPtr property;
 
-        if ( node != NULL && objectType != NULL )
+        if ( node != NULL )
         {
+            // Get the property definition Id
+            string propDefinitionId;
             try
             {
-                string id = getXmlNodeAttributeValue( node, "propertyDefinitionId" );
-
-                // Find the value nodes
-                vector< string > values;
-                for ( xmlNodePtr child = node->children; child; child = child->next )
-                {
-                    if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
-                    {
-                        xmlChar* content = xmlNodeGetContent( child );
-                        values.push_back( string( ( char * ) content ) );
-                        xmlFree( content );
-                    }
-                }
-
-                map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( id );
-                if ( it != objectType->getPropertiesTypes().end( ) )
-                {
-                    property.reset( new Property( it->second, values ) );
-                }
+                propDefinitionId = getXmlNodeAttributeValue( node, "propertyDefinitionId" );
             }
             catch ( const Exception& )
             {
-                // Ignore that non-property node
+            }
+
+            // Try to get the property type definition
+            PropertyTypePtr propType;
+            if ( !propDefinitionId.empty() && objectType )
+            {
+                map< string, PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propDefinitionId );
+                if ( it != objectType->getPropertiesTypes().end( ) )
+                    propType = it->second;
+            }
+
+            // Try to construct a temporary type definition
+            if ( !propDefinitionId.empty( ) && !propType )
+            {
+                if ( node->name != NULL )
+                {
+                    string localName = getXmlNodeAttributeValue( node,
+                            "localName", "" );
+                    string displayName = getXmlNodeAttributeValue( node,
+                            "displayName", "" );
+                    string queryName = getXmlNodeAttributeValue( node,
+                            "queryName", "" );
+
+                    string xmlType( ( char * )node->name );
+                    string propStr( "property" );
+                    size_t pos = xmlType.find( propStr );
+                    if ( pos == 0 )
+                        xmlType = xmlType.substr( propStr.length( ) );
+
+                    propType.reset( new PropertyType( xmlType, propDefinitionId,
+                                                      localName, displayName,
+                                                      queryName ) );
+                }
+            }
+
+            if ( propType )
+            {
+                try
+                {
+                    // Find the value nodes
+                    vector< string > values;
+                    for ( xmlNodePtr child = node->children; child; child = child->next )
+                    {
+                        if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
+                        {
+                            xmlChar* content = xmlNodeGetContent( child );
+                            values.push_back( string( ( char * ) content ) );
+                            xmlFree( content );
+                        }
+                    }
+                    property.reset( new Property( propType, values ) );
+                }
+                catch ( const Exception& )
+                {
+                    // Ignore that non-property node
+                }
             }
         }
 
