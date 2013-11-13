@@ -114,7 +114,7 @@ namespace libcmis
             string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
             m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
 
-            string propertiesReq( "//cmis:properties/*" );
+            string propertiesReq( "//*[@propertyDefinitionId]" );
             xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
             if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
             {
