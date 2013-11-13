@@ -89,6 +89,17 @@ char* libcmis_object_getThumbnailUrl( libcmis_ObjectPtr object );
 
 libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr object, libcmis_ErrorPtr error );
 
+libcmis_ObjectPtr
+libcmis_object_addSecondaryType( libcmis_ObjectPtr object,
+                                 const char* id,
+                                 libcmis_vector_property_Ptr properties,
+                                 libcmis_ErrorPtr error );
+
+libcmis_ObjectPtr
+libcmis_object_removeSecondaryType( libcmis_ObjectPtr object,
+                                    const char* id,
+                                    libcmis_ErrorPtr error );
+
 libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object );
 libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const char* name );
 void libcmis_object_setProperty( libcmis_ObjectPtr object, libcmis_PropertyPtr property );

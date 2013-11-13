@@ -33,6 +33,32 @@
 using namespace std;
 using libcmis::PropertyPtrMap;
 
+namespace
+{
+    string lcl_stdString( const char* str )
+    {
+        string result;
+        if ( str )
+            result = string( str );
+        return result;
+    }
+
+    PropertyPtrMap lcl_createPropertiesMap( libcmis_vector_property_Ptr properties )
+    {
+        PropertyPtrMap propertiesMap;
+        if ( properties )
+        {
+            for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                    it != properties->handle.end( ); ++it )
+            {
+                libcmis::PropertyPtr propHandle = *it;
+                propertiesMap[ propHandle->getPropertyType()->getId( ) ] = propHandle;
+            }
+        }
+        return propertiesMap;
+    }
+}
+
 void libcmis_vector_object_free( libcmis_vector_object_Ptr vector )
 {
     delete vector;
@@ -220,6 +246,78 @@ libcmis_vector_string_Ptr libcmis_object_getSecondaryTypes( libcmis_ObjectPtr ob
     return c_types;
 }
 
+libcmis_ObjectPtr
+libcmis_object_addSecondaryType( libcmis_ObjectPtr object,
+                                 const char* id,
+                                 libcmis_vector_property_Ptr properties,
+                                 libcmis_ErrorPtr error )
+{
+    libcmis_ObjectPtr updated = NULL;
+    if ( object != NULL && object->handle != NULL && properties != NULL )
+    {
+        try
+        {
+            PropertyPtrMap propertiesMap = lcl_createPropertiesMap( properties );
+            libcmis::ObjectPtr result = object->handle->addSecondaryType(
+                                                    lcl_stdString( id ),
+                                                    propertiesMap );
+            updated = new libcmis_object( );
+            updated->handle = result;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+    }
+    return updated;
+}
+
+libcmis_ObjectPtr
+libcmis_object_removeSecondaryType( libcmis_ObjectPtr object,
+                                    const char* id,
+                                    libcmis_ErrorPtr error )
+{
+    libcmis_ObjectPtr updated = NULL;
+    if ( object != NULL && object->handle != NULL )
+    {
+        try
+        {
+            libcmis::ObjectPtr result = object->handle->removeSecondaryType(
+                                                lcl_stdString( id ) );
+            updated = new libcmis_object( );
+            updated->handle = result;
+        }
+        catch ( const libcmis::Exception& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->type = strdup( e.getType().c_str() );
+            }
+        }
+        catch ( const bad_alloc& e )
+        {
+            if ( error != NULL )
+            {
+                error->message = strdup( e.what() );
+                error->badAlloc = true;
+            }
+        }
+    }
+    return updated;
+}
 
 libcmis_vector_property_Ptr libcmis_object_getProperties( libcmis_ObjectPtr object )
 {
@@ -248,7 +346,7 @@ libcmis_PropertyPtr libcmis_object_getProperty( libcmis_ObjectPtr object, const 
     if ( object != NULL && object->handle.get( ) != NULL )
     {
         PropertyPtrMap& handles = object->handle->getProperties( );
-        PropertyPtrMap::iterator it = handles.find( string( name ) );
+        PropertyPtrMap::iterator it = handles.find( lcl_stdString( name ) );
         if ( it != handles.end( ) )
         {
             property = new ( nothrow ) libcmis_property( );
@@ -271,14 +369,7 @@ libcmis_ObjectPtr libcmis_object_updateProperties(
         try
         {
             // Build the map of changed properties
-            PropertyPtrMap propertiesMap;
-            for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
-                    it != properties->handle.end( ); ++it )
-            {
-                libcmis::PropertyPtr propHandle = *it;
-                propertiesMap[ propHandle->getPropertyType()->getId( ) ] = propHandle;
-            }
-
+            PropertyPtrMap propertiesMap = lcl_createPropertiesMap( properties );
             libcmis::ObjectPtr handle = object->handle->updateProperties( propertiesMap );
             result = new libcmis_object( );
             result->handle = handle;
