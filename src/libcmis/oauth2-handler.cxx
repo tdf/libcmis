@@ -167,9 +167,14 @@ string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )
 
 string OAuth2Handler::oauth2Authenticate( )
 {
-    return m_oauth2Parser( m_session, getAuthURL( ),
-                           m_session->getUsername( ),
-                           m_session->getPassword( ) );
+    string code;
+    if ( m_oauth2Parser )
+    {
+        code = m_oauth2Parser( m_session, getAuthURL( ),
+                               m_session->getUsername( ),
+                               m_session->getPassword( ) );
+    }
+    return code;
 }
 
 void OAuth2Handler::setOAuth2Parser( OAuth2Parser parser )

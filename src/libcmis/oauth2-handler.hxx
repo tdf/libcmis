@@ -47,9 +47,10 @@ class OAuth2Handler
         std::string m_refresh;
 
         OAuth2Parser m_oauth2Parser;
+
     public:
 
-        OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data ) 
+        OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data )
             throw ( libcmis::Exception );
 
         OAuth2Handler( const OAuth2Handler& copy );
@@ -69,7 +70,7 @@ class OAuth2Handler
             access/refresh tokens.
 
             \param authCode
-               the authentication code normally obtained from authenticate 
+               the authentication code normally obtained from authenticate
                method.
           */
         void fetchTokens( std::string authCode ) throw ( libcmis::Exception );

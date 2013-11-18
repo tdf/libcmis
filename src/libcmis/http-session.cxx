@@ -118,7 +118,8 @@ HttpSession::HttpSession( string username, string password, bool noSslCheck,
     m_verbose( verbose ),
     m_noHttpErrors( false ),
     m_noSSLCheck( noSslCheck ),
-    m_refreshedToken( false )
+    m_refreshedToken( false ),
+    m_inOAuth2Authentication( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -138,7 +139,8 @@ HttpSession::HttpSession( const HttpSession& copy ) :
     m_verbose( copy.m_verbose ),
     m_noHttpErrors( copy.m_noHttpErrors ),
     m_noSSLCheck( copy.m_noSSLCheck ),
-    m_refreshedToken( false )
+    m_refreshedToken( false ),
+    m_inOAuth2Authentication( false )
 {
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
@@ -155,7 +157,8 @@ HttpSession::HttpSession( ) :
     m_verbose( false ),
     m_noHttpErrors( false ),
     m_noSSLCheck( false ),
-    m_refreshedToken( false )
+    m_refreshedToken( false ),
+    m_inOAuth2Authentication( false )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -175,6 +178,7 @@ HttpSession& HttpSession::operator=( const HttpSession& copy )
         m_noHttpErrors = copy.m_noHttpErrors;
         m_noSSLCheck = copy.m_noSSLCheck;
         m_refreshedToken = copy.m_refreshedToken;
+        m_inOAuth2Authentication = copy.m_inOAuth2Authentication;
 
         // Not sure how sharing curl handles is safe.
         curl_global_init( CURL_GLOBAL_ALL );
@@ -205,6 +209,8 @@ string& HttpSession::getPassword( ) throw ( CurlException )
 
 libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlException )
 {
+    checkOAuth2( url );
+
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
     initProtocols( );
@@ -260,6 +266,8 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
 
 libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, vector< string > headers ) throw ( CurlException )
 {
+    checkOAuth2( url );
+
     // Duplicate istream in case we need to retry
     string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
 
@@ -344,6 +352,8 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
 libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istream& is,
     const string& contentType, bool redirect ) throw ( CurlException )
 {
+    checkOAuth2( url );
+
     // Duplicate istream in case we need to retry
     string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
 
@@ -432,6 +442,8 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
 
 void HttpSession::httpDeleteRequest( string url ) throw ( CurlException )
 {
+    checkOAuth2( url );
+
     // Reset the handle for the request
     curl_easy_reset( m_curlHandle );
     initProtocols( );
@@ -652,6 +664,17 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     }
 }
 
+
+void HttpSession::checkOAuth2( string url )
+{
+    if ( m_oauth2Handler )
+    {
+        m_oauth2Handler->setOAuth2Parser( OAuth2Providers::getOAuth2Parser( url ) );
+        if ( m_oauth2Handler->getAccessToken().empty() && !m_inOAuth2Authentication )
+            oauth2Authenticate( );
+    }
+}
+
 long HttpSession::getHttpStatus( )
 {
     long status = 0;
@@ -663,12 +686,13 @@ long HttpSession::getHttpStatus( )
 void HttpSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
 {
     m_oauth2Handler = new OAuth2Handler( this, oauth2 );
-    oauth2Authenticate( );
 }
 
 void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
 {
     string authCode;
+
+    m_inOAuth2Authentication = true;
 
     // Try to get the authentication code using the given provider.
     authCode = m_oauth2Handler->oauth2Authenticate( );
@@ -702,6 +726,8 @@ void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     m_oauth2Handler->fetchTokens( string( authCode ) );
+
+    m_inOAuth2Authentication = false;
 }
 
 void HttpSession::setNoSSLCertificateCheck( bool noCheck )

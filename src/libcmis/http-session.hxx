@@ -104,6 +104,7 @@ class HttpSession
         bool m_noHttpErrors;
         bool m_noSSLCheck;
         bool m_refreshedToken;
+        bool m_inOAuth2Authentication;
     public:
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
@@ -160,6 +161,7 @@ class HttpSession
 
     private:
         void checkCredentials( ) throw ( CurlException );
+        void checkOAuth2( std::string url );
         void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ), bool redirect = true ) throw ( CurlException );
         void initProtocols( );
 };
