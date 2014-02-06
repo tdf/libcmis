@@ -128,7 +128,7 @@ libcmis_DocumentPtr DocumentTest::getTested( bool isFiled, bool triggersFaults )
     // Create the document
     libcmis_DocumentPtr result = new libcmis_document( );
     libcmis::DocumentPtr handle( new dummies::Document( isFiled, triggersFaults ) );
-    result->setHandle( handle );
+    result->handle = handle;
 
     return result;
 }

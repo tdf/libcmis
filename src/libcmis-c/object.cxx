@@ -32,6 +32,7 @@
 
 using namespace std;
 using libcmis::PropertyPtrMap;
+using boost::dynamic_pointer_cast;
 
 namespace
 {
@@ -481,10 +482,10 @@ void libcmis_object_move( libcmis_ObjectPtr object,
         {
             libcmis::FolderPtr sourceHandle;
             if ( source != NULL )
-                sourceHandle = source->handle;
+                sourceHandle = dynamic_pointer_cast< libcmis::Folder >( source->handle );
             libcmis::FolderPtr destHandle;
             if ( dest != NULL )
-                destHandle = dest->handle;
+                destHandle = dynamic_pointer_cast< libcmis::Folder >( dest->handle );
 
             object->handle->move( sourceHandle, destHandle );
         }

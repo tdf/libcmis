@@ -31,6 +31,8 @@
 
 using namespace std;
 using libcmis::PropertyPtrMap;
+using libcmis::FolderPtr;
+using boost::dynamic_pointer_cast;
 
 void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector )
 {
@@ -55,7 +57,7 @@ libcmis_FolderPtr libcmis_vector_folder_get( libcmis_vector_folder_Ptr vector, s
         libcmis::FolderPtr handle = vector->handle[i];
         item = new ( nothrow ) libcmis_folder( );
         if ( item )
-            item->setHandle( handle );
+            item->handle = handle;
     }
     return item;
 }
@@ -84,7 +86,7 @@ libcmis_FolderPtr libcmis_folder_cast( libcmis_ObjectPtr object )
         {
             folder = new ( nothrow ) libcmis_folder( );
             if ( folder )
-                folder->setHandle( handle );
+                folder->handle = handle;
         }
     }
 
@@ -105,11 +107,15 @@ libcmis_FolderPtr libcmis_folder_getParent( libcmis_FolderPtr folder, libcmis_Er
     {
         try
         {
-            libcmis::FolderPtr handle = folder->handle->getFolderParent( );
-            if ( handle.get( ) != NULL )
+            FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+            if ( folder )
             {
-                parent = new libcmis_folder( );
-                parent->setHandle( handle );
+                libcmis::FolderPtr handle = folderHandle->getFolderParent( );
+                if ( handle.get( ) != NULL )
+                {
+                    parent = new libcmis_folder( );
+                    parent->handle = handle;
+                }
             }
         }
         catch ( const libcmis::Exception& e )
@@ -140,9 +146,13 @@ libcmis_vector_object_Ptr libcmis_folder_getChildren( libcmis_FolderPtr folder, 
     {
         try
         {
-            std::vector< libcmis::ObjectPtr > handles = folder->handle->getChildren( );
-            result = new libcmis_vector_object( );
-            result->handle = handles;
+            libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+            if ( folder )
+            {
+                std::vector< libcmis::ObjectPtr > handles = folderHandle->getChildren( );
+                result = new libcmis_vector_object( );
+                result->handle = handles;
+            }
         }
         catch ( const libcmis::Exception& e )
         {
@@ -169,7 +179,11 @@ char* libcmis_folder_getPath( libcmis_FolderPtr folder )
 {
     char* path = NULL;
     if ( folder != NULL && folder->handle.get( ) != NULL )
-        path = strdup( folder->handle->getPath( ).c_str( ) );
+    {
+        libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+        if ( folder )
+            path = strdup( folderHandle->getPath( ).c_str( ) );
+    }
     return path;
 }
 
@@ -178,7 +192,11 @@ bool libcmis_folder_isRootFolder( libcmis_FolderPtr folder )
 {
     bool isRoot = false;
     if ( folder != NULL && folder->handle.get( ) != NULL )
-        isRoot = folder->handle->isRootFolder( );
+    {
+        libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+        if ( folder )
+            isRoot = folderHandle->isRootFolder( );
+    }
     return isRoot;
 }
 
@@ -190,41 +208,45 @@ libcmis_FolderPtr libcmis_folder_createFolder(
     libcmis_FolderPtr result = NULL;
     if ( folder != NULL && folder->handle.get( ) != NULL )
     {
-        try
+        libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+        if ( folder )
         {
-            PropertyPtrMap mappedProperties;
-            if ( properties != NULL )
+            try
             {
-                size_t size = properties->handle.size( );
-                for ( size_t i = 0; i < size; ++i )
+                PropertyPtrMap mappedProperties;
+                if ( properties != NULL )
                 {
-                    libcmis::PropertyPtr property = properties->handle[i];
-                    if ( property.get( ) != NULL )
+                    size_t size = properties->handle.size( );
+                    for ( size_t i = 0; i < size; ++i )
                     {
-                        string id = property->getPropertyType( )->getId( );
-                        mappedProperties.insert( pair< string, libcmis::PropertyPtr >( id, property ) );
+                        libcmis::PropertyPtr property = properties->handle[i];
+                        if ( property.get( ) != NULL )
+                        {
+                            string id = property->getPropertyType( )->getId( );
+                            mappedProperties.insert( pair< string, libcmis::PropertyPtr >( id, property ) );
+                        }
                     }
                 }
-            }
 
-            libcmis::FolderPtr handle = folder->handle->createFolder( mappedProperties );
-            result = new libcmis_folder( );
-            result->setHandle( handle );
-        }
-        catch ( const libcmis::Exception& e )
-        {
-            if ( error != NULL )
-            {
-                error->message = strdup( e.what() );
-                error->type = strdup( e.getType().c_str() );
+                libcmis::FolderPtr handle = folderHandle->createFolder( mappedProperties );
+                result = new libcmis_folder( );
+                result->handle = handle;
             }
-        }
-        catch ( const bad_alloc& e )
-        {
-            if ( error != NULL )
+            catch ( const libcmis::Exception& e )
             {
-                error->message = strdup( e.what() );
-                error->badAlloc = true;
+                if ( error != NULL )
+                {
+                    error->message = strdup( e.what() );
+                    error->type = strdup( e.getType().c_str() );
+                }
+            }
+            catch ( const bad_alloc& e )
+            {
+                if ( error != NULL )
+                {
+                    error->message = strdup( e.what() );
+                    error->badAlloc = true;
+                }
             }
         }
     }
@@ -244,57 +266,61 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
     libcmis_DocumentPtr created = NULL;
     if ( folder != NULL && folder->handle.get( ) != NULL )
     {
-        try
+        libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+        if ( folder )
         {
-            // Create the ostream
-            boost::shared_ptr< std::ostream > stream( new stringstream( ) );
-
-            size_t bufSize = 2048;
-            char* buf = new char[ bufSize ];
-            size_t read = 0;
-            do
+            try
             {
-                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
-                stream->write( buf, read );
-            } while ( read == bufSize );
-            delete[] buf;
+                // Create the ostream
+                boost::shared_ptr< std::ostream > stream( new stringstream( ) );
 
-            // Create the property map
-            PropertyPtrMap propertiesMap;
-            if ( properties != NULL )
-            {
-                for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
-                        it != properties->handle.end( ); ++it )
+                size_t bufSize = 2048;
+                char* buf = new char[ bufSize ];
+                size_t read = 0;
+                do
                 {
-                    string id = ( *it )->getPropertyType( )->getId( );
-                    propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                    read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
+                    stream->write( buf, read );
+                } while ( read == bufSize );
+                delete[] buf;
+
+                // Create the property map
+                PropertyPtrMap propertiesMap;
+                if ( properties != NULL )
+                {
+                    for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                            it != properties->handle.end( ); ++it )
+                    {
+                        string id = ( *it )->getPropertyType( )->getId( );
+                        propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                    }
+                }
+
+                libcmis::DocumentPtr handle = folderHandle->createDocument( propertiesMap, stream, contentType, filename );
+                created = new libcmis_document( );
+                created->handle = handle;
+            }
+            catch ( const libcmis::Exception& e )
+            {
+                if ( error != NULL )
+                {
+                    error->message = strdup( e.what() );
+                    error->type = strdup( e.getType().c_str() );
                 }
             }
-
-            libcmis::DocumentPtr handle = folder->handle->createDocument( propertiesMap, stream, contentType, filename );
-            created = new libcmis_document( );
-            created->setHandle( handle );
-        }
-        catch ( const libcmis::Exception& e )
-        {
-            if ( error != NULL )
+            catch ( const bad_alloc& e )
             {
-                error->message = strdup( e.what() );
-                error->type = strdup( e.getType().c_str() );
+                if ( error != NULL )
+                {
+                    error->message = strdup( e.what() );
+                    error->badAlloc = true;
+                }
             }
-        }
-        catch ( const bad_alloc& e )
-        {
-            if ( error != NULL )
+            catch ( const exception& e )
             {
-                error->message = strdup( e.what() );
-                error->badAlloc = true;
+                if ( error != NULL )
+                    error->message = strdup( e.what() );
             }
-        }
-        catch ( const exception& e )
-        {
-            if ( error != NULL )
-                error->message = strdup( e.what() );
         }
     }
     return created;
@@ -313,9 +339,13 @@ libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,
         failed = new libcmis_vector_string( );
         if ( folder != NULL && folder->handle.get( ) != NULL )
         {
-                vector< string > handle = folder->handle->removeTree( allVersion,
+            libcmis::FolderPtr folderHandle = dynamic_pointer_cast< libcmis::Folder >( folder->handle );
+            if ( folder )
+            {
+                vector< string > handle = folderHandle->removeTree( allVersion,
                         libcmis::UnfileObjects::Type( unfile ), continueOnError );
                 failed->handle = handle;
+            }
         }
     }
     catch ( const libcmis::Exception& e )

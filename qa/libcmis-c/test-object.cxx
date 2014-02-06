@@ -120,7 +120,7 @@ libcmis_FolderPtr ObjectTest::getTestFolder( )
 {
     libcmis_FolderPtr result = new libcmis_folder( );
     libcmis::FolderPtr handle( new dummies::Folder( false, false ) );
-    result->setHandle( handle );
+    result->handle = handle;
 
     return result;
 }
@@ -269,7 +269,7 @@ void ObjectTest::updatePropertiesTest( )
     libcmis_PropertyPtr newProperty = libcmis_property_create( propertyType, values, size );
     delete[ ] values;
     libcmis_vector_property_append( newProperties, newProperty );
-    
+
     // Update the properties (method under test)
     libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, newProperties, error );
 
@@ -292,7 +292,7 @@ void ObjectTest::updatePropertiesErrorTest( )
     libcmis_ObjectPtr tested = getTested( true );
     CPPUNIT_ASSERT_MESSAGE( "Timestamp not set to 0 initially", 0 == libcmis_object_getRefreshTimestamp( tested ) );
     libcmis_ErrorPtr error = libcmis_error_create( );
-    
+
     // Create the changed properties map
     libcmis_vector_property_Ptr newProperties = libcmis_vector_property_create( );
     libcmis_ObjectTypePtr objectType = libcmis_object_getTypeDescription( tested );
@@ -304,7 +304,7 @@ void ObjectTest::updatePropertiesErrorTest( )
     libcmis_PropertyPtr newProperty = libcmis_property_create( propertyType, values, size );
     delete[ ] values;
     libcmis_vector_property_append( newProperties, newProperty );
-    
+
     // Update the properties (method under test)
     libcmis_ObjectPtr updated = libcmis_object_updateProperties( tested, newProperties, error );
 

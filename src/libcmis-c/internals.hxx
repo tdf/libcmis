@@ -126,26 +126,12 @@ struct libcmis_property
 
 struct libcmis_folder : public libcmis_object
 {
-    libcmis::FolderPtr handle;
-
-    libcmis_folder( ) : libcmis_object( ), handle( ) { }
-    void setHandle( libcmis::FolderPtr folder )
-    {
-        handle = folder;
-        libcmis_object::handle = folder;
-    }
+    libcmis_folder( ) : libcmis_object( ) { }
 };
 
 struct libcmis_document : public libcmis_object
 {
-    libcmis::DocumentPtr handle;
-
-    libcmis_document( ) : libcmis_object( ), handle( ) { }
-    void setHandle( libcmis::DocumentPtr document )
-    {
-        handle = document;
-        libcmis_object::handle = document;
-    }
+    libcmis_document( ) : libcmis_object( ) { }
 };
 
 struct libcmis_oauth2data

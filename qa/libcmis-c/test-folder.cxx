@@ -91,7 +91,7 @@ libcmis_FolderPtr FolderTest::getTested( bool isRoot, bool triggersFaults )
 {
     libcmis_FolderPtr result = new libcmis_folder( );
     libcmis::FolderPtr handle( new dummies::Folder( isRoot, triggersFaults ) );
-    result->setHandle( handle );
+    result->handle = handle;
 
     return result;
 }

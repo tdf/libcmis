@@ -30,7 +30,10 @@
 #include "internals.hxx"
 
 using namespace std;
+using libcmis::DocumentPtr;
+using libcmis::FolderPtr;
 using libcmis::PropertyPtrMap;
+using boost::dynamic_pointer_cast;
 
 void libcmis_vector_document_free( libcmis_vector_document_Ptr vector )
 {
@@ -54,7 +57,7 @@ libcmis_DocumentPtr libcmis_vector_document_get( libcmis_vector_document_Ptr vec
     {
         libcmis::DocumentPtr handle = vector->handle[i];
         item = new( nothrow ) libcmis_document( );
-        item->setHandle( handle );
+        item->handle = handle;
     }
     return item;
 }
@@ -64,7 +67,7 @@ bool libcmis_is_document( libcmis_ObjectPtr object )
     bool isDocument = false;
     if ( object != NULL && object->handle.get( ) != NULL )
     {
-        libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object->handle );
+        DocumentPtr document = dynamic_pointer_cast< libcmis::Document >( object->handle );
         isDocument = document.get( ) != NULL;
     }
     return isDocument;
@@ -75,14 +78,11 @@ libcmis_DocumentPtr libcmis_document_cast( libcmis_ObjectPtr object )
 {
     libcmis_DocumentPtr document = NULL;
 
-    if ( object != NULL && object->handle.get( ) != NULL )
+    if ( object != NULL && object->handle.get( ) != NULL &&
+            libcmis_is_document( object ) )
     {
-        libcmis::DocumentPtr handle = boost::dynamic_pointer_cast< libcmis::Document >( object->handle );
-        if ( handle.get( ) != NULL )
-        {
-            document = new ( nothrow ) libcmis_document( );
-            document->setHandle( handle );
-        }
+        document = new ( nothrow ) libcmis_document( );
+        document->handle = object->handle;
     }
 
     return document;
@@ -102,9 +102,13 @@ libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr docum
     {
         try
         {
-            vector< libcmis::FolderPtr > handles = document->handle->getParents( );
-            parents = new libcmis_vector_folder( );
-            parents->handle = handles;
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
+            {
+                vector< libcmis::FolderPtr > handles = doc->getParents( );
+                parents = new libcmis_vector_folder( );
+                parents->handle = handles;
+            }
         }
         catch ( const libcmis::Exception& e )
         {
@@ -137,18 +141,22 @@ void libcmis_document_getContentStream(
     {
         try
         {
-            boost::shared_ptr< istream > stream = document->handle->getContentStream( );
-
-            stream->seekg( 0 );
-            int bufSize = 2048;
-            char* buf = new char[ bufSize ];
-            while ( !stream->eof( ) )
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
             {
-                stream->read( buf, bufSize );
-                size_t read = stream->gcount( );
-                writeFn( ( const void * )buf, size_t( 1 ), read, userData );
+                boost::shared_ptr< istream > stream = doc->getContentStream( );
+
+                stream->seekg( 0 );
+                int bufSize = 2048;
+                char* buf = new char[ bufSize ];
+                while ( !stream->eof( ) )
+                {
+                    stream->read( buf, bufSize );
+                    size_t read = stream->gcount( );
+                    writeFn( ( const void * )buf, size_t( 1 ), read, userData );
+                }
+                delete[] buf;
             }
-            delete[] buf;
         }
         catch ( const libcmis::Exception& e )
         {
@@ -203,7 +211,9 @@ void libcmis_document_setContentStream(
             } while ( read == bufSize );
             delete[] buf;
 
-            document->handle->setContentStream( stream, contentType, fileName, overwrite );
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
+                doc->setContentStream( stream, contentType, fileName, overwrite );
         }
         catch ( const libcmis::Exception& e )
         {
@@ -234,7 +244,11 @@ char* libcmis_document_getContentType( libcmis_DocumentPtr document )
 {
     char* value = NULL;
     if ( document != NULL && document->handle.get( ) != NULL )
-        value = strdup( document->handle->getContentType( ).c_str( ) );
+    {
+        DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+        if ( doc )
+            value = strdup( doc->getContentType( ).c_str( ) );
+    }
     return value;
 }
 
@@ -243,7 +257,11 @@ char* libcmis_document_getContentFilename( libcmis_DocumentPtr document )
 {
     char* value = NULL;
     if ( document != NULL && document->handle.get( ) != NULL )
-        value = strdup( document->handle->getContentFilename( ).c_str( ) );
+    {
+        DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+        if ( doc )
+            value = strdup( doc->getContentFilename( ).c_str( ) );
+    }
     return value;
 }
 
@@ -252,7 +270,11 @@ long libcmis_document_getContentLength( libcmis_DocumentPtr document )
 {
     long value = 0;
     if ( document != NULL && document->handle.get( ) != NULL )
-        value = document->handle->getContentLength( );
+    {
+        DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+        if ( doc )
+            value = doc->getContentLength( );
+    }
     return value;
 }
 
@@ -264,9 +286,13 @@ libcmis_DocumentPtr libcmis_document_checkOut( libcmis_DocumentPtr document, lib
     {
         try
         {
-            libcmis::DocumentPtr handle = document->handle->checkOut( );
-            pwc= new libcmis_document( );
-            pwc->handle = handle;
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
+            {
+                libcmis::DocumentPtr handle = doc->checkOut( );
+                pwc= new libcmis_document( );
+                pwc->handle = handle;
+            }
         }
         catch ( const bad_alloc& e )
         {
@@ -292,7 +318,9 @@ void libcmis_document_cancelCheckout( libcmis_DocumentPtr document, libcmis_Erro
     {
         try
         {
-            document->handle->cancelCheckout( );
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
+                doc->cancelCheckout( );
         }
         catch ( const libcmis::Exception& e )
         {
@@ -322,35 +350,39 @@ libcmis_DocumentPtr libcmis_document_checkIn(
     {
         try
         {
-            // Create the ostream
-            boost::shared_ptr< std::ostream > stream( new stringstream( ) );
-
-            size_t bufSize = 2048;
-            char * buf = new char[ bufSize ];
-            size_t read = 0;
-            do
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
             {
-                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
-                stream->write( buf, read );
-            } while ( read == bufSize );
-            delete[] buf;
+                // Create the ostream
+                boost::shared_ptr< std::ostream > stream( new stringstream( ) );
 
-            // Create the property map
-            PropertyPtrMap propertiesMap;
-            if ( properties != NULL )
-            {
-                for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
-                        it != properties->handle.end( ); ++it )
+                size_t bufSize = 2048;
+                char * buf = new char[ bufSize ];
+                size_t read = 0;
+                do
                 {
-                    string id = ( *it )->getPropertyType( )->getId( );
-                    propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
-                }
-            }
+                    read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
+                    stream->write( buf, read );
+                } while ( read == bufSize );
+                delete[] buf;
 
-            libcmis::DocumentPtr handle = document->handle->checkIn( isMajor, comment, propertiesMap,
-                    stream, contentType, filename );
-            newVersion = new libcmis_document( );
-            newVersion->handle = handle;
+                // Create the property map
+                PropertyPtrMap propertiesMap;
+                if ( properties != NULL )
+                {
+                    for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
+                            it != properties->handle.end( ); ++it )
+                    {
+                        string id = ( *it )->getPropertyType( )->getId( );
+                        propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                    }
+                }
+
+                libcmis::DocumentPtr handle = doc->checkIn( isMajor, comment, propertiesMap,
+                        stream, contentType, filename );
+                newVersion = new libcmis_document( );
+                newVersion->handle = handle;
+            }
         }
         catch ( const libcmis::Exception& e )
         {
@@ -386,9 +418,13 @@ libcmis_vector_document_Ptr libcmis_document_getAllVersions(
     {
         try
         {
-            std::vector< libcmis::DocumentPtr > handles = document->handle->getAllVersions( );
-            result = new libcmis_vector_document( );
-            result->handle = handles;
+            DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
+            if ( doc )
+            {
+                std::vector< libcmis::DocumentPtr > handles = doc->getAllVersions( );
+                result = new libcmis_vector_document( );
+                result->handle = handles;
+            }
         }
         catch ( const libcmis::Exception& e )
         {
