@@ -43,7 +43,7 @@
 
 using namespace std;
 
-extern int isOutOfMemory;
+extern bool isOutOfMemory;
 
 namespace
 {
