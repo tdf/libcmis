@@ -240,7 +240,7 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
         if ( getHttpStatus( ) == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )
         {
             // Refresh the token
-            m_oauth2Handler->refresh( );
+            oauth2Refresh();
 
             // Resend the query
             try
@@ -252,7 +252,6 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
             }
             catch (const CurlException& )
             {
-
                 throw;
             }
             m_refreshedToken = false;
@@ -325,7 +324,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
         {
 
             // Refresh the token
-            m_oauth2Handler->refresh( );
+            oauth2Refresh();
 
             // Resend the query
             try
@@ -414,7 +413,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
         if ( status == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )
         {
             // Refresh the token
-            m_oauth2Handler->refresh( );
+            oauth2Refresh();
 
             // Resend the query
             try
@@ -461,7 +460,8 @@ void HttpSession::httpDeleteRequest( string url ) throw ( CurlException )
         {
 
             // Refresh the token
-            m_oauth2Handler->refresh( );
+            oauth2Refresh();
+
             // Resend the query
             try
             {
@@ -516,7 +516,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
         headers_slist = curl_slist_append( headers_slist,
-                                  m_oauth2Handler->getHttpHeader( ).c_str( ) );
+                                           m_oauth2Handler->getHttpHeader( ).c_str( ) );
     }
     else if ( !getUsername().empty() && !getPassword().empty() )
     {
@@ -741,6 +741,13 @@ string HttpSession::getRefreshToken( ) throw ( libcmis::Exception )
     if ( m_oauth2Handler )
         refreshToken = m_oauth2Handler->getRefreshToken( );
     return refreshToken;
+}
+
+void HttpSession::oauth2Refresh( )
+{
+    m_inOAuth2Authentication = true;
+    m_oauth2Handler->refresh( );
+    m_inOAuth2Authentication = false;
 }
 
 void HttpSession::initProtocols( )

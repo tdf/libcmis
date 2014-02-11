@@ -162,6 +162,7 @@ class HttpSession
     private:
         void checkCredentials( ) throw ( CurlException );
         void checkOAuth2( std::string url );
+        void oauth2Refresh( );
         void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ), bool redirect = true ) throw ( CurlException );
         void initProtocols( );
 };
