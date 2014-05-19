@@ -41,6 +41,10 @@ class OAuth2Providers
     public :
         static std::string OAuth2Gdrive( HttpSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
+
+        static std::string OAuth2Onedrive( HttpSession* session, const std::string& authUrl, 
+                                       const std::string& username, const std::string& password );
+
         static std::string OAuth2Alfresco( HttpSession* session, const std::string& authUrl, 
                                        const std::string& username, const std::string& password );
 

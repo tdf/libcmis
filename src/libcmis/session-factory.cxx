@@ -27,6 +27,7 @@
  */
 #include "atom-session.hxx"
 #include "gdrive-session.hxx"
+#include "onedrive-session.hxx"
 #include "session-factory.hxx"
 #include "ws-session.hxx"
 
@@ -66,6 +67,11 @@ namespace libcmis
             {
                 session = new GDriveSession( bindingUrl, username, password,
                                              oauth2, verbose );
+            }
+            else if ( bindingUrl == "https://apis.live.net/v5.0" )
+            {
+                session = new OneDriveSession( bindingUrl, username, password,
+                                               oauth2, verbose);
             }
             else
             {
