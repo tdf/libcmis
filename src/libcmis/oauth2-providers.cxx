@@ -114,6 +114,8 @@ string OAuth2Providers::OAuth2Onedrive( HttpSession* session, const string& auth
         // fails because Microsoft requiers javascrip
         return res;
     }
+    // for the unused variable warrning
+    string code = username + password;
     return code;
 }
 
