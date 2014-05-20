@@ -1,0 +1,8 @@
+{
+    "token_type":"bearer",
+    "expires_in":3600,
+    "scope":"wl.signin wl.skydrive",
+    "access_token":"new-access-token",
+    "refresh_token":"mock-refresh-token",
+    "user_id":"mock-user-id"
+}
