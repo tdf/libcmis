@@ -106,57 +106,16 @@ string OAuth2Providers::OAuth2Onedrive( HttpSession* session, const string& auth
     }
     catch ( const CurlException& e )
     {
-        return string( );
+        return res;
     }
 
     string loginPost, loginLink; 
     if ( !parseResponse( res.c_str( ), loginPost, loginLink ) ) {
         // fails because Microsoft requiers javascrip
-        return string( );
+        return res;
     }
-    
-    loginPost += "email=";  
-    loginPost += string( username );
-    loginPost += "&passwd=";
-    loginPost += string( password );
-    
-    istringstream loginIs( loginPost );
-    string loginRes;
-    try 
-    {
-        loginRes = session->httpPostRequest ( loginLink, loginIs, CONTENT_TYPE )
-                        ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        return string( );
-    }
-
-    // STEP 2: allow libcmis to access One drive
-    string approvalPost, approvalLink; 
-    if ( !parseResponse( loginRes. c_str( ), approvalPost, approvalLink) )
-        return string( );
-    approvalPost += "submit_access=true";
-
-    istringstream approvalIs( approvalPost );
-    string approvalRes;
-    try
-    {
-        approvalRes = session->httpPostRequest ( approvalLink, approvalIs, 
-                            CONTENT_TYPE) ->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-
-    // STEP 3: Take the authentication code from the text bar
-    string code = parseCode( approvalRes.c_str( ) );
-
     return code;
 }
-
-
 
 string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& authUrl,
                                         const string& username, const string& password )
