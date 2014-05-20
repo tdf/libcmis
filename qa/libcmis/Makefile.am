@@ -4,6 +4,7 @@ if !OS_WIN32
 mockup_tests = \
 	test-atom \
 	test-gdrive \
+	test-onedrive \
 	test-ws \
 	test-factory
 endif
@@ -70,6 +71,26 @@ test_gdrive_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_gdrive_LDADD = \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
+test_onedrive_SOURCES =	\
+	test-helpers.cxx \
+	test-helpers.hxx \
+	test-main.cxx \
+	test-onedrive.cxx
+
+test_onedrive_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_srcdir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
+
+test_onedrive_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \

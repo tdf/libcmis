@@ -37,6 +37,7 @@
 #include <atom-session.hxx>
 #include <ws-session.hxx>
 #include <gdrive-session.hxx>
+#include <onedrive-session.hxx>
 
 #include <mockup-config.h>
 #include <test-helpers.hxx>
@@ -46,6 +47,7 @@
 #define BINDING_WS string( "http://mockup/ws" )
 #define BINDING_BAD "http://mockup/bad"
 #define BINDING_GDRIVE  string ( "https://www.googleapis.com/drive/v2" )
+#define BINDING_ONEDRIVE  string ( "https://apis.live.net/v5.0" )
 #define SERVER_REPOSITORY string( "mock" )
 #define SERVER_USERNAME "tester"
 #define SERVER_PASSWORD "somepass"
@@ -59,6 +61,9 @@
 #define GDRIVE_LOGIN_URL  string ("https://login/url" )
 #define GDRIVE_APPROVAL_URL  string ("https://approval/url" )
 #define GDRIVE_TOKEN_URL  string ( "https://token/url" )
+
+#define ONEDRIVE_AUTH_URL string ( "https://auth/url" )
+#define ONEDRIVE_TOKEN_URL  string ( "https://token/url" )
 
 using namespace std;
 
@@ -105,6 +110,15 @@ namespace
         curl_mockup_addResponse ( GDRIVE_TOKEN_URL.c_str( ), "", "POST",
                                   DATA_DIR "/gdrive/token-response.json", 200, true );
     }
+
+    void lcl_init_mockup_onedrive( )
+    {
+        curl_mockup_reset( );
+
+        // token response
+        curl_mockup_addResponse ( GDRIVE_TOKEN_URL.c_str( ), "", "POST",
+                                  DATA_DIR "/onedrive/token-response.json", 200, true );
+    }
 }
 
 class FactoryTest : public CppUnit::TestFixture
@@ -117,6 +131,7 @@ class FactoryTest : public CppUnit::TestFixture
         void createSessionWSBadAuthTest( );
         void createSessionNoCmisTest( );
         void createSessionGDriveTest( );
+        void createSessionOneDriveTest( );
 
         CPPUNIT_TEST_SUITE( FactoryTest );
         CPPUNIT_TEST( createSessionAtomTest );
@@ -125,6 +140,7 @@ class FactoryTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createSessionWSBadAuthTest );
         CPPUNIT_TEST( createSessionNoCmisTest );
         CPPUNIT_TEST( createSessionGDriveTest );
+        CPPUNIT_TEST( createSessionOneDriveTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -207,6 +223,23 @@ void FactoryTest::createSessionGDriveTest( )
             oauth2Data );
     CPPUNIT_ASSERT_MESSAGE( "Not a GDriveSession",
             dynamic_cast< GDriveSession* >( session ) != NULL );
+}
+
+void FactoryTest::createSessionOneDriveTest( )
+{
+    lcl_init_mockup_gdrive( );
+
+    libcmis::OAuth2DataPtr oauth2Data(
+        new libcmis::OAuth2Data( ONEDRIVE_AUTH_URL, ONEDRIVE_TOKEN_URL,
+                                 OAUTH_SCOPE, OAUTH_REDIRECT_URI,
+                                 OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET ));
+
+    libcmis::Session* session = libcmis::SessionFactory::createSession(
+            BINDING_ONEDRIVE, SERVER_USERNAME, SERVER_PASSWORD,
+            SERVER_REPOSITORY, false,
+            oauth2Data );
+    CPPUNIT_ASSERT_MESSAGE( "Not a OneDriveSession",
+            dynamic_cast< OneDriveSession* >( session ) != NULL );
 }
 
 void FactoryTest::createSessionNoCmisTest( )
