@@ -139,7 +139,7 @@ void BaseSession::setNoSSLCertificateCheck( bool noCheck )
     HttpSession::setNoSSLCertificateCheck( noCheck );
 }
 
- void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
+void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
             throw ( libcmis::Exception )
 {
     m_oauth2Handler = new OAuth2Handler( this, oauth2 );
