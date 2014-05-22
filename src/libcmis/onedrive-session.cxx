@@ -27,7 +27,8 @@
  */
 #include "oauth2-handler.hxx"
 #include "onedrive-session.hxx"
-#include "gdrive-repository.hxx"
+#include "onedrive-repository.hxx"
+#include "json-utils.hxx"
 
 using namespace std;
 
@@ -68,7 +69,7 @@ libcmis::RepositoryPtr OneDriveSession::getRepository( )
 {
     // Return a dummy repository since OneDrive doesn't have that notion
     // I think a Gdrive repo will do for the moment
-    libcmis::RepositoryPtr repo( new GdriveRepository( ) );
+    libcmis::RepositoryPtr repo( new OneDriveRepository( ) );
     return repo;
 }
 
@@ -93,7 +94,6 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
     string kind = jsonRes["type"].toString( );
     if ( kind == "file" )
     {
-        object.reset( new OneDriveFolder( this, jsonRes ) );
     }
     return object;
 }
