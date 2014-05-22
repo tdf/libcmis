@@ -60,18 +60,10 @@ class OneDriveTest : public CppUnit::TestFixture
     public:
         void sessionAuthenticationTest( );
         void sessionExpiryTokenGetTest( );
-        void sessionExpiryTokenPostTest( );
-        void sessionExpiryTokenPutTest( );
-        void sessionExpiryTokenDeleteTest( );
-        void getRepositoriesTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
-        //CPPUNIT_TEST( sessionExpiryTokenPutTest );
-        //CPPUNIT_TEST( sessionExpiryTokenPostTest );
-        //CPPUNIT_TEST( sessionExpiryTokenDeleteTest );
-        //CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -161,136 +153,6 @@ void OneDriveTest::sessionExpiryTokenGetTest( )
     {
         // GET expires, need to refresh then GET again
         libcmis::ObjectPtr obj = session.getObject( objectId );
-    }
-    catch ( ... )
-    {
-        if ( session.getHttpStatus( ) == 401 )
-        {
-            // Check if access token is refreshed
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(
-                   "wrong access token",
-                   string ( "new-access-token" ),
-                   session.m_oauth2Handler->getAccessToken( ) );
-        }
-    }
-}
-
-void OneDriveTest::sessionExpiryTokenPostTest( )
-{
-    // Access_token will expire after expires_in seconds,
-    // We need to use the refresh key to get a new one.
-
-    curl_mockup_reset( );
-    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
-
-    curl_mockup_reset( );
-    static const string folderId("aFileId");
-    const string folderUrl = BASE_URL + "me/skydrive/files/" + folderId;
-    const string metaUrl = BASE_URL + "/files";
-
-    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", DATA_DIR "/onedrive/refresh_response.json", 200, true);
-
-    curl_mockup_addResponse( folderUrl.c_str( ), "",
-                               "GET", DATA_DIR "/onedrive/folder.json", 200, true );
-
-    // 401 response, token is expired
-    // refresh and then POST again
-    curl_mockup_addResponse( metaUrl.c_str( ), "",
-                               "POST", "", 401, false );
-    libcmis::FolderPtr parent = session.getFolder( folderId );
-
-    try
-    {
-        PropertyPtrMap properties;
-        // POST expires, need to refresh then POST again
-        parent->createFolder( properties );
-    }
-    catch ( ... )
-    {
-        if ( session.getHttpStatus( ) == 401 )
-        {
-            // Check if access token is refreshed
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(
-                   "wrong access token",
-                   string ( "new-access-token" ),
-                   session.m_oauth2Handler->getAccessToken( ) );
-        }
-    }
-}
-
-void OneDriveTest::sessionExpiryTokenDeleteTest( )
-{
-    // Access_token will expire after expires_in seconds,
-    // We need to use the refresh key to get a new one.
-
-    curl_mockup_reset( );
-    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
-
-    curl_mockup_reset( );
-    static const string objectId("aFileId");
-    string url = BASE_URL + "/me/skydrive/files/" + objectId;
-
-    curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", DATA_DIR "/onedrive/document2.json", 200, true);
-
-    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", DATA_DIR "/onedrive/refresh_response.json", 200, true);
-    // 401 response, token is expired
-    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 401, false);
-
-    libcmis::ObjectPtr obj = session.getObject( objectId );
-
-    libcmis::ObjectPtr object = session.getObject( objectId );
-
-    try
-    {
-        // DELETE expires, need to refresh then DELETE again
-        object->remove( );
-    }
-    catch ( ... )
-    {
-        if ( session.getHttpStatus( ) == 401 )
-        {
-            // Check if access token is refreshed
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(
-                   "wrong access token",
-                   string ( "new-access-token" ),
-                   session.m_oauth2Handler->getAccessToken( ) );
-            const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
-            CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
-        }
-    }
-
-}
-
-void OneDriveTest::sessionExpiryTokenPutTest( )
-{
-    // Access_token will expire after expires_in seconds,
-    // We need to use the refresh key to get a new one.
-
-    curl_mockup_reset( );
-    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
-
-    curl_mockup_reset( );
-    static const string objectId("aFileId");
-    string url = BASE_URL + "/me/skydrive/files/" + objectId;
-
-    curl_mockup_addResponse( TOKEN_URL.c_str(), "",
-                             "POST", DATA_DIR "/onedrive/refresh_response.json", 200, true);
-
-    curl_mockup_addResponse( url.c_str( ), "",
-                               "GET", DATA_DIR "/onedrive/document.json", 200, true );
-
-    // 401 response, token is expired
-    curl_mockup_addResponse( url.c_str( ),"", "PUT", "", 401, false );
-
-    libcmis::ObjectPtr object = session.getObject( objectId );
-
-    try
-    {
-        // PUT expires, need to refresh then PUT again
-        object->updateProperties( object->getProperties( ) );
     }
     catch ( ... )
     {
