@@ -60,10 +60,12 @@ class OneDriveTest : public CppUnit::TestFixture
     public:
         void sessionAuthenticationTest( );
         void sessionExpiryTokenGetTest( );
+        void getRepositoriesTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
+        CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -165,6 +167,20 @@ void OneDriveTest::sessionExpiryTokenGetTest( )
                    session.m_oauth2Handler->getAccessToken( ) );
         }
     }
+}
+
+void OneDriveTest::getRepositoriesTest( )
+{
+     curl_mockup_reset( );
+
+     OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+     vector< libcmis::RepositoryPtr > actual = session.getRepositories( );
+
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ),
+                                   actual.size( ) );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
+                                   string ( "OneDrive" ),
+                                   actual.front()->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
