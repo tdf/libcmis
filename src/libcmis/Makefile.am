@@ -95,10 +95,12 @@ libcmis_la_SOURCES = \
 	gdrive-session.cxx \
 	gdrive-utils.hxx \
 	gdrive-utils.cxx \
-	onedrive-session.hxx \
-	onedrive-session.cxx \
 	onedrive-repository.hxx \
 	onedrive-repository.cxx \
+	onedrive-session.hxx \
+	onedrive-session.cxx \
+	onedrive-utils.hxx \
+	onedrive-utils.cxx \
 	json-utils.hxx \
 	json-utils.cxx \
 	oauth2-handler.hxx \
