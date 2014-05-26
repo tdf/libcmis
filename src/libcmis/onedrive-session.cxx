@@ -68,7 +68,6 @@ libcmis::RepositoryPtr OneDriveSession::getRepository( )
     throw ( libcmis::Exception )
 {
     // Return a dummy repository since OneDrive doesn't have that notion
-    // I think a Gdrive repo will do for the moment
     libcmis::RepositoryPtr repo( new OneDriveRepository( ) );
     return repo;
 }
@@ -92,9 +91,8 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
     // If we have a folder, then convert the object
     libcmis::ObjectPtr object;
     string kind = jsonRes["type"].toString( );
-    if ( kind == "file" )
-    {
-    }
+    // folder, file, etc
+    // return empty object for now
     return object;
 }
 
