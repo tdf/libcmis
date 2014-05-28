@@ -64,12 +64,14 @@ class OneDriveTest : public CppUnit::TestFixture
         void sessionExpiryTokenGetTest( );
         void getRepositoriesTest( );
         void filePropertyTest( );
+        void folderListedPropertyTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( filePropertyTest );
+        CPPUNIT_TEST( folderListedPropertyTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -227,6 +229,69 @@ void OneDriveTest::filePropertyTest( )
                                            propValue );
         }
 
+    }
+}
+
+void OneDriveTest::folderListedPropertyTest( )
+{
+    static const string objectId( "aFileId" );
+    static string objectPath = DATA_DIR;
+    objectPath += "/onedrive/folder-listed.json";
+    std::ifstream fin( objectPath.c_str( ) );
+    std::stringstream res;
+    res << fin.rdbuf( );
+
+    Json jsonRes = Json::parse( res.str( ) );
+    Json::JsonVector objsList = jsonRes["data"].getList( );
+
+    for(unsigned int i = 0; i < objsList.size(); i++) {
+        Json::JsonObject objs = objsList[i].getObjects( );
+        Json::JsonObject::iterator it;
+
+        for ( it = objs.begin( ); it != objs.end( ); ++it)
+        {
+            PropertyPtr property;
+            property.reset( new OneDriveProperty( it->first, it->second ) );
+            const string localName = property->getPropertyType( )->getLocalName( );
+            const string propValue = property->toString( );
+
+            if (localName == "cmis:creationDate") {
+                CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong creation date",
+                                               string ( "createdTime" ),
+                                               propValue );
+            }
+            else if (localName == "cmis:createdBy") {
+                CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong author",
+                                               string ( "onedriveUser" ),
+                                               propValue );
+            }
+            if ( objs["type"].toString( ) == "file" ) {
+                if (localName == "cmis:objectId") {
+                    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
+                                                   string ( "aFileId" ),
+                                                   propValue );
+                }
+                
+                else if (localName == "cmis:contentStreamFileName") {
+                    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
+                                                   string ( "OneDrive File" ),
+                                                   propValue );
+                }
+            }
+            else {
+                if (localName == "cmis:objectId") {
+                    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
+                                                   string ( "aFolderId" ),
+                                                   propValue );
+                }
+                
+                else if (localName == "cmis:contentStreamFileName") {
+                    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name",
+                                                   string ( "OneDrive Folder" ),
+                                                   propValue );
+                }
+            }
+        }
     }
 }
 
