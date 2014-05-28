@@ -1,7 +1,7 @@
 {
 	"id": "aFolderId",
 	"from": {
-		"name": "onedrive#user",
+		"name": "onedriveUser",
 		"id": "aUserId"
 	},
 	"name": "OneDrive File",
