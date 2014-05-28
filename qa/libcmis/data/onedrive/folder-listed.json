@@ -6,7 +6,7 @@
                 "name": "onedriveUser",
                 "id": "aUserId"
             },
-            "name": "OneDrive File",
+            "name": "OneDrive Folder",
             "description": "short description",
             "parent_id": "aParentId",
             "size": 42,
@@ -26,7 +26,7 @@
         {
             "id": "aFileId",
             "from": {
-                "name": "onedrive#user",
+                "name": "onedriveUser",
                 "id": "aUserId"
             },
             "name": "OneDrive File",
