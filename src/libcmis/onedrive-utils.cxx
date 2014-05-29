@@ -81,6 +81,13 @@ string OneDriveUtils::toOneDriveKey( const string& key )
     return convertedKey;
 }
 
+bool OneDriveUtils::checkUpdatable( const std::string& key)
+{
+    bool updatable = ( key == "name" ||
+                       key == "description" );
+    return updatable;
+}
+
 bool OneDriveUtils::checkMultiValued( const string& key )
 {
     bool bMultiValued = ( key == "from" ||

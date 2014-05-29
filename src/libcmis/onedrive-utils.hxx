@@ -43,6 +43,9 @@ class OneDriveUtils
         // Convert a CMIS key to OneDrive key
         static std::string toOneDriveKey( const std::string& key );
 
+        // Check if a property is updatable
+        static bool checkUpdatable( const std::string& key);
+
         // Check if a property has multiple values
         static bool checkMultiValued( const std::string& key);
 

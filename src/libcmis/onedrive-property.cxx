@@ -52,9 +52,7 @@ OneDriveProperty::OneDriveProperty( const string& key, Json json ):
     propertyType->setQueryName( convertedKey );
     propertyType->setDisplayName( key );
     propertyType->setTypeFromJsonType( json.getStrType( ) );
-    // The updateable property is not specified in the documentation so I will
-    // assume everything is updateable until I've checked them and proved otherwise
-    propertyType->setUpdatable( true );
+    propertyType->setUpdatable( OneDriveUtils::checkUpdatable( key ) );
     propertyType->setMultiValued( OneDriveUtils::checkMultiValued( key ) );
 
     setPropertyType( propertyType );    

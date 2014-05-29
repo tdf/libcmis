@@ -32,6 +32,7 @@
 #include "json-utils.hxx"
 #include "property.hxx"
 
+// reference: http://msdn.microsoft.com/en-us/library/hh243648.aspx
 class OneDriveProperty : public libcmis::Property
 {
     public :
@@ -40,6 +41,9 @@ class OneDriveProperty : public libcmis::Property
         ~OneDriveProperty( );    
         OneDriveProperty( const OneDriveProperty& copy);
         OneDriveProperty& operator=( const OneDriveProperty& copy );
+
+        // Check if the property is updatable
+        bool checkUpdatable( const std::string& key );
     private :
         // Avoid calling default constructor
         OneDriveProperty( );
