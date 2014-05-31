@@ -26,6 +26,7 @@
  * instead of those above.
  */
 #include "oauth2-handler.hxx"
+#include "onedrive-object.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-repository.hxx"
 #include "json-utils.hxx"
@@ -93,6 +94,7 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
     string kind = jsonRes["type"].toString( );
     // folder, file, etc
     // return empty object for now
+    object.reset(new OneDriveObject( this, jsonRes ) );
     return object;
 }
 
