@@ -37,6 +37,7 @@
 #include <mockup-config.h>
 
 #include <fstream>
+#include "onedrive-object.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-session.hxx"
 #include "oauth2-handler.hxx"
@@ -63,6 +64,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void sessionAuthenticationTest( );
         void sessionExpiryTokenGetTest( );
         void getRepositoriesTest( );
+        void getObjectTest( );
         void filePropertyTest( );
         void folderListedPropertyTest( );
 
@@ -70,6 +72,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
         CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( filePropertyTest );
         CPPUNIT_TEST( folderListedPropertyTest );
         CPPUNIT_TEST_SUITE_END( );
@@ -187,6 +190,21 @@ void OneDriveTest::getRepositoriesTest( )
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
                                    string ( "OneDrive" ),
                                    actual.front()->getId( ) );
+}
+
+void OneDriveTest::getObjectTest()
+{
+    static const string objectId ("aFileId");
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse ( url.c_str( ), "",
+                              "GET", DATA_DIR "/onedrive/file.json", 200, true);
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    boost::shared_ptr<OneDriveObject> obj = boost::dynamic_pointer_cast
+                                            <OneDriveObject>( object );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", objectId,
+                                                     obj->getId( ) );
 }
 
 void OneDriveTest::filePropertyTest( )
