@@ -191,49 +191,31 @@ void OneDriveTest::getRepositoriesTest( )
 
 void OneDriveTest::filePropertyTest( )
 {
-    static const string objectId( "aFileId" );
-    static string objectPath = DATA_DIR;
-    objectPath += "/onedrive/file.json";
-    std::ifstream fin( objectPath.c_str( ) );
-    std::stringstream res;
-    res << fin.rdbuf( );
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
 
-    Json jsonRes = Json::parse( res.str( ) );
-    Json::JsonObject objs = jsonRes.getObjects( );
-    Json::JsonObject::iterator it;
-    for ( it = objs.begin( ); it != objs.end( ); ++it)
-    {
-        PropertyPtr property;
-        property.reset( new OneDriveProperty( it->first, it->second ) );
-        const string localName = property->getPropertyType( )->getLocalName( );
-        const string propValue = property->toString( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/file.json", 200, true);
 
-        if (localName == "cmis:creationDate")
-        {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong creation date",
-                                           string ( "createdTime" ),
-                                           propValue );
-        }
-        else if (localName == "cmis:objectId")
-        {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
-                                           string ( "aFileId" ),
-                                           propValue );
-        }
-        else if (localName == "cmis:createdBy")
-        {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong author",
-                                           string ( "onedriveUser" ),
-                                           propValue );
-        }
-        else if (localName == "cmis:contentStreamFileName")
-        {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
-                                           string ( "OneDrive File" ),
-                                           propValue );
-        }
+    libcmis::ObjectPtr obj = session.getObject( objectId );
 
-    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong creation date",
+                                   string ( "createdTime" ),
+                                   obj->getStringProperty( "cmis:creationDate" ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
+                                   string ( "aFileId" ),
+                                   obj->getStringProperty( "cmis:objectId" ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong author",
+                                   string ( "onedriveUser" ),
+                                   obj->getStringProperty( "cmis:createdBy" ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
+                                   string ( "OneDrive File" ),
+                                   obj->getStringProperty( "cmis:contentStreamFileName" ) );
 }
 
 void OneDriveTest::folderListedPropertyTest( )
