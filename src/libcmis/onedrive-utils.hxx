@@ -49,8 +49,11 @@ class OneDriveUtils
         // Check if a property has multiple values
         static bool checkMultiValued( const std::string& key);
 
-        // Parse a Gdrive property value to CMIS values
+        // Parse a OneDrive property value to CMIS values
         static std::vector< std::string > parseOneDriveProperty( std::string key, Json jsonValue );
+
+        // Convert CMIS properties to OneDrive properties
+        static Json toOneDriveJson( const libcmis::PropertyPtrMap& properties );
 };
 
 #endif

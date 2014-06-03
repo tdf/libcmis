@@ -111,3 +111,23 @@ vector< string > OneDriveUtils::parseOneDriveProperty( string key, Json json )
     else values.push_back( json.toString( ) );
     return values;
 }
+
+Json OneDriveUtils::toOneDriveJson( const PropertyPtrMap& properties )
+{
+    Json propsJson;
+    
+    for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
+            it != properties.end() ; ++it )
+    {
+        string key = toOneDriveKey( it->first );
+        Json value( it->second );
+        
+        // Convert the key back to the onedrive key
+        if ( checkUpdatable( key ) )
+        {
+            propsJson.add( key, value );
+        }
+    }
+
+    return propsJson;
+} 
