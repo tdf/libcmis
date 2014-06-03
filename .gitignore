@@ -24,6 +24,7 @@ test-utils
 test-mockup
 test-atom
 test-gdrive
+test-onedrive
 test-json
 test-ws
 test-factory
