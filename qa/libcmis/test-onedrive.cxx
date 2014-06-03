@@ -67,6 +67,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getObjectTest( );
         void filePropertyTest( );
         void folderListedPropertyTest( );
+        void deleteTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -75,6 +76,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( filePropertyTest );
         CPPUNIT_TEST( folderListedPropertyTest );
+        CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -306,6 +308,25 @@ void OneDriveTest::folderListedPropertyTest( )
             }
         }
     }
+}
+
+void OneDriveTest::deleteTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string objectId( "aFileId" );
+
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true);
+    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 204, false);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    object->remove( );
+    const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+    CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
