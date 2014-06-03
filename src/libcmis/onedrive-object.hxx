@@ -60,12 +60,12 @@ class OneDriveObject : public virtual libcmis::Object
         std::vector< std::string > getMultiStringProperty(
                 const std::string& propertyName );
 
+       virtual boost::shared_ptr< Object > updateProperties(
+            const libcmis::PropertyPtrMap& properties )
+                throw ( libcmis::Exception );
+
         virtual std::vector< libcmis::RenditionPtr> getRenditions( std::string /*filter = std::string( )*/ )
             throw ( libcmis::Exception ) {return std::vector< libcmis::RenditionPtr>( );}
-
-        virtual boost::shared_ptr< Object > updateProperties(
-            const libcmis::PropertyPtrMap& /*properties*/ )
-                throw ( libcmis::Exception ) {return boost::shared_ptr< Object >( );}
 
         virtual void move( boost::shared_ptr< libcmis::Folder > /*source*/,
                            boost::shared_ptr< libcmis::Folder > /*destination*/ )

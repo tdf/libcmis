@@ -129,3 +129,33 @@ vector< string> OneDriveObject::getMultiStringProperty( const string& propertyNa
         values = it->second->getStrings( );
     return values; 
 }
+
+libcmis::ObjectPtr OneDriveObject::updateProperties(
+        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
+{
+    // Make Json object from properties
+    Json json = OneDriveUtils::toOneDriveJson( properties );
+
+    istringstream is( json.toString( ));
+
+    libcmis::HttpResponsePtr response;
+    try 
+    {   
+        vector< string > headers;
+        headers.push_back( "Content-Type: application/json" );
+        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    
+    string res = response->getStream( )->str( );
+    Json jsonRes = Json::parse( res );
+    libcmis::ObjectPtr updated( new OneDriveObject ( getSession( ), jsonRes ) );
+
+    if ( updated->getId( ) == getId( ) )
+         refreshImpl( jsonRes );
+
+    return updated;
+}
