@@ -1,0 +1,24 @@
+{
+	"id": "aNewFileId",
+	"from": {
+		"name": "onedriveUser",
+		"id": "aUserId"
+	},
+	"name": "New File Name",
+	"description": "new description",
+	"parent_id": "aParentId",
+	"size": 42,
+	"upload_location": "uploadLocation",
+	"comments_count": 0,
+	"comments_enabled": true,
+	"is_embeddable": true,
+	"source": "sourceUrl",
+	"link": "linkUrl",
+	"type": "file",
+	"shared_with": {
+		"access": "Shared"
+	},
+	"created_time": "createdTime",
+	"updated_time": "updatedTime",
+	"client_updated_time": "clientUpdatedTime"
+}

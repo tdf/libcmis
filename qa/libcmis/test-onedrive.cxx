@@ -68,6 +68,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void filePropertyTest( );
         void folderListedPropertyTest( );
         void deleteTest( );
+        void updatePropertiesTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -77,6 +78,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( filePropertyTest );
         CPPUNIT_TEST( folderListedPropertyTest );
         CPPUNIT_TEST( deleteTest );
+        CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -327,6 +329,43 @@ void OneDriveTest::deleteTest( )
     object->remove( );
     const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
+}
+
+void OneDriveTest::updatePropertiesTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string objectId( "aFileId" );
+    const string newObjectId( "aNewFileId" );
+
+    const string objectUrl = BASE_URL + "/" + objectId;
+    const string newObjectUrl = BASE_URL + "/" + newObjectId;
+
+    curl_mockup_addResponse( objectUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true );
+    curl_mockup_addResponse( newObjectUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/updated-file.json", 200, true );
+    curl_mockup_addResponse( objectUrl.c_str( ), "",
+                               "PUT", DATA_DIR "/onedrive/updated-file.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::ObjectPtr newObject = session.getObject( newObjectId );
+
+    object->updateProperties( newObject->getProperties( ) );
+
+    const char* updateRequest = curl_mockup_getRequestBody( objectUrl.c_str( ), "", "PUT" );
+
+    Json json = Json::parse( string( updateRequest ) );
+    string name = json["name"].toString( );
+    string description = json["description"].toString( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Name key not converted",
+                                  string( "New File Name"),
+                                  name );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Description key not converted",
+                                  string( "new description"),
+                                  description );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
