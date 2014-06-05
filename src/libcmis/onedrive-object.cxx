@@ -63,18 +63,23 @@ void OneDriveObject::initializeFromJson ( Json json, string /*id*/, string /*nam
 {
     Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
+    bool isFolder = json["type"].toString( ) == "folder";
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
         PropertyPtr property;
  
         property.reset( new OneDriveProperty( it->first, it->second ) );
         m_properties[ property->getPropertyType( )->getId()] = property;
+        if ( it->first == "name" && !isFolder )
+        {
+            PropertyPtr contentStreamProp;
+            contentStreamProp.reset( new OneDriveProperty( "cmis:contentStreamFileName", it->second ) );
+            m_properties[ contentStreamProp->getPropertyType( )->getId()] = contentStreamProp;
+        }
     }
+
     m_refreshTimestamp = time( NULL );
-
-    bool isFolder = json["type"].toString( ) == "folder";
     m_allowableActions.reset( new OneDriveAllowableActions( isFolder ) );
-
 }
 
 OneDriveSession* OneDriveObject::getSession( )

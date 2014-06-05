@@ -305,7 +305,7 @@ void OneDriveTest::folderListedPropertyTest( )
                                                    propValue );
                 }
                 
-                else if (localName == "cmis:contentStreamFileName")
+                else if (localName == "cmis:name")
                 {
                     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name",
                                                    string ( "OneDrive Folder" ),
