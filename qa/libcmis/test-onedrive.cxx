@@ -69,6 +69,8 @@ class OneDriveTest : public CppUnit::TestFixture
         void folderListedPropertyTest( );
         void deleteTest( );
         void updatePropertiesTest( );
+        void getFileAllowableActionsTest( );
+        void getFolderAllowableActionsTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -79,6 +81,8 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( folderListedPropertyTest );
         CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( getFileAllowableActionsTest );
+        CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -366,6 +370,51 @@ void OneDriveTest::updatePropertiesTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Description key not converted",
                                   string( "new description"),
                                   description );
+}
+
+void OneDriveTest::getFileAllowableActionsTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/file.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    boost::shared_ptr< libcmis::AllowableActions > actions = object->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            !actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+}
+
+void OneDriveTest::getFolderAllowableActionsTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFolderId");
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/folder.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    boost::shared_ptr< libcmis::AllowableActions > actions = object->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
