@@ -95,6 +95,7 @@ libcmis_la_SOURCES = \
 	gdrive-session.cxx \
 	gdrive-utils.hxx \
 	gdrive-utils.cxx \
+	onedrive-allowable-actions.hxx \
 	onedrive-object.hxx \
 	onedrive-object.cxx \
 	onedrive-property.hxx \

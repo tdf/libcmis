@@ -25,6 +25,7 @@
  * instead of those above.
  */
 
+#include "onedrive-allowable-actions.hxx"
 #include "onedrive-object.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-repository.hxx"
@@ -70,6 +71,10 @@ void OneDriveObject::initializeFromJson ( Json json, string /*id*/, string /*nam
         m_properties[ property->getPropertyType( )->getId()] = property;
     }
     m_refreshTimestamp = time( NULL );
+
+    bool isFolder = json["type"].toString( ) == "folder";
+    m_allowableActions.reset( new OneDriveAllowableActions( isFolder ) );
+
 }
 
 OneDriveSession* OneDriveObject::getSession( )
