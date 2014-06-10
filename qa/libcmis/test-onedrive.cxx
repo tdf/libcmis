@@ -226,7 +226,7 @@ void OneDriveTest::filePropertyTest( )
     libcmis::ObjectPtr obj = session.getObject( objectId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong creation date",
-                                   string ( "createdTime" ),
+                                   string ( "2014-06-09T08:24:04+0000" ),
                                    obj->getStringProperty( "cmis:creationDate" ) );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
