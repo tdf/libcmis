@@ -70,6 +70,8 @@ class OneDriveTest : public CppUnit::TestFixture
         void updatePropertiesTest( );
         void getFileAllowableActionsTest( );
         void getFolderAllowableActionsTest( );
+        void getFolderTest( );
+        void getChildrenTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -81,6 +83,8 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( getFileAllowableActionsTest );
         CPPUNIT_TEST( getFolderAllowableActionsTest );
+        CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -341,6 +345,75 @@ void OneDriveTest::getFolderAllowableActionsTest( )
     CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be false",
             actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
             !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
+}
+
+void OneDriveTest::getFolderTest( )
+{
+    curl_mockup_reset( );
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    static const string folderId( "aFolderId" );
+    static const string parentId( "aParentId" );
+    string url = BASE_URL + "/" + folderId;
+    string parentUrl = BASE_URL + "/" + parentId;
+
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/folder.json", 200, true);
+
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true);
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
+            NULL != folder );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "OneDrive Folder" ), folder->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !folder->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !folder->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !folder->getLastModificationDate( ).is_not_a_date_time() );
+}
+
+void OneDriveTest::getChildrenTest( )
+{
+    curl_mockup_reset( );
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    static const string folderId ("aFolderId");
+    string url = BASE_URL + "/" + folderId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/folder.json", 200, true);
+
+    libcmis::ObjectPtr obj = session.getObject( folderId );
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
+            NULL != folder );
+
+    string childrenUrl = BASE_URL + "/" + folderId + "/files";
+    curl_mockup_addResponse( childrenUrl.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/folder-listed.json", 200, true);
+
+    vector< libcmis::ObjectPtr > children= folder->getChildren( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of children", size_t( 2 ), children.size() );
+
+    int folderCount = 0;
+    int fileCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); ++it )
+    {
+        if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
+            ++folderCount;
+        else
+            ++fileCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of file children", 1, fileCount );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
