@@ -26,6 +26,7 @@
  * instead of those above.
  */
 #include "oauth2-handler.hxx"
+#include "onedrive-folder.hxx"
 #include "onedrive-object.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-repository.hxx"
@@ -89,12 +90,16 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
     }
     Json jsonRes = Json::parse( res );
 
-    // If we have a folder, then convert the object
     libcmis::ObjectPtr object;
     string kind = jsonRes["type"].toString( );
-    // folder, file, etc
-    // return empty object for now
-    object.reset(new OneDriveObject( this, jsonRes ) );
+    if ( kind == "folder" )
+    {
+        object.reset( new OneDriveFolder( this, jsonRes ) );
+    }
+    else
+    {
+        object.reset( new OneDriveObject( this, jsonRes ) );
+    }
     return object;
 }
 
