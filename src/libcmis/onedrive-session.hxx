@@ -30,6 +30,7 @@
 
 #include "base-session.hxx"
 #include "repository.hxx"
+#include "json-utils.hxx"
 
 class OneDriveSession : public BaseSession
 {
@@ -60,6 +61,9 @@ class OneDriveSession : public BaseSession
             throw ( libcmis::Exception );
         
         virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( )
+            throw ( libcmis::Exception );
+
+       libcmis::ObjectPtr getObjectFromJson( Json& jsonRes ) 
             throw ( libcmis::Exception );
 
     private:

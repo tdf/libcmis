@@ -74,12 +74,7 @@ vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( )
     // Create children objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
     {   
-        ObjectPtr child;
-        if ( objs[i]["type"].toString( ) == "folder")
-            child.reset( new OneDriveFolder( getSession( ), objs[i] ) );
-        else
-            child.reset( new OneDriveObject( getSession( ), objs[i] ) );
-        children.push_back( child );
+        children.push_back( getSession( )->getObjectFromJson( objs[i] ) );
     }   
     
     return children;

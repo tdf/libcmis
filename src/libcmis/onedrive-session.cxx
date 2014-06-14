@@ -30,7 +30,6 @@
 #include "onedrive-object.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-repository.hxx"
-#include "json-utils.hxx"
 
 using namespace std;
 
@@ -89,7 +88,12 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
         throw e.getCmisException( );
     }
     Json jsonRes = Json::parse( res );
+    return getObjectFromJson( jsonRes );
+}
 
+libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes ) 
+            throw ( libcmis::Exception )
+{
     libcmis::ObjectPtr object;
     string kind = jsonRes["type"].toString( );
     if ( kind == "folder" )
