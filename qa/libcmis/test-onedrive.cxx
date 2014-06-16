@@ -76,6 +76,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getDocumentTest( );
         void getDocumentParentTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
         
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -93,6 +94,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getDocumentParentTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -537,6 +539,49 @@ void OneDriveTest::getContentStreamTest( )
         out << is->rdbuf();
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void OneDriveTest::setContentStreamTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    const string documentId( "aFileId" );
+
+    string url = BASE_URL + "/" + documentId;
+    string putUrl = "uploadLocation";
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "PUT", DATA_DIR "/onedrive/file.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "aFileName" );
+        document->setContentStream( os, "text/plain", filename );
+
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+
+        // Check if metadata has been properly uploaded
+        const char* meta = curl_mockup_getRequestBody( url.c_str( ), "", "PUT" );
+        string expectedMeta = "{\n    \"name\": \"aFileName\"\n}\n";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad meta uploaded", expectedMeta, string( meta ) );
+        // Check the content has been properly uploaded
+        const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
     {
