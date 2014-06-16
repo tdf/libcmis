@@ -75,6 +75,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void moveTest( );
         void getDocumentTest( );
         void getDocumentParentTest( );
+        void getContentStreamTest( );
         
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -91,6 +92,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getDocumentParentTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -510,6 +512,38 @@ void OneDriveTest::getDocumentParentTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", parentId, parents[0]->getId( ) );
+}
+
+void OneDriveTest::getContentStreamTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    string url = BASE_URL + "/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true);
+    string expectedContent( "Test content stream" );
+    string downloadUrl = "sourceUrl";
+    curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
+
+    libcmis::ObjectPtr object = session.getObject( documentId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( );
+        ostringstream out;
+        out << is->rdbuf();
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
