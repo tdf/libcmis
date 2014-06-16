@@ -67,9 +67,9 @@ class OneDriveObject : public virtual libcmis::Object
         virtual std::vector< libcmis::RenditionPtr> getRenditions( std::string /*filter = std::string( )*/ )
             throw ( libcmis::Exception ) {return std::vector< libcmis::RenditionPtr>( );}
 
-        virtual void move( boost::shared_ptr< libcmis::Folder > /*source*/,
-                           boost::shared_ptr< libcmis::Folder > /*destination*/ )
-            throw ( libcmis::Exception ) { }
+        virtual void move( boost::shared_ptr< libcmis::Folder > source,
+                           boost::shared_ptr< libcmis::Folder > destination )
+            throw ( libcmis::Exception );
 
     protected:
         OneDriveSession* getSession( );    

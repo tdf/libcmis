@@ -169,3 +169,28 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
 
     return updated;
 }
+
+void OneDriveObject::move( FolderPtr /*source*/, FolderPtr destination ) 
+                                        throw ( libcmis::Exception )
+{  
+    Json destJson;
+    Json destId( destination->getId( ).c_str( ) );
+    destJson.add( "destination", destId );
+    
+    istringstream is( destJson.toString( ) );
+    libcmis::HttpResponsePtr response;
+    try 
+    {   
+        string url = getUrl( ) + "?method=MOVE";
+        cerr << url << endl;
+        response = getSession( )->httpPostRequest( url, is, "application/json" );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    string res = response->getStream( )->str( );
+    Json jsonRes = Json::parse( res );
+
+    refreshImpl( jsonRes );
+}
