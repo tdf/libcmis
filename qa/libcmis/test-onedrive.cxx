@@ -72,6 +72,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getFolderAllowableActionsTest( );
         void getFolderTest( );
         void getChildrenTest( );
+        void moveTest( );
 
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -85,6 +86,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -414,6 +416,38 @@ void OneDriveTest::getChildrenTest( )
     }
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of file children", 1, fileCount );
+}
+
+void OneDriveTest::moveTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string objectId( "aFileId" );
+    const string sourceId( "aFolderId" );
+    const string desId( "aParentId" );
+
+    string url = BASE_URL + "/" + objectId;
+    string sourceUrl = BASE_URL + "/" + sourceId;
+    string desUrl = BASE_URL + "/" + desId;
+
+    curl_mockup_addResponse( url.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true );
+    curl_mockup_addResponse( url.c_str( ), "method=MOVE",
+                               "POST", DATA_DIR "/onedrive/file.json", 200, true );
+    curl_mockup_addResponse( desUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true );
+    curl_mockup_addResponse( sourceUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/folder.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::FolderPtr source = session.getFolder( sourceId );
+    libcmis::FolderPtr destination = session.getFolder( desId );
+
+    object->move( source, destination );
+    const char* moveRequest = curl_mockup_getRequestBody( url.c_str( ), "method=MOVE", "POST" );
+    Json parentJson = Json::parse( string( moveRequest ) );
+    string newParentId = parentJson["destination"].toString( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", desId, newParentId);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
