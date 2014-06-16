@@ -73,7 +73,8 @@ class OneDriveTest : public CppUnit::TestFixture
         void getFolderTest( );
         void getChildrenTest( );
         void moveTest( );
-
+        void getDocumentTest( );
+        
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
@@ -87,6 +88,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -448,6 +450,37 @@ void OneDriveTest::moveTest( )
     Json parentJson = Json::parse( string( moveRequest ) );
     string newParentId = parentJson["destination"].toString( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad new parent folder", desId, newParentId);
+}
+
+void OneDriveTest::getDocumentTest( )
+{
+    curl_mockup_reset( );
+    static const string objectId ("aFileId");
+
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/file.json", 200, true);
+
+    libcmis::ObjectPtr obj = session.getObject( objectId );
+
+    // Check if we got the document object.
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( obj );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
+
+    // Test the document properties
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", objectId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name",
+                                  string( "OneDrive File" ),
+                                  document->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
+
+    CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 42 == document->getContentLength( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
