@@ -85,7 +85,6 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
         throw( libcmis::Exception )
 {
     Json propsJson = OneDriveUtils::toOneDriveJson( properties );
-    propsJson.add( "type", "folder");
 
     string uploadUrl = getSession( )->getBindingUrl( ) + "/" + getId( );
     
