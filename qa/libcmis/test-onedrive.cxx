@@ -74,6 +74,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void moveTest( );
         void getDocumentTest( );
+        void getDocumentParentTest( );
         
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -89,6 +90,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getDocumentTest );
+        CPPUNIT_TEST( getDocumentParentTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -481,6 +483,33 @@ void OneDriveTest::getDocumentTest( )
     CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
 
     CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 42 == document->getContentLength( ) );
+}
+
+void OneDriveTest::getDocumentParentTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+    static const string documentId( "aFileId" );
+    static const string parentId( "aParentId" );
+    string url = BASE_URL + "/" + documentId;
+    curl_mockup_addResponse( url.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/file.json", 200, true);
+
+    string parentUrl = BASE_URL + "/" + parentId;
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( "aFileId" );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
+
+    vector< libcmis::FolderPtr > parents= document->getParents( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", parentId, parents[0]->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
