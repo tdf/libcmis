@@ -609,34 +609,33 @@ void OneDriveTest::createDocumentTest( )
     curl_mockup_addResponse( folderUrl.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true );
     curl_mockup_addResponse( uploadUrl.c_str( ), "",
-                               "PUT", DATA_DIR "/onedrive/new-file.json", 200, true);
+                               "PUT", DATA_DIR "/onedrive/new-file.json", 200, true );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
-                               "PUT", DATA_DIR "/onedrive/file.json", 200, true);
+                               "PUT", DATA_DIR "/onedrive/file.json", 200, true );
+    curl_mockup_addResponse( documentUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/file.json", 200, true );
     curl_mockup_addResponse( uploadLocation.c_str( ), "",
-                               "PUT", DATA_DIR "/onedrive/file.json", 200, true);
-
+                               "PUT", DATA_DIR "/onedrive/file.json", 200, true );
 
     libcmis::FolderPtr parent = session.getFolder( folderId );
-
     try
     {
         string expectedContent( "Test set content stream" );
         boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
         PropertyPtrMap properties;
 
-        //TODO this causes trouble
         parent->createDocument( properties, os, "text/plain", filename );
 
         curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
-        const char* content = curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( uploadLocation.c_str( ), "", "PUT" );
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
     {
         string msg = "Unexpected exception: ";
-        msg += e.what();
-        CPPUNIT_FAIL( msg.c_str() );
+        msg += e.what( );
+        CPPUNIT_FAIL( msg.c_str( ) );
     }
 }
 
