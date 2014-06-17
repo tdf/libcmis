@@ -132,17 +132,15 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     }
     
     Json jsonRes = Json::parse( res );
-    DocumentPtr object = (DocumentPtr) new OneDriveDocument( getSession( ), jsonRes );
+    DocumentPtr document( new OneDriveDocument( getSession( ), jsonRes ) );
 
-    // uploading the properties
-    ObjectPtr objectPtr = object->updateProperties( properties );
-    libcmis::DocumentPtr documentPtr = boost::dynamic_pointer_cast< libcmis::Document >( objectPtr );
-
-    ::boost::shared_ptr< OneDriveDocument > document = 
-        boost::dynamic_pointer_cast< OneDriveDocument >( documentPtr );
+    // Upload the properties
+    ObjectPtr object = document->updateProperties( properties );
+    document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     // Upload stream
-    document->uploadStream( os, contentType);    
+    OneDriveDocument* oneDriveDocument = dynamic_cast< OneDriveDocument * >( document.get( ) );
+    oneDriveDocument->uploadStream( os, contentType );
 
     return document;
 }
