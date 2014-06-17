@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 using namespace std;
 
@@ -168,6 +169,8 @@ namespace mockup
             if ( isFilePath )
             {
                 FILE* fd = fopen( response.c_str( ), "r" );
+                if ( !fd )
+                    cerr  << "Missing test file: " << response << endl;
 
                 size_t bufSize = 2048;
                 char* buf = new char[bufSize];
