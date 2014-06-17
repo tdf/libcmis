@@ -8,7 +8,7 @@
 	"description": "short description",
 	"parent_id": "aParentId",
 	"size": 42,
-	"upload_location": "uploadLocation",
+	"upload_location": "https://base/url/aFileId/content",
 	"comments_count": 0,
 	"comments_enabled": true,
 	"is_embeddable": true,

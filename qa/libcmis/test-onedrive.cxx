@@ -77,6 +77,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getDocumentParentTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
+        void createDocumentTest( );
         
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -95,6 +96,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentParentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -556,7 +558,7 @@ void OneDriveTest::setContentStreamTest( )
     const string documentId( "aFileId" );
 
     string url = BASE_URL + "/" + documentId;
-    string putUrl = "uploadLocation";
+    string putUrl = url + "/content";
     curl_mockup_addResponse( url.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/file.json", 200, true);
 
@@ -581,6 +583,53 @@ void OneDriveTest::setContentStreamTest( )
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad meta uploaded", expectedMeta, string( meta ) );
         // Check the content has been properly uploaded
         const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void OneDriveTest::createDocumentTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string documentId( "aFileId" );
+    const string folderId( "aParentId" );
+    const string filename( "aFileName" );
+
+    const string folderUrl = BASE_URL + "/" + folderId;
+    const string uploadUrl = folderUrl + "/files/" + filename;
+    const string documentUrl = BASE_URL + "/" + documentId;
+    const string uploadLocation = documentUrl + "/content";
+
+    curl_mockup_addResponse( folderUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true );
+    curl_mockup_addResponse( uploadUrl.c_str( ), "",
+                               "PUT", DATA_DIR "/onedrive/new-file.json", 200, true);
+    curl_mockup_addResponse( documentUrl.c_str( ), "",
+                               "PUT", DATA_DIR "/onedrive/file.json", 200, true);
+    curl_mockup_addResponse( uploadLocation.c_str( ), "",
+                               "PUT", DATA_DIR "/onedrive/file.json", 200, true);
+
+
+    libcmis::FolderPtr parent = session.getFolder( folderId );
+
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        PropertyPtrMap properties;
+
+        //TODO this causes trouble
+        parent->createDocument( properties, os, "text/plain", filename );
+
+        curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
+
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )

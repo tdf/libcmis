@@ -182,7 +182,6 @@ void OneDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
     try 
     {   
         string url = getUrl( ) + "?method=MOVE";
-        cerr << url << endl;
         response = getSession( )->httpPostRequest( url, is, "application/json" );
     }
     catch ( const CurlException& e )

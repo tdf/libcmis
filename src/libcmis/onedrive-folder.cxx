@@ -107,13 +107,44 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
 }
 
 libcmis::DocumentPtr OneDriveFolder::createDocument( 
-    const PropertyPtrMap& /*properties*/, 
-    boost::shared_ptr< ostream > /*os*/, 
-    string /*contentType*/, string /*fileName*/ ) 
+    const PropertyPtrMap& properties, 
+    boost::shared_ptr< ostream > os, 
+    string contentType, string fileName ) 
     throw ( libcmis::Exception )
 {    
-    ::boost::shared_ptr<libcmis::Document> doc;
-    return doc;
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
+    
+    string newDocUrl = getSession( )->getBindingUrl( ) + "/" + getId( ) + 
+                       "/files/" + fileName;
+    std::istringstream emptyIs( "empty" );
+    vector< string > headers;
+    string res;
+    // this will only create the file and return it's id, name and source url
+    try
+    {
+        res = getSession( )->httpPutRequest( newDocUrl, emptyIs, headers )
+                                ->getStream( )->str( );
+    }
+    catch (const CurlException& e)
+    {
+        throw e.getCmisException( );
+    }
+    
+    Json jsonRes = Json::parse( res );
+    DocumentPtr object = (DocumentPtr) new OneDriveDocument( getSession( ), jsonRes );
+
+    // uploading the properties
+    ObjectPtr objectPtr = object->updateProperties( properties );
+    libcmis::DocumentPtr documentPtr = boost::dynamic_pointer_cast< libcmis::Document >( objectPtr );
+
+    ::boost::shared_ptr< OneDriveDocument > document = 
+        boost::dynamic_pointer_cast< OneDriveDocument >( documentPtr );
+
+    // Upload stream
+    document->uploadStream( os, contentType);    
+
+    return document;
 }
 
 vector< string > OneDriveFolder::removeTree( 
