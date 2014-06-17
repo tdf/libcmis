@@ -162,7 +162,7 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
     
     string res = response->getStream( )->str( );
     Json jsonRes = Json::parse( res );
-    libcmis::ObjectPtr updated( new OneDriveObject ( getSession( ), jsonRes ) );
+    libcmis::ObjectPtr updated = getSession()->getObjectFromJson( jsonRes );
 
     if ( updated->getId( ) == getId( ) )
          refreshImpl( jsonRes );
