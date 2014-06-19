@@ -111,10 +111,10 @@ namespace libcmis
             //   * Makes secondary aspect properties annoying to create
             //   * Prevents from getting Alfresco additional properties
             // First get the type id as it will give us the property definitions
-            string typeIdReq( "//cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
+            string typeIdReq( "/*/cmis:properties/cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
             m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
 
-            string propertiesReq( "//*[@propertyDefinitionId]" );
+            string propertiesReq( "/*/cmis:properties/*" );
             xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
             if ( NULL != xpathObj && NULL != xpathObj->nodesetval )
             {
