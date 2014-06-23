@@ -119,6 +119,12 @@ namespace
         curl_mockup_addResponse ( GDRIVE_TOKEN_URL.c_str( ), "", "POST",
                                   DATA_DIR "/onedrive/token-response.json", 200, true );
     }
+
+    char* authCodeFallback( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
+    {
+        char *authCode = strdup( "authCode" );
+        return authCode;
+    }
 }
 
 class FactoryTest : public CppUnit::TestFixture
@@ -234,6 +240,7 @@ void FactoryTest::createSessionOneDriveTest( )
                                  OAUTH_SCOPE, OAUTH_REDIRECT_URI,
                                  OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET ));
 
+    libcmis::SessionFactory::setOAuth2AuthCodeProvider( authCodeFallback );
     libcmis::Session* session = libcmis::SessionFactory::createSession(
             BINDING_ONEDRIVE, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY, false,

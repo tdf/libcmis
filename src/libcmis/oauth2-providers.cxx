@@ -94,29 +94,10 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     return code;
 }
 
-string OAuth2Providers::OAuth2Onedrive( HttpSession* session, const string& authUrl,
-                                      const string& username, const string& password )
+string OAuth2Providers::OAuth2Onedrive( HttpSession* /*session*/, const string& /*authUrl*/,
+                                      const string& /*username*/, const string& /*password*/ )
 {
-    static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
-    // STEP 1: Log in
-    string res;
-    try
-    {
-        res = session->httpGetRequest( authUrl )->getStream( )->str( );
-    }
-    catch ( const CurlException& e )
-    {
-        return res;
-    }
-
-    string loginPost, loginLink; 
-    if ( !parseResponse( res.c_str( ), loginPost, loginLink ) ) {
-        // fails because Microsoft requiers javascrip
-        return string( );
-    }
-    // for the unused variable warrning
-    string code = username + password;
-    return code;
+    return string( );
 }
 
 string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& authUrl,
