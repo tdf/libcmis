@@ -27,6 +27,7 @@
  */
 
 #include <algorithm>
+#include <sstream>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
@@ -62,8 +63,9 @@ RelatedMultipart::RelatedMultipart( ) :
     m_parts( ),
     m_boundary( )
 {
-    uuid uuid = random_generator()();
-    m_boundary = "--------uuid:" + to_string( uuid );
+    stringstream tmpStream("--------uuid:");
+    tmpStream << random_generator()();
+    m_boundary = tmpStream.str();
 }
 
 RelatedMultipart::RelatedMultipart( const string& body, const string& contentType ) :
@@ -297,15 +299,12 @@ boost::shared_ptr< istringstream > RelatedMultipart::toStream( )
 
 string RelatedMultipart::createPartId( const string& name )
 {
-    string cid( name + "*" );
+    stringstream tmpStream(name);
+    tmpStream << "*";
+    tmpStream << random_generator()();
+    tmpStream << "@libcmis.sourceforge.net";
 
-    // Generate the UUID part of the id
-    uuid uuid = random_generator()();
-    cid += to_string( uuid );
-
-    cid += "@libcmis.sourceforge.net";
-
-    return cid;
+    return tmpStream.str();
 }
 
 boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipart& multipart )
