@@ -105,6 +105,7 @@ class HttpSession
         bool m_noSSLCheck;
         bool m_refreshedToken;
         bool m_inOAuth2Authentication;
+        bool m_NTLMAuthentication;
     public:
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
@@ -124,6 +125,8 @@ class HttpSession
         /** Don't throw the HTTP errors as CurlExceptions.
           */
         void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }
+
+        void setNTLMAuthentication( bool NTLMAuth ) { m_NTLMAuthentication = NTLMAuth; }
 
         /** Set the OAuth2 data and get the access / refresh tokens.
           */
