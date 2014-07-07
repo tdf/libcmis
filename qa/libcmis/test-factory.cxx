@@ -38,6 +38,7 @@
 #include <ws-session.hxx>
 #include <gdrive-session.hxx>
 #include <onedrive-session.hxx>
+#include <sharepoint-session.hxx>
 
 #include <mockup-config.h>
 #include <test-helpers.hxx>
@@ -45,6 +46,7 @@
 
 #define BINDING_ATOM string( "http://mockup/atom" )
 #define BINDING_WS string( "http://mockup/ws" )
+#define BINDING_SHAREPOINT string ( "http://mockup/sharepoint" )
 #define BINDING_BAD "http://mockup/bad"
 #define BINDING_GDRIVE  string ( "https://www.googleapis.com/drive/v2" )
 #define BINDING_ONEDRIVE  string ( "https://apis.live.net/v5.0" )
@@ -125,6 +127,16 @@ namespace
         char *authCode = strdup( "authCode" );
         return authCode;
     }
+
+    void lcl_init_mockup_sharepoint( )
+    {
+        curl_mockup_reset( );
+
+        curl_mockup_addResponse( BINDING_SHAREPOINT.c_str( ), "", "GET", "", 401, false );
+        curl_mockup_addResponse( ( BINDING_SHAREPOINT + "/currentuser" ).c_str( ), "", "GET",
+                                 DATA_DIR "/sharepoint/auth-resp.json", 200, true );
+        curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    }
 }
 
 class FactoryTest : public CppUnit::TestFixture
@@ -138,6 +150,8 @@ class FactoryTest : public CppUnit::TestFixture
         void createSessionNoCmisTest( );
         void createSessionGDriveTest( );
         void createSessionOneDriveTest( );
+        void createSessionSharePointTest( );
+        void createSessionSharePointBadAuthTest( );
 
         CPPUNIT_TEST_SUITE( FactoryTest );
         CPPUNIT_TEST( createSessionAtomTest );
@@ -147,6 +161,8 @@ class FactoryTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createSessionNoCmisTest );
         CPPUNIT_TEST( createSessionGDriveTest );
         CPPUNIT_TEST( createSessionOneDriveTest );
+        CPPUNIT_TEST( createSessionSharePointTest );
+        CPPUNIT_TEST( createSessionSharePointBadAuthTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -247,6 +263,35 @@ void FactoryTest::createSessionOneDriveTest( )
             oauth2Data );
     CPPUNIT_ASSERT_MESSAGE( "Not a OneDriveSession",
             dynamic_cast< OneDriveSession* >( session ) != NULL );
+}
+
+void FactoryTest::createSessionSharePointTest( )
+{
+    lcl_init_mockup_sharepoint( );
+
+    libcmis::Session* session = libcmis::SessionFactory::createSession(
+            BINDING_SHAREPOINT, SERVER_USERNAME, SERVER_PASSWORD,
+            SERVER_REPOSITORY );
+    CPPUNIT_ASSERT_MESSAGE( "Not a SharePoint Session",
+            dynamic_cast< SharePointSession* >( session ) != NULL );
+}
+
+void FactoryTest::createSessionSharePointBadAuthTest( )
+{
+    lcl_init_mockup_sharepoint( );
+
+    try
+    {
+        libcmis::SessionFactory::createSession(
+                BINDING_ATOM, "Bad user", "Bad Password",
+                SERVER_REPOSITORY );
+        CPPUNIT_FAIL( "Should throw exception" );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type",
+                string( "permissionDenied" ), e.getType( ) );
+    }
 }
 
 void FactoryTest::createSessionNoCmisTest( )
