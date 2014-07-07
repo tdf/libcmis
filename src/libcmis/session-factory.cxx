@@ -29,6 +29,7 @@
 #include "gdrive-session.hxx"
 #include "onedrive-session.hxx"
 #include "session-factory.hxx"
+#include "sharepoint-session.hxx"
 #include "ws-session.hxx"
 
 using namespace std;
@@ -86,19 +87,27 @@ namespace libcmis
                 }
                 catch ( const CurlException& e )
                 {
-                    throw e.getCmisException( );
+                    if ( e.getHttpStatus( ) == 401 )
+                    {
+                        // Probably SharePoint - needs NTLM authentication
+                        session = new SharePointSession( bindingUrl, username,
+                                                          password, verbose );
+                    }
+                    else
+                        throw e.getCmisException( );
                 }
 
 
                 // Try the CMIS cases: we need to autodetect the binding type
-                try
-                {
-                    session = new AtomPubSession( bindingUrl, repository,
-                                    *httpSession, response );
-                }
-                catch ( const Exception& e )
-                {
-                }
+                if ( session == NULL )
+                    try
+                    {
+                        session = new AtomPubSession( bindingUrl, repository,
+                                        *httpSession, response );
+                    }
+                    catch ( const Exception& e )
+                    {
+                    }
 
                 if ( session == NULL )
                 {
