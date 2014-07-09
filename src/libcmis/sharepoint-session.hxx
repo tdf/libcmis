@@ -68,6 +68,11 @@ class SharePointSession : public BaseSession
         Json getJsonFromUrl( std::string url )
             throw ( libcmis::Exception );
 
+        void httpRunRequest( std::string url,
+                             std::vector< std::string > headers,
+                             bool redirect )
+            throw ( CurlException );
+
     private:
         SharePointSession( );
 };
