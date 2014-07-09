@@ -52,9 +52,13 @@ class SharePointTest : public CppUnit::TestFixture
 {
     public:
         void getRepositoriesTest( );
+        void getObjectTest( );
+        void propertiesTest( );
         
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( propertiesTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -83,6 +87,59 @@ void SharePointTest::getRepositoriesTest( )
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
                                    string ( "SharePoint" ),
                                    actual.front()->getId( ) );
+}
+
+void SharePointTest::getObjectTest( )
+{
+    static const string objectId ( "aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    string authorUrl = url + "/Author";
+    curl_mockup_addResponse ( url.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    boost::shared_ptr<SharePointObject> obj = boost::dynamic_pointer_cast
+                                            <SharePointObject>( object );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", objectId,
+                                                     obj->getId( ) );
+}
+
+void SharePointTest::propertiesTest( )
+{
+    static const string objectId ( "aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string url = BASE_URL + "/" + objectId;
+    string authorUrl = url + "/Author";
+    curl_mockup_addResponse ( url.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong creation date",
+                                   string ( "2014-07-08T09:29:29Z" ),
+                                   object->getStringProperty( "cmis:creationDate" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
+                                   string ( "aFileId" ),
+                                   object->getStringProperty( "cmis:objectId" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong author",
+                                   string ( "aUserId" ),
+                                   object->getStringProperty( "cmis:createdBy" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
+                                   string ( "SharePoint File" ),
+                                   object->getStringProperty( "cmis:contentStreamFileName" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkin comment",
+                                   string ( "aCheckinComment" ),
+                                   object->getStringProperty( "cmis:checkinComment" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version",
+                                   string ( "2" ),
+                                   object->getStringProperty( "cmis:versionLabel" ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
