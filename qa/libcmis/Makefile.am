@@ -5,6 +5,7 @@ mockup_tests = \
 	test-atom \
 	test-gdrive \
 	test-onedrive \
+	test-sharepoint \
 	test-ws \
 	test-factory
 endif
@@ -95,6 +96,27 @@ test_onedrive_LDADD = \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
+
+test_sharepoint_SOURCES =	\
+	test-helpers.cxx \
+	test-helpers.hxx \
+	test-main.cxx \
+	test-sharepoint.cxx
+
+test_sharepoint_CPPFLAGS = \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_srcdir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0 \
+	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
+
+test_sharepoint_LDADD = \
+	$(top_builddir)/qa/mockup/libcmis-mockup.la \
+	$(XML2_LIBS) \
+	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LIBS)
+
 
 test_ws_SOURCES =	\
 	test-ws.cxx \
