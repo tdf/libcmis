@@ -120,7 +120,7 @@ HttpSession::HttpSession( string username, string password, bool noSslCheck,
     m_noSSLCheck( noSslCheck ),
     m_refreshedToken( false ),
     m_inOAuth2Authentication( false ),
-    m_NTLMAuthentication( false )
+    m_authMethod( CURLAUTH_ANY )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -142,7 +142,7 @@ HttpSession::HttpSession( const HttpSession& copy ) :
     m_noSSLCheck( copy.m_noSSLCheck ),
     m_refreshedToken( false ),
     m_inOAuth2Authentication( false ),
-    m_NTLMAuthentication( copy.m_NTLMAuthentication )
+    m_authMethod( copy.m_authMethod )
 {
     // Not sure how sharing curl handles is safe.
     curl_global_init( CURL_GLOBAL_ALL );
@@ -161,7 +161,7 @@ HttpSession::HttpSession( ) :
     m_noSSLCheck( false ),
     m_refreshedToken( false ),
     m_inOAuth2Authentication( false ),
-    m_NTLMAuthentication( false )
+    m_authMethod( CURLAUTH_ANY )
 {
     curl_global_init( CURL_GLOBAL_ALL );
     m_curlHandle = curl_easy_init( );
@@ -182,7 +182,7 @@ HttpSession& HttpSession::operator=( const HttpSession& copy )
         m_noSSLCheck = copy.m_noSSLCheck;
         m_refreshedToken = copy.m_refreshedToken;
         m_inOAuth2Authentication = copy.m_inOAuth2Authentication;
-        m_NTLMAuthentication = copy.m_NTLMAuthentication;
+        m_authMethod = copy.m_authMethod;
 
         // Not sure how sharing curl handles is safe.
         curl_global_init( CURL_GLOBAL_ALL );
@@ -515,10 +515,6 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
         headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
 
-    if ( m_NTLMAuthentication )
-        // we want json responses for SharePoint
-        headers_slist = curl_slist_append( headers_slist, "accept:application/json; odata=verbose" );
-
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
     if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
@@ -528,11 +524,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     }
     else if ( !getUsername().empty() && !getPassword().empty() )
     {
-        if ( m_NTLMAuthentication )
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_NTLM );
-        else
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-
+        curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
 #if LIBCURL_VERSION_VALUE >= 0x071301
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );

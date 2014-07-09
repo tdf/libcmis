@@ -41,8 +41,7 @@ SharePointSession::SharePointSession ( string baseUrl,
                  libcmis::OAuth2DataPtr(), verbose )
 
 {
-    setNTLMAuthentication( true );
-
+    setAuthMethod( CURLAUTH_NTLM );
     libcmis::HttpResponsePtr response;
     try
     {

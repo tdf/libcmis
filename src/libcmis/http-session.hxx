@@ -105,7 +105,7 @@ class HttpSession
         bool m_noSSLCheck;
         bool m_refreshedToken;
         bool m_inOAuth2Authentication;
-        bool m_NTLMAuthentication;
+        int m_authMethod;
     public:
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
@@ -126,13 +126,11 @@ class HttpSession
           */
         void setNoHttpErrors( bool noHttpErrors ) { m_noHttpErrors = noHttpErrors; }
 
-        void setNTLMAuthentication( bool NTLMAuth ) { m_NTLMAuthentication = NTLMAuth; }
 
         /** Set the OAuth2 data and get the access / refresh tokens.
           */
         virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
             throw ( libcmis::Exception );
-
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url )
             throw ( CurlException );
@@ -161,6 +159,7 @@ class HttpSession
             the OAuth2 login parser.
           */
         void oauth2Authenticate( ) throw ( libcmis::Exception );
+        void setAuthMethod( int authMethod ) { m_authMethod = authMethod; }
 
     private:
         void checkCredentials( ) throw ( CurlException );
