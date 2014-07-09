@@ -1,0 +1,28 @@
+{
+  "d":{
+    "Email":"",
+    "Groups":{
+      "__deferred":{
+        "uri":"http://mock/_api/Web/GetUserById(1)/Groups"
+      }
+    },
+    "Id":1,
+    "IsHiddenInUI":false,
+    "IsSiteAdmin":true,
+    "LoginName":"i:0#.w|sp-cmis\\aUserId",
+    "PrincipalType":1,
+    "Title":"aUserId",
+    "UserId":{
+      "NameId":"s-1-5-21-1673017749-4204619129-3521412262-500",
+      "NameIdIssuer":"urn:office:idp:activedirectory",
+      "__metadata":{
+        "type":"SP.UserIdInfo"
+      }
+    },
+    "__metadata":{
+      "id":"http://mock/_api/Web/GetUserById(1)",
+      "type":"SP.User",
+      "uri":"http://mock/_api/Web/GetUserById(1)"
+    }
+  }
+}
