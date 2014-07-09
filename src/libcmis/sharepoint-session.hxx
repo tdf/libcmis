@@ -62,6 +62,12 @@ class SharePointSession : public BaseSession
         virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( )
             throw ( libcmis::Exception );
 
+       libcmis::ObjectPtr getObjectFromJson( Json& jsonRes ) 
+            throw ( libcmis::Exception );
+
+        Json getJsonFromUrl( std::string url )
+            throw ( libcmis::Exception );
+
     private:
         SharePointSession( );
 };

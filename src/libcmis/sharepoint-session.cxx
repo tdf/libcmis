@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "sharepoint-object.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-session.hxx"
 
@@ -79,10 +80,41 @@ libcmis::RepositoryPtr SharePointSession::getRepository( )
     return repo;
 }
 
-libcmis::ObjectPtr SharePointSession::getObject( string /*objectId*/ )
+libcmis::ObjectPtr SharePointSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {
+    string res;
+    string objectLink = m_bindingUrl + "/" + objectId;
+    try
+    {
+        res = httpGetRequest( objectLink )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    Json jsonRes = Json::parse( res );
+    return getObjectFromJson( jsonRes );
+}
+
+libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes ) 
+            throw ( libcmis::Exception )
+{
     libcmis::ObjectPtr object;
+    string kind = jsonRes["d"]["__metadata"]["type"].toString( );
+    // only SharePointObject available for now
+    if ( kind == "SP.Folder" )
+    {
+        object.reset( new SharePointObject( this, jsonRes ) );
+    }
+    else if ( kind == "SP.File" )
+    {
+        object.reset( new SharePointObject( this, jsonRes ) );
+    }
+    else
+    {
+        object.reset( new SharePointObject( this, jsonRes ) );
+    }
     return object;
 }
 
@@ -105,3 +137,19 @@ vector< libcmis::ObjectTypePtr > SharePointSession::getBaseTypes( )
     vector< libcmis::ObjectTypePtr > types;
     return types;
 }
+
+Json SharePointSession::getJsonFromUrl( string url )
+    throw ( libcmis::Exception )
+{
+    string response;
+    try
+    {
+        response = httpGetRequest( url )->getStream()->str();
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    return Json::parse( response );
+}
+

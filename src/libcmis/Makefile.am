@@ -110,10 +110,16 @@ libcmis_la_SOURCES = \
 	onedrive-session.cxx \
 	onedrive-utils.hxx \
 	onedrive-utils.cxx \
+	sharepoint-object.hxx \
+	sharepoint-object.cxx \
+	sharepoint-property.hxx \
+	sharepoint-property.cxx \
 	sharepoint-repository.hxx \
 	sharepoint-repository.cxx \
 	sharepoint-session.hxx \
 	sharepoint-session.cxx \
+	sharepoint-utils.hxx \
+	sharepoint-utils.cxx \
 	json-utils.hxx \
 	json-utils.cxx \
 	oauth2-handler.hxx \
