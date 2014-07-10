@@ -41,6 +41,10 @@ class SharePointSession : public BaseSession
                        bool verbose = false )
                    throw ( libcmis::Exception );
 
+        SharePointSession( std::string baseUrl,
+                        const HttpSession& httpSession,
+                        libcmis::HttpResponsePtr response ) throw ( libcmis::Exception );
+
         SharePointSession( const SharePointSession& copy );
 
         ~SharePointSession ( );

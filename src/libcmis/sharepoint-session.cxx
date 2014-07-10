@@ -29,6 +29,7 @@
 #include "sharepoint-object.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-session.hxx"
+#include "sharepoint-utils.hxx"
 #include "session-factory.hxx"
 
 using namespace std;
@@ -54,6 +55,20 @@ SharePointSession::SharePointSession ( string baseUrl,
         throw e.getCmisException( );
     }
 
+    // Add the dummy repository
+    m_repositories.push_back( getRepository( ) );
+}
+
+SharePointSession::SharePointSession( string baseUrl,
+                                      const HttpSession& httpSession,
+                                      libcmis::HttpResponsePtr response )
+                                            throw ( libcmis::Exception ) :
+    BaseSession( baseUrl, string(), httpSession )
+{
+    if ( !SharePointUtils::isSharePoint( response->getStream( )->str( ) ) )
+    {
+        throw new libcmis::Exception( "Not a SharePoint service" );
+    }
     // Add the dummy repository
     m_repositories.push_back( getRepository( ) );
 }

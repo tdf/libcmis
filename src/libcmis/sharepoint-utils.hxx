@@ -42,6 +42,9 @@ class SharePointUtils
 
         // Parse a SharePoint property value to CMIS values
         static std::vector< std::string > parseSharePointProperty( std::string key, Json jsonValue );
+
+        // Checks if a response came from a SharePoint service
+        static bool isSharePoint( std::string response );
 };
 
 #endif

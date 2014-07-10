@@ -28,6 +28,7 @@
 
 #include "sharepoint-utils.hxx"
 #include "json-utils.hxx"
+#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;
@@ -75,4 +76,11 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     }
     else values.push_back( json.toString( ) );
     return values;
+}
+
+bool SharePointUtils::isSharePoint( string response )
+{
+    xmlDocPtr doc = xmlReadMemory( response.c_str( ), response.size( ), "noname.xml", NULL, 0 );
+    xmlXPathContextPtr xpath = xmlXPathNewContext( doc );
+    return "SP.Web" == libcmis::getXPathValue( xpath, "//@term" );
 }
