@@ -65,9 +65,11 @@ SharePointSession::SharePointSession( string baseUrl,
                                             throw ( libcmis::Exception ) :
     BaseSession( baseUrl, string(), httpSession )
 {
+    boost::shared_ptr< libcmis::Exception > exception;
     if ( !SharePointUtils::isSharePoint( response->getStream( )->str( ) ) )
     {
-        throw new libcmis::Exception( "Not a SharePoint service" );
+        exception.reset( new libcmis::Exception( "Not a SharePoint service" ) );
+        throw *exception.get( );
     }
     // Add the dummy repository
     m_repositories.push_back( getRepository( ) );
