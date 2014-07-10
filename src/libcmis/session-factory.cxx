@@ -87,19 +87,14 @@ namespace libcmis
                 }
                 catch ( const CurlException& e )
                 {
-                    if ( e.getHttpStatus( ) == 401 )
-                    {
-                        // Probably SharePoint - needs NTLM authentication
-                        session = new SharePointSession( bindingUrl, username,
-                                                          password, verbose );
-                    }
-                    else
-                        throw e.getCmisException( );
+                    // Could be SharePoint - needs NTLM authentication
+                    session = new SharePointSession( bindingUrl, username,
+                                                      password, verbose );
                 }
-
 
                 // Try the CMIS cases: we need to autodetect the binding type
                 if ( session == NULL )
+                {
                     try
                     {
                         session = new AtomPubSession( bindingUrl, repository,
@@ -108,6 +103,7 @@ namespace libcmis
                     catch ( const Exception& e )
                     {
                     }
+                }
 
                 if ( session == NULL )
                 {
@@ -115,6 +111,20 @@ namespace libcmis
                     try
                     {
                         session = new WSSession( bindingUrl, repository,
+                                      *httpSession, response );
+                    }
+                    catch ( const Exception& e )
+                    {
+                    }
+                }
+
+                if ( session == NULL )
+                {
+                    // Maybe the first request didn't throw an exception and the authentication
+                    // succeeded so we need to double check for SharePoint 
+                    try
+                    {
+                        session = new SharePointSession( bindingUrl,
                                       *httpSession, response );
                     }
                     catch ( const Exception& e )
