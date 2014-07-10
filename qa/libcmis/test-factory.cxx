@@ -151,6 +151,7 @@ class FactoryTest : public CppUnit::TestFixture
         void createSessionGDriveTest( );
         void createSessionOneDriveTest( );
         void createSessionSharePointTest( );
+        void createSessionSharePointDefaultAuthTest( );
         void createSessionSharePointBadAuthTest( );
 
         CPPUNIT_TEST_SUITE( FactoryTest );
@@ -162,6 +163,7 @@ class FactoryTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createSessionGDriveTest );
         CPPUNIT_TEST( createSessionOneDriveTest );
         CPPUNIT_TEST( createSessionSharePointTest );
+        CPPUNIT_TEST( createSessionSharePointDefaultAuthTest );
         CPPUNIT_TEST( createSessionSharePointBadAuthTest );
         CPPUNIT_TEST_SUITE_END( );
 };
@@ -268,6 +270,19 @@ void FactoryTest::createSessionOneDriveTest( )
 void FactoryTest::createSessionSharePointTest( )
 {
     lcl_init_mockup_sharepoint( );
+
+    libcmis::Session* session = libcmis::SessionFactory::createSession(
+            BINDING_SHAREPOINT, SERVER_USERNAME, SERVER_PASSWORD,
+            SERVER_REPOSITORY );
+    CPPUNIT_ASSERT_MESSAGE( "Not a SharePoint Session",
+            dynamic_cast< SharePointSession* >( session ) != NULL );
+}
+
+void FactoryTest::createSessionSharePointDefaultAuthTest( )
+{
+    curl_mockup_addResponse( BINDING_SHAREPOINT.c_str( ), "", "GET",
+                             DATA_DIR "/sharepoint/auth-xml-resp.xml", 200, true );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     libcmis::Session* session = libcmis::SessionFactory::createSession(
             BINDING_SHAREPOINT, SERVER_USERNAME, SERVER_PASSWORD,
