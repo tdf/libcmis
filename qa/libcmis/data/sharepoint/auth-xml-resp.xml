@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xml:base="http://mock/_api/">
+  <id>http://mock/_api/Web</id>
+  <category term="SP.Web" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+  <link rel="edit" href="Web" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/FirstUniqueAncestorSecurableObject" type="application/atom+xml;type=entry" title="FirstUniqueAncestorSecurableObject" href="Web/FirstUniqueAncestorSecurableObject" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/RoleAssignments" type="application/atom+xml;type=feed" title="RoleAssignments" href="Web/RoleAssignments" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AllProperties" type="application/atom+xml;type=entry" title="AllProperties" href="Web/AllProperties" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AssociatedMemberGroup" type="application/atom+xml;type=entry" title="AssociatedMemberGroup" href="Web/AssociatedMemberGroup" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AssociatedOwnerGroup" type="application/atom+xml;type=entry" title="AssociatedOwnerGroup" href="Web/AssociatedOwnerGroup" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AssociatedVisitorGroup" type="application/atom+xml;type=entry" title="AssociatedVisitorGroup" href="Web/AssociatedVisitorGroup" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AvailableContentTypes" type="application/atom+xml;type=feed" title="AvailableContentTypes" href="Web/AvailableContentTypes" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/AvailableFields" type="application/atom+xml;type=feed" title="AvailableFields" href="Web/AvailableFields" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ContentTypes" type="application/atom+xml;type=feed" title="ContentTypes" href="Web/ContentTypes" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CurrentUser" type="application/atom+xml;type=entry" title="CurrentUser" href="Web/CurrentUser" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/EventReceivers" type="application/atom+xml;type=feed" title="EventReceivers" href="Web/EventReceivers" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Features" type="application/atom+xml;type=feed" title="Features" href="Web/Features" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Fields" type="application/atom+xml;type=feed" title="Fields" href="Web/Fields" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Folders" type="application/atom+xml;type=feed" title="Folders" href="Web/Folders" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Lists" type="application/atom+xml;type=feed" title="Lists" href="Web/Lists" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ListTemplates" type="application/atom+xml;type=feed" title="ListTemplates" href="Web/ListTemplates" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Navigation" type="application/atom+xml;type=entry" title="Navigation" href="Web/Navigation" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ParentWeb" type="application/atom+xml;type=entry" title="ParentWeb" href="Web/ParentWeb" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/PushNotificationSubscribers" type="application/atom+xml;type=feed" title="PushNotificationSubscribers" href="Web/PushNotificationSubscribers" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/RecycleBin" type="application/atom+xml;type=feed" title="RecycleBin" href="Web/RecycleBin" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/RegionalSettings" type="application/atom+xml;type=entry" title="RegionalSettings" href="Web/RegionalSettings" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/RoleDefinitions" type="application/atom+xml;type=feed" title="RoleDefinitions" href="Web/RoleDefinitions" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/RootFolder" type="application/atom+xml;type=entry" title="RootFolder" href="Web/RootFolder" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/SiteGroups" type="application/atom+xml;type=feed" title="SiteGroups" href="Web/SiteGroups" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/SiteUserInfoList" type="application/atom+xml;type=entry" title="SiteUserInfoList" href="Web/SiteUserInfoList" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/SiteUsers" type="application/atom+xml;type=feed" title="SiteUsers" href="Web/SiteUsers" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ThemeInfo" type="application/atom+xml;type=entry" title="ThemeInfo" href="Web/ThemeInfo" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/UserCustomActions" type="application/atom+xml;type=feed" title="UserCustomActions" href="Web/UserCustomActions" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Webs" type="application/atom+xml;type=feed" title="Webs" href="Web/Webs" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/WebInfos" type="application/atom+xml;type=feed" title="WebInfos" href="Web/WebInfos" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/WorkflowAssociations" type="application/atom+xml;type=feed" title="WorkflowAssociations" href="Web/WorkflowAssociations" />
+  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/WorkflowTemplates" type="application/atom+xml;type=feed" title="WorkflowTemplates" href="Web/WorkflowTemplates" />
+  <title />
+  <updated>2014-07-10T07:24:26Z</updated>
+  <author>
+    <name />
+  </author>
+  <content type="application/xml">
+    <m:properties>
+      <d:AllowRssFeeds m:type="Edm.Boolean">true</d:AllowRssFeeds>
+      <d:AppInstanceId m:type="Edm.Guid">00000000-0000-0000-0000-000000000000</d:AppInstanceId>
+      <d:Configuration m:type="Edm.Int16">0</d:Configuration>
+      <d:Created m:type="Edm.DateTime">2014-07-02T13:55:23</d:Created>
+      <d:CustomMasterUrl>/_catalogs/masterpage/seattle.master</d:CustomMasterUrl>
+      <d:Description />
+      <d:DocumentLibraryCalloutOfficeWebAppPreviewersDisabled m:type="Edm.Boolean">false</d:DocumentLibraryCalloutOfficeWebAppPreviewersDisabled>
+      <d:EnableMinimalDownload m:type="Edm.Boolean">false</d:EnableMinimalDownload>
+      <d:Id m:type="Edm.Guid">98a58f26-7ed4-436c-917b-05fa37e06ab2</d:Id>
+      <d:Language m:type="Edm.Int32">1033</d:Language>
+      <d:LastItemModifiedDate m:type="Edm.DateTime">2014-07-08T09:29:30Z</d:LastItemModifiedDate>
+      <d:MasterUrl>/_catalogs/masterpage/seattle.master</d:MasterUrl>
+      <d:QuickLaunchEnabled m:type="Edm.Boolean">true</d:QuickLaunchEnabled>
+      <d:RecycleBinEnabled m:type="Edm.Boolean">true</d:RecycleBinEnabled>
+      <d:ServerRelativeUrl>/</d:ServerRelativeUrl>
+      <d:SyndicationEnabled m:type="Edm.Boolean">true</d:SyndicationEnabled>
+      <d:Title>Home</d:Title>
+      <d:TreeViewEnabled m:type="Edm.Boolean">false</d:TreeViewEnabled>
+      <d:UIVersion m:type="Edm.Int32">15</d:UIVersion>
+      <d:UIVersionConfigurationEnabled m:type="Edm.Boolean">false</d:UIVersionConfigurationEnabled>
+      <d:Url>http://mock</d:Url>
+      <d:WebTemplate>STS</d:WebTemplate>
+    </m:properties>
+  </content>
+</entry>
