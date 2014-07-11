@@ -55,7 +55,6 @@ class SharePointObject : public virtual libcmis::Object
         virtual void remove( bool allVersions = true ) 
             throw ( libcmis::Exception );
 
-        std::string getUrl( );
         std::vector< std::string > getMultiStringProperty(
                 const std::string& propertyName );
 

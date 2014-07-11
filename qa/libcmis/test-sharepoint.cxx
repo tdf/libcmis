@@ -91,10 +91,10 @@ void SharePointTest::getRepositoriesTest( )
 
 void SharePointTest::getObjectTest( )
 {
-    static const string objectId ( "aFileId" );
+    static const string objectId ( "http://base/_api/Web/aFileId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
-    string url = BASE_URL + "/" + objectId;
+    string url = objectId;
     string authorUrl = url + "/Author";
     curl_mockup_addResponse ( url.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/file.json", 200, true);
@@ -110,10 +110,10 @@ void SharePointTest::getObjectTest( )
 
 void SharePointTest::propertiesTest( )
 {
-    static const string objectId ( "aFileId" );
+    static const string objectId ( "http://base/_api/Web/aFileId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
-    string url = BASE_URL + "/" + objectId;
+    string url = objectId;
     string authorUrl = url + "/Author";
     curl_mockup_addResponse ( url.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/file.json", 200, true);
@@ -126,7 +126,7 @@ void SharePointTest::propertiesTest( )
                                    string ( "2014-07-08T09:29:29Z" ),
                                    object->getStringProperty( "cmis:creationDate" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong object id",
-                                   string ( "aFileId" ),
+                                   string ( "http://base/_api/Web/aFileId" ),
                                    object->getStringProperty( "cmis:objectId" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong author",
                                    string ( "aUserId" ),

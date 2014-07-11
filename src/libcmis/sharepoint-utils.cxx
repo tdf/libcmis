@@ -60,8 +60,6 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     if ( key == "__metadata" )
     {
         string id = json["uri"].toString( );
-        size_t pos = id.find( "_api/Web/" );
-        id = id.substr( pos + strlen( "_api/Web/" ) );
         values.push_back( id );
     }
     if ( key == "Author" ||

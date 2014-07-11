@@ -107,7 +107,7 @@ void SharePointObject::refresh( ) throw ( libcmis::Exception )
     string res;
     try
     {
-        res  = getSession()->httpGetRequest( getUrl( ) )->getStream( )->str( );
+        res  = getSession( )->httpGetRequest( getId( ) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -121,17 +121,12 @@ void SharePointObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception
 {
     try
     {
-        getSession( )->httpDeleteRequest( getUrl( ) );
+        getSession( )->httpDeleteRequest( getId( ) );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
-}
-
-string SharePointObject::getUrl( )
-{
-    return getSession( )->getBindingUrl( ) + "/" + getId( );
 }
 
 vector< string> SharePointObject::getMultiStringProperty( const string& propertyName )

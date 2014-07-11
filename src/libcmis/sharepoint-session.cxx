@@ -100,11 +100,11 @@ libcmis::RepositoryPtr SharePointSession::getRepository( )
 libcmis::ObjectPtr SharePointSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {
+    // objectId is uri for the file
     string res;
-    string objectLink = m_bindingUrl + "/" + objectId;
     try
     {
-        res = httpGetRequest( objectLink )->getStream()->str();
+        res = httpGetRequest( objectId )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
