@@ -91,8 +91,9 @@ class CurlException : public std::exception
 
 class HttpSession
 {
-    private:
+    protected:
         CURL* m_curlHandle;
+    private:
         bool  m_no100Continue;
     protected:
         OAuth2Handler* m_oauth2Handler;
@@ -160,7 +161,10 @@ class HttpSession
           */
         void oauth2Authenticate( ) throw ( libcmis::Exception );
         void setAuthMethod( int authMethod ) { m_authMethod = authMethod; }
-        void httpRunRequest( std::string url, std::vector< std::string > headers = std::vector< std::string > ( ), bool redirect = true ) throw ( CurlException );
+        virtual void httpRunRequest( std::string url,
+                                    std::vector< std::string > headers = std::vector< std::string > ( ),
+                                    bool redirect = true ) 
+            throw ( CurlException );
 
     private:
         void checkCredentials( ) throw ( CurlException );
