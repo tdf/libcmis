@@ -70,9 +70,8 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
         m_properties[ property->getPropertyType( )->getId()] = property;
         if ( it->first == "Name" && !isFolder )
         {
-            PropertyPtr contentStreamProp;
-            contentStreamProp.reset( new SharePointProperty( "cmis:contentStreamFileName", it->second ) );
-            m_properties[ contentStreamProp->getPropertyType( )->getId()] = contentStreamProp;
+            property.reset( new SharePointProperty( "cmis:contentStreamFileName", it->second ) );
+            m_properties[ property->getPropertyType( )->getId()] = property;
         }
     }
 
