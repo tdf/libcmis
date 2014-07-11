@@ -38,10 +38,10 @@ SharePointObject::SharePointObject( SharePointSession* session ) :
 {
 }
 
-SharePointObject::SharePointObject( SharePointSession* session, Json json, string id, string name ) :
+SharePointObject::SharePointObject( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, id, name ); 
+   initializeFromJson( json, parentId, name ); 
 }
 
 SharePointObject::SharePointObject( const SharePointObject& copy ) :
@@ -58,15 +58,14 @@ SharePointObject& SharePointObject::operator=( const SharePointObject& copy )
     return *this;
 }
 
-void SharePointObject::initializeFromJson ( Json json, string /*id*/, string /*name*/ )
+void SharePointObject::initializeFromJson ( Json json, string parentId, string /*name*/ )
 {
     Json::JsonObject objs = json["d"].getObjects( );
     Json::JsonObject::iterator it;
+    PropertyPtr property;
     bool isFolder = json["d"]["__metadata"]["type"].toString( ) == "SP.Folder";
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
-        PropertyPtr property;
- 
         property.reset( new SharePointProperty( it->first, it->second ) );
         m_properties[ property->getPropertyType( )->getId()] = property;
         if ( it->first == "Name" && !isFolder )
@@ -77,15 +76,17 @@ void SharePointObject::initializeFromJson ( Json json, string /*id*/, string /*n
         }
     }
 
+    // ParentId is not provided in the response
+    property.reset( new SharePointProperty( "cmis:parentId", Json( parentId.c_str( ) ) ) );
+    m_properties[ property->getPropertyType( )->getId()] = property;
+
     if ( !isFolder )
     {
         Json authorJson = getSession( )->getJsonFromUrl( getStringProperty( "Author" ) );
-        PropertyPtr property;
         property.reset( new SharePointProperty( "cmis:createdBy", 
                     authorJson["d"]["Title"] ) );
         m_properties[ property->getPropertyType( )->getId( ) ] = property;
     }
-
 
     m_refreshTimestamp = time( NULL );
 }

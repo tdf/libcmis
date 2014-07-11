@@ -114,7 +114,7 @@ libcmis::ObjectPtr SharePointSession::getObject( string objectId )
     return getObjectFromJson( jsonRes );
 }
 
-libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes ) 
+libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string parentId ) 
             throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
@@ -122,15 +122,15 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes )
     // only SharePointObject available for now
     if ( kind == "SP.Folder" )
     {
-        object.reset( new SharePointObject( this, jsonRes ) );
+        object.reset( new SharePointObject( this, jsonRes, parentId ) );
     }
     else if ( kind == "SP.File" )
     {
-        object.reset( new SharePointObject( this, jsonRes ) );
+        object.reset( new SharePointObject( this, jsonRes, parentId ) );
     }
     else
     {
-        object.reset( new SharePointObject( this, jsonRes ) );
+        object.reset( new SharePointObject( this, jsonRes, parentId ) );
     }
     return object;
 }

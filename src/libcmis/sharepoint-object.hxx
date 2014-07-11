@@ -40,14 +40,14 @@ class SharePointObject : public virtual libcmis::Object
 
         // Create a SharePoint document from Json properties.
         SharePointObject( SharePointSession* session, Json json, 
-               std::string id = std::string( ),
+               std::string parentId = std::string( ),
                std::string name = std::string( ) );
         SharePointObject( const SharePointObject& copy );
         virtual ~SharePointObject( ) { }
 
         SharePointObject& operator=( const SharePointObject& copy );
 
-        void initializeFromJson( Json json, std::string id = std::string( ),
+        void initializeFromJson( Json json, std::string parentId = std::string( ),
                                             std::string name = std::string( ) );
 
         void refreshImpl( Json json );
