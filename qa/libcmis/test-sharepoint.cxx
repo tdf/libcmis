@@ -54,11 +54,13 @@ class SharePointTest : public CppUnit::TestFixture
         void getRepositoriesTest( );
         void getObjectTest( );
         void propertiesTest( );
+        void deleteTest( );
         
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( propertiesTest );
+        CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -140,6 +142,26 @@ void SharePointTest::propertiesTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version",
                                    string ( "2" ),
                                    object->getStringProperty( "cmis:versionLabel" ) );
+}
+
+void SharePointTest::deleteTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string url = objectId;
+    string authorUrl = url + "/Author";
+    curl_mockup_addResponse ( url.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 204, false);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+
+    object->remove( );
+    const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+    CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
