@@ -45,6 +45,8 @@ class SharePointUtils
 
         // Checks if a response came from a SharePoint service
         static bool isSharePoint( std::string response );
+
+        static std::string getPath( std::string url );
 };
 
 #endif
