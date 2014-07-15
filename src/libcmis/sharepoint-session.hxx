@@ -73,13 +73,29 @@ class SharePointSession : public BaseSession
         Json getJsonFromUrl( std::string url )
             throw ( libcmis::Exception );
 
+        void fetchDigestCode( )
+            throw ( libcmis::Exception );
+
         void httpRunRequest( std::string url,
                              std::vector< std::string > headers,
                              bool redirect )
             throw ( CurlException );
 
+        libcmis::HttpResponsePtr httpPutRequest( std::string url,
+                                                 std::istream& is,
+                                                 std::vector< std::string > headers )
+            throw ( CurlException );
+        libcmis::HttpResponsePtr httpPostRequest( const std::string& url,
+                                                  std::istream& is,
+                                                  const std::string& contentType,
+                                                  bool redirect = true )
+            throw ( CurlException );
+        void httpDeleteRequest( std::string url ) throw ( CurlException );
+
+
     private:
         SharePointSession( );
+        std::string m_digestCode;
 };
 
 #endif /* _SHAREPONT_SESSION_HXX_ */

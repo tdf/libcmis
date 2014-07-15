@@ -40,7 +40,8 @@ SharePointSession::SharePointSession ( string baseUrl,
                                bool verbose )
                                     throw ( libcmis::Exception ) :
     BaseSession( baseUrl, string(), username, password, false,
-                 libcmis::OAuth2DataPtr(), verbose )
+                 libcmis::OAuth2DataPtr(), verbose ),
+    m_digestCode( string( ) ) 
 
 {
     setAuthMethod( CURLAUTH_NTLM );
@@ -63,7 +64,8 @@ SharePointSession::SharePointSession( string baseUrl,
                                       const HttpSession& httpSession,
                                       libcmis::HttpResponsePtr response )
                                             throw ( libcmis::Exception ) :
-    BaseSession( baseUrl, string(), httpSession )
+    BaseSession( baseUrl, string(), httpSession ),
+    m_digestCode( string( ) ) 
 {
     boost::shared_ptr< libcmis::Exception > exception;
     if ( !SharePointUtils::isSharePoint( response->getStream( )->str( ) ) )
@@ -76,12 +78,12 @@ SharePointSession::SharePointSession( string baseUrl,
 }
 
 SharePointSession::SharePointSession( const SharePointSession& copy ) :
-    BaseSession( copy )
+    BaseSession( copy ), m_digestCode( copy.m_digestCode )
 {
 }
 
 SharePointSession::SharePointSession() :
-    BaseSession()
+    BaseSession(), m_digestCode( string( ) )
 {
 }
 
@@ -188,6 +190,7 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
 
     headers_slist = curl_slist_append( headers_slist, "accept:application/json; odata=verbose" );
+    headers_slist = curl_slist_append( headers_slist, ( "x-requestdigest:" + m_digestCode ).c_str( ) );
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {
@@ -332,4 +335,75 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         if ( !errorFixed )
             throw CurlException( string( errBuff ), errCode, url, httpError );
     }
+}
+
+libcmis::HttpResponsePtr SharePointSession::httpPutRequest( std::string url,
+                                         std::istream& is,
+                                         std::vector< std::string > headers )
+    throw ( CurlException )
+{
+    libcmis::HttpResponsePtr response;
+    try
+    {
+        response = HttpSession::httpPutRequest( url, is, headers );
+    }
+    catch ( const CurlException& e )
+    {
+        fetchDigestCode( );
+        response = HttpSession::httpPutRequest( url, is, headers );
+    }
+    return response;
+}
+        
+libcmis::HttpResponsePtr SharePointSession::httpPostRequest( const std::string& url,
+                                          std::istream& is,
+                                          const std::string& contentType,
+                                          bool redirect )
+    throw ( CurlException )
+{
+    libcmis::HttpResponsePtr response;
+    try
+    {
+        response = HttpSession::httpPostRequest( url, is, contentType, redirect );
+    }
+    catch ( const CurlException& e )
+    {
+        fetchDigestCode( );
+        response = HttpSession::httpPostRequest( url, is, contentType, redirect );
+    }
+    return response;
+}
+
+void SharePointSession::httpDeleteRequest( std::string url )
+    throw ( CurlException )
+{
+    try
+    {
+        HttpSession::httpDeleteRequest( url );
+    }
+    catch ( const CurlException& e )
+    {
+        fetchDigestCode( );
+        HttpSession::httpDeleteRequest( url );
+    }
+}
+
+void SharePointSession::fetchDigestCode( )
+    throw ( libcmis::Exception )
+{
+    istringstream is( "empty" );
+    libcmis::HttpResponsePtr response;
+    // url = http://host/_api/contextinfo, first we remove the '/web' part
+    string url = m_bindingUrl.substr( 0, m_bindingUrl.size( ) - 4 ) + "/contextinfo";
+    try 
+    {   
+        response = HttpSession::httpPostRequest( url, is, "" );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    string res = response->getStream( )->str( );
+    Json jsonRes = Json::parse( res );
+    m_digestCode = jsonRes["d"]["GetContextWebInformation"]["FormDigestValue"].toString( );
 }
