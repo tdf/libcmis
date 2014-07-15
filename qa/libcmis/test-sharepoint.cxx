@@ -46,7 +46,8 @@ using namespace libcmis;
 
 static const string USERNAME( "mock-user" );
 static const string PASSWORD( "mock-password" );
-static const string BASE_URL ( "http://base/_api/Web" );
+static const string BASE_URL( "http://base/_api/Web" );
+static const string CONTEXTINFO_URL( "http://base/_api/contextinfo" );
 
 class SharePointTest : public CppUnit::TestFixture
 {
@@ -73,6 +74,8 @@ SharePointSession SharePointTest::getTestSession( string username, string passwo
     curl_mockup_addResponse( BASE_URL.c_str( ), "", "GET", "", 401, false );
     curl_mockup_addResponse( ( BASE_URL + "/currentuser" ).c_str( ), "", "GET",
                              DATA_DIR "/sharepoint/auth-resp.json", 200, true );
+    curl_mockup_addResponse( CONTEXTINFO_URL.c_str( ), "", "POST",
+                             DATA_DIR "/sharepoint/xdigest.json", 200, true );
 
     return SharePointSession( BASE_URL, username, password, false );
 }

@@ -46,7 +46,8 @@
 
 #define BINDING_ATOM string( "http://mockup/atom" )
 #define BINDING_WS string( "http://mockup/ws" )
-#define BINDING_SHAREPOINT string ( "http://mockup/sharepoint" )
+#define BINDING_SHAREPOINT string ( "http://mockup/sharepoint/_api/web" )
+#define CONTEXTINFO_URL string ( "http://mockup/sharepoint/_api/contextinfo" )
 #define BINDING_BAD "http://mockup/bad"
 #define BINDING_GDRIVE  string ( "https://www.googleapis.com/drive/v2" )
 #define BINDING_ONEDRIVE  string ( "https://apis.live.net/v5.0" )
@@ -135,6 +136,8 @@ namespace
         curl_mockup_addResponse( BINDING_SHAREPOINT.c_str( ), "", "GET", "", 401, false );
         curl_mockup_addResponse( ( BINDING_SHAREPOINT + "/currentuser" ).c_str( ), "", "GET",
                                  DATA_DIR "/sharepoint/auth-resp.json", 200, true );
+        curl_mockup_addResponse( CONTEXTINFO_URL.c_str( ), "", "POST",
+                                 DATA_DIR "/sharepoint/xdigest.json", 200, true );
         curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     }
 }
@@ -282,6 +285,9 @@ void FactoryTest::createSessionSharePointDefaultAuthTest( )
 {
     curl_mockup_addResponse( BINDING_SHAREPOINT.c_str( ), "", "GET",
                              DATA_DIR "/sharepoint/auth-xml-resp.xml", 200, true );
+    curl_mockup_addResponse( CONTEXTINFO_URL.c_str( ), "", "POST",
+                             DATA_DIR "/sharepoint/xdigest.json", 200, true );
+
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
     libcmis::Session* session = libcmis::SessionFactory::createSession(

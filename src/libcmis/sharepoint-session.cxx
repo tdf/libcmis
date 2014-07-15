@@ -58,6 +58,7 @@ SharePointSession::SharePointSession ( string baseUrl,
 
     // Add the dummy repository
     m_repositories.push_back( getRepository( ) );
+    fetchDigestCode( );
 }
 
 SharePointSession::SharePointSession( string baseUrl,
@@ -75,6 +76,7 @@ SharePointSession::SharePointSession( string baseUrl,
     }
     // Add the dummy repository
     m_repositories.push_back( getRepository( ) );
+    fetchDigestCode( );
 }
 
 SharePointSession::SharePointSession( const SharePointSession& copy ) :
