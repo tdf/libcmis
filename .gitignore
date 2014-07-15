@@ -26,6 +26,7 @@ test-atom
 test-gdrive
 test-onedrive
 test-json
+test-sharepoint
 test-ws
 test-factory
 test-api
