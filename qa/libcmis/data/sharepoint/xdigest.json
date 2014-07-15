@@ -1,0 +1,20 @@
+{
+  "d":{
+    "GetContextWebInformation":{
+      "FormDigestTimeoutSeconds":1800,
+      "FormDigestValue":"0xEBC52E4F66DE48475242A8F8291E9C6CAE1C71525B2EFFC8100F87746F4A5780E5EFCA2ABF063C8B3B08B987EBF56BF7ADE4A94714934D2C3928E060FBA4009A,14 Jul 2014 08:31:38 -0000",
+      "LibraryVersion":"15.0.4420.1017",
+      "SiteFullUrl":"http://base/_api",
+      "SupportedSchemaVersions":{
+        "results":[
+          "14.0.0.0",
+          "15.0.0.0"
+        ]
+      },
+      "WebFullUrl":"http://base/_api",
+      "__metadata":{
+        "type":"SP.ContextWebInformation"
+      }
+    }
+  }
+}
