@@ -101,9 +101,8 @@ void SharePointTest::getObjectTest( )
     static const string objectId ( "http://base/_api/Web/aFileId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
-    string url = objectId;
-    string authorUrl = url + "/Author";
-    curl_mockup_addResponse ( url.c_str( ), "",
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/file.json", 200, true);
     curl_mockup_addResponse ( authorUrl.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/author.json", 200, true);
@@ -120,9 +119,8 @@ void SharePointTest::propertiesTest( )
     static const string objectId ( "http://base/_api/Web/aFileId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
-    string url = objectId;
-    string authorUrl = url + "/Author";
-    curl_mockup_addResponse ( url.c_str( ), "",
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/file.json", 200, true);
     curl_mockup_addResponse ( authorUrl.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/author.json", 200, true);
@@ -154,18 +152,17 @@ void SharePointTest::deleteTest( )
     static const string objectId ( "http://base/_api/Web/aFileId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
-    string url = objectId;
-    string authorUrl = url + "/Author";
-    curl_mockup_addResponse ( url.c_str( ), "",
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/file.json", 200, true);
     curl_mockup_addResponse ( authorUrl.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/author.json", 200, true);
-    curl_mockup_addResponse( url.c_str( ),"", "DELETE", "", 204, false);
+    curl_mockup_addResponse( objectId.c_str( ),"", "DELETE", "", 204, false);
 
     libcmis::ObjectPtr object = session.getObject( objectId );
 
     object->remove( );
-    const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
+    const struct HttpRequest* deleteRequest = curl_mockup_getRequest( objectId.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
 }
 
