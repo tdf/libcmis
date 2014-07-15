@@ -56,12 +56,14 @@ class SharePointTest : public CppUnit::TestFixture
         void getObjectTest( );
         void propertiesTest( );
         void deleteTest( );
+        void xdigestExpiredTest( );
         
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( propertiesTest );
         CPPUNIT_TEST( deleteTest );
+        CPPUNIT_TEST( xdigestExpiredTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -165,6 +167,37 @@ void SharePointTest::deleteTest( )
     object->remove( );
     const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
+}
+
+void SharePointTest::xdigestExpiredTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse( objectId.c_str( ),"", "DELETE", "", 401, false);
+    curl_mockup_addResponse( CONTEXTINFO_URL.c_str( ), "", "POST",
+                             DATA_DIR "/sharepoint/new-xdigest.json", 200, true );
+    
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    try
+    {
+        object->remove( );
+    }
+    catch ( ... )
+    {
+        if ( session.getHttpStatus( ) == 401 )
+        {
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(
+                   "wrong xdigest code",
+                   string ( "new-xdigest-code" ),
+                   session.m_digestCode );
+        }
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
