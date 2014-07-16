@@ -37,6 +37,7 @@
 #include <mockup-config.h>
 
 #include <fstream>
+#include "sharepoint-document.hxx"
 #include "sharepoint-object.hxx"
 #include "sharepoint-property.hxx"
 #include "sharepoint-session.hxx"
@@ -59,6 +60,7 @@ class SharePointTest : public CppUnit::TestFixture
         void xdigestExpiredTest( );
         void getFileAllowableActionsTest( );
         void getFolderAllowableActionsTest( );
+        void getDocumentTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -68,6 +70,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( xdigestExpiredTest );
         CPPUNIT_TEST( getFileAllowableActionsTest );
         CPPUNIT_TEST( getFolderAllowableActionsTest );
+        CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -242,5 +245,36 @@ void SharePointTest::getFolderAllowableActionsTest( )
             actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
             !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
 }
+
+void SharePointTest::getDocumentTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    // Check if we got the document object.
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
+
+    // Test the document properties
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", objectId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name",
+                                  string( "SharePoint File" ),
+                                  document->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "LastModificationDate is missing", !document->getLastModificationDate( ).is_not_a_date_time() );
+    CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 18045 == document->getContentLength( ) );
+}
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
