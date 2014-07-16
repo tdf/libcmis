@@ -61,6 +61,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getFileAllowableActionsTest( );
         void getFolderAllowableActionsTest( );
         void getDocumentTest( );
+        void getContentStreamTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -71,6 +72,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFileAllowableActionsTest );
         CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST( getDocumentTest );
+        CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -276,5 +278,37 @@ void SharePointTest::getDocumentTest( )
     CPPUNIT_ASSERT_MESSAGE( "Content length is incorrect", 18045 == document->getContentLength( ) );
 }
 
+void SharePointTest::getContentStreamTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    string expectedContent( "Test content stream" );
+    string downloadUrl = objectId + "/%24value";
+
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse( downloadUrl.c_str( ), "", "GET", expectedContent.c_str( ), 0, false );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    try
+    {
+        boost::shared_ptr< istream >  is = document->getContentStream( );
+        ostringstream out;
+        out << is->rdbuf();
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
