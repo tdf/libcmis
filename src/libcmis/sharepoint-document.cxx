@@ -82,18 +82,36 @@ boost::shared_ptr< istream > SharePointDocument::getContentStream( string /*stre
     return stream;
 }
 
-void SharePointDocument::uploadStream( boost::shared_ptr< ostream > /*os*/, 
-                                   string /*contentType*/ )
-                                throw ( libcmis::Exception )
-{
-}
-
-void SharePointDocument::setContentStream( boost::shared_ptr< ostream > /*os*/, 
-                                       string /*contentType*/, 
+void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os, 
+                                       string contentType, 
                                        string /*fileName*/, 
                                        bool /*overwrite*/ ) 
                                             throw ( libcmis::Exception )
 {
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
+
+     // file uri + /$value
+    string putUrl = getId( ) + "/%24value";
+    // Upload stream
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+    vector <string> headers;
+    headers.push_back( string( "Content-Type: " ) + contentType );
+    try
+    {
+        getSession()->httpPutRequest( putUrl, *is, headers );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    long httpStatus = getSession( )->getHttpStatus( );
+    if ( httpStatus < 200 || httpStatus >= 300 )
+    {
+        throw libcmis::Exception( "Document content wasn't set for"
+                "some reason" );
+    }
+    refresh( );
 }
 
 libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception )
