@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include "sharepoint-document.hxx"
 #include "sharepoint-object.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-session.hxx"
@@ -130,7 +131,7 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
     }
     else if ( kind == "SP.File" )
     {
-        object.reset( new SharePointObject( this, jsonRes, parentId ) );
+        object.reset( new SharePointDocument( this, jsonRes, parentId ) );
     }
     else
     {
