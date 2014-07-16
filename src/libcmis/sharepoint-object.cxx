@@ -25,6 +25,7 @@
  * instead of those above.
  */
 
+#include "sharepoint-allowable-actions.hxx"
 #include "sharepoint-object.hxx"
 #include "sharepoint-property.hxx"
 #include "sharepoint-repository.hxx"
@@ -88,6 +89,7 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
     }
 
     m_refreshTimestamp = time( NULL );
+    m_allowableActions.reset( new SharePointAllowableActions( isFolder ) );
 }
 
 SharePointSession* SharePointObject::getSession( )

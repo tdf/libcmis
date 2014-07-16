@@ -110,6 +110,7 @@ libcmis_la_SOURCES = \
 	onedrive-session.cxx \
 	onedrive-utils.hxx \
 	onedrive-utils.cxx \
+	sharepoint-allowable-actions.hxx \
 	sharepoint-object.hxx \
 	sharepoint-object.cxx \
 	sharepoint-property.hxx \
