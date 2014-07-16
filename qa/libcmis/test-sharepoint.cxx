@@ -57,13 +57,17 @@ class SharePointTest : public CppUnit::TestFixture
         void propertiesTest( );
         void deleteTest( );
         void xdigestExpiredTest( );
-        
+        void getFileAllowableActionsTest( );
+        void getFolderAllowableActionsTest( );
+       
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( propertiesTest );
         CPPUNIT_TEST( deleteTest );
         CPPUNIT_TEST( xdigestExpiredTest );
+        CPPUNIT_TEST( getFileAllowableActionsTest );
+        CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -195,6 +199,48 @@ void SharePointTest::xdigestExpiredTest( )
                    session.m_digestCode );
         }
     }
+}
+
+void SharePointTest::getFileAllowableActionsTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    boost::shared_ptr< libcmis::AllowableActions > actions = object->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            !actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+}
+
+void SharePointTest::getFolderAllowableActionsTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFolderId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/folder.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    boost::shared_ptr< libcmis::AllowableActions > actions = object->getAllowableActions( );
+
+    CPPUNIT_ASSERT_MESSAGE( "CreateDocument allowable action should be true",
+            actions->isDefined( libcmis::ObjectAction::CreateDocument ) &&
+            actions->isAllowed( libcmis::ObjectAction::CreateDocument ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "GetContentStream allowable action should be false",
+            actions->isDefined( libcmis::ObjectAction::GetContentStream ) &&
+            !actions->isAllowed( libcmis::ObjectAction::GetContentStream ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
