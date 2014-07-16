@@ -42,7 +42,7 @@ string SharePointUtils::toCmisKey( const string& key )
         convertedKey = "cmis:checkinComment";
     else if ( key == "TimeCreated" )
         convertedKey = "cmis:creationDate";
-    else if ( key == "TileLastModified" )
+    else if ( key == "TimeLastModified" )
         convertedKey = "cmis:lastModificationDate";
     else if ( key == "Name" )
         convertedKey = "cmis:name";
