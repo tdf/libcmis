@@ -62,6 +62,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getFolderAllowableActionsTest( );
         void getDocumentTest( );
         void getContentStreamTest( );
+        void setContentStreamTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -73,6 +74,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderAllowableActionsTest );
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getContentStreamTest );
+        CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -302,6 +304,42 @@ void SharePointTest::getContentStreamTest( )
         ostringstream out;
         out << is->rdbuf();
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Content stream doesn't match", expectedContent, out.str( ) );
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what();
+        CPPUNIT_FAIL( msg.c_str() );
+    }
+}
+
+void SharePointTest::setContentStreamTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    string expectedContent( "Test content stream" );
+    string putUrl = objectId + "/%24value";
+
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    try
+    {
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        string filename( "aFileName" );
+        document->setContentStream( os, "text/plain", filename );
+
+        CPPUNIT_ASSERT_MESSAGE( "Object not refreshed during setContentStream", object->getRefreshTimestamp( ) > 0 );
+        // Check the content has been properly uploaded
+        const char* content = curl_mockup_getRequestBody( putUrl.c_str( ), "", "PUT" );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
     catch ( const libcmis::Exception& e )
     {
