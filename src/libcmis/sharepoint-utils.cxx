@@ -82,13 +82,3 @@ bool SharePointUtils::isSharePoint( string response )
     xmlXPathContextPtr xpath = xmlXPathNewContext( doc );
     return "SP.Web" == libcmis::getXPathValue( xpath, "//@term" );
 }
-
-string SharePointUtils::getPath( string url )
-{
-    string token = "ByServerRelativeUrl(";
-    size_t pos = url.find( token );
-    string path = url.substr( pos + token.size( ) );
-    // returns:  '/path/to/file
-    return path.substr( 0, path.size( ) - 2 );
-}
-
