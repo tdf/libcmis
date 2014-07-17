@@ -106,7 +106,7 @@ class HttpSession
         bool m_noSSLCheck;
         bool m_refreshedToken;
         bool m_inOAuth2Authentication;
-        int m_authMethod;
+        unsigned long m_authMethod;
     public:
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
@@ -160,10 +160,10 @@ class HttpSession
             the OAuth2 login parser.
           */
         void oauth2Authenticate( ) throw ( libcmis::Exception );
-        void setAuthMethod( int authMethod ) { m_authMethod = authMethod; }
+        void setAuthMethod( unsigned long authMethod ) { m_authMethod = authMethod; }
         virtual void httpRunRequest( std::string url,
                                     std::vector< std::string > headers = std::vector< std::string > ( ),
-                                    bool redirect = true ) 
+                                    bool redirect = true )
             throw ( CurlException );
 
     private:
