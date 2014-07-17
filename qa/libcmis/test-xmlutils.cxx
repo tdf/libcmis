@@ -75,6 +75,8 @@ class XmlTest : public CppUnit::TestFixture
         // Other tests
         void sha1Test( );
         void propertyTypeUpdateTest( );
+        void escapeTest( );
+        void unescapeTest( );
 
         CPPUNIT_TEST_SUITE( XmlTest );
         CPPUNIT_TEST( parseDateTimeTest );
@@ -93,6 +95,8 @@ class XmlTest : public CppUnit::TestFixture
         CPPUNIT_TEST( propertyIntegerAsXmlTest );
         CPPUNIT_TEST( sha1Test );
         CPPUNIT_TEST( propertyTypeUpdateTest );
+        CPPUNIT_TEST( escapeTest );
+        CPPUNIT_TEST( unescapeTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -572,6 +576,18 @@ void XmlTest::propertyTypeUpdateTest( )
            string( "LOCAL" ), propDef.getLocalName( ) );
     CPPUNIT_ASSERT_MESSAGE( "Property Type still marked temporary",
            !propDef.m_temporary );
+}
+
+void XmlTest::escapeTest( )
+{
+    string actual = libcmis::escape("something to escape$");
+    CPPUNIT_ASSERT_EQUAL( string("something%20to%20escape%24"), actual);
+}
+
+void XmlTest::unescapeTest( )
+{
+    string actual = libcmis::unescape("something%20to%20escape%24");
+    CPPUNIT_ASSERT_EQUAL( string("something to escape$"), actual);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( XmlTest );
