@@ -115,13 +115,83 @@ libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes )
 libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
     throw ( libcmis::Exception )
 {
-    return getObject( path );
+    string id;
+    if ( path == "/" )
+    {
+        id = "me/skydrive";
+    }
+    else
+    {
+        size_t pos = path.rfind("/");
+        string name = libcmis::escape( path.substr( pos + 1, path.size( ) ) );
+        string res;
+        string objectQuery = m_bindingUrl + "/me/skydrive/search?q=" + name;
+        try
+        {
+            res = httpGetRequest( objectQuery )->getStream( )->str( );
+        }
+        catch ( const CurlException& e )
+        {
+            throw e.getCmisException( );
+        }
+        Json jsonRes = Json::parse( res );
+        Json::JsonVector objs = jsonRes["data"].getList( );
+        
+        // Searching for a match in the path to the object
+        for ( unsigned int i = 0; i < objs.size( ); i++ )
+        {   
+            if ( isAPathMatch( objs[i], path ) )
+            {
+                id = objs[i]["id"].toString( );
+                break;
+            }
+        }
+    }
+    if ( id.empty( ) )
+    {
+        boost::shared_ptr< libcmis::Exception > exception;
+        exception.reset( new libcmis::Exception( "No file could be found" ) );
+        throw *exception.get( );
+    }
+    return getObject( id );
 }
 
-libcmis::ObjectTypePtr OneDriveSession::getType( string id )
+bool OneDriveSession::isAPathMatch( Json objectJson, string path )
     throw ( libcmis::Exception )
 {
-    id += "";
+    string parentId = objectJson["parent_id"].toString( );
+    string objectName = objectJson["name"].toString( );
+    size_t pos = path.rfind("/");
+    string pathName = path.substr( pos + 1, path.size( ) );
+    string truncatedPath = path.substr( 0, pos );
+
+    if ( truncatedPath.empty( ) && parentId == "null" && objectName == pathName )
+    {
+        // match
+        return true;
+    }
+    if ( truncatedPath.empty( ) || parentId == "null" || objectName != pathName )
+    {
+        return false;
+    }
+
+    string res;
+    string parentUrl = m_bindingUrl + "/" + parentId;
+    try
+    {
+        res = httpGetRequest( parentUrl )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    Json jsonRes = Json::parse( res );
+    return isAPathMatch( jsonRes, truncatedPath );
+}
+
+libcmis::ObjectTypePtr OneDriveSession::getType( string /*id*/ )
+    throw ( libcmis::Exception )
+{
     libcmis::ObjectTypePtr type;
     return type;
 }

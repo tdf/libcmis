@@ -66,6 +66,9 @@ class OneDriveSession : public BaseSession
        libcmis::ObjectPtr getObjectFromJson( Json& jsonRes ) 
             throw ( libcmis::Exception );
 
+       bool isAPathMatch( Json objectJson, std::string path )
+            throw ( libcmis::Exception );
+
     private:
         OneDriveSession( );
 };
