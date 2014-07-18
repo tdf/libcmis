@@ -1,0 +1,24 @@
+{
+	"id": "wrongFile",
+	"from": {
+		"name": "onedriveUser",
+		"id": "aUserId"
+	},
+	"name": "OneDriveFile",
+	"description": "short description",
+	"parent_id": "folderA",
+	"size": 42,
+	"upload_location": "https://base/url/aFileId/content",
+	"comments_count": 0,
+	"comments_enabled": true,
+	"is_embeddable": true,
+	"source": "sourceUrl",
+	"link": "linkUrl",
+	"type": "file",
+	"shared_with": {
+		"access": "Shared"
+	},
+	"created_time": "2014-06-09T08:24:04+0000",
+	"updated_time": "2014-06-09T08:24:04+0000",
+	"client_updated_time": "2014-06-09T08:24:04+0000"
+}

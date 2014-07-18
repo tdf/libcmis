@@ -1,0 +1,52 @@
+{
+  "data":[
+    {
+      "id":"wrongFileId",
+      "from":{
+        "name":"aOneDriveUser",
+        "id":"1b4a1bc1bdb25a14"
+      },
+      "name":"OneDriveFile",
+      "description":"",
+      "parent_id":"folderA", // path: /A/Wrong File 
+      "size":18047,
+      "upload_location":"https://apis.live.net/v5.0/wrongFileId/content/",
+      "comments_count":0,
+      "comments_enabled":false,
+      "is_embeddable":true,
+      "source":"sourceUrl",
+      "link":"link",
+      "type":"file",
+      "shared_with":{
+        "access":"Just me"
+      },
+      "created_time":"2014-07-17T15:16:43+0000",
+      "updated_time":"2014-07-17T15:41:45+0000",
+      "client_updated_time":"2014-07-17T15:41:45+0000"
+    },
+    {
+      "id":"rightFile",
+      "from":{
+        "name":"aOneDriveUser",
+        "id":"1b4a1bc1bdb25a14"
+      },
+      "name":"OneDriveFile",
+      "description":"",
+      "parent_id":"folderC", // path: /A/B/C/Right File
+      "size":4,
+      "upload_location":"https://apis.live.net/v5.0/rightFileId/content/",
+      "comments_count":0,
+      "comments_enabled":false,
+      "is_embeddable":true,
+      "source":"sourceUrl",
+      "link":"link",
+      "type":"file",
+      "shared_with":{
+        "access":"Just me"
+      },
+      "created_time":"2014-06-17T11:30:14+0000",
+      "updated_time":"2014-06-17T11:30:14+0000",
+      "client_updated_time":"2014-06-17T11:30:14+0000"
+    }
+  ]
+}
