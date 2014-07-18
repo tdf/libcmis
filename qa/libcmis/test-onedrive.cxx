@@ -78,6 +78,7 @@ class OneDriveTest : public CppUnit::TestFixture
         void getContentStreamTest( );
         void setContentStreamTest( );
         void createDocumentTest( );
+        void getObjectByPathTest( );
         
         CPPUNIT_TEST_SUITE( OneDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
@@ -97,6 +98,7 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( getObjectByPathTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -637,6 +639,41 @@ void OneDriveTest::createDocumentTest( )
         msg += e.what( );
         CPPUNIT_FAIL( msg.c_str( ) );
     }
+}
+
+void OneDriveTest::getObjectByPathTest( )
+{
+    curl_mockup_reset( );
+    OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+    const string documentId( "rightFile" );
+    const string wrongDocumentId( "wrongFile" );
+    const string folderAId( "folderA" );
+    const string folderBId( "folderB" );
+    const string folderCId( "folderC" );
+    const string path( "/Folder A/Folder B/Folder C/OneDriveFile" );
+
+    const string documentUrl = BASE_URL + "/" + documentId;
+    const string wrongDocumentUrl = BASE_URL + "/" + wrongDocumentId;
+    const string folderAUrl = BASE_URL + "/" + folderAId;
+    const string folderBUrl = BASE_URL + "/" + folderBId;
+    const string folderCUrl = BASE_URL + "/" + folderCId;
+    const string searchUrl = BASE_URL + "/me/skydrive/search";
+
+    curl_mockup_addResponse( documentUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/searched-file.json", 200, true );
+    curl_mockup_addResponse( wrongDocumentUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/searched-wrong-file.json", 200, true );
+    curl_mockup_addResponse( searchUrl.c_str( ), "q=OneDriveFile",
+                                "GET", DATA_DIR "/onedrive/search-result.json", 200, true );
+    curl_mockup_addResponse( folderAUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/folderA.json", 200, true );
+    curl_mockup_addResponse( folderBUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/folderB.json", 200, true );
+    curl_mockup_addResponse( folderCUrl.c_str( ), "",
+                               "GET", DATA_DIR "/onedrive/folderC.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObjectByPath( path );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong objectFetched", documentId, object->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( OneDriveTest );
