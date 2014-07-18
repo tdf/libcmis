@@ -122,6 +122,7 @@ libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
     }
     else
     {
+        path = "/SkyDrive" + path;
         size_t pos = path.rfind("/");
         string name = libcmis::escape( path.substr( pos + 1, path.size( ) ) );
         string res;

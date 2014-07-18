@@ -647,10 +647,10 @@ void OneDriveTest::getObjectByPathTest( )
     OneDriveSession session = getTestSession( USERNAME, PASSWORD );
     const string documentId( "rightFile" );
     const string wrongDocumentId( "wrongFile" );
-    const string folderAId( "folderA" );
+    const string folderAId( "folderA" ); // root
     const string folderBId( "folderB" );
     const string folderCId( "folderC" );
-    const string path( "/Folder A/Folder B/Folder C/OneDriveFile" );
+    const string path( "/Folder B/Folder C/OneDriveFile" );
 
     const string documentUrl = BASE_URL + "/" + documentId;
     const string wrongDocumentUrl = BASE_URL + "/" + wrongDocumentId;
