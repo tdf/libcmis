@@ -86,19 +86,20 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
     return stream;
 }
 
-void OneDriveDocument::uploadStream( boost::shared_ptr< ostream > os, 
-                                   string contentType )
+void OneDriveDocument::uploadStream( boost::shared_ptr< ostream > os ) 
                                 throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
 
-    string putUrl = getStringProperty( "upload_location" );
+    string fileName = libcmis::escape( getStringProperty( "cmis:name" ) );
+    string putUrl = getSession( )->getBindingUrl( ) + "/" + 
+                    getStringProperty( "cmis:parentId" ) + "/files/" +
+                    fileName + "?overwrite=true";
     
     // Upload stream
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
     vector <string> headers;
-    headers.push_back( string( "Content-Type: " ) + contentType );
     try
     {
         getSession()->httpPutRequest( putUrl, *is, headers );
@@ -115,7 +116,7 @@ void OneDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
 }
 
 void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
-                                       string contentType, 
+                                       string /*contentType*/, 
                                        string fileName, 
                                        bool /*overwrite*/ ) 
                                             throw ( libcmis::Exception )
@@ -146,7 +147,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     }
 
     // Upload stream
-    uploadStream( os, contentType );
+    uploadStream( os );
 }
 
 libcmis::DocumentPtr OneDriveDocument::checkOut( ) throw ( libcmis::Exception )

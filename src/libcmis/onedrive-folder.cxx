@@ -109,7 +109,7 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
 libcmis::DocumentPtr OneDriveFolder::createDocument( 
     const PropertyPtrMap& properties, 
     boost::shared_ptr< ostream > os, 
-    string contentType, string fileName ) 
+    string /*contentType*/, string fileName ) 
     throw ( libcmis::Exception )
 {    
     if ( !os.get( ) )
@@ -140,7 +140,7 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
 
     // Upload stream
     OneDriveDocument* oneDriveDocument = dynamic_cast< OneDriveDocument * >( document.get( ) );
-    oneDriveDocument->uploadStream( os, contentType );
+    oneDriveDocument->uploadStream( os );
 
     return document;
 }
