@@ -4,7 +4,7 @@
 		"name": "onedriveUser",
 		"id": "aUserId"
 	},
-	"name": "OneDrive File",
+	"name": "OneDriveFile",
 	"description": "short description",
 	"parent_id": "aParentId",
 	"size": 42,

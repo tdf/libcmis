@@ -256,7 +256,7 @@ void OneDriveTest::filePropertyTest( )
                                    obj->getStringProperty( "cmis:createdBy" ) );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
-                                   string ( "OneDrive File" ),
+                                   string ( "OneDriveFile" ),
                                    obj->getStringProperty( "cmis:contentStreamFileName" ) );
 }
 
@@ -482,7 +482,7 @@ void OneDriveTest::getDocumentTest( )
     // Test the document properties
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", objectId, document->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name",
-                                  string( "OneDrive File" ),
+                                  string( "OneDriveFile" ),
                                   document->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
 
@@ -560,7 +560,7 @@ void OneDriveTest::setContentStreamTest( )
     const string documentId( "aFileId" );
 
     string url = BASE_URL + "/" + documentId;
-    string putUrl = url + "/content";
+    string putUrl = BASE_URL + "/aParentId/files/OneDriveFile";
     curl_mockup_addResponse( url.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/file.json", 200, true);
 
@@ -569,7 +569,7 @@ void OneDriveTest::setContentStreamTest( )
 
     curl_mockup_addResponse( url.c_str( ), "",
                                "PUT", DATA_DIR "/onedrive/file.json", 200, true);
-    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+    curl_mockup_addResponse( putUrl.c_str( ), "overwrite=true", "PUT", "Updated", 0, false );
     try
     {
         string expectedContent( "Test set content stream" );
@@ -606,7 +606,7 @@ void OneDriveTest::createDocumentTest( )
     const string folderUrl = BASE_URL + "/" + folderId;
     const string uploadUrl = folderUrl + "/files/" + filename;
     const string documentUrl = BASE_URL + "/" + documentId;
-    const string uploadLocation = documentUrl + "/content";
+    const string uploadLocation = BASE_URL + "/aParentId/files/OneDriveFile";
 
     curl_mockup_addResponse( folderUrl.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true );
@@ -616,7 +616,7 @@ void OneDriveTest::createDocumentTest( )
                                "PUT", DATA_DIR "/onedrive/file.json", 200, true );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/file.json", 200, true );
-    curl_mockup_addResponse( uploadLocation.c_str( ), "",
+    curl_mockup_addResponse( uploadLocation.c_str( ), "overwrite=true",
                                "PUT", DATA_DIR "/onedrive/file.json", 200, true );
 
     libcmis::FolderPtr parent = session.getFolder( folderId );
