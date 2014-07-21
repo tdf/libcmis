@@ -102,6 +102,8 @@ libcmis_la_SOURCES = \
 	onedrive-folder.cxx \
 	onedrive-object.hxx \
 	onedrive-object.cxx \
+	onedrive-object-type.hxx \
+	onedrive-object-type.cxx \
 	onedrive-property.hxx \
 	onedrive-property.cxx \
 	onedrive-repository.hxx \

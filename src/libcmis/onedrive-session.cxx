@@ -26,6 +26,7 @@
  * instead of those above.
  */
 #include "oauth2-handler.hxx"
+#include "onedrive-object-type.hxx"
 #include "onedrive-document.hxx"
 #include "onedrive-folder.hxx"
 #include "onedrive-object.hxx"
@@ -190,10 +191,10 @@ bool OneDriveSession::isAPathMatch( Json objectJson, string path )
     return isAPathMatch( jsonRes, truncatedPath );
 }
 
-libcmis::ObjectTypePtr OneDriveSession::getType( string /*id*/ )
+libcmis::ObjectTypePtr OneDriveSession::getType( string id )
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr type;
+    libcmis::ObjectTypePtr type( new OneDriveObjectType( id ) );
     return type;
 }
 
