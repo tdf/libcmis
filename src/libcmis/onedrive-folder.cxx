@@ -115,6 +115,7 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
+    fileName = libcmis::escape( fileName );
     string newDocUrl = getSession( )->getBindingUrl( ) + "/" + getId( ) + 
                        "/files/" + fileName;
     std::istringstream emptyIs( "empty" );
