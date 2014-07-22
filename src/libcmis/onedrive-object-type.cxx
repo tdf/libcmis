@@ -56,12 +56,40 @@ OneDriveObjectType::OneDriveObjectType( const std::string& id ): ObjectType( )
     nameType->setUpdatable( true );
     m_propertiesTypes[ nameType->getId( ) ] = nameType;
 
+    // streamFileName
+    libcmis::PropertyTypePtr streamFileNameType( new libcmis::PropertyType( ) );
+    nameType->setId( "cmis:contentStreamFileName" );
+    nameType->setType( libcmis::PropertyType::String );
+    nameType->setUpdatable( true );
+    m_propertiesTypes[ nameType->getId( ) ] = streamFileNameType;
+
     // description
     libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
     descriptionType->setId( "cmis:description" );
     descriptionType->setType( libcmis::PropertyType::String );
     descriptionType->setUpdatable( true );
     m_propertiesTypes[ descriptionType->getId( ) ] = descriptionType;
+
+    // modifiedDate
+    libcmis::PropertyTypePtr modifiedDateType( new libcmis::PropertyType( ) );
+    modifiedDateType->setId( "cmis:lastModificationDate" );
+    modifiedDateType->setType( libcmis::PropertyType::DateTime );
+    modifiedDateType->setUpdatable( false );
+    m_propertiesTypes[ modifiedDateType->getId( ) ] = modifiedDateType;
+
+    // creationDate 
+    libcmis::PropertyTypePtr creationDateType( new libcmis::PropertyType( ) );
+    modifiedDateType->setId( "cmis:creationDate" );
+    modifiedDateType->setType( libcmis::PropertyType::DateTime );
+    modifiedDateType->setUpdatable( false );
+    m_propertiesTypes[ modifiedDateType->getId( ) ] = creationDateType;
+
+    // size 
+    libcmis::PropertyTypePtr contentStreamLength( new libcmis::PropertyType( ) );
+    modifiedDateType->setId( "cmis:contentStreamLength" );
+    modifiedDateType->setType( libcmis::PropertyType::Integer );
+    modifiedDateType->setUpdatable( false );
+    m_propertiesTypes[ modifiedDateType->getId( ) ] = contentStreamLength;
 }
 
 libcmis::ObjectTypePtr OneDriveObjectType::getParentType( )
