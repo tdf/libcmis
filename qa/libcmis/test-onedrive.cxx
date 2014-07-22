@@ -606,7 +606,6 @@ void OneDriveTest::createDocumentTest( )
     const string folderUrl = BASE_URL + "/" + folderId;
     const string uploadUrl = folderUrl + "/files/" + filename;
     const string documentUrl = BASE_URL + "/" + documentId;
-    const string uploadLocation = BASE_URL + "/aParentId/files/OneDriveFile";
 
     curl_mockup_addResponse( folderUrl.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/parent-folder.json", 200, true );
@@ -616,8 +615,6 @@ void OneDriveTest::createDocumentTest( )
                                "PUT", DATA_DIR "/onedrive/file.json", 200, true );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
                                "GET", DATA_DIR "/onedrive/file.json", 200, true );
-    curl_mockup_addResponse( uploadLocation.c_str( ), "overwrite=true",
-                               "PUT", DATA_DIR "/onedrive/file.json", 200, true );
 
     libcmis::FolderPtr parent = session.getFolder( folderId );
     try
@@ -629,7 +626,7 @@ void OneDriveTest::createDocumentTest( )
         parent->createDocument( properties, os, "text/plain", filename );
 
         curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
-        const char* content = curl_mockup_getRequestBody( uploadLocation.c_str( ), "", "PUT" );
+        const char* content = curl_mockup_getRequestBody( uploadUrl.c_str( ), "", "PUT" );
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
     }
