@@ -134,6 +134,16 @@ libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception 
 
 void SharePointDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
+    istringstream is( "empty" );
+    string url = getId( ) + "/undocheckout";
+    try 
+    {   
+        getSession( )->httpPostRequest( url, is, "" );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
 }
 
 libcmis::DocumentPtr SharePointDocument::checkIn( bool /*isMajor*/, 
