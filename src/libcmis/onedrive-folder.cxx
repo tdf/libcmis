@@ -116,6 +116,18 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
     
+    if (fileName.empty( ) )
+    {
+        for ( PropertyPtrMap::const_iterator it = properties.begin( ) ; 
+                it != properties.end( ) ; ++it )
+        {
+            if ( it->first == "cmis:name" )
+            {
+                fileName = it->second->toString( );
+            }
+        }
+    }
+
     fileName = libcmis::escape( fileName );
     string newDocUrl = getSession( )->getBindingUrl( ) + "/" + getId( ) + 
                        "/files/" + fileName;
