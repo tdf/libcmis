@@ -129,15 +129,15 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     }
 
     fileName = libcmis::escape( fileName );
-    string newDocUrl = getSession( )->getBindingUrl( ) + "/" + getId( ) + 
-                       "/files/" + fileName;
-    std::istringstream emptyIs( "empty" );
+    string newDocUrl = getSession( )->getBindingUrl( ) + "/" +
+                       getId( ) + "/files/" + fileName;
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
     vector< string > headers;
     string res;
     // this will only create the file and return it's id, name and source url
     try
     {
-        res = getSession( )->httpPutRequest( newDocUrl, emptyIs, headers )
+        res = getSession( )->httpPutRequest( newDocUrl, *is, headers )
                                 ->getStream( )->str( );
     }
     catch (const CurlException& e)
@@ -152,10 +152,7 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     ObjectPtr object = document->updateProperties( properties );
     document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
-    // Upload stream
-    OneDriveDocument* oneDriveDocument = dynamic_cast< OneDriveDocument * >( document.get( ) );
-    oneDriveDocument->uploadStream( os );
-
+    refresh( );
     return document;
 }
 
