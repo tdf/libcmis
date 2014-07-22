@@ -86,35 +86,6 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
     return stream;
 }
 
-void OneDriveDocument::uploadStream( boost::shared_ptr< ostream > os ) 
-                                throw ( libcmis::Exception )
-{
-    if ( !os.get( ) )
-        throw libcmis::Exception( "Missing stream" );
-
-    string fileName = libcmis::escape( getStringProperty( "cmis:name" ) );
-    string putUrl = getSession( )->getBindingUrl( ) + "/" + 
-                    getStringProperty( "cmis:parentId" ) + "/files/" +
-                    fileName + "?overwrite=true";
-    
-    // Upload stream
-    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-    vector <string> headers;
-    try
-    {
-        getSession()->httpPutRequest( putUrl, *is, headers );
-    }
-    catch ( const CurlException& e )
-    {
-        throw e.getCmisException( );
-    }
-    long httpStatus = getSession( )->getHttpStatus( );
-    if ( httpStatus < 200 || httpStatus >= 300 )
-        throw libcmis::Exception( "Document content wasn't set for"
-                "some reason" );
-    refresh( );
-}
-
 void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
                                        string /*contentType*/, 
                                        string fileName, 
@@ -146,8 +117,27 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         }
     }
 
+    fileName = libcmis::escape( getStringProperty( "cmis:name" ) );
+    string putUrl = getSession( )->getBindingUrl( ) + "/" + 
+                    getStringProperty( "cmis:parentId" ) + "/files/" +
+                    fileName + "?overwrite=true";
+    
     // Upload stream
-    uploadStream( os );
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+    vector <string> headers;
+    try
+    {
+        getSession()->httpPutRequest( putUrl, *is, headers );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    long httpStatus = getSession( )->getHttpStatus( );
+    if ( httpStatus < 200 || httpStatus >= 300 )
+        throw libcmis::Exception( "Document content wasn't set for"
+                "some reason" );
+    refresh( );
 }
 
 libcmis::DocumentPtr OneDriveDocument::checkOut( ) throw ( libcmis::Exception )
