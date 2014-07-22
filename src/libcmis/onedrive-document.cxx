@@ -87,10 +87,10 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
 }
 
 void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
-                                       string /*contentType*/, 
-                                       string fileName, 
-                                       bool /*overwrite*/ ) 
-                                            throw ( libcmis::Exception )
+                                         string /*contentType*/, 
+                                         string fileName, 
+                                         bool /*overwrite*/ ) 
+    throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -154,14 +154,13 @@ void OneDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
     // Don't do anything since we don't have CheckOut
 }
 
-libcmis::DocumentPtr OneDriveDocument::checkIn( 
-    bool /*isMajor*/, 
-    std::string /*comment*/,
-    const PropertyPtrMap& properties,
-    boost::shared_ptr< std::ostream > stream,
-    std::string contentType, 
-    std::string fileName ) 
-        throw ( libcmis::Exception )
+libcmis::DocumentPtr OneDriveDocument::checkIn( bool /*isMajor*/, 
+                                                std::string /*comment*/,
+                                                const PropertyPtrMap& properties,
+                                                boost::shared_ptr< std::ostream > stream,
+                                                std::string contentType, 
+                                                std::string fileName ) 
+    throw ( libcmis::Exception )
 {     
     // OneDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
