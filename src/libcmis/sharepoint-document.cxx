@@ -116,7 +116,19 @@ void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os,
 
 libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception )
 {
-    libcmis::DocumentPtr checkout ;
+    istringstream is( "empty" );
+    string url = getId( ) + "/checkout";
+    try 
+    {   
+        getSession( )->httpPostRequest( url, is, "" );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
+    libcmis::DocumentPtr checkout =
+        boost::dynamic_pointer_cast< libcmis::Document > ( obj );
     return checkout;
 }
 
