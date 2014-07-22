@@ -83,10 +83,10 @@ boost::shared_ptr< istream > SharePointDocument::getContentStream( string /*stre
 }
 
 void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os, 
-                                       string contentType, 
-                                       string /*fileName*/, 
-                                       bool /*overwrite*/ ) 
-                                            throw ( libcmis::Exception )
+                                           string contentType, 
+                                           string /*fileName*/, 
+                                           bool /*overwrite*/ ) 
+    throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -124,14 +124,13 @@ void SharePointDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
 }
 
-libcmis::DocumentPtr SharePointDocument::checkIn( 
-    bool /*isMajor*/, 
-    std::string /*comment*/,
-    const PropertyPtrMap& /*properties*/,
-    boost::shared_ptr< std::ostream > /*stream*/,
-    std::string /*contentType*/, 
-    std::string /*fileName*/ ) 
-        throw ( libcmis::Exception )
+libcmis::DocumentPtr SharePointDocument::checkIn( bool /*isMajor*/, 
+                                                  std::string /*comment*/,
+                                                  const PropertyPtrMap& /*properties*/,
+                                                  boost::shared_ptr< std::ostream > /*stream*/,
+                                                  std::string /*contentType*/, 
+                                                  std::string /*fileName*/ ) 
+    throw ( libcmis::Exception )
 {     
     libcmis::DocumentPtr checkin;
     return checkin;
