@@ -103,6 +103,7 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
     Json jsonRes = Json::parse( response );
     libcmis::FolderPtr folderPtr( new OneDriveFolder( getSession( ), jsonRes ) );
 
+    refresh( );
     return folderPtr;
 }
 
