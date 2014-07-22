@@ -63,6 +63,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getDocumentTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
+        void checkOutTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -75,6 +76,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -347,6 +349,27 @@ void SharePointTest::setContentStreamTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void SharePointTest::checkOutTest( )
+{
+    static const string objectId ( "http://base/_api/Web/aFileId" );
+    static const string authorUrl = objectId + "/Author";
+    static const string checkOutUrl = objectId + "/checkout";
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    curl_mockup_addResponse( objectId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/file.json", 200, true );
+    curl_mockup_addResponse( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true );
+    curl_mockup_addResponse( checkOutUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/file.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+
+    libcmis::DocumentPtr checkedOutDocument = document->checkOut( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedOut document", objectId, document->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
