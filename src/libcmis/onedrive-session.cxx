@@ -98,7 +98,7 @@ libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes )
 {
     libcmis::ObjectPtr object;
     string kind = jsonRes["type"].toString( );
-    if ( kind == "folder" )
+    if ( kind == "folder" || kind == "album" )
     {
         object.reset( new OneDriveFolder( this, jsonRes ) );
     }
