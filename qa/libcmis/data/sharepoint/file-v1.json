@@ -1,0 +1,56 @@
+{
+  "d":{
+    "Author":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/Author"
+      }
+    },
+    "CheckInComment":"aCheckinComment",
+    "CheckOutType":2,
+    "CheckedOutByUser":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/CheckedOutByUser"
+      }
+    },
+    "ContentTag":"{AD7FC895-3E19-4553-AD77-9ADFC2A3B69A},1,2",
+    "CustomizedPageStatus":0,
+    "ETag":"\"{AD7FC895-3E19-4553-AD77-9ADFC2A3B69A},1\"",
+    "Exists":true,
+    "Length":"18045",
+    "Level":1,
+    "ListItemAllFields":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/ListItemAllFields"
+      }
+    },
+    "LockedByUser":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/LockedByUser"
+      }
+    },
+    "MajorVersion":2,
+    "MinorVersion":0,
+    "ModifiedBy":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/ModifiedBy"
+      }
+    },
+    "Name":"SharePoint File",
+    "ServerRelative_api/Web":"/Shared Documents/file.txt",
+    "TimeCreated":"2014-07-08T09:29:29Z",
+    "TimeLastModified":"2014-07-08T09:29:29Z",
+    "Title":"",
+    "UIVersion":512,
+    "UIVersionLabel":"1.0",
+    "Versions":{
+      "__deferred":{
+        "uri":"http://base/_api/Web/aFileId/Versions"
+      }
+    },
+    "__metadata":{
+      "id":"http://base/_api/Web/aFileId-v1",
+      "type":"SP.File",
+      "uri":"http://base/_api/Web/aFileId-v1"
+    }
+  }
+}

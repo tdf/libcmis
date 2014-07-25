@@ -1,0 +1,44 @@
+{
+  "d": {
+    "results": [
+      {
+        "CheckInComment": "checkin Comment",
+        "Created": "2014-07-25T12:07:57Z",
+        "CreatedBy": {
+          "__deferred": {
+            "uri": "http://sp-cmis.cloudapp.net/_api/SP.FileVersionc617ba22-0ea6-4d05-a9ac-6135d8cede1a/CreatedBy"
+          }
+        },
+        "ID": 1,
+        "IsCurrentVersion": true,
+        "Size": 14027,
+        "Url": "_vti_history/512/Shared Documents/File Name",
+        "VersionLabel": "1.0",
+        "__metadata": {
+          "id": "http://sp-cmis.cloudapp.net/_api/SP.FileVersionc617ba22-0ea6-4d05-a9ac-6135d8cede1a",
+          "type": "SP.FileVersion",
+          "uri": "http://sp-cmis.cloudapp.net/_api/SP.FileVersionc617ba22-0ea6-4d05-a9ac-6135d8cede1a"
+        }
+      },
+      {
+        "CheckInComment": "checkin Comment",
+        "Created": "2014-07-25T12:13:47Z",
+        "CreatedBy": {
+          "__deferred": {
+            "uri": "http://sp-cmis.cloudapp.net/_api/SP.FileVersion5e4560d1-2047-4d3d-9f14-5be91aaf1f6c/CreatedBy"
+          }
+        },
+        "ID": 2,
+        "IsCurrentVersion": false,
+        "Size": 14120,
+        "Url": "_vti_history/513/Shared Documents/File Name",
+        "VersionLabel": "1.1",
+        "__metadata": {
+          "id": "http://sp-cmis.cloudapp.net/_api/SP.FileVersion5e4560d1-2047-4d3d-9f14-5be91aaf1f6c",
+          "type": "SP.FileVersion",
+          "uri": "http://sp-cmis.cloudapp.net/_api/SP.FileVersion5e4560d1-2047-4d3d-9f14-5be91aaf1f6c"
+        }
+      }
+    ]
+  }
+}
