@@ -65,6 +65,7 @@ class SharePointTest : public CppUnit::TestFixture
         void setContentStreamTest( );
         void checkOutTest( );
         void checkInTest( );
+        void getAllVersionsTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -79,6 +80,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( checkInTest );
+        CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -158,7 +160,7 @@ void SharePointTest::propertiesTest( )
                                    string ( "aCheckinComment" ),
                                    object->getStringProperty( "cmis:checkinComment" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version",
-                                   string ( "2" ),
+                                   string ( "1.0" ),
                                    object->getStringProperty( "cmis:versionLabel" ) );
 }
 
@@ -402,6 +404,37 @@ void SharePointTest::checkInTest( )
     libcmis::DocumentPtr checkedInDocument;
     checkedInDocument = document->checkIn( true, checkInComment, properties, os, "", fileName );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedIn document", objectId, checkedInDocument->getId( ) );
+}
+
+void SharePointTest::getAllVersionsTest( )
+{
+    static const string objectId( "http://base/_api/Web/aFileId" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    string versionsUrl = objectId + "/Versions";
+    string objectV1Url = versionsUrl +"(1)";
+    string objectV2Url = versionsUrl +"(2)";
+    string objectV1Id = objectId + "-v1";
+
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse ( versionsUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/versions.json", 200, true);
+    curl_mockup_addResponse ( objectV1Url.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( objectV2Url.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file-v1.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    vector< libcmis::DocumentPtr > allVersions = document->getAllVersions( );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version of the document - 1",
+                                  objectId, allVersions[0]->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version of the document - 2",
+                                  objectV1Id, allVersions[1]->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
