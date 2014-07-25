@@ -64,6 +64,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getContentStreamTest( );
         void setContentStreamTest( );
         void checkOutTest( );
+        void checkInTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -77,6 +78,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
         CPPUNIT_TEST( checkOutTest );
+        CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -370,6 +372,36 @@ void SharePointTest::checkOutTest( )
 
     libcmis::DocumentPtr checkedOutDocument = document->checkOut( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedOut document", objectId, document->getId( ) );
+}
+
+void SharePointTest::checkInTest( )
+{
+    static const string objectId( "http://base/_api/Web/aFileId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    string expectedContent( "Test content stream" );
+    string putUrl = objectId + "/%24value";
+    string checkInUrl = objectId + "/checkin(comment='checkin_comment',checkintype=1)";
+
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse( putUrl.c_str( ), "", "PUT", "Updated", 0, false );
+    curl_mockup_addResponse( checkInUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/file.json", 200, true );
+
+    libcmis::ObjectPtr object = session.getObject( objectId );
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    PropertyPtrMap properties;
+    boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+    string fileName( "aFileName" );
+    string checkInComment( "checkin_comment" );
+
+    libcmis::DocumentPtr checkedInDocument;
+    checkedInDocument = document->checkIn( true, checkInComment, properties, os, "", fileName );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedIn document", objectId, checkedInDocument->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
