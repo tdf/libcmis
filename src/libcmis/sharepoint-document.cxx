@@ -146,15 +146,39 @@ void SharePointDocument::cancelCheckout( ) throw ( libcmis::Exception )
     }
 }
 
-libcmis::DocumentPtr SharePointDocument::checkIn( bool /*isMajor*/, 
-                                                  std::string /*comment*/,
+libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor, 
+                                                  std::string comment,
                                                   const PropertyPtrMap& /*properties*/,
-                                                  boost::shared_ptr< std::ostream > /*stream*/,
-                                                  std::string /*contentType*/, 
-                                                  std::string /*fileName*/ ) 
+                                                  boost::shared_ptr< std::ostream > stream,
+                                                  std::string contentType, 
+                                                  std::string fileName ) 
     throw ( libcmis::Exception )
 {     
-    libcmis::DocumentPtr checkin;
+    setContentStream( stream, contentType, fileName );
+    comment = libcmis::escape( comment );
+    string url = getId( ) + "/checkin(comment='" + comment + "'";
+    if ( isMajor )
+    {
+        url += ",checkintype=1)";
+    }
+    else
+    {
+        url += ",checkintype=0)";
+    }
+    vector< string > headers;
+    istringstream is( "empty" );
+    try 
+    {   
+        getSession( )->httpPostRequest( url, is, "" );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+
+    libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
+    libcmis::DocumentPtr checkin =
+        boost::dynamic_pointer_cast< libcmis::Document > ( obj );
     return checkin;
 }
 
