@@ -46,9 +46,11 @@ string SharePointUtils::toCmisKey( const string& key )
         convertedKey = "cmis:lastModificationDate";
     else if ( key == "Name" )
         convertedKey = "cmis:name";
-    else if ( key == "MajorVersion" )
+    else if ( key == "UIVersionLabel" ||
+              key == "VersionLabel" )
         convertedKey = "cmis:versionLabel";
-    else if ( key == "Length" )
+    else if ( key == "Length" ||
+              key == "Size" )
         convertedKey = "cmis:contentStreamLength";
     else convertedKey = key;
     return convertedKey;

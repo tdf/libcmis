@@ -129,7 +129,7 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
     {
         object.reset( new SharePointObject( this, jsonRes, parentId ) );
     }
-    else if ( kind == "SP.File" )
+    else if ( kind == "SP.File" || kind == "SP.FileVersion" )
     {
         object.reset( new SharePointDocument( this, jsonRes, parentId ) );
     }
