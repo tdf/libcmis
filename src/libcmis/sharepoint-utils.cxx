@@ -66,9 +66,13 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     }
     if ( key == "Author" ||
          key == "CheckedOutByUser" ||
+         key == "Files" ||
+         key == "Folders" ||
          key == "ListItemAllFields" ||
          key == "LockedByUser" ||
          key == "ModifiedBy" ||
+         key == "ParentFolder" ||
+         key == "Properties" ||
          key == "Versions" )
     {
         string propertyUri = json["__deferred"]["uri"].toString( );
