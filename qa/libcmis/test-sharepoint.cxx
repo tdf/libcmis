@@ -66,6 +66,7 @@ class SharePointTest : public CppUnit::TestFixture
         void checkOutTest( );
         void checkInTest( );
         void getAllVersionsTest( );
+        void getFolderTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -81,6 +82,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
+        CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -435,6 +437,32 @@ void SharePointTest::getAllVersionsTest( )
                                   objectId, allVersions[0]->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version of the document - 2",
                                   objectV1Id, allVersions[1]->getId( ) );
+}
+
+void SharePointTest::getFolderTest( )
+{
+    static const string folderId( "http://base/_api/Web/aFolderId" );
+    static const string parentId( "http://base/_api/Web/rootFolderId" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    string parentUrl = folderId + "/ParentFolder";
+    curl_mockup_addResponse( folderId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( parentUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/root-folder.json", 200, true );
+    curl_mockup_addResponse( parentId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/root-folder.json", 200, true );
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
+            NULL != folder );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "SharePoint Folder" ), folder->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
+
+    CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
+    CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
