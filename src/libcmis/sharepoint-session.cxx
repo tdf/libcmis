@@ -27,6 +27,7 @@
  */
 
 #include "sharepoint-document.hxx"
+#include "sharepoint-folder.hxx"
 #include "sharepoint-object.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-session.hxx"
@@ -127,7 +128,7 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
     // only SharePointObject available for now
     if ( kind == "SP.Folder" )
     {
-        object.reset( new SharePointObject( this, jsonRes, parentId ) );
+        object.reset( new SharePointFolder( this, jsonRes, parentId ) );
     }
     else if ( kind == "SP.File" || kind == "SP.FileVersion" )
     {

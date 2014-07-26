@@ -115,6 +115,8 @@ libcmis_la_SOURCES = \
 	sharepoint-allowable-actions.hxx \
 	sharepoint-document.hxx \
 	sharepoint-document.cxx \
+	sharepoint-folder.hxx \
+	sharepoint-folder.cxx \
 	sharepoint-object.hxx \
 	sharepoint-object.cxx \
 	sharepoint-property.hxx \
