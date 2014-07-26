@@ -76,9 +76,12 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
         }
     }
 
-    // ParentId is not provided in the response
-    property.reset( new SharePointProperty( "cmis:parentId", Json( parentId.c_str( ) ) ) );
-    m_properties[ property->getPropertyType( )->getId()] = property;
+    if ( !parentId.empty( ) )
+    {
+        // ParentId is not provided in the response
+        property.reset( new SharePointProperty( "cmis:parentId", Json( parentId.c_str( ) ) ) );
+        m_properties[ property->getPropertyType( )->getId()] = property;
+    }
 
     if ( !isFolder )
     {
