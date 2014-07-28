@@ -95,6 +95,19 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
                     authorJson["d"]["Title"] ) );
         m_properties[ property->getPropertyType( )->getId( ) ] = property;
     }
+    else
+    {
+        // we need to get the creation and lastUpdate time which aren't
+        // provided in the response
+        Json propJson = getSession( )->getJsonFromUrl( getStringProperty( "Properties" ) );
+        property.reset( new SharePointProperty( "cmis:creationDate", 
+                    propJson["d"]["vti_x005f_timecreated"] ) );
+        m_properties[ property->getPropertyType( )->getId( ) ] = property;
+
+        property.reset( new SharePointProperty( "cmis:lastModificationDate", 
+                    propJson["d"]["vti_x005f_timelastmodified"] ) );
+        m_properties[ property->getPropertyType( )->getId( ) ] = property;
+    }
 
     m_refreshTimestamp = time( NULL );
     m_allowableActions.reset( new SharePointAllowableActions( isFolder ) );
