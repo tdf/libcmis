@@ -67,6 +67,7 @@ class SharePointTest : public CppUnit::TestFixture
         void checkInTest( );
         void getAllVersionsTest( );
         void getFolderTest( );
+        void getChildrenTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -83,6 +84,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST( getFolderTest );
+        CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -463,6 +465,44 @@ void SharePointTest::getFolderTest( )
 
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
+}
+
+void SharePointTest::getChildrenTest( )
+{
+    static const string folderId( "http://base/_api/Web/aFolderId" );
+    static const string authorUrl( "http://base/_api/Web/aFileId/Author" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    string filesUrl = folderId + "/Files";
+    string foldersUrl = folderId + "/Folders";
+    curl_mockup_addResponse( folderId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( filesUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/children-files.json", 200, true );
+    curl_mockup_addResponse( foldersUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/children-folders.json", 200, true );
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
+            NULL != folder );
+
+    vector< libcmis::ObjectPtr > children= folder->getChildren( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of children", size_t( 2 ), children.size() );
+
+    int folderCount = 0;
+    int fileCount = 0;
+    for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
+          it != children.end( ); ++it )
+    {
+        if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
+            ++folderCount;
+        else
+            ++fileCount;
+    }
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of file children", 1, fileCount );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
