@@ -1,0 +1,42 @@
+{
+  "d": {
+    "results":[
+      {
+        "Files": {
+          "__deferred": {
+            "uri": "http://base/_api/Web/aFolderId/Files"
+          }
+        },
+        "Folders": {
+          "__deferred": {
+            "uri": "http://base/_api/Web/aFolderId/Folders"
+          }
+        },
+        "ItemCount": 3,
+        "ListItemAllFields": {
+          "__deferred": {
+            "uri": "http://base/_api/Web/aFolderId/ListItemAllFields"
+          }
+        },
+        "Name": "SharePoint Folder",
+        "ParentFolder": {
+          "__deferred": {
+            "uri": "http://base/_api/Web/aFolderId/ParentFolder"
+          }
+        },
+        "Properties": {
+          "__deferred": {
+            "uri": "http://base/_api/Web/aFolderId/Properties"
+          }
+        },
+        "ServerRelativeUrl": "/Shared Documents",
+        "WelcomePage": "",
+        "__metadata": {
+          "id": "http://base/_api/Web/aFolderId",
+          "type": "SP.Folder",
+          "uri": "http://base/_api/Web/aFolderId"
+        }
+      }
+    ]
+  }
+}
