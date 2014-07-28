@@ -61,10 +61,15 @@ SharePointObject& SharePointObject::operator=( const SharePointObject& copy )
 
 void SharePointObject::initializeFromJson ( Json json, string parentId, string /*name*/ )
 {
-    Json::JsonObject objs = json["d"].getObjects( );
+    if ( !json["d"].toString( ).empty( ) ) {
+        // Basic GET requests receive the data inside a "d" object, 
+        // but child listing doesn't, so this unifies the representation
+        json = json["d"];
+    }
+    Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
     PropertyPtr property;
-    bool isFolder = json["d"]["__metadata"]["type"].toString( ) == "SP.Folder";
+    bool isFolder = json["__metadata"]["type"].toString( ) == "SP.Folder";
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
         property.reset( new SharePointProperty( it->first, it->second ) );

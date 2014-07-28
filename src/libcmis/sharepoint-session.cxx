@@ -124,7 +124,10 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
             throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
-    string kind = jsonRes["d"]["__metadata"]["type"].toString( );
+    if ( !jsonRes["d"].toString( ).empty( ) ) {
+        jsonRes = jsonRes["d"];
+    }
+    string kind = jsonRes["__metadata"]["type"].toString( );
     // only SharePointObject available for now
     if ( kind == "SP.Folder" )
     {
