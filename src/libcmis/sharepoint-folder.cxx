@@ -83,7 +83,35 @@ vector< libcmis::ObjectPtr > SharePointFolder::getChildren( )
     throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
+    string filesUrl = getStringProperty( "Files" );
+    string foldersUrl = getStringProperty( "Folders" );
+
+    Json::JsonVector objs = getChildrenImpl( filesUrl );
+    Json::JsonVector folders = getChildrenImpl( foldersUrl );
+    objs.insert( objs.begin( ), folders.begin( ), folders.end( ) );
+
+    for ( unsigned int i = 0; i < objs.size( ); i++)
+    {
+        children.push_back( getSession( )->getObjectFromJson( objs[i], getId( ) ) );
+    }
     return children;
+}
+
+Json::JsonVector SharePointFolder::getChildrenImpl( string url )
+    throw ( libcmis::Exception )
+{
+    string res;
+    try
+    {
+        res = getSession( )->httpGetRequest( url )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+    Json jsonRes = Json::parse( res );
+    Json::JsonVector objs = jsonRes["d"]["results"].getList( );
+    return objs;
 }
 
 libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& /*properties*/ ) 

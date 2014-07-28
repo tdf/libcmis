@@ -49,6 +49,9 @@ class SharePointFolder : public libcmis::Folder, public SharePointObject
         virtual std::vector< libcmis::ObjectPtr > getChildren( ) 
             throw ( libcmis::Exception );
 
+        Json::JsonVector getChildrenImpl( std::string url )
+            throw ( libcmis::Exception );
+
         virtual libcmis::FolderPtr createFolder( const libcmis::PropertyPtrMap& properties )
             throw ( libcmis::Exception );
 
