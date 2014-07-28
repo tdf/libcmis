@@ -245,8 +245,11 @@ void SharePointTest::getFolderAllowableActionsTest( )
     static const string objectId ( "http://base/_api/Web/aFolderId" );
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string folderPropUrl = objectId + "/Properties";
     curl_mockup_addResponse ( objectId.c_str( ), "",
                               "GET", DATA_DIR "/sharepoint/folder.json", 200, true);
+    curl_mockup_addResponse ( folderPropUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true);
 
     libcmis::ObjectPtr object = session.getObject( objectId );
     boost::shared_ptr< libcmis::AllowableActions > actions = object->getAllowableActions( );
@@ -448,8 +451,14 @@ void SharePointTest::getFolderTest( )
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
 
     string parentUrl = folderId + "/ParentFolder";
+    string folderPropUrl = folderId + "/Properties";
+    string parentFolderPropUrl = parentId + "/Properties";
     curl_mockup_addResponse( folderId.c_str( ), "",
                              "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( folderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
+    curl_mockup_addResponse( parentFolderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
     curl_mockup_addResponse( parentUrl.c_str( ), "",
                              "GET", DATA_DIR "/sharepoint/root-folder.json", 200, true );
     curl_mockup_addResponse( parentId.c_str( ), "",
@@ -475,8 +484,11 @@ void SharePointTest::getChildrenTest( )
 
     string filesUrl = folderId + "/Files";
     string foldersUrl = folderId + "/Folders";
+    string folderPropUrl = folderId + "/Properties";
     curl_mockup_addResponse( folderId.c_str( ), "",
                              "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( folderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
     curl_mockup_addResponse( filesUrl.c_str( ), "",
                              "GET", DATA_DIR "/sharepoint/children-files.json", 200, true );
     curl_mockup_addResponse( foldersUrl.c_str( ), "",
