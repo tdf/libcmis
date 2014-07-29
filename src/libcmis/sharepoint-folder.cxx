@@ -156,14 +156,45 @@ libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& propert
     return newFolder;
 }
 
-libcmis::DocumentPtr SharePointFolder::createDocument( const PropertyPtrMap& /*properties*/, 
-                                                       boost::shared_ptr< ostream > /*os*/, 
-                                                       string /*contentType*/, 
-                                                       string /*fileName*/ ) 
+libcmis::DocumentPtr SharePointFolder::createDocument( const PropertyPtrMap& properties, 
+                                                       boost::shared_ptr< ostream > os, 
+                                                       string contentType, 
+                                                       string fileName ) 
     throw ( libcmis::Exception )
 {    
+    if ( !os.get( ) )
+        throw libcmis::Exception( "Missing stream" );
 
-    DocumentPtr document;
+    if ( fileName.empty( ) )
+    {
+        for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
+                it != properties.end() ; ++it )
+        {
+           if ( it->first == "cmis:name" ||
+                it->first == "cmis:contentStreamFileName" )
+           {
+               fileName = it->second->toString( );
+           }
+        }
+    }
+    fileName = libcmis::escape( fileName );
+    string url = getId( ) + "/files/add(overwrite=true,";
+    url += "url='" + fileName + "')";
+
+    // Upload stream
+    boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
+    string res;
+    try
+    {
+        res = getSession( )->httpPostRequest( url, *is, contentType )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {
+        throw e.getCmisException( );
+    }
+
+    Json jsonRes = Json::parse( res );
+    DocumentPtr document( new SharePointDocument( getSession( ), jsonRes, getId( ) ) );
     return document;
 }
 
