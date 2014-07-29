@@ -1,0 +1,35 @@
+{
+  "d": {
+    "__metadata": {
+      "id": "http://base/_api/web/aFolderId/properties",
+      "type": "SP.PropertyValues",
+      "uri": "http://base/_api/web/aFolderId/properties"
+    },
+    "vti_x005f_candeleteversion": "true",
+    "vti_x005f_dirlateststamp": "2014-07-28T16:10:28",
+    "vti_x005f_docstoretype": 1,
+    "vti_x005f_etag": "\"{61A348A0-D6D6-4B67-91E9-FFC87CCDE1BF},0\"",
+    "vti_x005f_folderitemcount": 3,
+    "vti_x005f_foldersubfolderitemcount": 0,
+    "vti_x005f_hassubdirs": "true",
+    "vti_x005f_isbrowsable": "true",
+    "vti_x005f_isexecutable": "false",
+    "vti_x005f_isscriptable": "false",
+    "vti_x005f_level": 1,
+    "vti_x005f_listbasetype": 1,
+    "vti_x005f_listenableminorversions": "true",
+    "vti_x005f_listenablemoderation": "false",
+    "vti_x005f_listenableversioning": "true",
+    "vti_x005f_listname": "{D0014F89-052C-4F0A-A65D-A61DFC837093}",
+    "vti_x005f_listrequirecheckout": "false",
+    "vti_x005f_listservertemplate": 101,
+    "vti_x005f_listtitle": "Documents",
+    "vti_x005f_metainfoversion": 1,
+    "vti_x005f_nexttolasttimemodified": "2014-07-08T09:29:29",
+    "vti_x005f_parentid": "{F3A8C5D9-525D-4BEB-A9DF-4CA122A5D074}",
+    "vti_x005f_replid": "rid:{61A348A0-D6D6-4B67-91E9-FFC87CCDE1BF}",
+    "vti_x005f_rtag": "rt:61A348A0-D6D6-4B67-91E9-FFC87CCDE1BF@00000000000",
+    "vti_x005f_timecreated": "2014-07-02T14:19:02",
+    "vti_x005f_timelastmodified": "2014-07-14T09:15:56"
+  }
+}
