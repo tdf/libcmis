@@ -69,6 +69,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getFolderTest( );
         void getChildrenTest( );
         void createFolderTest( );
+        void createDocumentTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -87,6 +88,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( createFolderTest );
+        CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -544,6 +546,48 @@ void SharePointTest::createFolderTest( )
 
     libcmis::FolderPtr newFolder = folder->createFolder( properties );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "New folder not created", folderId, newFolder->getId( ) );
+}
+
+void SharePointTest::createDocumentTest( )
+{
+    static const string folderId( "http://base/_api/Web/aFolderId" );
+    static const string fileId( "http://base/_api/Web/aFileId" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    string folderPropUrl = folderId + "/Properties";
+    string newDocUrl = folderId + "/files/add(overwrite=true,url='NewDoc')";
+    string authorUrl = fileId + "/Author";
+    curl_mockup_addResponse( folderId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( folderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
+    curl_mockup_addResponse( newDocUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/file.json", 200, true );
+    curl_mockup_addResponse( authorUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/author.json", 200, true );
+
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+    try
+    {
+        string expectedContent( "Test set content stream" );
+        boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
+        PropertyPtrMap properties;
+        string fileName = "NewDoc";
+
+        libcmis::DocumentPtr document = folder->createDocument( properties, os, 
+                                                                "text/plain", fileName );
+
+        const char* content = curl_mockup_getRequestBody( newDocUrl.c_str( ), "", "POST" );
+
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad content uploaded", expectedContent, string( content ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad document id", fileId, document->getId( ) );                  
+    }
+    catch ( const libcmis::Exception& e )
+    {
+        string msg = "Unexpected exception: ";
+        msg += e.what( );
+        CPPUNIT_FAIL( msg.c_str( ) );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
