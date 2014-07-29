@@ -114,10 +114,45 @@ Json::JsonVector SharePointFolder::getChildrenImpl( string url )
     return objs;
 }
 
-libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& /*properties*/ ) 
+libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& properties ) 
     throw( libcmis::Exception )
 {
-    libcmis::FolderPtr newFolder;
+    string folderName;
+    for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
+            it != properties.end() ; ++it )
+    {
+       if ( it->first == "cmis:name" )
+       {
+           folderName = it->second->toString( );
+       }
+    }
+    // bindingUrl/folders/add('/path/to/folder')
+    string relativeUrl;
+    if ( getStringProperty( "ServerRelativeUrl" ) == "/" )
+    {
+        relativeUrl = "/" + folderName;
+    }
+    else
+    {
+        relativeUrl = getStringProperty( "ServerRelativeUrl" ) + "/" + folderName;
+    }
+    relativeUrl = libcmis::escape( relativeUrl );
+    string folderUrl = getSession( )->getBindingUrl( );
+    folderUrl += "/folders/add('" + relativeUrl + "')";
+
+    istringstream is( "empty" );
+    string res;
+    try 
+    {   
+        res = getSession( )->httpPostRequest( folderUrl, is, "" )->getStream( )->str( );
+    }
+    catch ( const CurlException& e )
+    {   
+        throw e.getCmisException( );
+    }
+    Json jsonRes = Json::parse( res );
+
+    libcmis::FolderPtr newFolder( new SharePointFolder( getSession( ), jsonRes, getId( ) ) );
     return newFolder;
 }
 
