@@ -16,7 +16,7 @@
         "uri": "http://base/_api/Web/aFolderId/ListItemAllFields"
       }
     },
-    "Name": "SharePoint Folder",
+    "Name": "SharePointFolder",
     "ParentFolder": {
       "__deferred": {
         "uri": "http://base/_api/Web/aFolderId/ParentFolder"
@@ -27,7 +27,7 @@
         "uri": "http://base/_api/Web/aFolderId/Properties"
       }
     },
-    "ServerRelativeUrl": "/Shared Documents",
+    "ServerRelativeUrl": "/SharePointFolder",
     "WelcomePage": "",
     "__metadata": {
       "id": "http://base/_api/Web/aFolderId",

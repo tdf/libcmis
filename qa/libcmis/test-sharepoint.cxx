@@ -68,6 +68,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getAllVersionsTest( );
         void getFolderTest( );
         void getChildrenTest( );
+        void createFolderTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -85,6 +86,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getAllVersionsTest );
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getChildrenTest );
+        CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -469,7 +471,7 @@ void SharePointTest::getFolderTest( )
     CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::FolderPtr",
             NULL != folder );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "SharePoint Folder" ), folder->getName( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "SharePointFolder" ), folder->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
 
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
@@ -515,6 +517,33 @@ void SharePointTest::getChildrenTest( )
     }
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of file children", 1, fileCount );
+}
+
+void SharePointTest::createFolderTest( )
+{
+    static const string folderId( "http://base/_api/Web/aFolderId" );
+    static const string parentId( "http://base/_api/Web/rootFolderId" );
+    static const string newFolderUrl ( "http://base/_api/Web/folders/add('/SharePointFolder')" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    string folderPropUrl = folderId + "/Properties";
+    string parentFolderPropUrl = parentId + "/Properties";
+    curl_mockup_addResponse( folderId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder.json", 200, true );
+    curl_mockup_addResponse( folderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
+    curl_mockup_addResponse( parentFolderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
+    curl_mockup_addResponse( parentId.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/root-folder.json", 200, true );
+    curl_mockup_addResponse( newFolderUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/folder.json", 200, true );
+
+    libcmis::FolderPtr folder = session.getFolder( parentId );
+    PropertyPtrMap properties = session.getFolder( folderId )->getProperties( );
+
+    libcmis::FolderPtr newFolder = folder->createFolder( properties );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "New folder not created", folderId, newFolder->getId( ) );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
