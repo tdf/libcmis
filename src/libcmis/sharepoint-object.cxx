@@ -168,7 +168,26 @@ libcmis::ObjectPtr SharePointObject::updateProperties(
     return updated;
 }
 
-void SharePointObject::move( FolderPtr /*source*/, FolderPtr /*destination*/ ) 
+void SharePointObject::move( FolderPtr /*source*/, FolderPtr destination ) 
                                         throw ( libcmis::Exception )
 {  
+    if ( !getStringProperty( "cmis:checkinComment" ).empty( ) )
+    {
+        // only documents can be moved and only documents have this property
+        string url = getId( ) + "/moveto(newurl='";
+        url +=  libcmis::escape( destination->getStringProperty( "ServerRelativeUrl" ) );
+        url += "/" + getStringProperty( "cmis:name" ) + "'";
+        // overwrite flag
+        url += ",flags=1)"; 
+        istringstream is( "empty" );
+        try 
+        {   
+            getSession( )->httpPostRequest( url, is, "" );
+        }
+        catch ( const CurlException& e )
+        {   
+            throw e.getCmisException( );
+        }
+        refresh( );
+    }
 }
