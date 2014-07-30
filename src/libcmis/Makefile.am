@@ -119,6 +119,8 @@ libcmis_la_SOURCES = \
 	sharepoint-folder.cxx \
 	sharepoint-object.hxx \
 	sharepoint-object.cxx \
+	sharepoint-object-type.hxx \
+	sharepoint-object-type.cxx \
 	sharepoint-property.hxx \
 	sharepoint-property.cxx \
 	sharepoint-repository.hxx \
