@@ -63,13 +63,6 @@ SharePointObjectType::SharePointObjectType( const std::string& id ): ObjectType(
     streamFileNameType->setUpdatable( true );
     m_propertiesTypes[ streamFileNameType->getId( ) ] = streamFileNameType;
 
-    // description
-    libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
-    descriptionType->setId( "cmis:description" );
-    descriptionType->setType( libcmis::PropertyType::String );
-    descriptionType->setUpdatable( true );
-    m_propertiesTypes[ descriptionType->getId( ) ] = descriptionType;
-
     // modifiedDate
     libcmis::PropertyTypePtr modifiedDateType( new libcmis::PropertyType( ) );
     modifiedDateType->setId( "cmis:lastModificationDate" );
