@@ -164,7 +164,8 @@ vector< string> SharePointObject::getMultiStringProperty( const string& property
 libcmis::ObjectPtr SharePointObject::updateProperties(
         const PropertyPtrMap& /*properties*/ ) throw ( libcmis::Exception )
 {
-    libcmis::ObjectPtr updated;
+    // there are no updateable properties so just return the same object
+    libcmis::ObjectPtr updated = getSession( )->getObject( getId( ) );
     return updated;
 }
 
