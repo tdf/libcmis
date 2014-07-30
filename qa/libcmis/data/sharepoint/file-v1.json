@@ -35,7 +35,7 @@
         "uri":"http://base/_api/Web/aFileId/ModifiedBy"
       }
     },
-    "Name":"SharePoint File",
+    "Name":"SharePointFile",
     "ServerRelativeUrl":"/Shared Documents/file.txt",
     "TimeCreated":"2014-07-08T09:29:29Z",
     "TimeLastModified":"2014-07-08T09:29:29Z",

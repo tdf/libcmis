@@ -70,6 +70,7 @@ class SharePointTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void createFolderTest( );
         void createDocumentTest( );
+        void moveTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -89,6 +90,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createDocumentTest );
+        CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -162,7 +164,7 @@ void SharePointTest::propertiesTest( )
                                    string ( "aUserId" ),
                                    object->getStringProperty( "cmis:createdBy" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong file name",
-                                   string ( "SharePoint File" ),
+                                   string ( "SharePointFile" ),
                                    object->getStringProperty( "cmis:contentStreamFileName" ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkin comment",
                                    string ( "aCheckinComment" ),
@@ -287,7 +289,7 @@ void SharePointTest::getDocumentTest( )
     // Test the document properties
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document ID", objectId, document->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong document name",
-                                  string( "SharePoint File" ),
+                                  string( "SharePointFile" ),
                                   document->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
 
@@ -588,6 +590,33 @@ void SharePointTest::createDocumentTest( )
         msg += e.what( );
         CPPUNIT_FAIL( msg.c_str( ) );
     }
+}
+
+void SharePointTest::moveTest( )
+{
+    static const string fileId ( "http://base/_api/Web/aFileId" );
+    static const string folderId( "http://base/_api/Web/aFolderId" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = fileId + "/Author";
+    string folderPropUrl = folderId + "/Properties";
+    string moveUrl = fileId + "/moveto(newurl='/SharePointFolder/SharePointFile',flags=1)";
+    curl_mockup_addResponse ( fileId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+    curl_mockup_addResponse ( folderId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/folder.json", 200, true);
+    curl_mockup_addResponse( folderPropUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/folder-properties.json", 200, true );
+    curl_mockup_addResponse( moveUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/file.json", 200, true );
+
+    libcmis::ObjectPtr document = session.getObject( fileId );
+    libcmis::FolderPtr folder = session.getFolder( folderId );
+
+    document->move( folder, folder );
+    // nothing to assert, making the right reqeusts should be enough
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
