@@ -36,7 +36,7 @@
       }
     },
     "Name":"SharePoint File",
-    "ServerRelative_api/Web":"/Shared Documents/file.txt",
+    "ServerRelativeUrl":"/Shared Documents/file.txt",
     "TimeCreated":"2014-07-08T09:29:29Z",
     "TimeLastModified":"2014-07-08T09:29:29Z",
     "Title":"",
