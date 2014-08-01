@@ -29,6 +29,7 @@
 #include "sharepoint-document.hxx"
 #include "sharepoint-folder.hxx"
 #include "sharepoint-object.hxx"
+#include "sharepoint-object-type.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-session.hxx"
 #include "sharepoint-utils.hxx"
@@ -150,10 +151,10 @@ libcmis::ObjectPtr SharePointSession::getObjectByPath( string path )
     return getObject( path );
 }
 
-libcmis::ObjectTypePtr SharePointSession::getType( string /*id*/ )
+libcmis::ObjectTypePtr SharePointSession::getType( string id )
     throw ( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr type;
+    libcmis::ObjectTypePtr type( new SharePointObjectType( id ) );
     return type;
 }
 
