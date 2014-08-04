@@ -33,7 +33,7 @@
 class SharePointRepository: public libcmis::Repository
 {
     public:
-        SharePointRepository( );
+        SharePointRepository( std::string baseUrl );
 };
 
 #endif

@@ -100,7 +100,7 @@ libcmis::RepositoryPtr SharePointSession::getRepository( )
     throw ( libcmis::Exception )
 {
     // Return a dummy repository since SharePoint doesn't have that notion
-    libcmis::RepositoryPtr repo( new SharePointRepository( ) );
+    libcmis::RepositoryPtr repo( new SharePointRepository( getBindingUrl( ) ) );
     return repo;
 }
 

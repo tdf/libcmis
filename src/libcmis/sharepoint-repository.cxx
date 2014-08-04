@@ -27,7 +27,7 @@
  */
 #include "sharepoint-repository.hxx"
 
-SharePointRepository::SharePointRepository( ) :
+SharePointRepository::SharePointRepository( std::string baseUrl ) :
     Repository( )
 { 
     m_id = "SharePoint";
@@ -35,7 +35,7 @@ SharePointRepository::SharePointRepository( ) :
     m_description = "SharePoint repository";
     m_productName = "SharePoint";
     m_productVersion = "2010/2013";
-    m_rootId = "/";
+    m_rootId = baseUrl + "/getFolderByServerRelativeUrl('/')";
  
     m_capabilities[ ACL ] = "discover";
     m_capabilities[ AllVersionsSearchable ] = "true";
