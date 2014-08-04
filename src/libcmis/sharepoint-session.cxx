@@ -148,7 +148,23 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
 libcmis::ObjectPtr SharePointSession::getObjectByPath( string path )
     throw ( libcmis::Exception )
 {
-    return getObject( path );
+    libcmis::ObjectPtr object;
+    path = libcmis::escape( path );
+    // we don't know the object type so we try with Folder first
+    try
+    {
+        string folderUrl = getBindingUrl( ) + "/getFolderByServerRelativeUrl";
+        folderUrl += "('" + path + "')";
+        object = getObject( folderUrl );
+    }
+    catch ( const libcmis::Exception &e )
+    {
+        // it's not a Folder, maybe it's a File
+        string fileUrl = getBindingUrl( ) + "/getFileByServerRelativeUrl";
+        fileUrl += "('" + path + "')";
+        object = getObject( fileUrl );
+    }
+    return object;
 }
 
 libcmis::ObjectTypePtr SharePointSession::getType( string id )
