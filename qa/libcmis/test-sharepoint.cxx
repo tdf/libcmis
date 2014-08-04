@@ -71,6 +71,7 @@ class SharePointTest : public CppUnit::TestFixture
         void createFolderTest( );
         void createDocumentTest( );
         void moveTest( );
+        void getObjectByPathTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
         CPPUNIT_TEST( getRepositoriesTest );
@@ -91,6 +92,7 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( moveTest );
+        CPPUNIT_TEST( getObjectByPathTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -617,6 +619,27 @@ void SharePointTest::moveTest( )
 
     document->move( folder, folder );
     // nothing to assert, making the right reqeusts should be enough
+}
+
+void SharePointTest::getObjectByPathTest( )
+{
+    static const string folderUrl( "http://base/_api/Web/getFolderByServerRelativeUrl('/SharePointFile')" );
+    static const string fileUrl( "http://base/_api/Web/getFileByServerRelativeUrl('/SharePointFile')" );
+    static string authorUrl( "http://base/_api/Web/aFileId/Author" );
+
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    curl_mockup_addResponse( fileUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse( folderUrl.c_str( ), "",
+                             "GET", "", 400, true);
+    curl_mockup_addResponse( authorUrl.c_str( ), "",
+                             "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObjectByPath( "/SharePointFile" );
+    // Check if we got the document object.
+    libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
+    CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
+            NULL != document );
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
