@@ -46,6 +46,8 @@ string SharePointUtils::toCmisKey( const string& key )
         convertedKey = "cmis:lastModificationDate";
     else if ( key == "Name" )
         convertedKey = "cmis:name";
+    else if ( key == "CheckOutType" )
+        convertedKey = "cmis:isVersionSeriesCheckedOut";
     else if ( key == "UIVersionLabel" ||
               key == "VersionLabel" )
         convertedKey = "cmis:versionLabel";
@@ -77,6 +79,18 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     {
         string propertyUri = json["__deferred"]["uri"].toString( );
         values.push_back( propertyUri );
+    }
+    if ( key == "CheckOutType" )
+    {
+        //  Online = 0, Offline = 1, None = 2
+        if ( json.toString( ) == "2" )
+        {
+            values.push_back( "false" );
+        }
+        else
+        {
+            values.push_back( "true" );
+        }
     }
     else values.push_back( json.toString( ) );
     return values;
