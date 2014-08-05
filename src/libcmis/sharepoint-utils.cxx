@@ -58,6 +58,29 @@ string SharePointUtils::toCmisKey( const string& key )
     return convertedKey;
 }
 
+libcmis::PropertyType::Type SharePointUtils::getPropertyType( const string& key )
+{
+    libcmis::PropertyType::Type propertyType;
+    if ( key == "cmis:creationDate" ||
+         key == "cmis:lastModificationDate" )
+    {
+        propertyType = libcmis::PropertyType::DateTime;
+    }
+    else if ( key == "cmis:contentStreamLength" )
+    {
+        propertyType = libcmis::PropertyType::Integer;
+    }
+    else if ( key == "cmis:isVersionSeriesCheckedOut" )
+    {
+        propertyType = libcmis::PropertyType::Bool;
+    }
+    else
+    {
+        propertyType = libcmis::PropertyType::String;
+    }
+    return propertyType;
+}
+
 vector< string > SharePointUtils::parseSharePointProperty( string key, Json json )
 {
     vector< string > values;

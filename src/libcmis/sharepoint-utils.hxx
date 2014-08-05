@@ -40,6 +40,9 @@ class SharePointUtils
         // Convert a SharePoint Property key to a CMIS key
         static std::string toCmisKey( const std::string& key);
 
+        // Returns the property type (String/Bool/Integer etc )
+        static libcmis::PropertyType::Type getPropertyType( const std::string& key );
+
         // Parse a SharePoint property value to CMIS values
         static std::vector< std::string > parseSharePointProperty( std::string key, Json jsonValue );
 

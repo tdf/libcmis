@@ -54,6 +54,7 @@ SharePointProperty::SharePointProperty( const string& key, Json json ):
     propertyType->setTypeFromJsonType( json.getStrType( ) );
     propertyType->setUpdatable( false );
     propertyType->setMultiValued( false );
+    propertyType->setType( SharePointUtils::getPropertyType( convertedKey ) );
 
     setPropertyType( propertyType );    
     
