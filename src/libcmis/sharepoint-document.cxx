@@ -116,7 +116,7 @@ void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os,
 
 libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception )
 {
-    istringstream is( "empty" );
+    istringstream is( "" );
     string url = getId( ) + "/checkout";
     try 
     {   
@@ -134,7 +134,7 @@ libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception 
 
 void SharePointDocument::cancelCheckout( ) throw ( libcmis::Exception )
 {
-    istringstream is( "empty" );
+    istringstream is( "" );
     string url = getId( ) + "/undocheckout";
     try 
     {   
@@ -166,7 +166,7 @@ libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor,
         url += ",checkintype=0)";
     }
     vector< string > headers;
-    istringstream is( "empty" );
+    istringstream is( "" );
     try 
     {   
         getSession( )->httpPostRequest( url, is, "" );

@@ -180,7 +180,7 @@ void SharePointObject::move( FolderPtr /*source*/, FolderPtr destination )
         url += "/" + getStringProperty( "cmis:name" ) + "'";
         // overwrite flag
         url += ",flags=1)"; 
-        istringstream is( "empty" );
+        istringstream is( "" );
         try 
         {   
             getSession( )->httpPostRequest( url, is, "" );

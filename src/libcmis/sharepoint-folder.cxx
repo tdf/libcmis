@@ -140,7 +140,7 @@ libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& propert
     string folderUrl = getSession( )->getBindingUrl( );
     folderUrl += "/folders/add('" + relativeUrl + "')";
 
-    istringstream is( "empty" );
+    istringstream is( "" );
     string res;
     try 
     {   
