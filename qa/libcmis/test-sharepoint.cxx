@@ -447,9 +447,9 @@ void SharePointTest::getAllVersionsTest( )
     vector< libcmis::DocumentPtr > allVersions = document->getAllVersions( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version of the document - 1",
-                                  objectId, allVersions[0]->getId( ) );
+                                  objectId, allVersions[1]->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong version of the document - 2",
-                                  objectV1Id, allVersions[1]->getId( ) );
+                                  objectV1Id, allVersions[2]->getId( ) );
 }
 
 void SharePointTest::getFolderTest( )

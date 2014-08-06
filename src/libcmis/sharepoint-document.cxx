@@ -197,15 +197,20 @@ vector< libcmis::DocumentPtr > SharePointDocument::getAllVersions( )
         throw e.getCmisException( );
     }
 
+    // adding the latest version
+    libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
+    libcmis::DocumentPtr doc =
+        boost::dynamic_pointer_cast< libcmis::Document > ( obj );
+    allVersions.push_back( doc );
+
     Json jsonRes = Json::parse( res );
     Json::JsonVector objs = jsonRes["d"]["results"].getList( );
     for ( unsigned int i = 0; i < objs.size( ); i++) 
     {
         string versionNumber = objs[i]["ID"].toString( );
         string versionId = getId( ) + "/Versions(" + versionNumber + ")";
-        libcmis::ObjectPtr obj = getSession( )->getObject( versionId );
-        libcmis::DocumentPtr doc =
-            boost::dynamic_pointer_cast< libcmis::Document > ( obj );
+        obj = getSession( )->getObject( versionId );
+        doc = boost::dynamic_pointer_cast< libcmis::Document > ( obj );
         allVersions.push_back( doc );
     }
 
