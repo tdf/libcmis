@@ -40,7 +40,8 @@ string SharePointUtils::toCmisKey( const string& key )
         convertedKey = "cmis:objectId";
     else if ( key == "CheckInComment" )
         convertedKey = "cmis:checkinComment";
-    else if ( key == "TimeCreated" )
+    else if ( key == "TimeCreated" ||
+              key == "Created" )
         convertedKey = "cmis:creationDate";
     else if ( key == "TimeLastModified" )
         convertedKey = "cmis:lastModificationDate";
@@ -91,6 +92,7 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     }
     if ( key == "Author" ||
          key == "CheckedOutByUser" ||
+         key == "CreatedBy" ||
          key == "Files" ||
          key == "Folders" ||
          key == "ListItemAllFields" ||

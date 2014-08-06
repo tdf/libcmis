@@ -90,7 +90,13 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
 
     if ( !isFolder )
     {
-        Json authorJson = getSession( )->getJsonFromUrl( getStringProperty( "Author" ) );
+        string authorUrl = getStringProperty( "Author" );
+        if ( authorUrl.empty( ) )
+        {
+            // it's a file version
+           authorUrl = getStringProperty( "CreatedBy" );
+        }
+        Json authorJson = getSession( )->getJsonFromUrl( authorUrl );
         property.reset( new SharePointProperty( "cmis:createdBy", 
                     authorJson["d"]["Title"] ) );
         m_properties[ property->getPropertyType( )->getId( ) ] = property;
