@@ -81,7 +81,7 @@ class SharePointAllowableActions: public libcmis::AllowableActions
             m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::SetContentStream, !isFolder ) );
             m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
-                             libcmis::ObjectAction::GetAllVersions, true ) );
+                             libcmis::ObjectAction::GetAllVersions, !isFolder ) );
             m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
                              libcmis::ObjectAction::AddObjectToFolder, !isFolder ) );
             m_states.insert( std::pair< libcmis::ObjectAction::Type, bool> (
