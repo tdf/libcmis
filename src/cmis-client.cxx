@@ -73,7 +73,6 @@ namespace
     char* AuthCodeProvider::getAuthCode( const char* /*url*/, const char* /*username*/, const char* /*password*/ ) 
     {
         return strdup( m_authCode.c_str( ) );
-    
     }
 
     class CinAuthProvider : public libcmis::AuthProvider
