@@ -30,6 +30,13 @@ BINDING_URL=$1
 USER=$2
 PASS=$3
 REPO=$4
+OAUTH2_CLIENT_ID=$5
+OAUTH2_CLIENT_SECRET=$6
+OAUTH2_SCOPE=$7
+OAUTH2_AUTH_URL=$8
+OAUTH2_TOKEN_URL=$9
+OAUTH2_REDIRECT_URI=${10}
+NUM_ARGS=$#
 
 
 function cmis_client ( )
@@ -38,7 +45,19 @@ function cmis_client ( )
     if test "z$REPO" != "z"; then
         repo_opt=" -r \"$REPO\""
     fi
-    src/cmis-client --url "$BINDING_URL" -u "$USER" -p "$PASS"$repo_opt "$@"
+
+    args="--url "$BINDING_URL" -u "$USER" -p "$PASS"$repo_opt"
+    if test $NUM_ARGS -ge 10; then
+        args="$args --oauth2-client-id "$OAUTH2_CLIENT_ID"
+                    --oauth2-client-secret "$OAUTH2_CLIENT_SECRET"
+                    --oauth2-scope "$OAUTH2_SCOPE"
+                    --oauth2-auth-url "$OAUTH2_AUTH_URL"
+                    --oauth2-token-url "$OAUTH2_TOKEN_URL"
+                    --oauth2-redirect-uri "$OAUTH2_REDIRECT_URI""
+    fi
+
+    args="$args "$@""
+    src/cmis-client $args
 }
 
 function get_versionable_type ( )
