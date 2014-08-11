@@ -54,6 +54,28 @@ namespace
         return strdup( code.c_str() );
     }
 
+    class AuthCodeProvider
+    {
+        private:
+            static string m_authCode;
+
+        public:
+            static void setAuthCode( string authCode );
+            static char* getAuthCode( const char* /*url*/, const char* /*username*/, const char* /*password*/ );
+    };
+
+    string AuthCodeProvider::m_authCode = string( );
+    void AuthCodeProvider::setAuthCode( string authCode )
+    {
+        m_authCode = authCode;
+    }
+    
+    char* AuthCodeProvider::getAuthCode( const char* /*url*/, const char* /*username*/, const char* /*password*/ ) 
+    {
+        return strdup( m_authCode.c_str( ) );
+    
+    }
+
     class CinAuthProvider : public libcmis::AuthProvider
     {
         private:
@@ -301,6 +323,8 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
             oauth2RedirectUri = m_vm["oauth2-redirect-uri"].as< string >();
         if ( m_vm.count( "oauth2-scope" ) > 0 )
             oauth2Scope = m_vm["oauth2-scope"].as< string >();
+        if ( m_vm.count( "oauth2-auth-code" ) > 0 )
+            AuthCodeProvider::setAuthCode( m_vm["oauth2-auth-code"].as< string >() );
 
         libcmis::OAuth2DataPtr oauth2Data( new libcmis::OAuth2Data( oauth2AuthUrl, oauth2TokenUrl,
                     oauth2Scope, oauth2RedirectUri, oauth2ClientId, oauth2ClientSecret) );
@@ -308,7 +332,14 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
         if ( oauth2Data->isComplete( ) )
         {
             // Set the fallback AuthCode provider
-            libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_queryAuthCode );
+            if ( m_vm.count( "oauth2-auth-code" ) > 0 )
+            {
+                libcmis::SessionFactory::setOAuth2AuthCodeProvider( AuthCodeProvider::getAuthCode );
+            }
+            else
+            {
+                libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_queryAuthCode );
+            }
         }
         else
         {
@@ -1030,6 +1061,7 @@ options_description CmisClient::getOptionsDescription( )
         ( "oauth2-token-url", value< string >(), "URL to convert code to tokens in the OAuth2 flow" )
         ( "oauth2-redirect-uri", value< string >(), "redirect URI indicating that the authentication is finished in OAuth2 flow" )
         ( "oauth2-scope", value< string >(), "The authentication scope in OAuth2" )
+        ( "oauth2-auth-code", value< string >(), "The authentication code required to get the access token" )
     ;
 
     options_description setcontentOpts( "modification operations options" );
