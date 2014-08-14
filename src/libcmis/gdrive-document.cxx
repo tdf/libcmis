@@ -150,10 +150,11 @@ void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
         throw libcmis::Exception( string ( "Document " + getId( )+ 
                                     " is not editable" ) );
     string putUrl = getUploadUrl( ) + getId( );
+    putUrl += "?uploadType=media";
     
     // If it's a Google document, convert it 
     if ( isGoogleDoc( ) )
-        putUrl  += "?convert=true";
+        putUrl  += "&convert=true";
 
     // Upload stream
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
