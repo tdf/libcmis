@@ -26,18 +26,49 @@
 # in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
 # instead of those above.
 
-BINDING_URL=$1
-USER=$2
-PASS=$3
-REPO=$4
-OAUTH2_CLIENT_ID=$5
-OAUTH2_CLIENT_SECRET=$6
-OAUTH2_SCOPE=$7
-OAUTH2_AUTH_URL=$8
-OAUTH2_TOKEN_URL=$9
-OAUTH2_REDIRECT_URI=${10}
-NUM_ARGS=$#
+while [[ $# > 1 ]]
+do
+    key="$1"
+    shift
 
+    case $key in
+        --url)
+        BINDING_URL="$1"
+        shift;;
+        -u)
+        USER="$1"
+        shift;;
+        -p)
+        PASS="$1"
+        shift;;
+        -r)
+        REPO="$1"
+        shift;;
+        --oauth2-client-id)
+        OAUTH2_CLIENT_ID="$1"
+        shift;;
+        --oauth2-client-secret)
+        OAUTH2_CLIENT_SECRET="$1"
+        shift;;
+        --oauth2-scope)
+        OAUTH2_SCOPE="$1"
+        shift;;
+        --oauth2-auth-url)
+        OAUTH2_AUTH_URL="$1"
+        shift;;
+        --oauth2-token-url)
+        OAUTH2_TOKEN_URL="$1"
+        shift;;
+        --oauth2-redirect-uri)
+        OAUTH2_REDIRECT_URI="$1"
+        shift;;
+        --base-folder)
+        BASE_FOLDER="$1"
+        shift;;
+        *)
+        ;;
+    esac
+done
 
 function cmis_client ( )
 {
@@ -47,7 +78,7 @@ function cmis_client ( )
     fi
 
     args="--url "$BINDING_URL" -u "$USER" -p "$PASS"$repo_opt"
-    if test $NUM_ARGS -ge 10; then
+    if test "z$OAUTH2_CLIENT_ID" != "z"; then
         args="$args --oauth2-client-id "$OAUTH2_CLIENT_ID"
                     --oauth2-client-secret "$OAUTH2_CLIENT_SECRET"
                     --oauth2-scope "$OAUTH2_SCOPE"
@@ -87,7 +118,7 @@ function get_versionable_type ( )
 ROOT_ID=`cmis_client show-root | grep '^Id:' | cut -d ' ' -f 2`
 
 # Create a test folder
-test_folder_name="test-$$"
+test_folder_name=$BASE_FOLDER"/test-$$"
 test_folder_id=`cmis_client create-folder $ROOT_ID $test_folder_name | grep '^Id:' | cut -d ' ' -f 2`
 
 # Get a Versionable document type, not alway cmis:document for all servers
@@ -102,7 +133,6 @@ doc1_id=`cmis_client --object-type $versionable_type --input-file $file_path --i
 doc1_pwc=`cmis_client checkout $doc1_id | grep '^Id:' | cut -d ' ' -f 2`
 
 # TODO Checkin the document
-
 
 # Cleanup the test folder to remove all traces of the tests
 cmis_client delete $test_folder_id
