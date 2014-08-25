@@ -569,7 +569,12 @@ void CmisClient::execute( ) throw ( exception )
             if ( typeIt == propertiesTypes.end( ) )
                 throw CommandException( string( "No cmis:name on the object type... weird" ) );
             vector< string > nameValues;
-            nameValues.push_back( args[1] );
+            string newFolderName = args[1];
+            for ( unsigned int i = 2; i < args.size( ); i++ )
+            {
+                newFolderName += " " + args[i];
+            }
+            nameValues.push_back( newFolderName );
             libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
             
@@ -631,7 +636,12 @@ void CmisClient::execute( ) throw ( exception )
             if ( typeIt == propertiesTypes.end( ) )
                 throw CommandException( string( "No cmis:name on the object type... weird" ) );
             vector< string > nameValues;
-            nameValues.push_back( args[1] );
+            string newDocumentName = args[1];
+            for ( unsigned int i = 2; i < args.size( ); i++ )
+            {
+                newDocumentName += " " + args[i];
+            }
+            nameValues.push_back( newDocumentName );
             libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
             
