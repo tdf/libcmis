@@ -133,6 +133,7 @@ doc1_id=`cmis_client --object-type $versionable_type --input-file $file_path --i
 doc1_pwc=`cmis_client checkout $doc1_id | grep '^Id:' | cut -d ' ' -f 2`
 
 # TODO Checkin the document
+doc1_checkIn=`cmis_client --input-file $file_path --input-type $file_mime --message checkin_message checkin $doc1_id | grep '^Id:' | cut -d ' ' -f 2`
 
 # Cleanup the test folder to remove all traces of the tests
 cmis_client delete $test_folder_id
