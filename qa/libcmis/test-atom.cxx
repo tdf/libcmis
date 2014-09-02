@@ -688,6 +688,13 @@ void AtomTest::getDocumentParentsTest( )
     vector< libcmis::FolderPtr > actual = document->getParents( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 2 ), actual.size() );
+
+    vector< string > paths = document->getPaths();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of paths", size_t( 2 ), paths.size() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad document paths",
+                                  string( "/Parent 1/Test Document" ), paths[0] );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad document paths",
+                                  string( "/Parent 2/Test Document" ), paths[1] );
 }
 
 void AtomTest::getContentStreamTest( )
