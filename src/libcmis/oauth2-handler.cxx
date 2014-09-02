@@ -74,6 +74,7 @@ OAuth2Handler& OAuth2Handler::operator=( const OAuth2Handler& copy )
         m_data = copy.m_data;
         m_access = copy.m_access;
         m_refresh = copy.m_refresh;
+        m_oauth2Parser = copy.m_oauth2Parser;
     }
 
     return *this;

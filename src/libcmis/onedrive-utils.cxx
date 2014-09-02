@@ -71,8 +71,6 @@ string OneDriveUtils::toOneDriveKey( const string& key )
         convertedKey = "updated_time";
     else if ( key == "cmis:name" )
         convertedKey = "name";
-    else if ( key == "cmis:name" )
-        convertedKey = "name";
     else if ( key == "cmis:contentStreamLength" )
         convertedKey = "file_size";
     else if ( key == "cmis:parentId" )

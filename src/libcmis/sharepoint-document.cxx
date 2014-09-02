@@ -165,7 +165,6 @@ libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor,
     {
         url += ",checkintype=0)";
     }
-    vector< string > headers;
     istringstream is( "" );
     try 
     {   
