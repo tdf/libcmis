@@ -19,3 +19,4 @@ genlcov: $(infos)
 coverage-clean:
 	-$(LCOV) --directory $(top_builddir) -z
 	-rm -rf $(infos) libcmis-lcov
+	-find $(top_builddir) -type f -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" -exec rm "{}" \;
