@@ -65,6 +65,7 @@ AS_IF([test "x$enable_coverage" != "xno"], [
 
        CFLAGS="-g -O0 --coverage"
        CXXFLAGS="-g -O0 --coverage"
+       LDFLAGS+="--coverage"
 ])
 
 
