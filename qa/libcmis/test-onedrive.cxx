@@ -64,6 +64,8 @@ class OneDriveTest : public CppUnit::TestFixture
         void sessionAuthenticationTest( );
         void sessionExpiryTokenGetTest( );
         void getRepositoriesTest( );
+        void getObjectTypeDocumentTest( );
+        void getObjectTypeFolderTest( );
         void getObjectTest( );
         void filePropertyTest( );
         void deleteTest( );
@@ -84,6 +86,8 @@ class OneDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionAuthenticationTest );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
         CPPUNIT_TEST( getRepositoriesTest );
+        CPPUNIT_TEST( getObjectTypeDocumentTest );
+        CPPUNIT_TEST( getObjectTypeFolderTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( filePropertyTest );
         CPPUNIT_TEST( deleteTest );
@@ -214,6 +218,89 @@ void OneDriveTest::getRepositoriesTest( )
      CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong repository found",
                                    string ( "OneDrive" ),
                                    actual.front()->getId( ) );
+}
+
+void OneDriveTest::getObjectTypeDocumentTest()
+{
+     curl_mockup_reset( );
+
+     OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+     libcmis::ObjectTypePtr actual = session.getType("cmis:document");
+
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type ID", string("cmis:document"),
+                                   actual->getId() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type queryName",
+                                   string("cmis:document"),
+                                   actual->getQueryName() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent", string(""),
+                                   actual->getParentTypeId() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string("cmis:document"),
+                                   actual->getBaseTypeId() );
+
+     CPPUNIT_ASSERT( actual->getParentType().get() == NULL );
+     CPPUNIT_ASSERT_EQUAL( string( "cmis:document" ),
+                           actual->getBaseType()->getId() );
+
+     CPPUNIT_ASSERT( actual->isCreatable() );
+     CPPUNIT_ASSERT( !actual->isVersionable() );
+     CPPUNIT_ASSERT( actual->isFileable() );
+     CPPUNIT_ASSERT( actual->isQueryable() );
+     CPPUNIT_ASSERT( actual->isFulltextIndexed() );
+     CPPUNIT_ASSERT_EQUAL( libcmis::ObjectType::Allowed,
+                           actual->getContentStreamAllowed() );
+
+     map< string, libcmis::PropertyTypePtr > props = actual->getPropertiesTypes();
+
+     CPPUNIT_ASSERT_MESSAGE( "Missing property cmis:name",
+                             props.find("cmis:name") != props.end() );
+     
+     CPPUNIT_ASSERT_MESSAGE( "Missing property cmis:name",
+                             props.find("cmis:name") != props.end() );
+     CPPUNIT_ASSERT_MESSAGE( "Missing property cmis:contentStreamFileName",
+                             props.find("cmis:contentStreamFileName") != props.end() );
+     CPPUNIT_ASSERT_MESSAGE( "Missing property cmis:contentStreamLength",
+                             props.find("cmis:contentStreamLength") != props.end() );
+}
+
+void OneDriveTest::getObjectTypeFolderTest()
+{
+     curl_mockup_reset( );
+
+     OneDriveSession session = getTestSession( USERNAME, PASSWORD );
+
+     libcmis::ObjectTypePtr actual = session.getType("cmis:folder");
+
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type ID", string("cmis:folder"),
+                                   actual->getId() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type queryName",
+                                   string("cmis:folder"),
+                                   actual->getQueryName() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent", string(""),
+                                   actual->getParentTypeId() );
+     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string("cmis:folder"),
+                                   actual->getBaseTypeId() );
+
+     CPPUNIT_ASSERT( actual->getParentType().get() == NULL );
+     CPPUNIT_ASSERT_EQUAL( string( "cmis:folder" ),
+                           actual->getBaseType()->getId() );
+
+     CPPUNIT_ASSERT( actual->isCreatable() );
+     CPPUNIT_ASSERT( !actual->isVersionable() );
+     CPPUNIT_ASSERT( actual->isFileable() );
+     CPPUNIT_ASSERT( actual->isQueryable() );
+     CPPUNIT_ASSERT( !actual->isFulltextIndexed() );
+     CPPUNIT_ASSERT_EQUAL( libcmis::ObjectType::NotAllowed,
+                           actual->getContentStreamAllowed() );
+
+     map< string, libcmis::PropertyTypePtr > props = actual->getPropertiesTypes();
+
+     CPPUNIT_ASSERT_MESSAGE( "Missing property cmis:name",
+                             props.find("cmis:name") != props.end() );
+     CPPUNIT_ASSERT_MESSAGE( "Property cmis:contentStreamFileName shouldn't be set",
+                             props.find("cmis:contentStreamFileName") == props.end() );
+     CPPUNIT_ASSERT_MESSAGE( "Property cmis:contentStreamLength shouldn't be set",
+                             props.find("cmis:contentStreamLength") == props.end() );
 }
 
 void OneDriveTest::getObjectTest()

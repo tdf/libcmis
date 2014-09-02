@@ -34,13 +34,19 @@ OneDriveObjectType::OneDriveObjectType( const std::string& id ): ObjectType( )
     m_localName = "OneDrive Object Type";
     m_localNamespace = "OneDrive Object Type";
     m_displayName = "OneDrive Object Type";
-    m_queryName = "OneDrive Object Type";
+    m_queryName = id;
     m_description = "OneDrive Object Type";
-    m_parentTypeId = id;
+    m_parentTypeId = "";
     m_baseTypeId = id;
     m_creatable = true;
     m_versionable = false;
-    m_fulltextIndexed = true;
+    m_fileable = true;
+    m_fulltextIndexed = ( id == "cmis:document" );
+    m_queryable = true;
+    if ( id == "cmis:document" )
+        m_contentStreamAllowed = libcmis::ObjectType::Allowed;
+    else 
+        m_contentStreamAllowed = libcmis::ObjectType::NotAllowed;
 
     libcmis::PropertyTypePtr idType(new libcmis::PropertyType( ) );
     idType->setId( "cmis:objectTypeId" );
@@ -55,13 +61,6 @@ OneDriveObjectType::OneDriveObjectType( const std::string& id ): ObjectType( )
     nameType->setType( libcmis::PropertyType::String );
     nameType->setUpdatable( true );
     m_propertiesTypes[ nameType->getId( ) ] = nameType;
-
-    // streamFileName
-    libcmis::PropertyTypePtr streamFileNameType( new libcmis::PropertyType( ) );
-    streamFileNameType->setId( "cmis:contentStreamFileName" );
-    streamFileNameType->setType( libcmis::PropertyType::String );
-    streamFileNameType->setUpdatable( true );
-    m_propertiesTypes[ streamFileNameType->getId( ) ] = streamFileNameType;
 
     // description
     libcmis::PropertyTypePtr descriptionType( new libcmis::PropertyType( ) );
@@ -84,18 +83,32 @@ OneDriveObjectType::OneDriveObjectType( const std::string& id ): ObjectType( )
     creationDateType->setUpdatable( false );
     m_propertiesTypes[ creationDateType->getId( ) ] = creationDateType;
 
-    // size 
-    libcmis::PropertyTypePtr contentStreamLength( new libcmis::PropertyType( ) );
-    contentStreamLength->setId( "cmis:contentStreamLength" );
-    contentStreamLength->setType( libcmis::PropertyType::Integer );
-    contentStreamLength->setUpdatable( false );
-    m_propertiesTypes[ contentStreamLength->getId( ) ] = contentStreamLength;
+
+    if ( id == "cmis:document" )
+    {
+        // size 
+        libcmis::PropertyTypePtr contentStreamLength( new libcmis::PropertyType( ) );
+        contentStreamLength->setId( "cmis:contentStreamLength" );
+        contentStreamLength->setType( libcmis::PropertyType::Integer );
+        contentStreamLength->setUpdatable( false );
+        m_propertiesTypes[ contentStreamLength->getId( ) ] = contentStreamLength;
+
+        // streamFileName
+        libcmis::PropertyTypePtr streamFileNameType( new libcmis::PropertyType( ) );
+        streamFileNameType->setId( "cmis:contentStreamFileName" );
+        streamFileNameType->setType( libcmis::PropertyType::String );
+        streamFileNameType->setUpdatable( true );
+        m_propertiesTypes[ streamFileNameType->getId( ) ] = streamFileNameType;
+    }
 }
 
 libcmis::ObjectTypePtr OneDriveObjectType::getParentType( )
                                             throw( libcmis::Exception )
 {
-    libcmis::ObjectTypePtr parentTypePtr( new OneDriveObjectType( m_parentTypeId ) );
+    libcmis::ObjectTypePtr parentTypePtr;
+    if ( m_parentTypeId != "" ) {
+        parentTypePtr.reset( new OneDriveObjectType( m_parentTypeId ) );
+    }
     return parentTypePtr;
 }
 
