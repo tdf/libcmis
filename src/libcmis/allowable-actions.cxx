@@ -186,6 +186,7 @@ namespace libcmis
         return it != m_states.end();
     }
 
+    // LCOV_EXCL_START
     string AllowableActions::toString( )
     {
         stringstream buf;
@@ -288,4 +289,5 @@ namespace libcmis
 
         return buf.str( );
     }
+    // LCOV_EXCL_STOP
 }

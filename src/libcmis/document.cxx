@@ -78,6 +78,7 @@ namespace libcmis
         return contentLength;
     }
 
+    // LCOV_EXCL_START
     string Document::toString( )
     {
         stringstream buf;
@@ -101,4 +102,5 @@ namespace libcmis
 
         return buf.str();
     }
+    // LCOV_EXCL_STOP
 }

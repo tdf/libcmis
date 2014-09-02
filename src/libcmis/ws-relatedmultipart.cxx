@@ -45,6 +45,7 @@ RelatedPart::RelatedPart( string& name, string& type, string& content ) :
 {
 }
 
+// LCOV_EXCL_START
 string RelatedPart::toString( string cid )
 {
     string buf;
@@ -56,6 +57,7 @@ string RelatedPart::toString( string cid )
 
     return buf;
 }
+// LCOV_EXCL_STOP
 
 RelatedMultipart::RelatedMultipart( ) :
     m_startId( ),

@@ -132,6 +132,7 @@ namespace libcmis
        return result;
    }
 
+    // LCOV_EXCL_START
     string Repository::toString( ) const
     {
         stringstream buf;
@@ -178,6 +179,7 @@ namespace libcmis
 
         return buf.str();
     }
+    // LCOV_EXCL_STOP
 
     map< Repository::Capability, string > Repository::parseCapabilities( xmlNodePtr node )
     {

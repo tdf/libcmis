@@ -66,6 +66,7 @@ namespace libcmis
         return getParentId( ).empty( );
     }
 
+    // LCOV_EXCL_START
     string Folder::toString( )
     {
         stringstream buf;
@@ -86,4 +87,5 @@ namespace libcmis
 
         return buf.str();
     }
+    // LCOV_EXCL_STOP
 }

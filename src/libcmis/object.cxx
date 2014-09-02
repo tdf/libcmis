@@ -326,6 +326,7 @@ namespace libcmis
         return url;
     }
 
+    // LCOV_EXCL_START
     string Object::toString( )
     {
         stringstream buf;
@@ -391,6 +392,7 @@ namespace libcmis
 
         return buf.str();
     }
+    // LCOV_EXCL_STOP
 
     void Object::toXml( xmlTextWriterPtr writer )
     {

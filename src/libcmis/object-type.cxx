@@ -219,6 +219,7 @@ namespace libcmis
         return empty;
     }
 
+    // LCOV_EXCL_START
     string ObjectType::toString( )
     {
         stringstream buf;
@@ -268,4 +269,5 @@ namespace libcmis
 
         return buf.str();
     }
+    // LCOV_EXCL_STOP
 }
