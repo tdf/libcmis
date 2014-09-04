@@ -65,18 +65,18 @@ namespace libcmis
             
             bool isThumbnail( ) { return m_kind == "cmis:thumbnail"; }
 
-            std::string getStreamId( ) const { return m_streamId; }
-            std::string getMimeType( ) const { return m_mimeType; }
-            std::string getKind( ) const { return m_kind; }
-            std::string getUrl( ) const { return m_href; }
-            std::string getTitle( ) const { return m_title; }
+            const std::string& getStreamId( ) const { return m_streamId; }
+            const std::string& getMimeType( ) const { return m_mimeType; }
+            const std::string& getKind( ) const { return m_kind; }
+            const std::string& getUrl( ) const { return m_href; }
+            const std::string& getTitle( ) const { return m_title; }
 
             /** Provides the stream length in bytes or a negative value if missing.
               */
             long getLength( ) const { return m_length; }
             long getWidth( ) const { return m_width; }
             long getHeight( ) const { return m_height; }
-            std::string getRenditionDocumentId( ) { return m_renditionDocumentId; }
+            const std::string& getRenditionDocumentId( ) { return m_renditionDocumentId; }
 
             std::string toString( );
     };

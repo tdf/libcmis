@@ -62,12 +62,12 @@ namespace libcmis
 
             bool isComplete();
 
-            std::string getAuthUrl() { return m_authUrl; }
-            std::string getTokenUrl() { return m_tokenUrl; }
-            std::string getClientId() { return m_clientId; }
-            std::string getClientSecret() { return m_clientSecret; }
-            std::string getScope() { return m_scope; }
-            std::string getRedirectUri() { return m_redirectUri; }
+            const std::string& getAuthUrl() { return m_authUrl; }
+            const std::string& getTokenUrl() { return m_tokenUrl; }
+            const std::string& getClientId() { return m_clientId; }
+            const std::string& getClientSecret() { return m_clientSecret; }
+            const std::string& getScope() { return m_scope; }
+            const std::string& getRedirectUri() { return m_redirectUri; }
     };
     typedef ::boost::shared_ptr< OAuth2Data > OAuth2DataPtr;
 }
