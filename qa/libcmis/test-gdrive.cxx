@@ -1005,34 +1005,44 @@ void GDriveTest::updatePropertiesTest( )
     curl_mockup_reset( );
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     const string documentId( "aFileId" );
-
     const string documentUrl = BASE_URL + "/files/" + documentId;
-
     curl_mockup_addResponse( documentUrl.c_str( ), "",
                                "GET", DATA_DIR "/gdrive/document.json", 200, true );
     curl_mockup_addResponse( documentUrl.c_str( ), "",
-                               "PUT", DATA_DIR "/gdrive/document.json", 200, true );
+                               "PUT", DATA_DIR "/gdrive/document-updated.json", 200, true );
 
-    libcmis::ObjectPtr document = session.getObject( documentId );
 
-    document->updateProperties( document->getProperties( ) );
+    // Values for the test
+    string propertyName( "cmis:name" );
+    string expectedValue( "New Title" );
+    libcmis::ObjectPtr object = session.getObject( documentId );
 
+    // Fill the map of properties to change
+    PropertyPtrMap newProperties;
+
+    libcmis::ObjectTypePtr objectType = object->getTypeDescription( );
+    map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
+    vector< string > values;
+    values.push_back( expectedValue );
+    libcmis::PropertyPtr property( new libcmis::Property( it->second, values ) );
+    newProperties[ propertyName ] = property;
+
+    // Update the properties (method to test)
+    object->updateProperties( newProperties );
+
+    // Check that the sent request is OK
     const char* updateRequest = curl_mockup_getRequestBody( documentUrl.c_str( ), "", "PUT" );
 
-    // Check if properties keys are properly converted back before sending
+    // Check the sent properties
     Json json = Json::parse( string( updateRequest ) );
-    string id = json["id"].toString( );
-    string createdDate = json["createdDate"].toString( );
-    string title = json["title"].toString( );
-    string mimeType = json["mimeType"].toString( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Only the updated properties should be sent",
+                                  size_t( 1 ), json.getObjects().size( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "title key not present",
+                                  expectedValue, json["title"].toString( ) );
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "id key not converted", documentId, id );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "createdDate key not converted",
-                    string( "2010-04-28T14:53:23.141Z"), createdDate );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "title key not converted",
-                                  string( "GDrive File"), title );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "mimeType key not converted",
-                    string( "application/vnd.google-apps.form"), mimeType );
+    // Check that the object is updated
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Object not updated",
+                                  expectedValue, object->getName() );
 }
 
 void GDriveTest::getRefreshTokenTest( )
