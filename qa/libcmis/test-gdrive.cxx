@@ -66,6 +66,7 @@ class GDriveTest : public CppUnit::TestFixture
         void sessionExpiryTokenPostTest( );
         void sessionExpiryTokenPutTest( );
         void sessionExpiryTokenDeleteTest( );
+        void setRepositoryTest( );
         void getRepositoriesTest( );
         void getTypeTest( );
         void getObjectTest( );
@@ -98,6 +99,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( sessionExpiryTokenPutTest );
         CPPUNIT_TEST( sessionExpiryTokenPostTest );
         CPPUNIT_TEST( sessionExpiryTokenDeleteTest );
+        CPPUNIT_TEST( setRepositoryTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
@@ -367,6 +369,12 @@ void GDriveTest::sessionExpiryTokenPutTest( )
                    session.m_oauth2Handler->getAccessToken( ) );
         }
     }
+}
+
+void GDriveTest::setRepositoryTest( )
+{
+    GDriveSession session;
+    CPPUNIT_ASSERT_MESSAGE( "Should never fail", session.setRepository( "foobar" ) );
 }
 
 void GDriveTest::getDocumentTest( )
@@ -1054,10 +1062,20 @@ void GDriveTest::propertyCopyTest( )
     string value = "some value";
 
     GDriveProperty property( name, Json( value.c_str() ) );
-    GDriveProperty copy = property;
+    {
+        GDriveProperty copy = property;
 
-    CPPUNIT_ASSERT_EQUAL( name, copy.getPropertyType()->getId() );
-    CPPUNIT_ASSERT_EQUAL( value, copy.getStrings()[0] );
+        CPPUNIT_ASSERT_EQUAL( name, copy.getPropertyType()->getId() );
+        CPPUNIT_ASSERT_EQUAL( value, copy.getStrings()[0] );
+    }
+
+    {
+        GDriveProperty copy;
+        copy = property;
+
+        CPPUNIT_ASSERT_EQUAL( name, copy.getPropertyType()->getId() );
+        CPPUNIT_ASSERT_EQUAL( value, copy.getStrings()[0] );
+    }
 }
 
 void GDriveTest::getRefreshTokenTest( )

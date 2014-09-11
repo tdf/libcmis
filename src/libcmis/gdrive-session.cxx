@@ -77,6 +77,11 @@ libcmis::RepositoryPtr GDriveSession::getRepository( )
     return repo;
 }
 
+bool GDriveSession::setRepository( std::string )
+{
+    return true;
+}
+
 libcmis::ObjectPtr GDriveSession::getObject( string objectId )
     throw ( libcmis::Exception )
 {

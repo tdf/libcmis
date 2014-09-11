@@ -35,7 +35,7 @@ class GDriveSession : public BaseSession
 {
     public:
         GDriveSession( std::string baseUrl,
-                       std::string username, 
+                       std::string username,
                        std::string password,
                        libcmis::OAuth2DataPtr oauth2,
                        bool verbose = false )
@@ -45,20 +45,20 @@ class GDriveSession : public BaseSession
 
         ~GDriveSession ( );
 
-        virtual libcmis::RepositoryPtr getRepository( ) 
+        virtual libcmis::RepositoryPtr getRepository( )
             throw ( libcmis::Exception );
 
-        virtual bool setRepository( std::string ) { return true; }
+        virtual bool setRepository( std::string );
 
-        virtual libcmis::ObjectPtr getObject( std::string id ) 
+        virtual libcmis::ObjectPtr getObject( std::string id )
             throw ( libcmis::Exception );
 
-        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) 
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path )
             throw ( libcmis::Exception );
 
-        virtual libcmis::ObjectTypePtr getType( std::string id )             
+        virtual libcmis::ObjectTypePtr getType( std::string id )
             throw ( libcmis::Exception );
-        
+
         virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( )
             throw ( libcmis::Exception );
 
