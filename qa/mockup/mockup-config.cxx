@@ -169,8 +169,12 @@ namespace mockup
             if ( isFilePath )
             {
                 FILE* fd = fopen( response.c_str( ), "r" );
-                if ( !fd )
+                if ( !fd ) {
                     cerr  << "Missing test file: " << response << endl;
+                    handle->m_httpError = 500;
+                    return CURLE_HTTP_RETURNED_ERROR;
+                }
+
 
                 size_t bufSize = 2048;
                 char* buf = new char[bufSize];
