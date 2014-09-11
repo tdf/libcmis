@@ -392,6 +392,7 @@ void GDriveTest::getDocumentTest( )
                                   string( "application/vnd.google-apps.form" ),
                                   document->getContentType( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:document" ), document->getBaseType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type", string( "cmis:document" ), document->getType( ) );
 
     CPPUNIT_ASSERT_MESSAGE( "CreatedBy is missing", !document->getCreatedBy( ).empty( ) );
     CPPUNIT_ASSERT_MESSAGE( "CreationDate is missing", !document->getCreationDate( ).is_not_a_date_time() );
@@ -424,6 +425,7 @@ void GDriveTest::getFolderTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", folderId, folder->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "testFolder" ), folder->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), folder->getBaseType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong type", string( "cmis:folder" ), folder->getType( ) );
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", folder->getFolderParent( ).get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !folder->isRootFolder() );
 

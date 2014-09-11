@@ -492,6 +492,10 @@ void AtomTest::getFolderTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", expectedId, actual->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "Valid Object" ), actual->getName( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder path", string( "/Valid Object" ), actual->getPath( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder paths",
+                                  string( "/Valid Object" ), actual->getPaths( )[0] );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Folder should have only one path",
+                                  size_t(1), actual->getPaths( ).size() );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong base type", string( "cmis:folder" ), actual->getBaseType( ) );
     CPPUNIT_ASSERT_MESSAGE( "Missing folder parent", actual->getFolderParent( ).get( ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a root folder", !actual->isRootFolder() );
