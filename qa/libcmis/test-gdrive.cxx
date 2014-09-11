@@ -38,6 +38,7 @@
 #include <mockup-config.h>
 
 #include "gdrive-session.hxx"
+#include "gdrive-property.hxx"
 #include "oauth2-handler.hxx"
 #include "gdrive-object.hxx"
 #include "document.hxx"
@@ -84,6 +85,7 @@ class GDriveTest : public CppUnit::TestFixture
         void createDocumentTest( );
         void createFolderTest( );
         void updatePropertiesTest( );
+        void propertyCopyTest( );
         void removeTreeTest( );
         void getContentStreamWithRenditionsTest( );
         void getRefreshTokenTest( );
@@ -115,6 +117,7 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( createFolderTest );
         CPPUNIT_TEST( updatePropertiesTest );
+        CPPUNIT_TEST( propertyCopyTest );
         CPPUNIT_TEST( removeTreeTest );
         CPPUNIT_TEST( getContentStreamWithRenditionsTest );
         CPPUNIT_TEST( getRefreshTokenTest );
@@ -1043,6 +1046,18 @@ void GDriveTest::updatePropertiesTest( )
     // Check that the object is updated
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Object not updated",
                                   expectedValue, object->getName() );
+}
+
+void GDriveTest::propertyCopyTest( )
+{
+    string name = "cmis:name";
+    string value = "some value";
+
+    GDriveProperty property( name, Json( value.c_str() ) );
+    GDriveProperty copy = property;
+
+    CPPUNIT_ASSERT_EQUAL( name, copy.getPropertyType()->getId() );
+    CPPUNIT_ASSERT_EQUAL( value, copy.getStrings()[0] );
 }
 
 void GDriveTest::getRefreshTokenTest( )
