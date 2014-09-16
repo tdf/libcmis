@@ -375,6 +375,7 @@ void SharePointTest::checkOutTest( )
     static const string objectId ( "http://base/_api/Web/aFileId" );
     static const string authorUrl = objectId + "/Author";
     static const string checkOutUrl = objectId + "/checkout";
+    static const string cancelCheckOutUrl = objectId + "/undocheckout";
 
     SharePointSession session = getTestSession( USERNAME, PASSWORD );
     curl_mockup_addResponse( objectId.c_str( ), "",
@@ -383,12 +384,18 @@ void SharePointTest::checkOutTest( )
                               "GET", DATA_DIR "/sharepoint/author.json", 200, true );
     curl_mockup_addResponse( checkOutUrl.c_str( ), "",
                              "POST", DATA_DIR "/sharepoint/file.json", 200, true );
+    curl_mockup_addResponse( cancelCheckOutUrl.c_str( ), "",
+                             "POST", DATA_DIR "/sharepoint/file.json", 200, true );
 
     libcmis::ObjectPtr object = session.getObject( objectId );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     libcmis::DocumentPtr checkedOutDocument = document->checkOut( );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedOut document", objectId, document->getId( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong checkedOut document",
+                                   objectId,
+                                   checkedOutDocument->getId( ) );
+
+    checkedOutDocument->cancelCheckout( );
 }
 
 void SharePointTest::checkInTest( )
