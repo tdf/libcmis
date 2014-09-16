@@ -518,8 +518,15 @@ void SharePointTest::getChildrenTest( )
     {
         if ( NULL != boost::dynamic_pointer_cast< libcmis::Folder >( *it ) )
             ++folderCount;
-        else
+        else {
             ++fileCount;
+            libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( *it );
+            vector< libcmis::FolderPtr > parents= document->getParents( );
+
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad number of parents", size_t( 1 ), parents.size() );
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong parent Id", folderId, parents[0]->getId( ) );
+        }
+
     }
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of folder children", 1, folderCount );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of file children", 1, fileCount );
