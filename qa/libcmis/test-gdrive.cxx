@@ -70,6 +70,9 @@ class GDriveTest : public CppUnit::TestFixture
         void getRepositoriesTest( );
         void getTypeTest( );
         void getObjectTest( );
+        void getObjectByPathRootTest( );
+        void getObjectByPathTest( );
+        void getObjectByPathMissingTest( );
         void getDocumentTest( );
         void getFolderTest( );
         void getDocumentParentsTest( );
@@ -103,6 +106,9 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getTypeTest );
         CPPUNIT_TEST( getObjectTest );
+        CPPUNIT_TEST( getObjectByPathRootTest );
+        CPPUNIT_TEST( getObjectByPathTest );
+        CPPUNIT_TEST( getObjectByPathMissingTest );
         CPPUNIT_TEST( getDocumentTest );
         CPPUNIT_TEST( getFolderTest );
         CPPUNIT_TEST( getDocumentParentsTest );
@@ -683,6 +689,59 @@ void GDriveTest::getObjectTest()
                                             <GDriveObject>(object);
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id", objectId,
                                                      obj->getId( ) );
+}
+
+void GDriveTest::getObjectByPathRootTest()
+{
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string rootUrl = BASE_URL + "/files/root";
+    curl_mockup_addResponse ( rootUrl.c_str( ), "",
+                              "GET", DATA_DIR "/gdrive/folder.json", 200, true);
+
+    libcmis::ObjectPtr object = session.getObjectByPath( "/" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object Id",
+                                  string("testFolder"), object->getName( ) );
+}
+
+void GDriveTest::getObjectByPathTest()
+{
+    // Mockup setup
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string rootChildUrl = BASE_URL + "/files/root/children/";
+    curl_mockup_addResponse ( rootChildUrl.c_str( ), "q=title+=+'GDrive File'",
+                              "GET", DATA_DIR "/gdrive/root_child_search.json", 200, true );
+
+    string urlRootChildDoc = BASE_URL + "/files/aRootChildId2";
+    curl_mockup_addResponse( urlRootChildDoc.c_str( ), "",
+                             "GET", DATA_DIR "/gdrive/document.json", 200, true );
+
+    // Tested method
+    libcmis::ObjectPtr object = session.getObjectByPath( "/GDrive File" );
+
+    // Check the result
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Object",
+                                  string("GDrive File"), object->getName( ) );
+}
+
+void GDriveTest::getObjectByPathMissingTest()
+{
+    // Mockup setup
+    GDriveSession session = getTestSession( USERNAME, PASSWORD );
+    string rootChildUrl = BASE_URL + "/files/root/children/";
+    curl_mockup_addResponse ( rootChildUrl.c_str( ), "q=title+=+'GDrive File'",
+                              "GET", DATA_DIR "/gdrive/root_child_missing.json", 200, true );
+
+    // Tested method
+    try
+    {
+        libcmis::ObjectPtr object = session.getObjectByPath( "/GDrive File" );
+        CPPUNIT_FAIL( "objectNotFound exception expected" );
+    }
+    catch ( libcmis::Exception& e )
+    {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Bad exception type",
+                                     string( "objectNotFound" ), e.getType( ) );
+    }
 }
 
 void GDriveTest::getDocumentAllowableActionsTest( )

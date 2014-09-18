@@ -125,11 +125,60 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
 libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
     throw ( libcmis::Exception )
 {
-    // Google Drive doesn't support get Object by path.
-    // The path here serve as an object ID.
-    if ( path == "/" )
-        path = "root";
-    return getObject( path );
+    size_t pos = 0;
+    size_t endpos = 0;
+    string objectId;
+    libcmis::ObjectPtr object;
+
+    do
+    {
+        endpos = path.find( "/", pos );
+        size_t len = path.length( ) - pos;
+        if ( endpos != string::npos )
+            len = endpos - pos;
+
+        string segment = path.substr( pos, len );
+        if ( segment.empty( ) )
+        {
+            // Root case or ignore double slashes
+            if ( pos == 0 )
+                objectId = "root";
+            else
+                continue;
+        }
+        else
+        {
+            // Normal child case
+            // Ask for the ID of the child if there is any
+            string childIdUrl = m_bindingUrl + "/files/" + objectId +
+                                "/children/?q=title+=+'" + segment +
+                                "'&fields=items:id";
+
+            string res;
+            try
+            {
+                res = httpGetRequest( childIdUrl )->getStream()->str();
+            }
+            catch ( const CurlException& e )
+            {
+                throw e.getCmisException( );
+            }
+            Json jsonRes = Json::parse( res );
+
+            // Did we get an id?
+            Json::JsonVector items = jsonRes["items"].getList();
+            if ( items.empty( ) )
+                throw libcmis::Exception( "Object not found: " + path, "objectNotFound" );
+
+            objectId = items[0]["id"].toString( );
+            if ( objectId.empty( ) )
+                throw libcmis::Exception( "Object not found: " + path, "objectNotFound" );
+        }
+
+        pos = endpos + 1;
+    } while ( endpos != string::npos );
+
+    return getObject( objectId );
 }
 
 libcmis::ObjectTypePtr GDriveSession::getType( string id )
