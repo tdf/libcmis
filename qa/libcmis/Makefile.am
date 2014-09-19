@@ -16,6 +16,7 @@ check_PROGRAMS = \
 	${mockup_tests}
 
 test_utils_SOURCES =	\
+	test-commons.cxx \
 	test-decoder.cxx \
 	test-soap.cxx \
 	test-xmlutils.cxx \
