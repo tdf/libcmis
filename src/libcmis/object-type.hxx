@@ -95,14 +95,14 @@ namespace libcmis
                     do nothing
              */
             virtual void refresh( ) throw ( Exception );
-            virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
+            virtual time_t getRefreshTimestamp( ) const;
 
-            std::string getId( ) { return m_id; }
-            std::string getLocalName( ) { return m_localName; }
-            std::string getLocalNamespace( ) { return m_localNamespace; }
-            std::string getDisplayName( ) { return m_displayName; }
-            std::string getQueryName( ) { return m_queryName; }
-            std::string getDescription( ) { return m_description; }
+            std::string getId( ) const;
+            std::string getLocalName( ) const;
+            std::string getLocalNamespace( ) const;
+            std::string getDisplayName( ) const;
+            std::string getQueryName( ) const;
+            std::string getDescription( ) const;
 
             virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception );
             virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception );
@@ -113,26 +113,26 @@ namespace libcmis
 
                 \since libcmis 0.4
               */
-            std::string getParentTypeId( ) { return m_parentTypeId; }
+            std::string getParentTypeId( ) const;
 
             /** Get the base type id without extracting the complete base type from
                 the repository. This is mainly provided for performance reasons.
 
                 \since libcmis 0.4
               */
-            std::string getBaseTypeId( ) { return m_baseTypeId; }
+            std::string getBaseTypeId( ) const;
 
-            bool isCreatable( ) { return m_creatable; }
-            bool isFileable( ) { return m_fileable; }
-            bool isQueryable( ) { return m_queryable; }
-            bool isFulltextIndexed( ) { return m_fulltextIndexed; }
-            bool isIncludedInSupertypeQuery( ) { return m_includedInSupertypeQuery; }
-            bool isControllablePolicy( ) { return m_controllablePolicy; }
-            bool isControllableACL( ) { return m_controllableAcl; }
-            bool isVersionable( ) { return m_versionable; }
-            ContentStreamAllowed getContentStreamAllowed( ) { return m_contentStreamAllowed; }
+            bool isCreatable( ) const;
+            bool isFileable( ) const;
+            bool isQueryable( ) const;
+            bool isFulltextIndexed( ) const;
+            bool isIncludedInSupertypeQuery( ) const;
+            bool isControllablePolicy( ) const;
+            bool isControllableACL( ) const;
+            bool isVersionable( ) const;
+            ContentStreamAllowed getContentStreamAllowed( ) const;
 
-            std::map< std::string, PropertyTypePtr >& getPropertiesTypes( ) { return m_propertiesTypes; }
+            std::map< std::string, PropertyTypePtr >& getPropertiesTypes( );
 
             virtual std::string toString( );
     };

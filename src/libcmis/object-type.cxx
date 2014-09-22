@@ -131,6 +131,102 @@ namespace libcmis
         return *this;
     }
 
+    time_t ObjectType::getRefreshTimestamp( ) const
+    {
+        return m_refreshTimestamp;
+    }
+
+    string ObjectType::getId( ) const
+    {
+        return m_id;
+    }
+
+    string ObjectType::getLocalName( ) const
+    {
+        return m_localName;
+    }
+
+    string ObjectType::getLocalNamespace( ) const
+    {
+        return m_localNamespace;
+    }
+
+    string ObjectType::getDisplayName( ) const
+    {
+        return m_displayName;
+    }
+
+    string ObjectType::getQueryName( ) const
+    {
+        return m_queryName;
+    }
+
+    string ObjectType::getDescription( ) const
+    {
+        return m_description;
+    }
+
+    string ObjectType::getParentTypeId( ) const
+    {
+         return m_parentTypeId;
+    }
+
+    string ObjectType::getBaseTypeId( ) const
+    {
+         return m_baseTypeId;
+    }
+
+    bool ObjectType::isCreatable( ) const
+    {
+         return m_creatable;
+    }
+
+    bool ObjectType::isFileable( ) const
+    {
+         return m_fileable;
+    }
+
+    bool ObjectType::isQueryable( ) const
+    {
+         return m_queryable;
+    }
+
+    bool ObjectType::isFulltextIndexed( ) const
+    {
+         return m_fulltextIndexed;
+    }
+
+    bool ObjectType::isIncludedInSupertypeQuery( ) const
+    {
+         return m_includedInSupertypeQuery;
+    }
+
+    bool ObjectType::isControllablePolicy( ) const
+    {
+         return m_controllablePolicy;
+    }
+
+    bool ObjectType::isControllableACL( ) const
+    {
+         return m_controllableAcl;
+    }
+
+    bool ObjectType::isVersionable( ) const
+    {
+         return m_versionable;
+    }
+
+    ObjectType::ContentStreamAllowed ObjectType::getContentStreamAllowed( ) const
+    {
+         return m_contentStreamAllowed;
+    }
+
+    map< string, PropertyTypePtr >& ObjectType::getPropertiesTypes( )
+    {
+         return m_propertiesTypes;
+    }
+
+
     void ObjectType::initializeFromNode( xmlNodePtr typeNode )
     {
         if ( typeNode != NULL )
@@ -141,7 +237,7 @@ namespace libcmis
                 if ( content != NULL )
                 {
                     string value( ( const char * ) content, xmlStrlen( content ) );
-                    
+
                     if ( xmlStrEqual( child->name, BAD_CAST( "id" ) ) )
                         m_id = value;
                     else if ( xmlStrEqual( child->name, BAD_CAST( "localName" ) ) )
@@ -184,7 +280,7 @@ namespace libcmis
 
                         m_contentStreamAllowed = streamAllowed;
                     }
-                    else 
+                    else
                     {
                         libcmis::PropertyTypePtr type( new libcmis::PropertyType( child ) );
                         m_propertiesTypes[ type->getId() ] = type;
@@ -199,31 +295,29 @@ namespace libcmis
 
     void ObjectType::refresh( ) throw ( Exception )
     {
+        throw Exception( "ObjectType::refresh() shouldn't be called" );
     }
 
     ObjectTypePtr  ObjectType::getParentType( ) throw ( Exception )
     {
-        ObjectTypePtr empty;
-        return empty;
+        throw Exception( "ObjectType::getParentType() shouldn't be called" );
     }
 
     ObjectTypePtr  ObjectType::getBaseType( ) throw ( Exception )
     {
-        ObjectTypePtr empty;
-        return empty;
+        throw Exception( "ObjectType::getBaseType() shouldn't be called" );
     }
 
     vector< ObjectTypePtr > ObjectType::getChildren( ) throw ( Exception )
     {
-        vector< ObjectTypePtr > empty;
-        return empty;
+        throw Exception( "ObjectType::getChildren() shouldn't be called" );
     }
 
     // LCOV_EXCL_START
     string ObjectType::toString( )
     {
         stringstream buf;
-        
+
         buf << "Type Description:" << endl << endl;
         buf << "Id: " << getId( ) << endl;
         buf << "Display name: " << getDisplayName( ) << endl;
@@ -263,7 +357,7 @@ namespace libcmis
             if ( propType->isUpdatable( ) )
                 updatable = string( "RW" );
 
-            buf << "    " << updatable << "\t (" << propType->getId( ) << ")\t" 
+            buf << "    " << updatable << "\t (" << propType->getId( ) << ")\t"
                 << propType->getDisplayName( ) << endl;
         }
 

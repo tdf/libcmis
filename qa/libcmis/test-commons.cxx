@@ -53,10 +53,14 @@ class CommonsTest : public CppUnit::TestFixture
         void oauth2HandlerCopyTest();
         void objectTypeCopyTest();
 
+        // Methods that should never be called
+        void objectTypeNocallTest();
+
         CPPUNIT_TEST_SUITE( CommonsTest );
         CPPUNIT_TEST( oauth2DataCopyTest );
         CPPUNIT_TEST( oauth2HandlerCopyTest );
         CPPUNIT_TEST( objectTypeCopyTest );
+        CPPUNIT_TEST( objectTypeNocallTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -79,7 +83,7 @@ void CommonsTest::oauth2DataCopyTest( )
         copy = data;
         assertOAuth2DataEquals( data, copy );
     }
-    
+
     {
         OAuth2Data copy( data );
         assertOAuth2DataEquals( data, copy );
@@ -125,28 +129,26 @@ void CommonsTest::oauth2HandlerCopyTest( )
 
 static void assertObjectTypeEquals( const ObjectType& expected, const ObjectType& actual )
 {
-    CPPUNIT_ASSERT_EQUAL( expected.m_refreshTimestamp, actual.m_refreshTimestamp );
-    CPPUNIT_ASSERT_EQUAL( expected.m_id, actual.m_id );
-    CPPUNIT_ASSERT_EQUAL( expected.m_baseTypeId, actual.m_baseTypeId );
-    CPPUNIT_ASSERT_EQUAL( expected.m_refreshTimestamp, actual.m_refreshTimestamp );
-    CPPUNIT_ASSERT_EQUAL( expected.m_id, actual.m_id );
-    CPPUNIT_ASSERT_EQUAL( expected.m_localName, actual.m_localName );
-    CPPUNIT_ASSERT_EQUAL( expected.m_localNamespace, actual.m_localNamespace );
-    CPPUNIT_ASSERT_EQUAL( expected.m_displayName, actual.m_displayName );
-    CPPUNIT_ASSERT_EQUAL( expected.m_queryName, actual.m_queryName );
-    CPPUNIT_ASSERT_EQUAL( expected.m_description, actual.m_description );
-    CPPUNIT_ASSERT_EQUAL( expected.m_parentTypeId, actual.m_parentTypeId );
-    CPPUNIT_ASSERT_EQUAL( expected.m_baseTypeId, actual.m_baseTypeId );
-    CPPUNIT_ASSERT_EQUAL( expected.m_creatable, actual.m_creatable );
-    CPPUNIT_ASSERT_EQUAL( expected.m_fileable, actual.m_fileable );
-    CPPUNIT_ASSERT_EQUAL( expected.m_queryable, actual.m_queryable );
-    CPPUNIT_ASSERT_EQUAL( expected.m_fulltextIndexed, actual.m_fulltextIndexed );
-    CPPUNIT_ASSERT_EQUAL( expected.m_includedInSupertypeQuery, actual.m_includedInSupertypeQuery );
-    CPPUNIT_ASSERT_EQUAL( expected.m_controllablePolicy, actual.m_controllablePolicy );
-    CPPUNIT_ASSERT_EQUAL( expected.m_controllableAcl, actual.m_controllableAcl );
-    CPPUNIT_ASSERT_EQUAL( expected.m_versionable, actual.m_versionable );
-    CPPUNIT_ASSERT_EQUAL( expected.m_contentStreamAllowed, actual.m_contentStreamAllowed );
-    CPPUNIT_ASSERT_EQUAL( expected.m_propertiesTypes.size(), actual.m_propertiesTypes.size() );
+    CPPUNIT_ASSERT_EQUAL( expected.getRefreshTimestamp(), actual.getRefreshTimestamp() );
+    CPPUNIT_ASSERT_EQUAL( expected.getId(), actual.getId() );
+    CPPUNIT_ASSERT_EQUAL( expected.getLocalName(), actual.getLocalName() );
+    CPPUNIT_ASSERT_EQUAL( expected.getLocalNamespace(), actual.getLocalNamespace() );
+    CPPUNIT_ASSERT_EQUAL( expected.getDisplayName(), actual.getDisplayName() );
+    CPPUNIT_ASSERT_EQUAL( expected.getQueryName(), actual.getQueryName() );
+    CPPUNIT_ASSERT_EQUAL( expected.getDescription(), actual.getDescription() );
+    CPPUNIT_ASSERT_EQUAL( expected.getParentTypeId(), actual.getParentTypeId() );
+    CPPUNIT_ASSERT_EQUAL( expected.getBaseTypeId(), actual.getBaseTypeId() );
+    CPPUNIT_ASSERT_EQUAL( expected.isCreatable(), actual.isCreatable() );
+    CPPUNIT_ASSERT_EQUAL( expected.isFileable(), actual.isFileable() );
+    CPPUNIT_ASSERT_EQUAL( expected.isQueryable(), actual.isQueryable() );
+    CPPUNIT_ASSERT_EQUAL( expected.isFulltextIndexed(), actual.isFulltextIndexed() );
+    CPPUNIT_ASSERT_EQUAL( expected.isIncludedInSupertypeQuery(), actual.isIncludedInSupertypeQuery() );
+    CPPUNIT_ASSERT_EQUAL( expected.isControllablePolicy(), actual.isControllablePolicy() );
+    CPPUNIT_ASSERT_EQUAL( expected.isControllableACL(), actual.isControllableACL() );
+    CPPUNIT_ASSERT_EQUAL( expected.isVersionable(), actual.isVersionable() );
+    CPPUNIT_ASSERT_EQUAL( expected.getContentStreamAllowed(), actual.getContentStreamAllowed() );
+    CPPUNIT_ASSERT_EQUAL( const_cast< ObjectType& >( expected ).getPropertiesTypes().size(),
+                          const_cast< ObjectType& >( actual ).getPropertiesTypes().size() );
 }
 
 void CommonsTest::objectTypeCopyTest( )
@@ -166,6 +168,47 @@ void CommonsTest::objectTypeCopyTest( )
     {
         ObjectType copy ( type );
         assertObjectTypeEquals( type, copy );
+    }
+}
+
+void CommonsTest::objectTypeNocallTest( )
+{
+    ObjectType type;
+
+    try
+    {
+        type.refresh();
+        CPPUNIT_FAIL( "refresh() shouldn't succeed" );
+    }
+    catch ( const Exception& e )
+    {
+    }
+
+    try
+    {
+        type.getParentType();
+        CPPUNIT_FAIL( "getParentType() shouldn't succeed" );
+    }
+    catch ( const Exception& e )
+    {
+    }
+
+    try
+    {
+        type.getBaseType();
+        CPPUNIT_FAIL( "getBaseType() shouldn't succeed" );
+    }
+    catch ( const Exception& e )
+    {
+    }
+
+    try
+    {
+        type.getChildren();
+        CPPUNIT_FAIL( "getChildren() shouldn't succeed" );
+    }
+    catch ( const Exception& e )
+    {
     }
 }
 
