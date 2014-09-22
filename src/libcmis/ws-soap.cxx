@@ -79,10 +79,12 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
 
 }
 
+// LCOV_EXCL_START
 const char* SoapFault::what( ) const throw ( )
 {
     return m_message.c_str( );
 }
+// LCOV_EXCL_STOP
 
 
 SoapResponseFactory::SoapResponseFactory( ) :

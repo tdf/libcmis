@@ -31,6 +31,8 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#define private public
+
 #include "ws-relatedmultipart.hxx"
 #include "ws-requests.hxx"
 #include "ws-soap.hxx"
@@ -46,6 +48,9 @@ class SoapTest : public CppUnit::TestFixture
         map< string, SoapFaultDetailCreator > getTestDetailMapping( );
 
     public:
+
+        // Copy tests
+        void soapResponseFactoryCopyTest();
 
         // Soap Responses tests
 
@@ -70,6 +75,8 @@ class SoapTest : public CppUnit::TestFixture
         void writeCmismStreamTest( );
 
         CPPUNIT_TEST_SUITE( SoapTest );
+        CPPUNIT_TEST( soapResponseFactoryCopyTest );
+
         CPPUNIT_TEST( createResponseTest );
         CPPUNIT_TEST( parseFaultDetailEmptyTest );
         CPPUNIT_TEST( parseFaultDetailUnknownTest );
@@ -140,6 +147,33 @@ map< string, string > SoapTest::getTestNamespaces( )
     map< string, string > namespaces;
     namespaces[ "test" ] = "test-ns-url";
     return namespaces;
+}
+
+void SoapTest::soapResponseFactoryCopyTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    {
+        SoapResponseFactory copy;
+        copy = factory;
+
+        CPPUNIT_ASSERT_EQUAL( factory.m_mapping.size(), copy.m_mapping.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_namespaces.size(), copy.m_namespaces.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_detailMapping.size(), copy.m_detailMapping.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_session, copy.m_session );
+    }
+
+    {
+        SoapResponseFactory copy( factory );
+
+        CPPUNIT_ASSERT_EQUAL( factory.m_mapping.size(), copy.m_mapping.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_namespaces.size(), copy.m_namespaces.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_detailMapping.size(), copy.m_detailMapping.size() );
+        CPPUNIT_ASSERT_EQUAL( factory.m_session, copy.m_session );
+    }
 }
 
 void SoapTest::createResponseTest( )
