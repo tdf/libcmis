@@ -103,6 +103,7 @@ Rendition::~Rendition( )
 {
 }
 
+// LCOV_EXCL_START
 string Rendition::toString( )
 {
     stringstream buf;
@@ -136,5 +137,6 @@ string Rendition::toString( )
 
     return buf.str( );
 }
+// LCOV_EXCL_STOP
 
 }
