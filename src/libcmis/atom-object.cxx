@@ -323,6 +323,7 @@ void AtomObject::extractInfos( xmlDocPtr doc )
     if ( NULL != xpathCtx )
     {
         m_links.clear( );
+        m_renditions.clear( );
 
         // Get all the atom links
         string linksReq( "//atom:link" );

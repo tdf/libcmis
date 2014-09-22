@@ -128,16 +128,6 @@ namespace libcmis
                 }
             }
             xmlXPathFreeObject( xpathObj );
-
-            // Get the renditions
-            xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmis:rendition" ), xpathCtx );
-            if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
-            {
-                xmlNodePtr renditionNode = xpathObj->nodesetval->nodeTab[0];
-                libcmis::RenditionPtr rendition( new libcmis::Rendition( renditionNode ) );
-                m_renditions.push_back( rendition );
-            }
-            xmlXPathFreeObject( xpathObj );
         }
 
         xmlXPathFreeContext( xpathCtx );

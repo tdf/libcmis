@@ -37,7 +37,7 @@ Content-Transfer-Encoding: binary
           <cmis:capabilityPWCSearchable>false</cmis:capabilityPWCSearchable>
           <cmis:capabilityPWCUpdatable>true</cmis:capabilityPWCUpdatable>
           <cmis:capabilityQuery>bothcombined</cmis:capabilityQuery>
-          <cmis:capabilityRenditions>none</cmis:capabilityRenditions>
+          <cmis:capabilityRenditions>read</cmis:capabilityRenditions>
           <cmis:capabilityUnfiling>true</cmis:capabilityUnfiling>
           <cmis:capabilityVersionSpecificFiling>false</cmis:capabilityVersionSpecificFiling>
           <cmis:capabilityJoin>none</cmis:capabilityJoin>

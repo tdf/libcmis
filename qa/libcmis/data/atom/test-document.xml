@@ -124,6 +124,21 @@
       <objectId xmlns:ns0="http://mockup/cmis/extension" ns0:type="DocumentLevel2">test-document</objectId>
       <name>Test Document</name>
     </exampleExtension:exampleExtension>
+    <cmis:rendition>
+      <cmis:streamId>http://mockup/mock/renditions?id=test-document-rendition1</cmis:streamId>
+      <cmis:mimetype>image/png</cmis:mimetype>
+      <cmis:length>40385</cmis:length>
+      <cmis:kind>cmis:thumbnail</cmis:kind>
+      <cmis:title>picture</cmis:title>
+      <cmis:height>100</cmis:height>
+      <cmis:width>100</cmis:width>
+    </cmis:rendition>
+    <cmis:rendition>
+      <cmis:streamId>http://mockup/mock/renditions?id=test-document-rendition2</cmis:streamId>
+      <cmis:mimetype>application/pdf</cmis:mimetype>
+      <cmis:kind>pdf</cmis:kind>
+      <cmis:title>Doc as PDF</cmis:title>
+    </cmis:rendition>
   </cmisra:object>
   <atom:link rel="service" href="http://mockup/mock" type="application/atomsvc+xml"/>
   <atom:link rel="self" href="http://mockup/mock/id?id=test-document" type="application/atom+xml;type=entry" cmisra:id="test-document"/>

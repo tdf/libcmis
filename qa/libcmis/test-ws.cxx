@@ -119,6 +119,7 @@ class WSTest : public CppUnit::TestFixture
         void getChildrenTest( );
         void getContentStreamTest( );
         void setContentStreamTest( );
+        void getRenditionsTest( );
         void updatePropertiesTest( );
         void updatePropertiesEmptyTest( );
         void createFolderTest( );
@@ -151,6 +152,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( getChildrenTest );
         CPPUNIT_TEST( getContentStreamTest );
         CPPUNIT_TEST( setContentStreamTest );
+        CPPUNIT_TEST( getRenditionsTest );
         CPPUNIT_TEST( updatePropertiesTest );
         CPPUNIT_TEST( updatePropertiesEmptyTest );
         CPPUNIT_TEST( createFolderTest );
@@ -654,6 +656,32 @@ void WSTest::setContentStreamTest( )
         msg += e.what();
         CPPUNIT_FAIL( msg.c_str() );
     }
+}
+
+void WSTest::getRenditionsTest( )
+{
+    curl_mockup_reset( );
+    curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
+    test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
+    test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-renditions.http", "<cmism:getRenditions " );
+
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+
+    string expectedId( "test-document" );
+    libcmis::ObjectPtr actual = session.getObject( expectedId );
+
+    std::vector< libcmis::RenditionPtr > renditions = actual->getRenditions( );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad renditions count", size_t( 2 ), renditions.size( ) );
+
+    libcmis::RenditionPtr rendition = renditions[1];
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition mime type", string( "application/pdf" ), rendition->getMimeType( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition stream id", string( "test-document-rendition2" ), rendition->getStreamId() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - default case", long( -1 ), rendition->getLength( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition Title", string( "Doc as PDF" ), rendition->getTitle( ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition kind", string( "pdf" ), rendition->getKind( ) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - filled case", long( 40385 ), renditions[0]->getLength( ) );
 }
 
 void WSTest::updatePropertiesTest( )
@@ -1295,7 +1323,7 @@ libcmis::RepositoryPtr WSTest::getTestRepository()
     capabilities[libcmis::Repository::PWCSearchable] = "false";
     capabilities[libcmis::Repository::PWCUpdatable] = "true";
     capabilities[libcmis::Repository::Query] = "bothcombined";
-    capabilities[libcmis::Repository::Renditions] = "none";
+    capabilities[libcmis::Repository::Renditions] = "read";
     capabilities[libcmis::Repository::Unfiling] = "true";
     capabilities[libcmis::Repository::VersionSpecificFiling] = "false";
     capabilities[libcmis::Repository::Join] = "none";
