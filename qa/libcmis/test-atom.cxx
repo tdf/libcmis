@@ -590,8 +590,11 @@ void AtomTest::getRenditionsTest( )
 
     std::vector< libcmis::RenditionPtr > renditions = actual->getRenditions( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad renditions count", size_t( 2 ), renditions.size( ) );
+    
+    libcmis::RenditionPtr rendition = renditions[0];
+    CPPUNIT_ASSERT( rendition->isThumbnail() );
 
-    libcmis::RenditionPtr rendition = renditions[1];
+    rendition = renditions[1];
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition mime type", string( "application/pdf" ), rendition->getMimeType( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition href", string( "http://mockup/mock/renditions?id=test-document-rendition2" ), rendition->getUrl() );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad rendition length - default case", long( -1 ), rendition->getLength( ) );

@@ -103,6 +103,58 @@ Rendition::~Rendition( )
 {
 }
 
+bool Rendition::isThumbnail( )
+{
+    return m_kind == "cmis:thumbnail";
+}
+
+
+const string& Rendition::getStreamId( ) const
+{
+    return m_streamId;
+}
+
+const string& Rendition::getMimeType( ) const
+{
+    return m_mimeType;
+}
+
+const string& Rendition::getKind( ) const
+{
+    return m_kind;
+}
+
+const string& Rendition::getUrl( ) const
+{
+    return m_href;
+}
+
+const string& Rendition::getTitle( ) const
+{
+    return m_title;
+}
+
+long Rendition::getLength( ) const
+{
+    return m_length;
+}
+
+long Rendition::getWidth( ) const
+{
+    return m_width;
+}
+
+long Rendition::getHeight( ) const
+{
+    return m_height;
+}
+
+const string& Rendition::getRenditionDocumentId( )
+{
+    return m_renditionDocumentId;
+}
+
+
 // LCOV_EXCL_START
 string Rendition::toString( )
 {

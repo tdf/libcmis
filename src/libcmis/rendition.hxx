@@ -63,20 +63,20 @@ namespace libcmis
             Rendition( xmlNodePtr node );
             ~Rendition( );
             
-            bool isThumbnail( ) { return m_kind == "cmis:thumbnail"; }
+            bool isThumbnail( );
 
-            const std::string& getStreamId( ) const { return m_streamId; }
-            const std::string& getMimeType( ) const { return m_mimeType; }
-            const std::string& getKind( ) const { return m_kind; }
-            const std::string& getUrl( ) const { return m_href; }
-            const std::string& getTitle( ) const { return m_title; }
+            const std::string& getStreamId( ) const;
+            const std::string& getMimeType( ) const;
+            const std::string& getKind( ) const;
+            const std::string& getUrl( ) const;
+            const std::string& getTitle( ) const;
 
             /** Provides the stream length in bytes or a negative value if missing.
               */
-            long getLength( ) const { return m_length; }
-            long getWidth( ) const { return m_width; }
-            long getHeight( ) const { return m_height; }
-            const std::string& getRenditionDocumentId( ) { return m_renditionDocumentId; }
+            long getLength( ) const;
+            long getWidth( ) const;
+            long getHeight( ) const;
+            const std::string& getRenditionDocumentId( );
 
             std::string toString( );
     };
