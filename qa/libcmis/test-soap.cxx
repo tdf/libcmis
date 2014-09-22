@@ -55,6 +55,7 @@ class SoapTest : public CppUnit::TestFixture
         void parseFaultDetailValidTest( );
         void createFaultDefaultTest( );
         void parseResponseTest( );
+        void parseResponseXmlTest( );
         void parseResponseFaultTest( );
 
         // RelatedMultipart tests
@@ -74,6 +75,7 @@ class SoapTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parseFaultDetailUnknownTest );
         CPPUNIT_TEST( parseFaultDetailValidTest );
         CPPUNIT_TEST( parseResponseTest );
+        CPPUNIT_TEST( parseResponseXmlTest );
         CPPUNIT_TEST( parseResponseFaultTest );
 
         CPPUNIT_TEST( serializeMultipartSimpleTest );
@@ -214,6 +216,22 @@ void SoapTest::parseResponseTest( )
     multipart.setStart( cid, startInfo );
 
     vector< SoapResponsePtr > actual = factory.parseResponse( multipart );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of responses", size_t( 2 ), actual.size( ) );
+}
+
+void SoapTest::parseResponseXmlTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    string xml = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body>"
+                 "<test:testResponse xmlns:test=\"test-ns-url\"/>"
+                 "<test:testResponse xmlns:test=\"test-ns-url\"/>"
+                 "</S:Body></S:Envelope>";
+
+    vector< SoapResponsePtr > actual = factory.parseResponse( xml );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of responses", size_t( 2 ), actual.size( ) );
 }
 
