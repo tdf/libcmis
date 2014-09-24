@@ -85,17 +85,17 @@ namespace libcmis
             Repository( xmlNodePtr node );
             virtual ~Repository( ) { };
 
-            std::string getId( ) const { return m_id; }
-            std::string getName( ) const { return m_name; }
-            std::string getDescription( ) const { return m_description; }
-            std::string getVendorName( ) const { return m_vendorName; }
-            std::string getProductName( ) const { return m_productName; }
-            std::string getProductVersion( ) const { return m_productVersion; }
-            std::string getRootId( ) const { return m_rootId; }
-            std::string getCmisVersionSupported( ) const { return m_cmisVersionSupported; }
-            boost::shared_ptr< std::string > getThinClientUri( ) const { return m_thinClientUri; }
-            boost::shared_ptr< std::string > getPrincipalAnonymous( ) const { return m_principalAnonymous; }
-            boost::shared_ptr< std::string > getPrincipalAnyone( ) const { return m_principalAnyone; }
+            std::string getId( ) const;
+            std::string getName( ) const;
+            std::string getDescription( ) const;
+            std::string getVendorName( ) const;
+            std::string getProductName( ) const;
+            std::string getProductVersion( ) const;
+            std::string getRootId( ) const;
+            std::string getCmisVersionSupported( ) const;
+            boost::shared_ptr< std::string > getThinClientUri( ) const;
+            boost::shared_ptr< std::string > getPrincipalAnonymous( ) const;
+            boost::shared_ptr< std::string > getPrincipalAnyone( ) const;
 
             std::string getCapability( Capability capability ) const;
 

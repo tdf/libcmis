@@ -68,6 +68,62 @@ namespace libcmis
         initializeFromNode( node );
     }
 
+    string Repository::getId( ) const
+    {
+        return m_id;
+    }
+
+    string Repository::getName( ) const
+    {
+        return m_name;
+    }
+
+    string Repository::getDescription( ) const
+    {
+        return m_description;
+    }
+
+    string Repository::getVendorName( ) const
+    {
+        return m_vendorName;
+    }
+
+    string Repository::getProductName( ) const
+    {
+        return m_productName;
+    }
+
+    string Repository::getProductVersion( ) const
+    {
+        return m_productVersion;
+    }
+
+    string Repository::getRootId( ) const
+    {
+        return m_rootId;
+    }
+
+    string Repository::getCmisVersionSupported( ) const
+    {
+        return m_cmisVersionSupported;
+    }
+
+    boost::shared_ptr< string > Repository::getThinClientUri( ) const
+    {
+        return m_thinClientUri;
+    }
+
+    boost::shared_ptr< string > Repository::getPrincipalAnonymous( ) const
+    {
+        return m_principalAnonymous;
+    }
+
+    boost::shared_ptr< string > Repository::getPrincipalAnyone( ) const
+    {
+        return m_principalAnyone;
+    }
+
+
     void Repository::initializeFromNode( xmlNodePtr node )
     {
         for ( xmlNodePtr child = node->children; child; child = child->next )
@@ -117,7 +173,7 @@ namespace libcmis
 
         return result;
     }
-    
+
     bool Repository::getCapabilityAsBool( Capability capability ) const
    {
        string value = getCapability( capability );
@@ -153,7 +209,7 @@ namespace libcmis
         buf << endl;
         buf << "Capabilities:" << endl;
 
-        static string capabilitiesNames[] = 
+        static string capabilitiesNames[] =
         {
             "ACL",
             "AllVersionsSearchable",
@@ -227,7 +283,7 @@ namespace libcmis
                 capability = Join;
             else
                 ignore = true;
-        
+
             if ( !ignore )
                 capabilities[capability] = value;
         }

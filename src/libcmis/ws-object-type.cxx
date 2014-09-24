@@ -36,6 +36,12 @@ WSObjectType::WSObjectType( WSSession* session, xmlNodePtr node ) :
 {
 }
 
+WSObjectType::WSObjectType( ) :
+    libcmis::ObjectType( ),
+    m_session( NULL )
+{
+}
+
 WSObjectType::WSObjectType( const WSObjectType& copy ) :
     libcmis::ObjectType( copy ),
     m_session( copy.m_session )

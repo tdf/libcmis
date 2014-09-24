@@ -48,6 +48,9 @@ class WSObjectType : public libcmis::ObjectType
         virtual libcmis::ObjectTypePtr getParentType( ) throw ( libcmis::Exception );
         virtual libcmis::ObjectTypePtr getBaseType( ) throw ( libcmis::Exception );
         virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception );
+
+    private:
+        WSObjectType( );
 };
 
 #endif
