@@ -32,6 +32,12 @@
 
 using namespace std;
 
+RepositoryService::RepositoryService( ) :
+    m_session( NULL ),
+    m_url( "" )
+{
+}
+
 RepositoryService::RepositoryService( WSSession* session ) :
     m_session( session ),
     m_url( session->getServiceUrl( "RepositoryService" ) )

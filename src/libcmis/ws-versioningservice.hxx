@@ -58,6 +58,10 @@ class VersioningService
                 std::string fileName, std::string comment ) throw ( libcmis::Exception );
 
         std::vector< libcmis::DocumentPtr > getAllVersions( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
+
+    private:
+
+        VersioningService( );
 };
 
 #endif

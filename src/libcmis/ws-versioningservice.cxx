@@ -33,6 +33,12 @@
 using namespace std;
 using libcmis::PropertyPtrMap;
 
+VersioningService::VersioningService( ) :
+    m_session( NULL ),
+    m_url( "" )
+{
+}
+
 VersioningService::VersioningService( WSSession* session ) :
     m_session( session ),
     m_url( session->getServiceUrl( "VersioningService" ) )

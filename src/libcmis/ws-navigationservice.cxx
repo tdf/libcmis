@@ -32,6 +32,12 @@
 
 using namespace std;
 
+NavigationService::NavigationService( ) :
+    m_session( NULL ),
+    m_url( "" )
+{
+}
+
 NavigationService::NavigationService( WSSession* session ) :
     m_session( session ),
     m_url( session->getServiceUrl( "NavigationService" ) )

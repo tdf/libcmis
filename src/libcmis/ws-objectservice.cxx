@@ -33,6 +33,12 @@
 using namespace std;
 using libcmis::PropertyPtrMap;
 
+ObjectService::ObjectService( ) :
+    m_session( NULL ),
+    m_url( "" )
+{
+}
+
 ObjectService::ObjectService( WSSession* session ) :
     m_session( session ),
     m_url( session->getServiceUrl( "ObjectService" ) )

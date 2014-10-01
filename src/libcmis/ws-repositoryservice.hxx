@@ -62,6 +62,10 @@ class RepositoryService
 
         std::vector< libcmis::ObjectTypePtr > getTypeChildren( std::string repoId, std::string typeId )
             throw ( libcmis::Exception );
+
+    private:
+
+        RepositoryService();
 };
 
 #endif

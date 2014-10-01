@@ -85,6 +85,10 @@ class ObjectService
         libcmis::DocumentPtr createDocument( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId, boost::shared_ptr< std::ostream > stream, std::string contentType,
                 std::string fileName ) throw ( libcmis::Exception );
+
+    private:
+
+        ObjectService( );
 };
 
 #endif

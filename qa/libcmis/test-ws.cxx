@@ -138,6 +138,11 @@ class WSTest : public CppUnit::TestFixture
         void checkInTest( );
         void getAllVersionsTest( );
 
+        void navigationServiceCopyTest();
+        void repositoryServiceCopyTest();
+        void objectServiceCopyTest();
+        void versioningServiceCopyTest();
+
         CPPUNIT_TEST_SUITE( WSTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getRepositoryInfosTest );
@@ -171,6 +176,10 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST( cancelCheckOutTest );
         CPPUNIT_TEST( checkInTest );
         CPPUNIT_TEST( getAllVersionsTest );
+        CPPUNIT_TEST( navigationServiceCopyTest );
+        CPPUNIT_TEST( repositoryServiceCopyTest );
+        CPPUNIT_TEST( objectServiceCopyTest );
+        CPPUNIT_TEST( versioningServiceCopyTest );
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
@@ -1352,6 +1361,82 @@ void WSTest::getAllVersionsTest( )
                                  "<cmism:includeAllowableActions>true</cmism:includeAllowableActions>"
                              "</cmism:getAllVersions>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request sent", expectedRequest, xmlRequest );
+}
+
+void WSTest::navigationServiceCopyTest()
+{
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    NavigationService service( &session );
+
+    {
+        NavigationService copy( service );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+
+    {
+        NavigationService copy;
+        copy = service;
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+}
+
+void WSTest::repositoryServiceCopyTest()
+{
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    RepositoryService service( &session );
+
+    {
+        RepositoryService copy( service );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+
+    {
+        RepositoryService copy;
+        copy = service;
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+}
+
+void WSTest::objectServiceCopyTest()
+{
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    ObjectService service( &session );
+
+    {
+        ObjectService copy( service );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+
+    {
+        ObjectService copy;
+        copy = service;
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+}
+
+void WSTest::versioningServiceCopyTest()
+{
+    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    VersioningService service( &session );
+
+    {
+        VersioningService copy( service );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
+
+    {
+        VersioningService copy;
+        copy = service;
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Session not copied", service.m_session, copy.m_session );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "URL not copied", service.m_url, copy.m_url );
+    }
 }
 
 WSSession WSTest::getTestSession( string username, string password, bool noRepos )
