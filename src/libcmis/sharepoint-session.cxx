@@ -96,6 +96,11 @@ SharePointSession::~SharePointSession()
 {
 }
 
+bool SharePointSession::setRepository( string )
+{
+    return true;
+}
+
 libcmis::RepositoryPtr SharePointSession::getRepository( )
     throw ( libcmis::Exception )
 {

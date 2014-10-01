@@ -52,7 +52,7 @@ class SharePointSession : public BaseSession
         virtual libcmis::RepositoryPtr getRepository( ) 
             throw ( libcmis::Exception );
 
-        virtual bool setRepository( std::string ) { return true; }
+        virtual bool setRepository( std::string );
 
         virtual libcmis::ObjectPtr getObject( std::string id ) 
             throw ( libcmis::Exception );

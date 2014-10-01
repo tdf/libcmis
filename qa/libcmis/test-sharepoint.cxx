@@ -37,6 +37,7 @@
 #include <mockup-config.h>
 
 #include <fstream>
+#include "test-helpers.hxx"
 #include "sharepoint-document.hxx"
 #include "sharepoint-object.hxx"
 #include "sharepoint-property.hxx"
@@ -53,6 +54,7 @@ static const string CONTEXTINFO_URL( "http://base/_api/contextinfo" );
 class SharePointTest : public CppUnit::TestFixture
 {
     public:
+        void setRepositoryTest( );
         void getRepositoriesTest( );
         void getObjectTest( );
         void propertiesTest( );
@@ -72,8 +74,13 @@ class SharePointTest : public CppUnit::TestFixture
         void createDocumentTest( );
         void moveTest( );
         void getObjectByPathTest( );
+
+        void sessionCopyTest( );
+        void propertyCopyTest( );
+        void objectCopyTest( );
        
         CPPUNIT_TEST_SUITE( SharePointTest );
+        CPPUNIT_TEST( setRepositoryTest );
         CPPUNIT_TEST( getRepositoriesTest );
         CPPUNIT_TEST( getObjectTest );
         CPPUNIT_TEST( propertiesTest );
@@ -93,6 +100,9 @@ class SharePointTest : public CppUnit::TestFixture
         CPPUNIT_TEST( createDocumentTest );
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST( getObjectByPathTest );
+        CPPUNIT_TEST( sessionCopyTest );
+        CPPUNIT_TEST( propertyCopyTest );
+        CPPUNIT_TEST( objectCopyTest );
         CPPUNIT_TEST_SUITE_END( );
 
     private:
@@ -109,6 +119,14 @@ SharePointSession SharePointTest::getTestSession( string username, string passwo
                              DATA_DIR "/sharepoint/xdigest.json", 200, true );
 
     return SharePointSession( BASE_URL, username, password, false );
+}
+
+void SharePointTest::setRepositoryTest( )
+{
+     curl_mockup_reset( );
+
+     SharePointSession session = getTestSession( USERNAME, PASSWORD );
+     CPPUNIT_ASSERT_MESSAGE( "setRepository should never fail", session.setRepository( "Anything" ));
 }
 
 void SharePointTest::getRepositoriesTest( )
@@ -654,6 +672,67 @@ void SharePointTest::getObjectByPathTest( )
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
     CPPUNIT_ASSERT_MESSAGE( "Fetched object should be an instance of libcmis::DocumentPtr",
             NULL != document );
+}
+
+void SharePointTest::sessionCopyTest( )
+{
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    {
+        SharePointSession copy;
+        copy = session;
+        CPPUNIT_ASSERT_EQUAL( session.m_bindingUrl, copy.m_bindingUrl );
+        CPPUNIT_ASSERT_EQUAL( session.m_digestCode, copy.m_digestCode );
+    }
+
+    {
+        SharePointSession copy( session );
+        CPPUNIT_ASSERT_EQUAL( session.m_bindingUrl, copy.m_bindingUrl );
+        CPPUNIT_ASSERT_EQUAL( session.m_digestCode, copy.m_digestCode );
+    }
+}
+
+void SharePointTest::propertyCopyTest( )
+{
+    SharePointProperty property("Author", 
+                  "\"__deferred\":{"
+                  "     \"uri\":\"http://base/_api/Web/aFileId/Author\""
+                  "}");
+
+    {
+        SharePointProperty copy;
+        copy = property;
+
+        CPPUNIT_ASSERT_EQUAL( property.m_propertyType->m_id, copy.m_propertyType->m_id );
+        CPPUNIT_ASSERT_EQUAL( property.m_strValues[0], copy.m_strValues[0]);
+    }
+
+    {
+        SharePointProperty copy( property );
+
+        CPPUNIT_ASSERT_EQUAL( property.m_propertyType->m_id, copy.m_propertyType->m_id );
+        CPPUNIT_ASSERT_EQUAL( property.m_strValues[0], copy.m_strValues[0]);
+    }
+}
+
+void SharePointTest::objectCopyTest( )
+{
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+
+    string json;
+    test::loadFromFile( DATA_DIR "/sharepoint/file.json" , json );
+    SharePointObject object( &session, Json( json.c_str() ), "parentId", "Name" );
+
+    {
+        SharePointObject copy( object );
+        CPPUNIT_ASSERT_EQUAL( object.m_refreshTimestamp, copy.m_refreshTimestamp );
+    }
+
+    {
+        SharePointObject copy( &session );
+        copy = object;
+        CPPUNIT_ASSERT_EQUAL( object.m_refreshTimestamp, copy.m_refreshTimestamp );
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SharePointTest );
