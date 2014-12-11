@@ -717,21 +717,26 @@ void SharePointTest::propertyCopyTest( )
 
 void SharePointTest::objectCopyTest( )
 {
-    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    static const string objectId ( "http://base/_api/Web/aFileId" );
 
-    string json;
-    test::loadFromFile( DATA_DIR "/sharepoint/file.json" , json );
-    SharePointObject object( &session, Json( json.c_str() ), "parentId", "Name" );
+    SharePointSession session = getTestSession( USERNAME, PASSWORD );
+    string authorUrl = objectId + "/Author";
+    curl_mockup_addResponse ( objectId.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/file.json", 200, true);
+    curl_mockup_addResponse ( authorUrl.c_str( ), "",
+                              "GET", DATA_DIR "/sharepoint/author.json", 200, true);
+
+    boost::shared_ptr< SharePointObject > object = boost::dynamic_pointer_cast< SharePointObject >(session.getObject( objectId ) );
 
     {
-        SharePointObject copy( object );
-        CPPUNIT_ASSERT_EQUAL( object.m_refreshTimestamp, copy.m_refreshTimestamp );
+        SharePointObject copy( *object );
+        CPPUNIT_ASSERT_EQUAL( object->m_refreshTimestamp, copy.m_refreshTimestamp );
     }
 
     {
         SharePointObject copy( &session );
-        copy = object;
-        CPPUNIT_ASSERT_EQUAL( object.m_refreshTimestamp, copy.m_refreshTimestamp );
+        copy = *object;
+        CPPUNIT_ASSERT_EQUAL( object->m_refreshTimestamp, copy.m_refreshTimestamp );
     }
 }
 
