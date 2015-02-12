@@ -164,6 +164,7 @@ AS_IF([test "x$enable_tests" != "xno"], [
 # Check for boost
 m4_pattern_allow([^BOOST_])
 
+BOOST_REQUIRE([1.36])
 BOOST_DATE_TIME
 BOOST_SMART_PTR
 BOOST_UUID
