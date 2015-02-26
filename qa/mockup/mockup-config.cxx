@@ -49,7 +49,7 @@ namespace
         }
     }
 
-    const char** lcl_toStringArray( vector< string > vect )
+    const char** lcl_toStringArray( const vector< string >& vect )
     {
         const char** array = new const char*[vect.size() + 1];
         for ( size_t i = 0; i < vect.size( ); i++ )
