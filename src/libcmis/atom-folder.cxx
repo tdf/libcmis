@@ -170,7 +170,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_FOLDER );
     xmlFreeDoc( doc );
 
     libcmis::FolderPtr newFolder = boost::dynamic_pointer_cast< libcmis::Folder >( created );
@@ -244,7 +244,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& propertie
             throw libcmis::Exception( "Missing expected response from server" );
     }
 
-    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_DOCUMENT );
     xmlFreeDoc( doc );
 
     libcmis::DocumentPtr newDocument = boost::dynamic_pointer_cast< libcmis::Document >( created );

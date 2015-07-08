@@ -201,7 +201,7 @@ bool AtomPubSession::setRepository( string repositoryId )
     return found;
 }
 
-libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
+libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc, ResultObjectType res )
 {
     libcmis::ObjectPtr cmisObject;
 
@@ -222,11 +222,11 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc )
                 string baseType = libcmis::getXPathValue( xpathCtx, baseTypeReq );
 
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
-                if ( baseType == "cmis:folder" )
+                if ( res == RESULT_FOLDER || baseType == "cmis:folder" )
                 {
                     cmisObject.reset( new AtomFolder( this, node ) );
                 }
-                else if ( baseType == "cmis:document" )
+                else if ( res == RESULT_DOCUMENT || baseType == "cmis:document" )
                 {
                     cmisObject.reset( new AtomDocument( this, node ) );
                 }

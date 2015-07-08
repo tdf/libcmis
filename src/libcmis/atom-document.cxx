@@ -280,7 +280,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     if ( NULL == doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_DOCUMENT );
     xmlFreeDoc( doc );
 
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( created );
@@ -377,7 +377,7 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
         throw libcmis::Exception( "Failed to parse object infos" );
 
 
-    libcmis::ObjectPtr newVersion = getSession( )->createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr newVersion = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_DOCUMENT );
 
     if ( newVersion->getId( ) == getId( ) )
         refreshImpl( doc );

@@ -37,6 +37,7 @@ class AtomPubSession : public BaseSession
         AtomRepositoryPtr m_repository;
 
     public:
+        enum ResultObjectType { RESULT_DYNAMIC, RESULT_FOLDER, RESULT_DOCUMENT };
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         std::string username, std::string password, bool noSslCheck = false,
                         libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
@@ -58,7 +59,7 @@ class AtomPubSession : public BaseSession
 
         // Utility methods
 
-        libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc );
+        libcmis::ObjectPtr createObjectFromEntryDoc( xmlDocPtr doc, ResultObjectType res=RESULT_DYNAMIC );
 
         std::vector< libcmis::ObjectTypePtr > getChildrenTypes( std::string url )
             throw ( libcmis::Exception );
