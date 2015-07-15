@@ -522,7 +522,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
         headers_slist = curl_slist_append( headers_slist,
                                            m_oauth2Handler->getHttpHeader( ).c_str( ) );
     }
-    else if ( !getUsername().empty() && !getPassword().empty() )
+    else if ( !getUsername().empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
 #if LIBCURL_VERSION_VALUE >= 0x071301
