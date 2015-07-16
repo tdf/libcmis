@@ -905,7 +905,8 @@ void AtomTest::createFolderTest( )
 void AtomTest::createFolderBadTypeTest( )
 {
     curl_mockup_reset( );
-    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "POST", DATA_DIR "/atom/create-folder-bad-type.xml" );
+    curl_mockup_addResponse( "http://mockup/mock/children", "id=root-folder", "POST",
+                             "Not a cmis:folder derived type", 409, false );
     curl_mockup_addResponse( "http://mockup/mock/id", "id=root-folder", "GET", DATA_DIR "/atom/root-folder.xml" );
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", DATA_DIR "/atom/type-document.xml" );
@@ -944,8 +945,6 @@ void AtomTest::createFolderBadTypeTest( )
     catch ( libcmis::Exception& e )
     {
         CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong error type", string( "constraint" ), e.getType() );
-        CPPUNIT_ASSERT_MESSAGE( "Bad exception message",
-                string( e.what( ) ).find( "Created object is not a folder: " ) != string::npos );
     }
 
     // Check that the proper request has been sent

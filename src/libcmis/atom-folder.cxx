@@ -162,6 +162,10 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
     }
     catch ( const CurlException& e )
     {
+        /* 409 here is more likely to be a constraint error */
+        if ( e.getHttpStatus() == 409 ) {
+            throw libcmis::Exception( e.what(), "constraint" );
+        }
         throw e.getCmisException( );
     }
 
