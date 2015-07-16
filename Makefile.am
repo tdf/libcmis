@@ -35,6 +35,7 @@ EXTRA_DIST = \
 	COPYING.LGPL \
 	doc/cmis-client.xml \
 	cppcheck-test.sh \
+	cppcheck-suppress \
 	qa/libcmis/data
 
 if ENABLE_CPPCHECK
