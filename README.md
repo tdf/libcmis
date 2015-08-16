@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tdf/libcmis.svg?branch=master)](https://travis-ci.org/tdf/libcmis)
+
 Objective
 ---------
 
