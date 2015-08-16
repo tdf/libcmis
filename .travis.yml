@@ -1,0 +1,21 @@
+language: cpp
+sudo: required
+
+compiler:
+  - gcc
+  - clang
+
+before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libxml2-dev libcppunit-dev docbook-to-man
+  - sudo apt-get install -y libboost-program-options-dev libboost-date-time-dev libboost-dev
+
+script:
+  - ./autogen.sh
+  - make
+  - make check
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
