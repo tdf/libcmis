@@ -114,15 +114,6 @@ namespace
                                   DATA_DIR "/gdrive/token-response.json", 200, true );
     }
 
-    void lcl_init_mockup_onedrive( )
-    {
-        curl_mockup_reset( );
-
-        // token response
-        curl_mockup_addResponse ( GDRIVE_TOKEN_URL.c_str( ), "", "POST",
-                                  DATA_DIR "/onedrive/token-response.json", 200, true );
-    }
-
     char* authCodeFallback( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
     {
         char *authCode = strdup( "authCode" );
