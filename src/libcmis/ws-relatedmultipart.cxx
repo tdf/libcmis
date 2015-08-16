@@ -122,7 +122,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
 
     // Parse the multipart
     string bodyFixed( body );
-    if ( bodyFixed.find( "--" + m_boundary + "\r\n" ) == 0 )
+    if ( bodyFixed.compare( "--" + m_boundary + "\r\n" ) == 0 )
         bodyFixed = "\r\n" + bodyFixed;
 
     if ( bodyFixed[bodyFixed.length() - 1 ] != '\n' )
@@ -143,7 +143,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
     while ( pos != string::npos )
     {
         string line = bodyFixed.substr( lastPos, pos - lastPos );
-        if ( line.find( boundaryString ) == 0 )
+        if ( line.compare( boundaryString ) == 0 )
         {
             // Found a part start
             inPart = true;
@@ -200,7 +200,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         }
 
         // If we found the end of the multipart, no need to continue looping
-        if ( line.find( endBoundaryString ) == 0 )
+        if ( line.compare( endBoundaryString ) == 0 )
             break;
 
         lastPos = pos + lineEnd.length();
