@@ -151,9 +151,7 @@ libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
     }
     if ( id.empty( ) )
     {
-        boost::shared_ptr< libcmis::Exception > exception;
-        exception.reset( new libcmis::Exception( "No file could be found" ) );
-        throw *exception.get( );
+        throw libcmis::Exception( "No file could be found" );
     }
     return getObject( id );
 }

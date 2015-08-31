@@ -197,11 +197,11 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
     catch ( const SoapFault& fault )
     {
         boost::shared_ptr< libcmis::Exception > cmisException = getCmisException( fault );
-        if ( !cmisException.get( ) )
+        if ( cmisException )
         {
-            cmisException.reset( new libcmis::Exception( fault.what( ), "runtime" ) );
+            throw *cmisException;
         }
-        throw *cmisException.get( );
+        throw libcmis::Exception( fault.what( ), "runtime" );
     }
     catch ( const CurlException& e )
     {
