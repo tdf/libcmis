@@ -158,10 +158,9 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
 
     // parse the document
     Json jsonRes = Json::parse( res );
-    DocumentPtr documentPtr( new GDriveDocument( getSession( ), jsonRes ) );
-    
-    ::boost::shared_ptr< GDriveDocument > gDocument = 
-        boost::dynamic_pointer_cast< GDriveDocument >( documentPtr );
+
+    ::boost::shared_ptr< GDriveDocument >
+      gDocument( new GDriveDocument( getSession( ), jsonRes ) );
 
     // Upload stream
     gDocument->uploadStream( os, contentType);    
