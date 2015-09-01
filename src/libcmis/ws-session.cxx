@@ -103,11 +103,15 @@ WSSession& WSSession::operator=( const WSSession& copy )
     {
         BaseSession::operator=( copy );
         m_servicesUrls = copy.m_servicesUrls;
-        m_navigationService = NULL;
-        m_objectService = NULL;
-        m_repositoryService = NULL;
-        m_versioningService = NULL;
         m_responseFactory = copy.m_responseFactory;
+        delete m_navigationService;
+        m_navigationService = NULL;
+        delete m_objectService;
+        m_objectService = NULL;
+        delete m_repositoryService;
+        m_repositoryService = NULL;
+        delete m_versioningService;
+        m_versioningService = NULL;
     }
 
     return *this;
