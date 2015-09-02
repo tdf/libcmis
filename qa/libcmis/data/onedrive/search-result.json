@@ -8,7 +8,7 @@
       },
       "name":"OneDriveFile",
       "description":"",
-      "parent_id":"folderA", // path: /A/Wrong File 
+      "parent_id":"folderA",
       "size":18047,
       "upload_location":"https://apis.live.net/v5.0/wrongFileId/content/",
       "comments_count":0,
@@ -32,7 +32,7 @@
       },
       "name":"OneDriveFile",
       "description":"",
-      "parent_id":"folderC", // path: /A/B/C/Right File
+      "parent_id":"folderC",
       "size":4,
       "upload_location":"https://apis.live.net/v5.0/rightFileId/content/",
       "comments_count":0,
