@@ -353,7 +353,7 @@ char* curl_mockup_HttpRequest_getHeader( const struct HttpRequest* request, cons
 {
     char* value = NULL;
     size_t i = 0;
-    while ( request->headers[i] != NULL )
+    while ( request->headers[i] != NULL && value == NULL )
     {
         string header = request->headers[i];
         const string prefix = string( name ) + ":";
