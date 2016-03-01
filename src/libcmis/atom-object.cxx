@@ -106,13 +106,13 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
         libcmis::ObjectPtr object;
         if ( getBaseType( ) == "cmis:document" )
         {
-            AtomDocument* thisDoc = dynamic_cast< AtomDocument* >( this );
-            object.reset( new AtomDocument( *thisDoc ) );
+            const AtomDocument& thisDoc = dynamic_cast< const AtomDocument& >( *this );
+            object.reset( new AtomDocument( thisDoc ) );
         }
         else if ( getBaseType( ) == "cmis:folder" )
         {
-            AtomFolder* thisFolder = dynamic_cast< AtomFolder* >( this );
-            object.reset( new AtomFolder( *thisFolder ) );
+            const AtomFolder& thisFolder = dynamic_cast< const AtomFolder& >( *this );
+            object.reset( new AtomFolder( thisFolder ) );
         }
         return object;
     }
