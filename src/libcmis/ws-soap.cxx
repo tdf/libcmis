@@ -179,6 +179,7 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& 
                         responses.push_back( response );
                 }
             }
+            xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
     }
