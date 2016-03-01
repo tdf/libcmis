@@ -27,6 +27,8 @@
  */
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -89,16 +91,16 @@ AtomPubSession::~AtomPubSession( )
 void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::Exception )
 {
     // parse the content
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 );
+    const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 ), xmlFreeDoc );
 
-    if ( NULL != doc )
+    if ( bool( doc ) )
     {
         // Check that we have an AtomPub service document
-        xmlNodePtr root = xmlDocGetRootElement( doc );
+        xmlNodePtr root = xmlDocGetRootElement( doc.get() );
         if ( !xmlStrEqual( root->name, BAD_CAST( "service" ) ) )
             throw libcmis::Exception( "Not an atompub service document" );
 
-        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc.get() );
 
         // Register the Service Document namespaces
         libcmis::registerNamespaces( xpathCtx );
@@ -142,8 +144,6 @@ void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::
     }
     else
         throw libcmis::Exception( "Failed to parse service document" );
-
-    xmlFreeDoc( doc );
 }
 
 void AtomPubSession::initialize( libcmis::HttpResponsePtr response )
