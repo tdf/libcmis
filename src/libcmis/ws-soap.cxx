@@ -57,6 +57,7 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
                 localName = xmlStrdup( content );
             m_faultcode = string( ( char* )localName );
             xmlFree( content );
+            xmlFree( prefix );
             xmlFree( localName );
         }
         else if ( xmlStrEqual( child->name, BAD_CAST( "faultstring" ) ) )
