@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <boost/shared_ptr.hpp>
+
 #include "sharepoint-utils.hxx"
 #include "json-utils.hxx"
 #include "xml-utils.hxx"
@@ -124,6 +126,6 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
 bool SharePointUtils::isSharePoint( string response )
 {
     xmlDocPtr doc = xmlReadMemory( response.c_str( ), response.size( ), "noname.xml", NULL, 0 );
-    xmlXPathContextPtr xpath = xmlXPathNewContext( doc );
-    return "SP.Web" == libcmis::getXPathValue( xpath, "//@term" );
+    const boost::shared_ptr< xmlXPathContext > xpath( xmlXPathNewContext( doc ), xmlXPathFreeContext );
+    return "SP.Web" == libcmis::getXPathValue( xpath.get(), "//@term" );
 }
