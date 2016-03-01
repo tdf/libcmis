@@ -467,6 +467,11 @@ CurlHandle& CurlHandle::operator=( const CurlHandle& copy )
     return *this;
 }
 
+CurlHandle::~CurlHandle( )
+{
+    reset();
+}
+
 void CurlHandle::reset( )
 {
     m_url = string( );

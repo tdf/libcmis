@@ -40,6 +40,7 @@ class CurlHandle
         CurlHandle( );
         CurlHandle( const CurlHandle& copy );
         CurlHandle& operator=( const CurlHandle& copy );
+        ~CurlHandle( );
 
         std::string m_url;
 
