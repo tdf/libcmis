@@ -152,6 +152,7 @@ string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
         }
         xmlXPathFreeContext( xpathCtx );
     }
+    xmlFreeDoc( doc );
 
     // If we don't have a wsdl file we may have received an HTML explanation for it,
     // try to add ?wsdl to the URL (last chance to get something)
