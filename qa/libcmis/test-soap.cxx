@@ -468,7 +468,7 @@ void SoapTest::getStreamFromNodeXopTest( )
     buf << "<stream>"
         << "  <xop:Include xmlns:xop=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:" << dataCidEncoded << "\"/>"
         << "</stream>";
-    xmlNodePtr node = test::getXmlNode( buf.str( ) );
+    test::XmlNodeRef node = test::getXmlNode( buf.str( ) );
 
     // Run the tested method
     boost::shared_ptr< istream > stream = getStreamFromNode( node, multipart );
@@ -502,7 +502,7 @@ void SoapTest::getStreamFromNodeBase64Test( )
     
     stringstream buf;
     buf << "<stream>" << dataContent << "</stream>";
-    xmlNodePtr node = test::getXmlNode( buf.str( ) );
+    test::XmlNodeRef node = test::getXmlNode( buf.str( ) );
 
     // Run the tested method
     boost::shared_ptr< istream > stream = getStreamFromNode( node, multipart );

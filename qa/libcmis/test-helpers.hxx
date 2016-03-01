@@ -38,8 +38,22 @@
 
 namespace test
 {
+    class XmlNodeRef
+    {
+    public:
+        XmlNodeRef( xmlNodePtr node, boost::shared_ptr< xmlDoc > doc );
+        XmlNodeRef( const XmlNodeRef& other );
+        XmlNodeRef& operator=( const XmlNodeRef& other );
+
+        operator xmlNodePtr( ) const;
+
+    private:
+        xmlNodePtr m_node;
+        boost::shared_ptr< xmlDoc > m_doc;
+    };
+
     // Test helper functions for parser and writer tests
-    xmlNodePtr getXmlNode( std::string str );
+    XmlNodeRef getXmlNode( std::string str );
     const char* getXmlns( );
     std::string writeXml( boost::shared_ptr< libcmis::XmlSerializable > serializable );
 

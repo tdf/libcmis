@@ -38,14 +38,38 @@ using libcmis::PropertyPtrMap;
 namespace test
 {
 
-    xmlNodePtr getXmlNode( string str )
+    XmlNodeRef::XmlNodeRef( xmlNodePtr node, boost::shared_ptr< xmlDoc > doc )
+        : m_node( node )
+        , m_doc( doc )
+    {
+    }
+
+    XmlNodeRef::XmlNodeRef( const XmlNodeRef& other )
+        : m_node( other.m_node )
+        , m_doc( other.m_doc )
+    {
+    }
+
+    XmlNodeRef& XmlNodeRef::operator=( const XmlNodeRef& other )
+    {
+        m_node = other.m_node;
+        m_doc = other.m_doc;
+        return *this;
+    }
+
+    XmlNodeRef::operator xmlNodePtr( ) const
+    {
+        return m_node;
+    }
+
+    XmlNodeRef getXmlNode( string str )
     {
         xmlNodePtr node = NULL;
-        xmlDocPtr doc = xmlReadMemory( str.c_str( ), str.size( ), "tester", NULL, 0 );
-        if ( NULL != doc )
-            node = xmlDocGetRootElement( doc );
+        const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( str.c_str( ), str.size( ), "tester", NULL, 0 ), xmlFreeDoc );
+        if ( bool( doc ) )
+            node = xmlDocGetRootElement( doc.get() );
 
-        return node;
+        return XmlNodeRef( node, doc );
     }
 
     const char* getXmlns( )
