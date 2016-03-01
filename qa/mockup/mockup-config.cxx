@@ -356,10 +356,11 @@ char* curl_mockup_HttpRequest_getHeader( const struct HttpRequest* request, cons
     while ( request->headers[i] != NULL )
     {
         string header = request->headers[i];
-        size_t pos = header.find( string( name ) + ":" );
+        const string prefix = string( name ) + ":";
+        size_t pos = header.find( prefix );
         if ( pos == 0 )
         {
-            value = strdup( header.substr( pos + 1 ).c_str() );
+            value = strdup( header.substr( prefix.size() ).c_str() );
         }
         ++i;
     }
