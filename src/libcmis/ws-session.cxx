@@ -149,6 +149,7 @@ string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
             xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( definitionsXPath.c_str() ), xpathCtx );
 
             isWsdl = ( xpathObj != NULL ) && ( xpathObj->nodesetval != NULL ) && ( xpathObj->nodesetval->nodeNr > 0 );
+            xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
     }
