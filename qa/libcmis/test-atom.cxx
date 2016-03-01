@@ -1079,7 +1079,7 @@ void AtomTest::deleteFolderTreeTest( )
     // Test the sent request
     const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/descendants", "id=valid-object", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
-    delete request;
+    curl_mockup_HttpRequest_free( request );
 }
 
 void AtomTest::checkOutTest( )
@@ -1123,6 +1123,7 @@ void AtomTest::cancelCheckOutTest( )
     // Check that the DELETE request was sent out
     const struct HttpRequest* request = curl_mockup_getRequest( "http://mockup/mock/id", "id=working-copy", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "DELETE request not sent", request );
+    curl_mockup_HttpRequest_free( request );
 }
 
 void AtomTest::checkInTest( )
@@ -1161,6 +1162,8 @@ void AtomTest::checkInTest( )
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong major parameter", url.find("major=true") != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has wrong checkinComment parameter", url.find( "checkinComment=" + comment ) != string::npos );
     CPPUNIT_ASSERT_MESSAGE( "Sent checkin request has no checkin parameter", url.find("checkin=true") != string::npos );
+
+    curl_mockup_HttpRequest_free( request );
 }
 
 void AtomTest::getAllVersionsTest( )
@@ -1218,6 +1221,8 @@ void AtomTest::moveTest( )
                                 "<cmis:value>test-document</cmis:value>"
                             "</cmis:propertyId>";
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong request object sent", expectedObject, actualObject );
+
+    curl_mockup_HttpRequest_free( request );
 }
 
 AtomPubSession AtomTest::getTestSession( string username, string password )
