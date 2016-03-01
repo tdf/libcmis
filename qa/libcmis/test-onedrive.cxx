@@ -364,6 +364,7 @@ void OneDriveTest::deleteTest( )
     object->remove( );
     const struct HttpRequest* deleteRequest = curl_mockup_getRequest( url.c_str( ), "", "DELETE" );
     CPPUNIT_ASSERT_MESSAGE( "Delete request not sent", deleteRequest );
+    curl_mockup_HttpRequest_free( deleteRequest );
 }
 
 void OneDriveTest::updatePropertiesTest( )
