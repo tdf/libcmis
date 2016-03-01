@@ -74,6 +74,7 @@ namespace libcmis
         {
             xmlChar* content = xmlNodeGetContent( child );
             string value( ( const char * ) content );
+            xmlFree( content );
 
             if ( xmlStrEqual( child->name, BAD_CAST( "id" ) ) )
                 setId( value );
