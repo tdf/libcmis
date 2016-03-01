@@ -87,13 +87,13 @@ libcmis::ObjectPtr WSObject::updateProperties(
         libcmis::ObjectPtr object;
         if ( getBaseType( ) == "cmis:document" )
         {
-            WSDocument* thisDoc = dynamic_cast< WSDocument* >( this );
-            object.reset( new WSDocument( *thisDoc ) );
+            const WSDocument& thisDoc = dynamic_cast< const WSDocument& >( *this );
+            object.reset( new WSDocument( thisDoc ) );
         }
         else if ( getBaseType( ) == "cmis:folder" )
         {
-            WSFolder* thisFolder = dynamic_cast< WSFolder* >( this );
-            object.reset( new WSFolder( *thisFolder ) );
+            const WSFolder& thisFolder = dynamic_cast< const WSFolder& >( *this );
+            object.reset( new WSFolder( thisFolder ) );
         }
         return object;
     }
