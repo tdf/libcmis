@@ -100,6 +100,7 @@ namespace test
                         xmlBufferFree( buf );
                     }
                 }
+                xmlXPathFreeObject( xpathObj);
             }
             xmlXPathFreeContext( xpathCtx );
         }
