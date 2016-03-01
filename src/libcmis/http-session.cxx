@@ -561,6 +561,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
     // Get some feedback when something wrong happens
     char errBuff[CURL_ERROR_SIZE];
+    errBuff[0] = 0;
     curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
 
     // We want to get the response even if there is an Http error
