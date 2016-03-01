@@ -125,7 +125,7 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
 
 bool SharePointUtils::isSharePoint( string response )
 {
-    xmlDocPtr doc = xmlReadMemory( response.c_str( ), response.size( ), "noname.xml", NULL, 0 );
-    const boost::shared_ptr< xmlXPathContext > xpath( xmlXPathNewContext( doc ), xmlXPathFreeContext );
+    const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( response.c_str( ), response.size( ), "noname.xml", NULL, 0 ), xmlFreeDoc );
+    const boost::shared_ptr< xmlXPathContext > xpath( xmlXPathNewContext( doc.get() ), xmlXPathFreeContext );
     return "SP.Web" == libcmis::getXPathValue( xpath.get(), "//@term" );
 }
