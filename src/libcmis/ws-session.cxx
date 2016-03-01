@@ -220,19 +220,19 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
 void WSSession::parseWsdl( string buf ) throw ( libcmis::Exception )
 {
     // parse the content
-    xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 );
+    const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 ), xmlFreeDoc );
 
-    if ( NULL != doc )
+    if ( bool( doc ) )
     {
         // Check that we have a WSDL document
-        xmlNodePtr root = xmlDocGetRootElement( doc );
+        xmlNodePtr root = xmlDocGetRootElement( doc.get() );
         if ( !xmlStrEqual( root->name, BAD_CAST( "definitions" ) ) )
             throw libcmis::Exception( "Not a WSDL document" );
 
         // Get all the services soap URLs
         m_servicesUrls.clear( );
 
-        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
+        xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc.get() );
         libcmis::registerCmisWSNamespaces( xpathCtx );
 
         if ( NULL != xpathCtx )
@@ -264,8 +264,6 @@ void WSSession::parseWsdl( string buf ) throw ( libcmis::Exception )
     }
     else
         throw libcmis::Exception( "Failed to parse service document" );
-
-    xmlFreeDoc( doc );
 }
 
 void WSSession::initializeResponseFactory( )
