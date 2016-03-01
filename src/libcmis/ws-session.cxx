@@ -259,6 +259,7 @@ void WSSession::parseWsdl( string buf ) throw ( libcmis::Exception )
                     m_servicesUrls[name] = location;
                 }
             }
+            xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
     }
