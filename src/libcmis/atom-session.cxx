@@ -136,6 +136,7 @@ void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::
                     }
                 }
             }
+            xmlXPathFreeObject( xpathObj );
         }
         xmlXPathFreeContext( xpathCtx );
     }
