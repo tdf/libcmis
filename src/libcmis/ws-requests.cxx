@@ -505,6 +505,7 @@ SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultip
                         // an <xop:Include> pointing to another part of the multipart
                         response->m_stream = getStreamFromNode( gdchild, multipart );
                     }
+                    xmlFree( content );
                 }
             }
         }
