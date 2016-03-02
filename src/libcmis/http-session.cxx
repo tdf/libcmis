@@ -104,6 +104,27 @@ namespace
         }
         return errCode;
     }
+
+    template<typename T>
+    class ScopeGuard
+    {
+    public:
+        ScopeGuard(T &var, T newValue)
+            : m_var(var)
+            , m_origValue(var)
+        {
+            m_var = newValue;
+        }
+
+        ~ScopeGuard()
+        {
+            m_var = m_origValue;
+        }
+
+    private:
+        T& m_var;
+        const T m_origValue;
+    };
 }
 
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
@@ -697,7 +718,7 @@ void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
 {
     string authCode;
 
-    m_inOAuth2Authentication = true;
+    const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
 
     try
     {
@@ -730,8 +751,6 @@ void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
     m_oauth2Handler->fetchTokens( string( authCode ) );
-
-    m_inOAuth2Authentication = false;
 }
 
 void HttpSession::setNoSSLCertificateCheck( bool noCheck )
@@ -749,9 +768,8 @@ string HttpSession::getRefreshToken( ) throw ( libcmis::Exception )
 
 void HttpSession::oauth2Refresh( )
 {
-    m_inOAuth2Authentication = true;
+    const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
     m_oauth2Handler->refresh( );
-    m_inOAuth2Authentication = false;
 }
 
 void HttpSession::initProtocols( )
