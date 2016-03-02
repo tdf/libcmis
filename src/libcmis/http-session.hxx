@@ -168,7 +168,7 @@ class HttpSession
 
     private:
         void checkCredentials( ) throw ( CurlException );
-        void checkOAuth2( std::string url );
+        void checkOAuth2( std::string url ) throw ( CurlException );
         void oauth2Refresh( );
         void initProtocols( );
 };

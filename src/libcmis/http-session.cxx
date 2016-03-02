@@ -692,6 +692,8 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
 
 void HttpSession::checkOAuth2( string url )
+    throw ( CurlException )
+try
 {
     if ( m_oauth2Handler )
     {
@@ -699,6 +701,10 @@ void HttpSession::checkOAuth2( string url )
         if ( m_oauth2Handler->getAccessToken().empty() && !m_inOAuth2Authentication )
             oauth2Authenticate( );
     }
+}
+catch ( const libcmis::Exception& e )
+{
+    throw CurlException( e.what( ) );
 }
 
 long HttpSession::getHttpStatus( )
