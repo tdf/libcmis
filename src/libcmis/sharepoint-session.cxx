@@ -377,7 +377,7 @@ libcmis::HttpResponsePtr SharePointSession::httpPutRequest( std::string url,
     }
     catch ( const CurlException& e )
     {
-        fetchDigestCode( );
+        fetchDigestCodeCurl( );
         response = HttpSession::httpPutRequest( url, is, headers );
     }
     return response;
@@ -396,7 +396,7 @@ libcmis::HttpResponsePtr SharePointSession::httpPostRequest( const std::string& 
     }
     catch ( const CurlException& e )
     {
-        fetchDigestCode( );
+        fetchDigestCodeCurl( );
         response = HttpSession::httpPostRequest( url, is, contentType, redirect );
     }
     return response;
@@ -411,26 +411,30 @@ void SharePointSession::httpDeleteRequest( std::string url )
     }
     catch ( const CurlException& e )
     {
-        fetchDigestCode( );
+        fetchDigestCodeCurl( );
         HttpSession::httpDeleteRequest( url );
     }
 }
 
 void SharePointSession::fetchDigestCode( )
     throw ( libcmis::Exception )
+try
+{
+    fetchDigestCodeCurl( );
+}
+catch ( const CurlException& e )
+{
+    throw e.getCmisException( );
+}
+
+void SharePointSession::fetchDigestCodeCurl( )
+    throw ( CurlException )
 {
     istringstream is( "empty" );
     libcmis::HttpResponsePtr response;
     // url = http://host/_api/contextinfo, first we remove the '/web' part
     string url = m_bindingUrl.substr( 0, m_bindingUrl.size( ) - 4 ) + "/contextinfo";
-    try 
-    {   
-        response = HttpSession::httpPostRequest( url, is, "" );
-    }
-    catch ( const CurlException& e )
-    {   
-        throw e.getCmisException( );
-    }
+    response = HttpSession::httpPostRequest( url, is, "" );
     string res = response->getStream( )->str( );
     Json jsonRes = Json::parse( res );
     m_digestCode = jsonRes["d"]["GetContextWebInformation"]["FormDigestValue"].toString( );

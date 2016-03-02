@@ -95,6 +95,8 @@ class SharePointSession : public BaseSession
 
     private:
         SharePointSession( );
+        void fetchDigestCodeCurl( )
+            throw ( CurlException );
         std::string m_digestCode;
 };
 
