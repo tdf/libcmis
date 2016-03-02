@@ -773,9 +773,15 @@ string HttpSession::getRefreshToken( ) throw ( libcmis::Exception )
 }
 
 void HttpSession::oauth2Refresh( )
+    throw ( CurlException )
+try
 {
     const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
     m_oauth2Handler->refresh( );
+}
+catch ( const libcmis::Exception& e )
+{
+    throw CurlException( e.what() );
 }
 
 void HttpSession::initProtocols( )
