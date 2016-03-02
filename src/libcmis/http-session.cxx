@@ -699,13 +699,12 @@ void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
 
     m_inOAuth2Authentication = true;
 
-    // Try to get the authentication code using the given provider.
-    authCode = m_oauth2Handler->oauth2Authenticate( );
-
-
-    // If that didn't work, call the fallback provider from SessionFactory
     try
     {
+        // Try to get the authentication code using the given provider.
+        authCode = m_oauth2Handler->oauth2Authenticate( );
+
+        // If that didn't work, call the fallback provider from SessionFactory
         if ( authCode.empty( ) )
         {
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
