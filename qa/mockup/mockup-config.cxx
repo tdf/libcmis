@@ -331,7 +331,7 @@ int curl_mockup_getRequestsCount( const char* urlBase,
                                   ( url.find( urlBaseString ) == 0 );
             bool matchParams = matchParamString.empty( ) ||
                                   ( params.find( matchParamString ) != string::npos );
-            bool matchBodyPart = !matchBody ||
+            bool matchBodyPart = matchBodyStr.empty() ||
                                   ( it->m_body.find( matchBodyStr ) != string::npos );
 
             if ( matchBaseUrl && matchParams && matchBodyPart )
