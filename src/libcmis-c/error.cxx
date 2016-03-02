@@ -26,6 +26,7 @@
  * instead of those above.
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
@@ -44,8 +45,8 @@ void libcmis_error_free( libcmis_ErrorPtr error )
 {
     if ( error != NULL )
     {
-        delete[] error->message;
-        delete[] error->type;
+        free( error->message );
+        free( error->type );
         delete error;
     }
 }
