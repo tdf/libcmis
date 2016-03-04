@@ -68,3 +68,13 @@
   * Completely removed the dependency on InMemory server for unit tests
   * Minimized the number of HTTP requests sent by SessionFactory::createSession
   * Added Session::getBaseTypes()
+
+0.5.1
+
+  * Fixed a crash when server response did not contain cmis:baseTypeId
+    property (tdf#90351)
+  * Removed the requirement for non-empty password when using HTTP
+    authentication credentials
+  * Fixed build with boost 1.60 and gcc 5
+  * Fixed a few problems found by Coverity
+  * Fixed a busload of memory leaks
