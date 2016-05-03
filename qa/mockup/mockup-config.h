@@ -41,13 +41,13 @@ void curl_mockup_reset( );
         the base URL of the request without parameters
     \param matchParam
         a string to find in the parameters part of the URL to match
+    \param method
+        HTTP method to match like PUT, GET, POST or DELETE. An empty
+        string matches any method.
     \param response
         a string corresponding either to the file path of the request
         body to send or directly the content to send. This value has
         a different meaning depending on isFilePath parameter.
-    \param method
-        HTTP method to match like PUT, GET, POST or DELETE. An empty
-        string matches any method.
     \param status
         the HTTP status to return. 0 means HTTP OK (200).
     \param isFilePath

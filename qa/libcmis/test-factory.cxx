@@ -64,6 +64,7 @@
 
 #define GDRIVE_AUTH_URL string ( "https://auth/url" )
 #define GDRIVE_LOGIN_URL  string ("https://login/url" )
+#define GDRIVE_LOGIN_URL2  string ("https://login2/url" )
 #define GDRIVE_APPROVAL_URL  string ("https://approval/url" )
 #define GDRIVE_TOKEN_URL  string ( "https://token/url" )
 
@@ -101,10 +102,15 @@ namespace
                                  string("&redirect_uri=") + OAUTH_REDIRECT_URI +
                                  string("&response_type=code") +
                                  string("&client_id=") + OAUTH_CLIENT_ID;
-        curl_mockup_addResponse ( GDRIVE_AUTH_URL.c_str(), loginIdentifier.c_str( ),
-                                "GET", DATA_DIR "/gdrive/login.html", 200, true);
 
-        //authentication response
+        curl_mockup_addResponse ( GDRIVE_AUTH_URL.c_str(), loginIdentifier.c_str( ),
+                                "GET", DATA_DIR "/gdrive/login1.html", 200, true);
+
+        //authentication email
+        curl_mockup_addResponse( GDRIVE_LOGIN_URL2.c_str( ), "", "POST",
+                                 DATA_DIR "/gdrive/login2.html", 200, true);
+
+        //authentication password,
         curl_mockup_addResponse( GDRIVE_LOGIN_URL.c_str( ), "", "POST",
                                  DATA_DIR "/gdrive/approve.html", 200, true);
 
