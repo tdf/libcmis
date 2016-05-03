@@ -51,6 +51,7 @@ static const string CLIENT_SECRET ( "mock-secret" );
 static const string USERNAME( "mock-user" );
 static const string PASSWORD( "mock-password" );
 static const string LOGIN_URL ("https://login/url" );
+static const string LOGIN_URL2 ("https://login2/url" );
 static const string APPROVAL_URL ("https://approval/url" );
 static const string AUTH_URL ( "https://auth/url" );
 static const string TOKEN_URL ( "https://token/url" );
@@ -123,10 +124,15 @@ OneDriveSession OneDriveTest::getTestSession( string username, string password )
                              string("&redirect_uri=") + REDIRECT_URI +
                              string("&response_type=code") +
                              string("&client_id=") + CLIENT_ID;
-    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
-                            "GET", DATA_DIR "/gdrive/login.html", 200, true);
 
-    //authentication response
+    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
+                            "GET", DATA_DIR "/gdrive/login1.html", 200, true);
+
+    //authentication email
+    curl_mockup_addResponse( LOGIN_URL2.c_str( ), empty.c_str( ), "POST",
+                             DATA_DIR "/gdrive/login2.html", 200, true);
+
+    //authentication password
     curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
                              DATA_DIR "/gdrive/approve.html", 200, true);
 
