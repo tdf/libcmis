@@ -51,6 +51,7 @@ static const string CLIENT_SECRET ( "mock-secret" );
 static const string USERNAME( "mock-user" );
 static const string PASSWORD( "mock-password" );
 static const string LOGIN_URL ("https://login/url" );
+static const string LOGIN_URL2 ("https://login2/url" );
 static const string APPROVAL_URL ("https://approval/url" );
 static const string AUTH_URL ( "https://auth/url" );
 static const string TOKEN_URL ( "https://token/url" );
@@ -149,10 +150,15 @@ GDriveSession GDriveTest::getTestSession( string username, string password )
                              string("&redirect_uri=") + REDIRECT_URI +
                              string("&response_type=code") +
                              string("&client_id=") + CLIENT_ID;
-    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
-                            "GET", DATA_DIR "/gdrive/login.html", 200, true);
 
-    //authentication response
+    curl_mockup_addResponse ( AUTH_URL.c_str(), loginIdentifier.c_str( ),
+                            "GET", DATA_DIR "/gdrive/login1.html", 200, true);
+
+    //authentication email
+    curl_mockup_addResponse( LOGIN_URL2.c_str( ), empty.c_str( ), "POST",
+                             DATA_DIR "/gdrive/login2.html", 200, true);
+
+    //authentication password,
     curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
                              DATA_DIR "/gdrive/approve.html", 200, true);
 
@@ -171,15 +177,25 @@ void GDriveTest::sessionAuthenticationTest( )
     GDriveSession session = getTestSession( USERNAME, PASSWORD );
     string empty;
 
-    // Check authentication request
-    string authRequest( curl_mockup_getRequestBody( LOGIN_URL.c_str(), empty.c_str( ),
+    // Check authentication request for email
+    string authRequestEmail( curl_mockup_getRequestBody( LOGIN_URL2.c_str(), empty.c_str( ),
                                                 "POST" ) );
-    string expectedAuthRequest =
-        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
-                 "&Email=") + USERNAME + string("&Passwd=") + PASSWORD;
+    string expectedAuthRequestEmail =
+        string ( "Page=PasswordSeparationSignIn&continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Email=") + USERNAME;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request",
-                                  expectedAuthRequest, authRequest );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Email",
+                                  expectedAuthRequestEmail, authRequestEmail );
+
+    // Check authentication request for password
+    string authRequestPassword( curl_mockup_getRequestBody( LOGIN_URL.c_str(), empty.c_str( ),
+                                                "POST" ) );
+    string expectedAuthRequestPassword =
+        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Passwd=") + PASSWORD;
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Password",
+                                  expectedAuthRequestPassword, authRequestPassword );
 
     // Check code request
     string codeRequest( curl_mockup_getRequestBody( APPROVAL_URL.c_str(),

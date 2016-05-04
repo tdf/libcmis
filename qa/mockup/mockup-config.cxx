@@ -117,6 +117,9 @@ namespace mockup
         return !m_username.empty( ) && !m_password.empty( );
     }
 
+    /** Find a suitable response
+     * using the request as a search key
+     */
     CURLcode Configuration::writeResponse( CurlHandle* handle )
     {
         CURLcode code = CURLE_OK;
