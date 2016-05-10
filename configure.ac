@@ -10,7 +10,7 @@ m4_define([libcmis_version],[libcmis_api_version.libcmis_micro_version])
 
 AC_PREREQ([2.63])
 AC_INIT([libcmis], [libcmis_version])
-AM_INIT_AUTOMAKE([1.10 foreign])
+AM_INIT_AUTOMAKE([1.10 foreign dist-xz])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 # Checks for programs.
