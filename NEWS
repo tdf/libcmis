@@ -80,3 +80,5 @@
   * Fixed a busload of memory leaks
 
 0.5.2
+
+  * Fixed Google Drive login, broken by Google's new 2-page login sequence
