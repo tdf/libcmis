@@ -42,6 +42,7 @@
 #include "oauth2-handler.hxx"
 #include "gdrive-object.hxx"
 #include "document.hxx"
+#include "session-factory.hxx"
 
 using namespace std;
 using namespace libcmis;
@@ -50,19 +51,34 @@ static const string CLIENT_ID ( "mock-id" );
 static const string CLIENT_SECRET ( "mock-secret" );
 static const string USERNAME( "mock-user" );
 static const string PASSWORD( "mock-password" );
+static const string USERNAME2( "mock-user2" );
+static const string PASSWORD2( "mock-password2" );
 static const string LOGIN_URL ("https://login/url" );
 static const string LOGIN_URL2 ("https://login2/url" );
 static const string APPROVAL_URL ("https://approval/url" );
+static const string CHALLENGE_URL ("https://accounts.google.com/challenge/url" );
 static const string AUTH_URL ( "https://auth/url" );
 static const string TOKEN_URL ( "https://token/url" );
 static const string SCOPE ( "https://scope/url" );
 static const string REDIRECT_URI ("redirect:uri" );
 static const string BASE_URL ( "https://base/url" );
 
+#define PIN "123321"
+
+namespace
+{
+    char* lcl_authCodeFallback( const char* /*url*/, const char* /*username*/, const char* /*password*/ )
+    {
+        char *authCode = strdup( PIN );
+        return authCode;
+    }
+}
+
 class GDriveTest : public CppUnit::TestFixture
 {
     public:
         void sessionAuthenticationTest( );
+        void sessionAuthenticationTestWith2FA( );
         void sessionExpiryTokenGetTest( );
         void sessionExpiryTokenPostTest( );
         void sessionExpiryTokenPutTest( );
@@ -99,6 +115,7 @@ class GDriveTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( GDriveTest );
         CPPUNIT_TEST( sessionAuthenticationTest );
+        CPPUNIT_TEST( sessionAuthenticationTestWith2FA );
         CPPUNIT_TEST( sessionExpiryTokenGetTest );
         CPPUNIT_TEST( sessionExpiryTokenPutTest );
         CPPUNIT_TEST( sessionExpiryTokenPostTest );
@@ -135,10 +152,10 @@ class GDriveTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 
     private:
-        GDriveSession getTestSession( string username, string password );
+        GDriveSession getTestSession( string username, string password, bool with2FA = false );
 };
 
-GDriveSession GDriveTest::getTestSession( string username, string password )
+GDriveSession GDriveTest::getTestSession( string username, string password, bool with2FA )
 {
     libcmis::OAuth2DataPtr oauth2(
         new libcmis::OAuth2Data( AUTH_URL, TOKEN_URL, SCOPE,
@@ -158,9 +175,22 @@ GDriveSession GDriveTest::getTestSession( string username, string password )
     curl_mockup_addResponse( LOGIN_URL2.c_str( ), empty.c_str( ), "POST",
                              DATA_DIR "/gdrive/login2.html", 200, true);
 
-    //authentication password,
-    curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
-                             DATA_DIR "/gdrive/approve.html", 200, true);
+    //challenge - pin code
+    if( with2FA == true )
+    {
+        curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
+                                 DATA_DIR "/gdrive/challenge.html", 200, true);
+
+        //approval response
+        curl_mockup_addResponse( CHALLENGE_URL.c_str( ), empty.c_str( ),
+                                 "POST", DATA_DIR "/gdrive/approve.html", 200, true);
+    }
+    else
+    {
+        //authentication password,
+        curl_mockup_addResponse( LOGIN_URL.c_str( ), empty.c_str( ), "POST",
+                                 DATA_DIR "/gdrive/approve.html", 200, true);
+    }
 
     //approval response
     curl_mockup_addResponse( APPROVAL_URL.c_str( ), empty.c_str( ),
@@ -196,6 +226,74 @@ void GDriveTest::sessionAuthenticationTest( )
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Password",
                                   expectedAuthRequestPassword, authRequestPassword );
+
+    // Check code request
+    string codeRequest( curl_mockup_getRequestBody( APPROVAL_URL.c_str(),
+                        empty.c_str( ), "POST" ) );
+    string expectedCodeRequest = string( "state_wrapper=stateWrapper&submit_access=true" );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong approval request",
+                                  expectedCodeRequest, codeRequest);
+
+    // Check token request
+    string expectedTokenRequest =
+        string( "code=AuthCode") +
+        string( "&client_id=") + CLIENT_ID +
+        string( "&client_secret=") + CLIENT_SECRET +
+        string( "&redirect_uri=") + REDIRECT_URI +
+        string( "&grant_type=authorization_code" );
+
+    string tokenRequest( curl_mockup_getRequestBody( TOKEN_URL.c_str(), empty.c_str( ),
+                                                 "POST" ) );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong token request",
+                                  expectedTokenRequest, tokenRequest );
+
+    // Check token
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "Wrong access token",
+         string ( "mock-access-token" ),
+         session.m_oauth2Handler->getAccessToken( ));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "Wrong refresh token",
+        string ("mock-refresh-token"),
+        session.m_oauth2Handler->getRefreshToken( ));
+}
+
+void GDriveTest::sessionAuthenticationTestWith2FA( )
+{
+    libcmis::SessionFactory::setOAuth2AuthCodeProvider( lcl_authCodeFallback );
+
+    GDriveSession session = getTestSession( USERNAME2, PASSWORD2, true );
+    string empty;
+
+    // Check authentication request for email
+    string authRequestEmail( curl_mockup_getRequestBody( LOGIN_URL2.c_str(), empty.c_str( ),
+                                                "POST" ) );
+    string expectedAuthRequestEmail =
+        string ( "Page=PasswordSeparationSignIn&continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Email=") + USERNAME2;
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Email",
+                                  expectedAuthRequestEmail, authRequestEmail );
+
+    // Check authentication request for password
+    string authRequestPassword( curl_mockup_getRequestBody( LOGIN_URL.c_str(), empty.c_str( ),
+                                                "POST" ) );
+    string expectedAuthRequestPassword =
+        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Passwd=") + PASSWORD2;
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Password",
+                                  expectedAuthRequestPassword, authRequestPassword );
+
+    // Check request for pin code
+    string authRequestPin( curl_mockup_getRequestBody( CHALLENGE_URL.c_str(), empty.c_str( ),
+                                                "POST" ) );
+    string expectedAuthRequestPin =
+        string ( "continue=redirectLink&scope=Scope&service=lso&GALX=cookie"
+                 "&Pin=") + PIN;
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong authentication request for Pin",
+                                  expectedAuthRequestPin, authRequestPin );
 
     // Check code request
     string codeRequest( curl_mockup_getRequestBody( APPROVAL_URL.c_str(),
