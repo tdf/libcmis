@@ -298,8 +298,8 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
             if ( action != NULL )
             {
                 if ( strcmp((char*)action, "/signin/challenge") != 0
-                   and strcmp((char*)action, "/signin/selectchallenge") != 0
-                   and xmlStrlen(action) > 0 )
+                   && strcmp((char*)action, "/signin/selectchallenge") != 0
+                   && xmlStrlen(action) > 0 )
                 {
                     link = string ( (char*) action);
                     readInputField = true;
