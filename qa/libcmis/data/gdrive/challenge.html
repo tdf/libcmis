@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<form novalidate="" id="resend" action="/signin/challenge" method="post">
+  <input name="subAction" type="hidden" value="startChallenge">
+  <input name="challengeId" type="hidden" value="1">
+</form>
+<form novalidate="" id="challenge" action="/challenge/url" method="post">
+  <input name="continue" id="continue" value="redirectLink&amp;scope=Scope" type="hidden">
+  <input name="service" id="service" value="lso" type="hidden">
+  <input name="GALX" value="cookie" type="hidden">
+  <input name="Pin" id="Pin">
+</form>
+<form novalidate="" id="select_challenge" action="/signin/selectchallenge" method="post">
+  <input id="selectChallenge" type="submit">
+</form>
+</body>
+</html>
