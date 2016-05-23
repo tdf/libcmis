@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+<form novalidate="" id="skip" action="/signin/challenge/skip" method="post">
+  <input id="skipChallenge" type="submit">
+</form>
 <form novalidate="" id="resend" action="/signin/challenge" method="post">
   <input name="subAction" type="hidden" value="startChallenge">
   <input name="challengeId" type="hidden" value="1">
