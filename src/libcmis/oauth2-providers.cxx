@@ -33,6 +33,11 @@
 #include "oauth2-providers.hxx"
 #include "http-session.hxx"
 
+#define CHALLENGE_PAGE_ACTION "/signin"
+#define CHALLENGE_PAGE_ACTION_LEN sizeof( CHALLENGE_PAGE_ACTION ) - 1
+#define PIN_FORM_ACTION "/signin/challenge/ipp"
+#define PIN_FORM_ACTION_LEN sizeof( PIN_FORM_ACTION ) - 1
+
 using namespace std;
 
 string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUrl,
@@ -303,8 +308,12 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
             // We have to parse only the form with pin field.
             if ( action != NULL )
             {
-                bool bChallengePage = ( strncmp( (char*)action, "/signin", 7 ) == 0 );
-                bool bIsRightForm = ( strncmp( (char*)action, "/signin/challenge/ipp", 21 ) == 0 );
+                bool bChallengePage = ( strncmp( (char*)action,
+                                                 CHALLENGE_PAGE_ACTION,
+                                                 CHALLENGE_PAGE_ACTION_LEN ) == 0 );
+                bool bIsRightForm = ( strncmp( (char*)action,
+                                                 PIN_FORM_ACTION,
+                                                 PIN_FORM_ACTION_LEN ) == 0 );
                 if ( ( xmlStrlen( action ) > 0 )
                     && ( ( bChallengePage && bIsRightForm ) || !bChallengePage ) )
                 {
