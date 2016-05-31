@@ -303,10 +303,8 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
             // We have to parse only the form with pin field.
             if ( action != NULL )
             {
-                bool bChallengePage = ( xmlStrlen( action ) > 0 )
-                        && ( strncmp( (char*)action, "/signin", strlen( "/signin" ) ) == 0 );
-                bool bIsRightForm = ( xmlStrlen( action ) > 0 )
-                        && ( strncmp( (char*)action, "/signin/challenge/ipp", strlen( "/signin/challenge/ipp" ) ) == 0 );
+                bool bChallengePage = ( strncmp( (char*)action, "/signin", 7 ) == 0 );
+                bool bIsRightForm = ( strncmp( (char*)action, "/signin/challenge/ipp", 21 ) == 0 );
                 if ( ( xmlStrlen( action ) > 0 )
                     && ( ( bChallengePage && bIsRightForm ) || !bChallengePage ) )
                 {
