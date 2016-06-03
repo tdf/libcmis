@@ -33,6 +33,11 @@
 #include "oauth2-providers.hxx"
 #include "http-session.hxx"
 
+#define CHALLENGE_PAGE_ACTION "/signin"
+#define CHALLENGE_PAGE_ACTION_LEN sizeof( CHALLENGE_PAGE_ACTION ) - 1
+#define PIN_FORM_ACTION "/signin/challenge/ipp"
+#define PIN_FORM_ACTION_LEN sizeof( PIN_FORM_ACTION ) - 1
+
 using namespace std;
 
 string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUrl,
@@ -138,6 +143,13 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
 
         libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
         string pin( fallbackProvider( "", "", "" ) );
+
+        if( pin.empty() )
+        {
+            // unset OAuth2AuthCode Provider to avoid showing pin request again in the HttpSession::oauth2Authenticate
+            libcmis::SessionFactory::setOAuth2AuthCodeProvider( NULL );
+            return string( );
+        }
 
         loginChallengeLink = "https://accounts.google.com" + loginChallengeLink;
         loginChallengePost += "Pin=";
@@ -292,18 +304,24 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
             xmlChar* action = xmlTextReaderGetAttribute( reader, 
                                                          BAD_CAST( "action" ));
 
-            // GDrive pin code page contains 3 forms.
-            // First form resends pin code, we need to omit its input fields.
-            // Also we mustn't parse action field from the 'select challenge' form.
+            // GDrive pin code page contains many forms.
+            // We have to parse only the form with pin field.
             if ( action != NULL )
             {
-                if ( strcmp((char*)action, "/signin/challenge") != 0
-                   && strcmp((char*)action, "/signin/selectchallenge") != 0
-                   && xmlStrlen(action) > 0 )
+                bool bChallengePage = ( strncmp( (char*)action,
+                                                 CHALLENGE_PAGE_ACTION,
+                                                 CHALLENGE_PAGE_ACTION_LEN ) == 0 );
+                bool bIsRightForm = ( strncmp( (char*)action,
+                                                 PIN_FORM_ACTION,
+                                                 PIN_FORM_ACTION_LEN ) == 0 );
+                if ( ( xmlStrlen( action ) > 0 )
+                    && ( ( bChallengePage && bIsRightForm ) || !bChallengePage ) )
                 {
                     link = string ( (char*) action);
                     readInputField = true;
                 }
+                else
+                    readInputField = false;
                 xmlFree (action);
             }
         }
