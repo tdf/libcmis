@@ -382,9 +382,14 @@ namespace libcmis
         // Get the time zone offset
         boost::posix_time::time_duration tzOffset( boost::posix_time::duration_from_string( "+00:00" ) );
 
-        size_t teePos = dateTimeStr.find( 'T' );
-        string noTzStr = dateTimeStr.substr( 0, teePos + 1 );
+        if ( dateTimeStr.empty( ) )
+            return t; // obviously not a time
 
+        size_t teePos = dateTimeStr.find( 'T' );
+        if ( teePos == string::npos )
+            return t; // obviously not a time
+
+        string noTzStr = dateTimeStr.substr( 0, teePos + 1 );
         string timeStr = dateTimeStr.substr( teePos + 1 );
 
         // Get the TZ if any
