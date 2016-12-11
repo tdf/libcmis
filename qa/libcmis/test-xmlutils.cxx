@@ -170,6 +170,31 @@ void XmlTest::parseDateTimeTest( )
     basis.tm_min = 44;
     basis.tm_sec = 28;
 
+    // Broken strings
+    {
+        posix_time::ptime expected( boost::date_time::not_a_date_time );
+
+        posix_time::ptime t = libcmis::parseDateTime( string() );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Broken time string case failed #1",
+                                      expected, t );
+
+        char toParse[50];
+        strftime( toParse, sizeof( toParse ), "%FT", &basis );
+        t = libcmis::parseDateTime( string( toParse ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Broken time string case failed #2",
+                                      expected, t );
+
+        strftime( toParse, sizeof( toParse ), "T%T", &basis );
+        t = libcmis::parseDateTime( string( toParse ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Broken time string case failed #3",
+                                      expected, t );
+
+        strftime( toParse, sizeof( toParse ), "%T", &basis );
+        t = libcmis::parseDateTime( string( toParse ) );
+        CPPUNIT_ASSERT_EQUAL_MESSAGE( "Broken time string case failed #4",
+                                      expected, t );
+    }
+
     // No time zone test
     {
         char toParse[50];
