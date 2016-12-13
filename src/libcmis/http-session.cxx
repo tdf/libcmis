@@ -259,7 +259,7 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
         httpRunRequest( url );
         response->getData( )->finish( );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.
@@ -330,7 +330,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
         httpRunRequest( url, headers );
         response->getData( )->finish();
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         long status = getHttpStatus( );
         /** If we had a HTTP 417 response, this is likely to be due to some
@@ -419,7 +419,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
         httpRunRequest( url, headers, redirect );
         response->getData( )->finish();
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
 
         long status = getHttpStatus( );
@@ -478,7 +478,7 @@ void HttpSession::httpDeleteRequest( string url ) throw ( CurlException )
     {
         httpRunRequest( url );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         // If the access token is expired, we get 401 error,
         // Need to use the refresh token to get a new one.

@@ -85,7 +85,7 @@ namespace libcmis
                 {
                     response = httpSession->httpGetRequest( bindingUrl );
                 }
-                catch ( const CurlException& e )
+                catch ( const CurlException& )
                 {
                     // Could be SharePoint - needs NTLM authentication
                     session = new SharePointSession( bindingUrl, username,
@@ -100,7 +100,7 @@ namespace libcmis
                         session = new AtomPubSession( bindingUrl, repository,
                                         *httpSession, response );
                     }
-                    catch ( const Exception& e )
+                    catch ( const Exception& )
                     {
                     }
                 }
@@ -113,7 +113,7 @@ namespace libcmis
                         session = new WSSession( bindingUrl, repository,
                                       *httpSession, response );
                     }
-                    catch ( const Exception& e )
+                    catch ( const Exception& )
                     {
                     }
                 }
@@ -127,7 +127,7 @@ namespace libcmis
                         session = new SharePointSession( bindingUrl,
                                       *httpSession, response );
                     }
-                    catch ( const Exception& e )
+                    catch ( const Exception& )
                     {
                     }
                 }

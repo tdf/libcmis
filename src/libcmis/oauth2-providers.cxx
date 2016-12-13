@@ -80,7 +80,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         // send the first get, receive the html login page
         res = session->httpGetRequest( authUrl )->getStream( )->str( );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         return string( );
     }
@@ -102,7 +102,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         loginEmailRes = session->httpPostRequest ( loginEmailLink, loginEmailIs, CONTENT_TYPE )
                         ->getStream( )->str( );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         return string( );
     }
@@ -124,7 +124,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         loginPasswdRes = session->httpPostRequest ( loginPasswdLink, loginPasswdIs, CONTENT_TYPE )
                         ->getStream( )->str( );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         return string( );
     }
@@ -163,7 +163,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
             loginChallengeRes = session->httpPostRequest ( loginChallengeLink, loginChallengeIs, CONTENT_TYPE )
                             ->getStream( )->str( );
         }
-        catch ( const CurlException& e )
+        catch ( const CurlException& )
         {
             return string( );
         }
@@ -221,7 +221,7 @@ string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& auth
     {
         res = session->httpGetRequest( authUrl )->getStream( )->str( );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         return string( );
     }
@@ -247,7 +247,7 @@ string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& auth
         // Alfresco code is in the redirect link
         resp = session->httpPostRequest( loginLink, loginIs, CONTENT_TYPE, false ); 
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         return string( );
     }

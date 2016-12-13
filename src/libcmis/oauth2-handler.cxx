@@ -103,7 +103,7 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
         resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is,
                                         "application/x-www-form-urlencoded" );
     }
-    catch ( const CurlException& e )
+    catch ( const CurlException& )
     {
         throw libcmis::Exception(
                 "Couldn't get tokens from the authorization code ");
@@ -130,7 +130,7 @@ void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
         resp = m_session->httpPostRequest( m_data->getTokenUrl( ), is,
                                            "application/x-www-form-urlencoded" );
     }
-    catch (const CurlException& e )
+    catch (const CurlException& )
     {
         throw libcmis::Exception( "Couldn't refresh token ");
     }
