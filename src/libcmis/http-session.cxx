@@ -310,6 +310,8 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
     curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
     curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
+    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
