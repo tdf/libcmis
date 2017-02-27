@@ -252,7 +252,7 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
     // fix Cloudoku too many redirects error
     // note: though curl doc says -1 is the default for MAXREDIRS, the error i got
     // said it was 0
-    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 100);
+    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
 
     try
     {
