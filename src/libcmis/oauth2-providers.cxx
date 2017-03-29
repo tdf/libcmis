@@ -37,6 +37,7 @@
 #define CHALLENGE_PAGE_ACTION_LEN sizeof( CHALLENGE_PAGE_ACTION ) - 1
 #define PIN_FORM_ACTION "/signin/challenge/ipp"
 #define PIN_FORM_ACTION_LEN sizeof( PIN_FORM_ACTION ) - 1
+#define PIN_INPUT_NAME "Pin"
 
 using namespace std;
 
@@ -152,7 +153,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         }
 
         loginChallengeLink = "https://accounts.google.com" + loginChallengeLink;
-        loginChallengePost += "Pin=";
+        loginChallengePost += string( PIN_INPUT_NAME ) + "=";
         loginChallengePost += string( pin );
 
         istringstream loginChallengeIs( loginChallengePost );
@@ -291,6 +292,8 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
     if ( reader == NULL ) return 0;
 
     bool readInputField = false;
+    bool bIsRightForm = false;
+    bool bHasPinField = false;
 
     while ( true )
     {
@@ -301,6 +304,12 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
         // Find the redirect link
         if ( xmlStrEqual( nodeName, BAD_CAST( "form" ) ) )
         {
+            // 2FA: Don't add fields form other forms not having pin field
+            if ( bIsRightForm && !bHasPinField )
+                post = string( "" );
+            if ( bIsRightForm && bHasPinField )
+                break;
+
             xmlChar* action = xmlTextReaderGetAttribute( reader, 
                                                          BAD_CAST( "action" ));
 
@@ -311,7 +320,7 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
                 bool bChallengePage = ( strncmp( (char*)action,
                                                  CHALLENGE_PAGE_ACTION,
                                                  CHALLENGE_PAGE_ACTION_LEN ) == 0 );
-                bool bIsRightForm = ( strncmp( (char*)action,
+                bIsRightForm = ( strncmp( (char*)action,
                                                  PIN_FORM_ACTION,
                                                  PIN_FORM_ACTION_LEN ) == 0 );
                 if ( ( xmlStrlen( action ) > 0 )
@@ -332,6 +341,8 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
                                                        BAD_CAST( "name" ));
             xmlChar* value = xmlTextReaderGetAttribute( reader, 
                                                         BAD_CAST( "value" ));
+            if ( name != NULL && strcmp( (char*)name, PIN_INPUT_NAME ) == 0 )
+                bHasPinField = true;
             if ( ( name != NULL ) && ( value!= NULL ) )
             {
                 if ( ( xmlStrlen( name ) > 0) && ( xmlStrlen( value ) > 0) )
