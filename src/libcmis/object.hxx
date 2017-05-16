@@ -214,7 +214,7 @@ namespace libcmis
             void toXml( xmlTextWriterPtr writer );
     };
 
-    typedef ::boost::shared_ptr< Object > ObjectPtr;
+    typedef boost::shared_ptr< Object > ObjectPtr;
 }
 
 #endif

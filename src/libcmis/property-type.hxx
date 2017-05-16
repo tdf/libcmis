@@ -119,7 +119,7 @@ namespace libcmis
 
             void update( std::vector< ObjectTypePtr > typesDefs );
     };
-    typedef ::boost::shared_ptr< PropertyType > PropertyTypePtr;
+    typedef boost::shared_ptr< PropertyType > PropertyTypePtr;
 }
 
 #endif

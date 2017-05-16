@@ -40,7 +40,7 @@
 #include <libcmis/libcmis.hxx>
 
 using namespace std;
-using namespace ::boost::program_options;
+using namespace boost::program_options;
 using libcmis::PropertyPtrMap;
 
 namespace

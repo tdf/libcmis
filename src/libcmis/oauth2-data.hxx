@@ -69,7 +69,7 @@ namespace libcmis
             const std::string& getScope() { return m_scope; }
             const std::string& getRedirectUri() { return m_redirectUri; }
     };
-    typedef ::boost::shared_ptr< OAuth2Data > OAuth2DataPtr;
+    typedef boost::shared_ptr< OAuth2Data > OAuth2DataPtr;
 }
 
 #endif //_LIBCMIS_OAUTH2_DATA_HXX_

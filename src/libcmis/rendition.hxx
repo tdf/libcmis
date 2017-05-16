@@ -81,7 +81,7 @@ namespace libcmis
             std::string toString( );
     };
 
-    typedef ::boost::shared_ptr< Rendition > RenditionPtr;
+    typedef boost::shared_ptr< Rendition > RenditionPtr;
 }
 
 #endif

@@ -111,7 +111,7 @@ namespace libcmis
             static std::map< Capability, std::string > parseCapabilities( xmlNodePtr node );
     };
     
-    typedef ::boost::shared_ptr< Repository > RepositoryPtr;
+    typedef boost::shared_ptr< Repository > RepositoryPtr;
 }
 
 #endif

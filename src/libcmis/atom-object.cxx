@@ -59,7 +59,7 @@ namespace
                 // Some implementations (xcmis) put extra spaces into the type attribute
                 // (e.g. "application/atom+xml; type=feed" instead of "application/atom+xml;type=feed")
                 string linkType = link.getType( );
-                linkType.erase( remove_if( linkType.begin(), linkType.end(), ::isspace ), linkType.end() );
+                linkType.erase( remove_if( linkType.begin(), linkType.end(), isspace ), linkType.end() );
 
                 // Some implementation (SharePoint) are omitting the type attribute
                 bool matchesType = m_type.empty( ) || linkType.empty() || ( linkType == m_type );

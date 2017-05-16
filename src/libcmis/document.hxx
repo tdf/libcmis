@@ -140,7 +140,7 @@ namespace libcmis
 
             virtual std::string toString( );
     };
-    typedef ::boost::shared_ptr< Document > DocumentPtr;
+    typedef boost::shared_ptr< Document > DocumentPtr;
 }
 
 #endif

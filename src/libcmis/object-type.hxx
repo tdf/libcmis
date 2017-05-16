@@ -137,7 +137,7 @@ namespace libcmis
             virtual std::string toString( );
     };
 
-    typedef ::boost::shared_ptr< ObjectType > ObjectTypePtr;
+    typedef boost::shared_ptr< ObjectType > ObjectTypePtr;
 }
 
 #endif

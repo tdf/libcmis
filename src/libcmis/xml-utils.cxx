@@ -551,7 +551,7 @@ namespace libcmis
         string lower( sText );
         for ( size_t i = 0; i < sText.size(); ++i )
         {
-            lower[i] = ::tolower( sText[i] );
+            lower[i] = tolower( sText[i] );
         }
         return lower;
     }

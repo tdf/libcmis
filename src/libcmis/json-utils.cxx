@@ -188,7 +188,7 @@ Json Json::parse( const string& str ) throw ( libcmis:: Exception )
     {
         try 
         {
-            ::property_tree::json_parser::read_json( ss, pTree );
+            property_tree::json_parser::read_json( ss, pTree );
         }
         catch ( boost::exception const& )
         {

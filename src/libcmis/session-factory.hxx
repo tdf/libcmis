@@ -57,7 +57,7 @@ namespace libcmis
               */
             virtual bool authenticationQuery( std::string& username, std::string& password ) = 0;
     };
-    typedef ::boost::shared_ptr< AuthProvider > AuthProviderPtr;
+    typedef boost::shared_ptr< AuthProvider > AuthProviderPtr;
   
     /** Handler class used to request user input when an invalid SSL certificate is encountered.
      */ 
@@ -77,7 +77,7 @@ namespace libcmis
                */
              virtual bool validateCertificate( std::vector< std::string > certificatesChain ) = 0;
     };
-    typedef ::boost::shared_ptr< CertValidationHandler > CertValidationHandlerPtr;
+    typedef boost::shared_ptr< CertValidationHandler > CertValidationHandlerPtr;
 
     class SessionFactory
     {

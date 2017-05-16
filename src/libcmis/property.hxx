@@ -79,7 +79,7 @@ namespace libcmis
 
             std::string toString( );
     };
-    typedef ::boost::shared_ptr< Property > PropertyPtr;
+    typedef boost::shared_ptr< Property > PropertyPtr;
     typedef std::map< std::string, libcmis::PropertyPtr > PropertyPtrMap;
 
     PropertyPtr parseProperty( xmlNodePtr node, boost::shared_ptr< ObjectType > objectType );
