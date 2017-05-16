@@ -30,6 +30,7 @@
 #include <locale>
 #include <sstream>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "atom-document.hxx"
@@ -59,7 +60,7 @@ namespace
                 // Some implementations (xcmis) put extra spaces into the type attribute
                 // (e.g. "application/atom+xml; type=feed" instead of "application/atom+xml;type=feed")
                 string linkType = link.getType( );
-                linkType.erase( remove_if( linkType.begin(), linkType.end(), isspace ), linkType.end() );
+                linkType.erase( remove_if( linkType.begin(), linkType.end(), boost::is_space() ), linkType.end() );
 
                 // Some implementation (SharePoint) are omitting the type attribute
                 bool matchesType = m_type.empty( ) || linkType.empty() || ( linkType == m_type );
