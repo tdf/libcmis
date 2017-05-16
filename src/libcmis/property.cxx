@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <boost/algorithm/string.hpp>
+
 #include "object-type.hxx"
 #include "property.hxx"
 #include "xml-utils.hxx"
@@ -191,7 +193,7 @@ namespace libcmis
                     size_t pos = xmlType.find( propStr );
                     if ( pos == 0 ) {
                         xmlType = xmlType.substr( propStr.length( ) );
-                        xmlType = libcmis::tolower( xmlType );
+                        boost::to_lower( xmlType );
                     }
 
                     propType.reset( new PropertyType( xmlType, propDefinitionId,

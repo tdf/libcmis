@@ -27,6 +27,7 @@
  */
 #include <string>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <libxml/parser.h>
@@ -127,7 +128,7 @@ void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::
                             m_repositoryId = ws->getId( );
 
                         // SharePoint is case insensitive for the id...
-                        if ( libcmis::tolower( ws->getId( ) ) == libcmis::tolower( m_repositoryId ) )
+                        if ( boost::to_lower_copy( ws->getId( ) ) == boost::to_lower_copy( m_repositoryId ) )
                             m_repository = ws;
 
                         m_repositories.push_back( ws );

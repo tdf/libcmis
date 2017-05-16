@@ -167,6 +167,7 @@ m4_pattern_allow([^BOOST_])
 BOOST_REQUIRE([1.36])
 BOOST_DATE_TIME
 BOOST_SMART_PTR
+BOOST_STRING_ALGO
 BOOST_UUID
 
 AS_IF([test "x$enable_client" != "xno"], [

@@ -179,7 +179,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
                     size_t colonPos = line.find( ":" );
                     string headerName = line.substr( 0, colonPos );
                     string headerValue = line.substr( colonPos + 1 );
-                    if ( libcmis::tolower( headerName ) == libcmis::tolower( "Content-Id" ) )
+                    if ( boost::to_lower_copy( headerName ) == "content-id" )
                     {
                         cid = libcmis::trim( headerValue );
                         // Remove the '<' '>' around the id if any

@@ -156,8 +156,6 @@ namespace libcmis
 
     std::string sha1( const std::string& str );
 
-    std::string tolower( std::string sText );
-
     int stringstream_write_callback(void * context, const char * s, int len);
 
     std::string escape( std::string str );
