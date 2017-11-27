@@ -34,7 +34,7 @@ using libcmis::PropertyPtrMap;
 bool isOutOfMemory = false;
 
 /// Ignore all tests results depending on this when running in valgrind
-void * operator new ( size_t requestedSize ) throw ( bad_alloc )
+void * operator new ( size_t requestedSize )
 {
     if ( isOutOfMemory )
     {

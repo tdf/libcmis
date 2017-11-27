@@ -116,7 +116,7 @@ CURLcode curl_global_init( long flags );
 
 CURL *curl_easy_init( void );
 void curl_easy_cleanup( CURL *curl );
-CURLcode curl_easy_setopt( CURL *curl, CURLoption option, ... );
+CURLcode curl_easy_setopt( CURL *curl, long option, ... );
 char *curl_easy_escape( CURL *handle, const char *string, int length );
 char *curl_unescape( const char *string, int length );
 char *curl_easy_unescape( CURL *handle, const char *string, int length, int *outlength );
@@ -140,7 +140,7 @@ typedef enum
   CURLINFO_LASTONE          = 42
 } CURLINFO;
 
-CURLcode curl_easy_getinfo( CURL *curl, CURLINFO info, ... );
+CURLcode curl_easy_getinfo( CURL *curl, long info, ... );
 
 #define LIBCURL_VERSION_MAJOR 7
 #define LIBCURL_VERSION_MINOR 26

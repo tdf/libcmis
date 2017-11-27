@@ -31,7 +31,14 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#if defined __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define private public
+#if defined __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include "ws-relatedmultipart.hxx"
 #include "ws-requests.hxx"

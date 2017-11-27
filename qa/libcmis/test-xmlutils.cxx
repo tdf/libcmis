@@ -35,7 +35,14 @@
 #include <cppunit/ui/text/TestRunner.h>
 #include <libxml/tree.h>
 
+#if defined __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define private public
+#if defined __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include "object-type.hxx"
 #include "property.hxx"

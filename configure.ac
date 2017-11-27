@@ -24,6 +24,7 @@ AC_PROG_LIBTOOL
 LT_INIT([win32-dll disable-static pic-only])
 AC_CANONICAL_HOST
 
+AX_CXX_COMPILE_STDCXX_11
 
 # Check the options
 AC_ARG_ENABLE(client,
@@ -205,6 +206,7 @@ AC_MSG_NOTICE([
 
 libcmis $VERSION:
               Prefix: ${prefix}
+            Compiler: ${CXX}
       Compiler flags: ${CXXFLAGS}
               client: ${enable_client}
               werror: ${enable_werror}

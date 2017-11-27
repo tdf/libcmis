@@ -137,7 +137,7 @@ char *curl_easy_unescape( CURL *, const char *string, int length, int * )
     return curl_unescape( string, length );
 }
 
-CURLcode curl_easy_setopt( CURL * curl, CURLoption option, ... )
+CURLcode curl_easy_setopt( CURL * curl, long option, ... )
 {
     CurlHandle* handle = static_cast< CurlHandle * >( curl );
 
@@ -347,7 +347,7 @@ CURLcode curl_easy_perform( CURL * curl )
     return mockup::config->writeResponse( handle );
 }
 
-CURLcode curl_easy_getinfo( CURL * curl, CURLINFO info, ... )
+CURLcode curl_easy_getinfo( CURL * curl, long info, ... )
 {
     CurlHandle* handle = static_cast< CurlHandle * >( curl );
 
