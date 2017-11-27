@@ -34,8 +34,15 @@
 #include <cppunit/ui/text/TestRunner.h>
 #include <libxml/tree.h>
 
+#if defined __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define private public
 #define protected public
+#if defined __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include "oauth2-data.hxx"
 #include "oauth2-handler.hxx"

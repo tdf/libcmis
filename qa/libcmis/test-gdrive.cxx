@@ -32,8 +32,15 @@
 
 #include <string>
 
+#if defined __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define private public
 #define protected public
+#if defined __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include <mockup-config.h>
 
