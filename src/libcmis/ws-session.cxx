@@ -41,7 +41,7 @@ using namespace std;
 
 WSSession::WSSession( string bindingUrl, string repositoryId, string username,
         string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2,
-        bool verbose ) throw ( libcmis::Exception ) :
+        bool verbose ) :
     BaseSession( bindingUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_servicesUrls( ),
     m_navigationService( NULL ),
@@ -58,7 +58,7 @@ WSSession::WSSession( string bindingUrl, string repositoryId, string username,
 
 WSSession::WSSession( string bindingUrl, string repositoryId,
                       const HttpSession& httpSession,
-                      libcmis::HttpResponsePtr response ) throw ( libcmis::Exception ) :
+                      libcmis::HttpResponsePtr response ) :
     BaseSession( bindingUrl, repositoryId, httpSession ),
     m_servicesUrls( ),
     m_navigationService( NULL ),
@@ -126,7 +126,6 @@ WSSession::~WSSession( )
 }
 
 string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
-    throw ( CurlException )
 {
     string buf;
     if ( response )
@@ -171,7 +170,7 @@ string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
     return buf;
 }
 
-vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& request ) throw ( libcmis::Exception )
+vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& request )
 {
     vector< SoapResponsePtr > responses;
 
@@ -217,7 +216,7 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
     return responses;
 }
 
-void WSSession::parseWsdl( string buf ) throw ( libcmis::Exception )
+void WSSession::parseWsdl( string buf )
 {
     // parse the content
     const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 ), xmlFreeDoc );
@@ -281,7 +280,7 @@ void WSSession::initializeResponseFactory( )
     m_responseFactory.setSession( this );
 }
 
-void WSSession::initializeRepositories( map< string, string > repositories ) throw ( libcmis::Exception )
+void WSSession::initializeRepositories( map< string, string > repositories )
 {
     for ( map< string, string >::iterator it = repositories.begin( );
           it != repositories.end( ); ++it )
@@ -292,7 +291,6 @@ void WSSession::initializeRepositories( map< string, string > repositories ) thr
 }
 
 void WSSession::initialize( libcmis::HttpResponsePtr response )
-    throw ( libcmis::Exception )
 {
     if ( m_repositories.empty() )
     {
@@ -389,7 +387,7 @@ VersioningService& WSSession::getVersioningService( )
     return *m_versioningService;
 }
 
-libcmis::RepositoryPtr WSSession::getRepository( ) throw ( libcmis::Exception )
+libcmis::RepositoryPtr WSSession::getRepository( )
 {
     // Check if we already have the repository
     libcmis::RepositoryPtr repo;
@@ -428,23 +426,22 @@ bool WSSession::setRepository( string repositoryId )
     return success;
 }
 
-libcmis::ObjectPtr WSSession::getObject( string id ) throw ( libcmis::Exception )
+libcmis::ObjectPtr WSSession::getObject( string id )
 {
     return getObjectService( ).getObject( getRepositoryId( ), id );
 }
 
-libcmis::ObjectPtr WSSession::getObjectByPath( string path ) throw ( libcmis::Exception )
+libcmis::ObjectPtr WSSession::getObjectByPath( string path )
 {
     return getObjectService( ).getObjectByPath( getRepositoryId( ), path );
 }
 
-libcmis::ObjectTypePtr WSSession::getType( string id ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr WSSession::getType( string id )
 {
     return getRepositoryService( ).getTypeDefinition( m_repositoryId, id );
 }
 
 vector< libcmis::ObjectTypePtr > WSSession::getBaseTypes( )
-    throw ( libcmis::Exception )
 {
     return getRepositoryService().getTypeChildren( m_repositoryId, "" );
 }

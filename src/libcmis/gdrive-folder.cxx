@@ -54,7 +54,6 @@ GDriveFolder::~GDriveFolder( )
 }
 
 vector< libcmis::ObjectPtr > GDriveFolder::getChildren( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
     
@@ -118,7 +117,6 @@ string GDriveFolder::uploadProperties( Json properties )
                              
 libcmis::FolderPtr GDriveFolder::createFolder( 
     const PropertyPtrMap& properties ) 
-        throw( libcmis::Exception )
 {
     Json propsJson = GdriveUtils::toGdriveJson( properties );
  
@@ -142,7 +140,6 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     const PropertyPtrMap& properties, 
     boost::shared_ptr< ostream > os, 
     string contentType, string fileName ) 
-    throw ( libcmis::Exception )
 {    
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -172,7 +169,6 @@ vector< string > GDriveFolder::removeTree(
     bool /*allVersions*/, 
     libcmis::UnfileObjects::Type /*unfile*/, 
     bool /*continueOnError*/ ) 
-        throw ( libcmis::Exception )
 {
     // Object remove doesn't work with folder
     // Using trash instead

@@ -40,8 +40,7 @@ using namespace std;
 SharePointSession::SharePointSession ( string baseUrl,
                                string username,
                                string password,
-                               bool verbose )
-                                    throw ( libcmis::Exception ) :
+                               bool verbose ) :
     BaseSession( baseUrl, string(), username, password, false,
                  libcmis::OAuth2DataPtr(), verbose ),
     m_digestCode( string( ) ) 
@@ -66,8 +65,7 @@ SharePointSession::SharePointSession ( string baseUrl,
 
 SharePointSession::SharePointSession( string baseUrl,
                                       const HttpSession& httpSession,
-                                      libcmis::HttpResponsePtr response )
-                                            throw ( libcmis::Exception ) :
+                                      libcmis::HttpResponsePtr response ) :
     BaseSession( baseUrl, string(), httpSession ),
     m_digestCode( string( ) ) 
 {
@@ -100,7 +98,6 @@ bool SharePointSession::setRepository( string )
 }
 
 libcmis::RepositoryPtr SharePointSession::getRepository( )
-    throw ( libcmis::Exception )
 {
     // Return a dummy repository since SharePoint doesn't have that notion
     libcmis::RepositoryPtr repo( new SharePointRepository( getBindingUrl( ) ) );
@@ -108,7 +105,6 @@ libcmis::RepositoryPtr SharePointSession::getRepository( )
 }
 
 libcmis::ObjectPtr SharePointSession::getObject( string objectId )
-    throw ( libcmis::Exception )
 {
     // objectId is uri for the file
     string res;
@@ -125,7 +121,6 @@ libcmis::ObjectPtr SharePointSession::getObject( string objectId )
 }
 
 libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string parentId ) 
-            throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
     if ( !jsonRes["d"].toString( ).empty( ) ) {
@@ -149,7 +144,6 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
 }
 
 libcmis::ObjectPtr SharePointSession::getObjectByPath( string path )
-    throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
     path = libcmis::escape( path );
@@ -171,21 +165,18 @@ libcmis::ObjectPtr SharePointSession::getObjectByPath( string path )
 }
 
 libcmis::ObjectTypePtr SharePointSession::getType( string id )
-    throw ( libcmis::Exception )
 {
     libcmis::ObjectTypePtr type( new SharePointObjectType( id ) );
     return type;
 }
 
 vector< libcmis::ObjectTypePtr > SharePointSession::getBaseTypes( )
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectTypePtr > types;
     return types;
 }
 
 Json SharePointSession::getJsonFromUrl( string url )
-    throw ( libcmis::Exception )
 {
     string response;
     try
@@ -200,7 +191,7 @@ Json SharePointSession::getJsonFromUrl( string url )
 }
 
 /* Overwriting HttpSession::httpRunRequest to add the "accept:application/json" header */
-void SharePointSession::httpRunRequest( string url, vector< string > headers, bool redirect ) throw ( CurlException )
+void SharePointSession::httpRunRequest( string url, vector< string > headers, bool redirect )
 {
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
@@ -368,7 +359,6 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
 libcmis::HttpResponsePtr SharePointSession::httpPutRequest( std::string url,
                                          std::istream& is,
                                          std::vector< std::string > headers )
-    throw ( CurlException )
 {
     libcmis::HttpResponsePtr response;
     try
@@ -387,7 +377,6 @@ libcmis::HttpResponsePtr SharePointSession::httpPostRequest( const std::string& 
                                           std::istream& is,
                                           const std::string& contentType,
                                           bool redirect )
-    throw ( CurlException )
 {
     libcmis::HttpResponsePtr response;
     try
@@ -403,7 +392,6 @@ libcmis::HttpResponsePtr SharePointSession::httpPostRequest( const std::string& 
 }
 
 void SharePointSession::httpDeleteRequest( std::string url )
-    throw ( CurlException )
 {
     try
     {
@@ -417,7 +405,6 @@ void SharePointSession::httpDeleteRequest( std::string url )
 }
 
 void SharePointSession::fetchDigestCode( )
-    throw ( libcmis::Exception )
 try
 {
     fetchDigestCodeCurl( );
@@ -428,7 +415,6 @@ catch ( const CurlException& e )
 }
 
 void SharePointSession::fetchDigestCodeCurl( )
-    throw ( CurlException )
 {
     istringstream is( "empty" );
     libcmis::HttpResponsePtr response;

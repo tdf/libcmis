@@ -57,7 +57,7 @@ namespace libcmis
 
     Session* SessionFactory::createSession( string bindingUrl, string username,
             string password, string repository, bool noSslCheck,
-            libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( Exception )
+            libcmis::OAuth2DataPtr oauth2, bool verbose )
     {
         Session* session = NULL;
 
@@ -138,7 +138,7 @@ namespace libcmis
     }
 
     vector< RepositoryPtr > SessionFactory::getRepositories( string bindingUrl,
-            string username, string password, bool verbose ) throw ( Exception )
+            string username, string password, bool verbose )
     {
         vector< RepositoryPtr > repos;
 

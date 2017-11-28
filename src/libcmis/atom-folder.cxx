@@ -56,7 +56,7 @@ AtomFolder::~AtomFolder( )
 {
 }
 
-vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectPtr > AtomFolder::getChildren( )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
@@ -133,7 +133,6 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( ) throw ( libcmis::Excepti
 }
 
 libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
-    throw( libcmis::Exception )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
@@ -187,7 +186,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
 }
 
 libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& properties,
-        boost::shared_ptr< ostream > os, string contentType, string ) throw ( libcmis::Exception )
+        boost::shared_ptr< ostream > os, string contentType, string )
 {
     AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
@@ -260,7 +259,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& propertie
 }
 
 vector< string > AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfile,
-        bool continueOnError ) throw ( libcmis::Exception )
+        bool continueOnError )
 {
     AtomLink* treeLink = getLink( "down", "application/cmistree+xml" );
     if ( NULL == treeLink )

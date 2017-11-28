@@ -128,7 +128,7 @@ namespace libcmis
                     std::string password = std::string( ),
                     std::string repositoryId = std::string( ),
                     bool noSslCheck = false,
-                    OAuth2DataPtr oauth2 = OAuth2DataPtr(), bool verbose = false ) throw ( Exception );
+                    OAuth2DataPtr oauth2 = OAuth2DataPtr(), bool verbose = false );
 
             /**
                 Gets the informations of the repositories on the server.
@@ -142,7 +142,7 @@ namespace libcmis
             static std::vector< RepositoryPtr > getRepositories( std::string bindingUrl,
                     std::string username = std::string( ),
                     std::string password = std::string( ),
-                    bool verbose = false ) throw ( Exception );
+                    bool verbose = false );
     };
 }
 

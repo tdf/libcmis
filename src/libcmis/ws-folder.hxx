@@ -40,15 +40,14 @@ class WSFolder : public libcmis::Folder, public WSObject
         virtual ~WSFolder( );
 
         // virtual pure methods from Folder
-        virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectPtr > getChildren( );
 
-        virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties )
-            throw ( libcmis::Exception );
+        virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties );
         virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
-                                boost::shared_ptr< std::ostream > os, std::string contentType, std::string fileName ) throw ( libcmis::Exception );
+                                boost::shared_ptr< std::ostream > os, std::string contentType, std::string fileName );
 
         virtual std::vector< std::string > removeTree( bool allVersion = true, libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
-                                bool continueOnError = false ) throw ( libcmis::Exception );
+                                bool continueOnError = false );
 };
 
 #endif

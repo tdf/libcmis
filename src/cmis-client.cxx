@@ -169,7 +169,7 @@ class CommandException : public exception
 
     public:
         CommandException( string msg ) : m_msg( msg ) { }
-        ~CommandException( ) throw( ) { }
+        ~CommandException( ) noexcept { }
         CommandException( const CommandException& copy ) : m_msg( copy.m_msg ) { }
 
         CommandException& operator=( const CommandException& copy )
@@ -179,7 +179,7 @@ class CommandException : public exception
             return *this;
         }
 
-        virtual const char* what() const throw() { return m_msg.c_str(); }
+        virtual const char* what() const noexcept { return m_msg.c_str(); }
 };
 
 class CmisClient
@@ -189,9 +189,9 @@ class CmisClient
     public:
         CmisClient( variables_map& vm ) : m_vm( vm ) { }
 
-        libcmis::Session* getSession( bool inGetRepositories = false ) throw ( CommandException, libcmis::Exception );
+        libcmis::Session* getSession( bool inGetRepositories = false );
 
-        void execute( ) throw ( exception );
+        void execute( );
 
         void printHelp( );
 
@@ -223,7 +223,7 @@ map< string, string > CmisClient::getObjectProperties( )
     return result;
 }
 
-libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( CommandException, libcmis::Exception )
+libcmis::Session* CmisClient::getSession( bool inGetRepositories )
 {
     if ( m_vm.count( "url" ) == 0 )
         throw CommandException( "Missing binding URL" );
@@ -352,7 +352,7 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories ) throw ( Comma
     return session;
 }
 
-void CmisClient::execute( ) throw ( exception )
+void CmisClient::execute( )
 {
     if ( ( m_vm.count( "help" ) > 0 ) || m_vm.count( "command" ) != 1 )
     {

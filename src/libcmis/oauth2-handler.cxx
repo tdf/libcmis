@@ -34,8 +34,7 @@
 
 using namespace std;
 
-OAuth2Handler::OAuth2Handler(HttpSession* session, libcmis::OAuth2DataPtr data)
-    throw ( libcmis::Exception ) :
+OAuth2Handler::OAuth2Handler(HttpSession* session, libcmis::OAuth2DataPtr data) :
         m_session( session ),
         m_data( data ),
         m_access( ),
@@ -85,7 +84,7 @@ OAuth2Handler::~OAuth2Handler( )
 
 }
 
-void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
+void OAuth2Handler::fetchTokens( string authCode )
 {
     string post =
         "code="              + authCode +
@@ -114,7 +113,7 @@ void OAuth2Handler::fetchTokens( string authCode ) throw ( libcmis::Exception )
     m_refresh = jresp[ "refresh_token" ].toString( );
 }
 
-void OAuth2Handler::refresh( ) throw ( libcmis::Exception )
+void OAuth2Handler::refresh( )
 {
     m_access = string( );
     string post =
@@ -148,17 +147,17 @@ string OAuth2Handler::getAuthURL( )
             "&client_id=" + m_data->getClientId( );
 }
 
-string OAuth2Handler::getAccessToken( ) throw ( libcmis::Exception )
+string OAuth2Handler::getAccessToken( )
 {
     return m_access;
 }
 
-string OAuth2Handler::getRefreshToken( ) throw ( libcmis::Exception )
+string OAuth2Handler::getRefreshToken( )
 {
     return m_refresh;
 }
 
-string OAuth2Handler::getHttpHeader( ) throw ( libcmis::Exception )
+string OAuth2Handler::getHttpHeader( )
 {
     string header;
     if ( !m_access.empty() )

@@ -89,13 +89,13 @@ class SoapFault : public std::exception
 
     public:
         SoapFault( xmlNodePtr faultNode, SoapResponseFactory* factory );
-        virtual ~SoapFault( ) throw ( ) { };
+        virtual ~SoapFault( ) noexcept { };
 
         const std::string& getFaultcode ( ) const { return m_faultcode; }
         const std::string& getFaultstring ( ) const { return m_faultstring; }
         std::vector< SoapFaultDetailPtr > getDetail( ) const { return m_detail; }
 
-        virtual const char* what() const throw();
+        virtual const char* what() const noexcept;
 };
 
 
@@ -130,11 +130,11 @@ class SoapResponseFactory
         /** Get the Soap envelope from the multipart and extract the response objects from it. This
             method will also read the possible related parts to construct the response.
           */
-        std::vector< SoapResponsePtr > parseResponse( RelatedMultipart& multipart ) throw ( SoapFault );
+        std::vector< SoapResponsePtr > parseResponse( RelatedMultipart& multipart );
         
         /** Get the Soap envelope from an XML-only file and extract the response objects from it.
          */
-        std::vector< SoapResponsePtr > parseResponse( std::string& xml ) throw ( SoapFault );
+        std::vector< SoapResponsePtr > parseResponse( std::string& xml );
 
         /** Create a SoapResponse object depending on the node we have. This shouldn't be used
             directly: only from parseResponse or unit tests.

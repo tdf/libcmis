@@ -66,7 +66,7 @@ ObjectService& ObjectService::operator=( const ObjectService& copy )
     return *this;
 }
 
-libcmis::ObjectPtr ObjectService::getObject( string repoId, string id ) throw ( libcmis::Exception )
+libcmis::ObjectPtr ObjectService::getObject( string repoId, string id )
 {
     libcmis::ObjectPtr object;
 
@@ -83,7 +83,7 @@ libcmis::ObjectPtr ObjectService::getObject( string repoId, string id ) throw ( 
     return object;
 }
 
-libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path ) throw ( libcmis::Exception )
+libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path )
 {
     libcmis::ObjectPtr object;
 
@@ -101,7 +101,7 @@ libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path ) 
 }
 
 vector< libcmis::RenditionPtr > ObjectService::getRenditions(
-        string repoId, string objectId, string filter ) throw ( libcmis::Exception )
+        string repoId, string objectId, string filter )
 {
     vector< libcmis::RenditionPtr > renditions;
 
@@ -123,7 +123,7 @@ vector< libcmis::RenditionPtr > ObjectService::getRenditions(
 libcmis::ObjectPtr ObjectService::updateProperties(
         string repoId, string objectId,
         const PropertyPtrMap& properties,
-        string changeToken ) throw ( libcmis::Exception )
+        string changeToken )
 {
     libcmis::ObjectPtr object;
 
@@ -143,14 +143,14 @@ libcmis::ObjectPtr ObjectService::updateProperties(
     return object;
 }
 
-void ObjectService::deleteObject( string repoId, string id, bool allVersions ) throw ( libcmis::Exception )
+void ObjectService::deleteObject( string repoId, string id, bool allVersions )
 {
     class DeleteObject request( repoId, id, allVersions );
     m_session->soapRequest( m_url, request );
 }
         
 vector< string > ObjectService::deleteTree( std::string repoId, std::string folderId, bool allVersions,
-        libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception )
+        libcmis::UnfileObjects::Type unfile, bool continueOnFailure )
 {
     vector< string > failedIds;
 
@@ -167,13 +167,13 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
     return failedIds;
 }
 
-void ObjectService::move( string repoId, string objectId, string destId, string srcId ) throw ( libcmis::Exception )
+void ObjectService::move( string repoId, string objectId, string destId, string srcId )
 {
     MoveObject request( repoId, objectId, destId, srcId );
     m_session->soapRequest( m_url, request );
 }
 
-boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, string objectId ) throw ( libcmis::Exception )
+boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, string objectId )
 {
     boost::shared_ptr< istream > stream;
 
@@ -191,14 +191,14 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
 }
 
 void ObjectService::setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-        boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName ) throw ( libcmis::Exception )
+        boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName )
 {
     SetContentStream request( repoId, objectId, overwrite, changeToken, stream, contentType, fileName );
     m_session->soapRequest( m_url, request );
 }
 
 libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyPtrMap& properties,
-        string folderId ) throw ( libcmis::Exception )
+        string folderId )
 {
     libcmis::FolderPtr folder;
 
@@ -219,7 +219,7 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyPtr
 }
 
 libcmis::DocumentPtr ObjectService::createDocument( string repoId, const PropertyPtrMap& properties,
-        string folderId, boost::shared_ptr< ostream > stream, string contentType, string fileName ) throw ( libcmis::Exception )
+        string folderId, boost::shared_ptr< ostream > stream, string contentType, string fileName )
 {
     libcmis::DocumentPtr document;
 

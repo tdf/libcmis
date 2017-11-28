@@ -44,15 +44,15 @@ class WSObject : public virtual libcmis::Object
 
         WSObject& operator=( const WSObject& copy );
 
-        virtual std::vector< libcmis::RenditionPtr > getRenditions( std::string filter ) throw ( libcmis::Exception );
+        virtual std::vector< libcmis::RenditionPtr > getRenditions( std::string filter );
         virtual libcmis::ObjectPtr updateProperties(
-                const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+                const std::map< std::string, libcmis::PropertyPtr >& properties );
         
-        virtual void refresh( ) throw ( libcmis::Exception );
+        virtual void refresh( );
         
-        virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+        virtual void remove( bool allVersions = true );
 
-        virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception );
+        virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination );
 
         WSSession* getSession( );
 };

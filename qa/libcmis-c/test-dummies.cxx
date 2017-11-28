@@ -60,7 +60,7 @@ namespace dummies
     {
     }
 
-    libcmis::RepositoryPtr Session::getRepository( ) throw ( libcmis::Exception )
+    libcmis::RepositoryPtr Session::getRepository( )
     {
         libcmis::RepositoryPtr repo( new Repository( ) );
         return repo;
@@ -82,35 +82,35 @@ namespace dummies
         return repos;
     }
 
-    libcmis::FolderPtr Session::getRootFolder() throw ( libcmis::Exception )
+    libcmis::FolderPtr Session::getRootFolder()
     {
         libcmis::FolderPtr root( new Folder( true, false ) );
         return root;
     }
 
-    libcmis::ObjectPtr Session::getObject( string id ) throw ( libcmis::Exception )
+    libcmis::ObjectPtr Session::getObject( string id )
     {
         return getFolder( id );
     }
 
-    libcmis::ObjectPtr Session::getObjectByPath( string path ) throw ( libcmis::Exception )
+    libcmis::ObjectPtr Session::getObjectByPath( string path )
     {
         return getFolder( path );
     }
 
-    libcmis::FolderPtr Session::getFolder( string ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Session::getFolder( string )
     {
         libcmis::FolderPtr result( new Folder( false, false ) );
         return result;
     }
 
-    libcmis::ObjectTypePtr Session::getType( string ) throw ( libcmis::Exception )
+    libcmis::ObjectTypePtr Session::getType( string )
     {
         libcmis::ObjectTypePtr type( new ObjectType( true, false ) );
         return type;
     }
 
-    vector< libcmis::ObjectTypePtr > Session::getBaseTypes( ) throw ( libcmis::Exception )
+    vector< libcmis::ObjectTypePtr > Session::getBaseTypes( )
     {
         vector< libcmis::ObjectTypePtr > types;
         libcmis::ObjectTypePtr type( new ObjectType( true, false ) );
@@ -118,7 +118,7 @@ namespace dummies
         return types;
     }
 
-    std::string Session::getRefreshToken( ) throw ( libcmis::Exception )
+    std::string Session::getRefreshToken( )
     {
         return string( );
     }
@@ -240,7 +240,6 @@ namespace dummies
     }
 
     libcmis::ObjectTypePtr  ObjectType::getParentType( )
-        throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -264,7 +263,6 @@ namespace dummies
     }
 
     libcmis::ObjectTypePtr  ObjectType::getBaseType( )
-        throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -287,7 +285,6 @@ namespace dummies
     }
 
     vector< libcmis::ObjectTypePtr > ObjectType::getChildren( )
-        throw ( libcmis::Exception )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -371,7 +368,7 @@ namespace dummies
     }
 
     libcmis::ObjectPtr Object::updateProperties(
-           const PropertyPtrMap& ) throw ( libcmis::Exception )
+           const PropertyPtrMap& )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -393,7 +390,7 @@ namespace dummies
         return allowableActions;
     }
 
-    void Object::refresh( ) throw ( libcmis::Exception )
+    void Object::refresh( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -401,7 +398,7 @@ namespace dummies
         time( &m_refreshTimestamp );
     }
 
-    void Object::remove( bool ) throw ( libcmis::Exception )
+    void Object::remove( bool )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -409,7 +406,7 @@ namespace dummies
         time( &m_refreshTimestamp );
     }
 
-    void Object::move( libcmis::FolderPtr, libcmis::FolderPtr ) throw ( libcmis::Exception )
+    void Object::move( libcmis::FolderPtr, libcmis::FolderPtr )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -429,7 +426,7 @@ namespace dummies
     {
     }
 
-    libcmis::FolderPtr Folder::getFolderParent( ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Folder::getFolderParent( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -442,7 +439,7 @@ namespace dummies
         return parent;
     }
 
-    vector< libcmis::ObjectPtr > Folder::getChildren( ) throw ( libcmis::Exception )
+    vector< libcmis::ObjectPtr > Folder::getChildren( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -467,7 +464,7 @@ namespace dummies
         return m_isRoot;
     }
 
-    libcmis::FolderPtr Folder::createFolder( const PropertyPtrMap& ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Folder::createFolder( const PropertyPtrMap& )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -477,7 +474,7 @@ namespace dummies
     }
 
     libcmis::DocumentPtr Folder::createDocument( const PropertyPtrMap& properties,
-                            boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
+                            boost::shared_ptr< ostream > os, string contentType, string filename )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -493,7 +490,7 @@ namespace dummies
     }
 
     vector< string > Folder::removeTree( bool, libcmis::UnfileObjects::Type,
-                            bool ) throw ( libcmis::Exception )
+                            bool )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -514,7 +511,7 @@ namespace dummies
     {
     }
 
-    vector< libcmis::FolderPtr > Document::getParents( ) throw ( libcmis::Exception )
+    vector< libcmis::FolderPtr > Document::getParents( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -531,7 +528,7 @@ namespace dummies
         return parents;
     }
 
-    boost::shared_ptr< istream > Document::getContentStream( string /*streamId*/ ) throw ( libcmis::Exception )
+    boost::shared_ptr< istream > Document::getContentStream( string /*streamId*/ )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -543,7 +540,7 @@ namespace dummies
         return stream;
     }
 
-    void Document::setContentStream( boost::shared_ptr< ostream > os, string, string, bool ) throw ( libcmis::Exception )
+    void Document::setContentStream( boost::shared_ptr< ostream > os, string, string, bool )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -581,7 +578,7 @@ namespace dummies
         return long( 12345 );
     }
 
-    libcmis::DocumentPtr Document::checkOut( ) throw ( libcmis::Exception )
+    libcmis::DocumentPtr Document::checkOut( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -592,7 +589,7 @@ namespace dummies
         return result;
     }
 
-    void Document::cancelCheckout( ) throw ( libcmis::Exception )
+    void Document::cancelCheckout( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -601,7 +598,7 @@ namespace dummies
     }
 
     libcmis::DocumentPtr Document::checkIn( bool, string, const PropertyPtrMap& properties,
-                  boost::shared_ptr< ostream > os, string contentType, string filename ) throw ( libcmis::Exception )
+                  boost::shared_ptr< ostream > os, string contentType, string filename )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );
@@ -613,7 +610,7 @@ namespace dummies
         return libcmis::DocumentPtr( new Document( true, false ) );
     }
 
-    vector< libcmis::DocumentPtr > Document::getAllVersions( ) throw ( libcmis::Exception )
+    vector< libcmis::DocumentPtr > Document::getAllVersions( )
     {
         if ( m_triggersFaults )
             throw libcmis::Exception( "Fault triggered" );

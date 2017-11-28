@@ -63,7 +63,7 @@ WSObject& WSObject::operator=( const WSObject& copy )
     return *this;
 }
 
-vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter ) throw ( libcmis::Exception )
+vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter )
 {
     // Check that the server supports that optional feature. There is no need to check it
     // when getting the object as we may get them by shear luck
@@ -79,7 +79,7 @@ vector< libcmis::RenditionPtr > WSObject::getRenditions( string filter ) throw (
 }
 
 libcmis::ObjectPtr WSObject::updateProperties(
-        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
+        const PropertyPtrMap& properties )
 {
     // No need to send HTTP request if there is nothing to update
     if ( properties.empty( ) )
@@ -101,7 +101,7 @@ libcmis::ObjectPtr WSObject::updateProperties(
     return getSession( )->getObjectService( ).updateProperties( repoId, this->getId( ), properties, this->getChangeToken( ) );
 }
 
-void WSObject::refresh( ) throw ( libcmis::Exception )
+void WSObject::refresh( )
 {
     libcmis::ObjectPtr object = m_session->getObject( getId( ) );
     WSObject* const other = dynamic_cast< WSObject* >( object.get( ) );
@@ -109,13 +109,13 @@ void WSObject::refresh( ) throw ( libcmis::Exception )
         *this = *other;
 }
 
-void WSObject::remove( bool allVersions ) throw ( libcmis::Exception )
+void WSObject::remove( bool allVersions )
 {
     string repoId = getSession( )->getRepositoryId( );
     getSession( )->getObjectService( ).deleteObject( repoId, this->getId( ), allVersions );
 }
 
-void WSObject::move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception )
+void WSObject::move( libcmis::FolderPtr source, libcmis::FolderPtr destination )
 {
     string repoId = getSession( )->getRepositoryId( );
     getSession( )->getObjectService( ).move( repoId, getId( ), destination->getId( ), source->getId( ) );

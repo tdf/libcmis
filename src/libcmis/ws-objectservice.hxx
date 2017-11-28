@@ -54,37 +54,37 @@ class ObjectService
 
         ObjectService& operator=( const ObjectService& copy );
 
-        libcmis::ObjectPtr getObject( std::string repoId, std::string id ) throw ( libcmis::Exception );
+        libcmis::ObjectPtr getObject( std::string repoId, std::string id );
 
-        libcmis::ObjectPtr getObjectByPath( std::string repoId, std::string path ) throw ( libcmis::Exception );
+        libcmis::ObjectPtr getObjectByPath( std::string repoId, std::string path );
 
         std::vector< libcmis::RenditionPtr > getRenditions(
-                std::string repoId, std::string objectId, std::string filter ) throw ( libcmis::Exception );
+                std::string repoId, std::string objectId, std::string filter );
         
         libcmis::ObjectPtr updateProperties(
                 std::string repoId,
                 std::string objectId,
                 const std::map< std::string, libcmis::PropertyPtr > & properties,
-                std::string changeToken ) throw ( libcmis::Exception );
+                std::string changeToken );
 
-        void deleteObject( std::string repoId, std::string id, bool allVersions ) throw ( libcmis::Exception );
+        void deleteObject( std::string repoId, std::string id, bool allVersions );
         
         std::vector< std::string > deleteTree( std::string repoId, std::string folderId, bool allVersions,
-                libcmis::UnfileObjects::Type unfile, bool continueOnFailure ) throw ( libcmis::Exception );
+                libcmis::UnfileObjects::Type unfile, bool continueOnFailure );
 
-        void move( std::string repoId, std::string objectId, std::string destId, std::string srcId ) throw ( libcmis::Exception );
+        void move( std::string repoId, std::string objectId, std::string destId, std::string srcId );
 
-        boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
+        boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId );
 
         void setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-                boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName ) throw ( libcmis::Exception );
+                boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName );
 
         libcmis::FolderPtr createFolder( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
-                std::string folderId ) throw ( libcmis::Exception );
+                std::string folderId );
 
         libcmis::DocumentPtr createDocument( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId, boost::shared_ptr< std::ostream > stream, std::string contentType,
-                std::string fileName ) throw ( libcmis::Exception );
+                std::string fileName );
 
     private:
 

@@ -47,30 +47,25 @@ class SharePointDocument : public libcmis::Document, public SharePointObject
         std::string getType( ) { return std::string( "cmis:document" );}
         std::string getBaseType( ) { return std::string( "cmis:document" );} 
 
-        virtual std::vector< libcmis::FolderPtr > getParents( ) 
-            throw (libcmis::Exception );
-        virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) ) 
-            throw (libcmis::Exception );
+        virtual std::vector< libcmis::FolderPtr > getParents( );
+        virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) );
 
         virtual void setContentStream( boost::shared_ptr< std::ostream > os, 
                                        std::string contentType,
                                        std::string fileName, 
-                                       bool overwrite = true ) 
-            throw ( libcmis::Exception );
+                                       bool overwrite = true );
 
-        virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
-        virtual void cancelCheckout( ) throw ( libcmis::Exception );
+        virtual libcmis::DocumentPtr checkOut( );
+        virtual void cancelCheckout( );
         virtual libcmis::DocumentPtr checkIn( bool isMajor, 
                                               std::string comment,
                                               const std::map< std::string,libcmis::PropertyPtr >& 
                                                   properties,
                                               boost::shared_ptr< std::ostream > stream,
                                               std::string contentType, 
-                                              std::string fileName ) 
-            throw ( libcmis::Exception );
+                                              std::string fileName );
         
-        virtual std::vector< libcmis::DocumentPtr > getAllVersions( )
-            throw (libcmis::Exception );
+        virtual std::vector< libcmis::DocumentPtr > getAllVersions( );
 };
 
 #endif

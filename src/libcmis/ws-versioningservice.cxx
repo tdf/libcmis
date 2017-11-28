@@ -66,7 +66,7 @@ VersioningService& VersioningService::operator=( const VersioningService& copy )
     return *this;
 }
 
-libcmis::DocumentPtr VersioningService::checkOut( string repoId, string documentId ) throw ( libcmis::Exception )
+libcmis::DocumentPtr VersioningService::checkOut( string repoId, string documentId )
 {
     libcmis::DocumentPtr pwc;
 
@@ -87,7 +87,7 @@ libcmis::DocumentPtr VersioningService::checkOut( string repoId, string document
     return pwc;
 }
 
-void VersioningService::cancelCheckOut( string repoId, string documentId ) throw ( libcmis::Exception )
+void VersioningService::cancelCheckOut( string repoId, string documentId )
 {
     CancelCheckOut request( repoId, documentId );
     m_session->soapRequest( m_url, request );
@@ -96,7 +96,7 @@ void VersioningService::cancelCheckOut( string repoId, string documentId ) throw
 libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId, bool isMajor,
         const PropertyPtrMap& properties,
         boost::shared_ptr< ostream > stream, string contentType, string fileName,
-        string comment ) throw ( libcmis::Exception )
+        string comment )
 {
     libcmis::DocumentPtr newVersion;
 
@@ -117,7 +117,7 @@ libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId,
     return newVersion;
 }
 
-vector< libcmis::DocumentPtr > VersioningService::getAllVersions( string repoId, string objectId ) throw ( libcmis::Exception )
+vector< libcmis::DocumentPtr > VersioningService::getAllVersions( string repoId, string objectId )
 {
     vector< libcmis::DocumentPtr > versions;
 

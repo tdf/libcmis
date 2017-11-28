@@ -92,7 +92,7 @@ namespace libcmis
             /** Parses the permission name into one of the enum values or throws
                 an exception for invalid input strings.
               */
-            static Type parseType( std::string type ) throw ( Exception );
+            static Type parseType( std::string type );
 
     };
 

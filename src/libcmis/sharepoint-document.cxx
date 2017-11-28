@@ -53,7 +53,6 @@ SharePointDocument::~SharePointDocument( )
 }
 
 vector< libcmis::FolderPtr > SharePointDocument::getParents( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
 
@@ -66,7 +65,6 @@ vector< libcmis::FolderPtr > SharePointDocument::getParents( )
 }
 
 boost::shared_ptr< istream > SharePointDocument::getContentStream( string /*streamId*/ )
-    throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;
     // file uri + /$value
@@ -86,7 +84,6 @@ void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os,
                                            string contentType, 
                                            string /*fileName*/, 
                                            bool /*overwrite*/ ) 
-    throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -114,7 +111,7 @@ void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os,
     refresh( );
 }
 
-libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception )
+libcmis::DocumentPtr SharePointDocument::checkOut( )
 {
     istringstream is( "" );
     string url = getId( ) + "/checkout";
@@ -132,7 +129,7 @@ libcmis::DocumentPtr SharePointDocument::checkOut( ) throw ( libcmis::Exception 
     return checkout;
 }
 
-void SharePointDocument::cancelCheckout( ) throw ( libcmis::Exception )
+void SharePointDocument::cancelCheckout( )
 {
     istringstream is( "" );
     string url = getId( ) + "/undocheckout";
@@ -152,7 +149,6 @@ libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor,
                                                   boost::shared_ptr< std::ostream > stream,
                                                   std::string contentType, 
                                                   std::string fileName ) 
-    throw ( libcmis::Exception )
 {     
     setContentStream( stream, contentType, fileName );
     comment = libcmis::escape( comment );
@@ -182,7 +178,6 @@ libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor,
 }
 
 vector< libcmis::DocumentPtr > SharePointDocument::getAllVersions( ) 
-    throw ( libcmis::Exception )
 {   
     string res;
     string url = getStringProperty( "Versions" );

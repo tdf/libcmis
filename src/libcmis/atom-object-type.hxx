@@ -40,23 +40,23 @@ class AtomObjectType : public libcmis::ObjectType
         std::string m_childrenUrl;
 
     public:
-        AtomObjectType( AtomPubSession* session, std::string id ) throw ( libcmis::Exception );
-        AtomObjectType( AtomPubSession* session, xmlNodePtr node ) throw ( libcmis::Exception );
+        AtomObjectType( AtomPubSession* session, std::string id );
+        AtomObjectType( AtomPubSession* session, xmlNodePtr node );
         AtomObjectType( const AtomObjectType& copy );
         virtual ~AtomObjectType( );
 
         AtomObjectType& operator=( const AtomObjectType& copy );
         
-        virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
+        virtual void refresh( ) { refreshImpl( NULL ); }
 
-        virtual libcmis::ObjectTypePtr getParentType( ) throw ( libcmis::Exception );
-        virtual libcmis::ObjectTypePtr getBaseType( ) throw ( libcmis::Exception );
-        virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getParentType( );
+        virtual libcmis::ObjectTypePtr getBaseType( );
+        virtual std::vector< libcmis::ObjectTypePtr > getChildren( );
 
     private:
 
-        void refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception );
-        void extractInfos( xmlDocPtr doc ) throw ( libcmis::Exception );
+        void refreshImpl( xmlDocPtr doc );
+        void extractInfos( xmlDocPtr doc );
 };
 
 #endif

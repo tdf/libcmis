@@ -56,21 +56,17 @@ class Json
 
         ~Json( ) ;
 
-        Json operator[]( std::string key ) const 
-            throw( libcmis::Exception );
+        Json operator[]( std::string key ) const;
 
         Json& operator=( const Json& rhs ) ;
 
         void swap( Json& other ) ;
 
-        void add( const Json& json)
-            throw( libcmis::Exception );
+        void add( const Json& json);
         
-        void add( const std::string& key, const Json& json)
-            throw( libcmis::Exception );
+        void add( const std::string& key, const Json& json);
 
-        static Json parse( const std::string& str )
-            throw( libcmis::Exception );
+        static Json parse( const std::string& str );
         
         std::string toString( ) const;
         Type getDataType( ) const ;

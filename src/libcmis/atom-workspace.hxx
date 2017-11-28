@@ -72,7 +72,7 @@ class AtomRepository : public libcmis::Repository
         std::map< UriTemplate::Type, std::string > m_uriTemplates;
 
     public:
-        AtomRepository( xmlNodePtr wsNode = NULL ) throw ( libcmis::Exception );
+        AtomRepository( xmlNodePtr wsNode = NULL );
         AtomRepository( const AtomRepository& rCopy );
         ~AtomRepository( );
 

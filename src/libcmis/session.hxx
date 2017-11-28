@@ -47,7 +47,7 @@ namespace libcmis
 
             /** Get the current repository.
               */
-            virtual RepositoryPtr getRepository( ) throw ( Exception ) = 0;
+            virtual RepositoryPtr getRepository( ) = 0;
 
             virtual std::vector< RepositoryPtr > getRepositories( ) = 0;
 
@@ -61,27 +61,27 @@ namespace libcmis
 
             /** Get the Root folder of the repository
               */
-            virtual FolderPtr getRootFolder() throw ( Exception )= 0;
+            virtual FolderPtr getRootFolder()= 0;
             
             /** Get a CMIS object from its ID.
               */
-            virtual ObjectPtr getObject( std::string id ) throw ( Exception ) = 0;
+            virtual ObjectPtr getObject( std::string id ) = 0;
 
             /** Get a CMIS object from one of its path.
               */
-            virtual ObjectPtr getObjectByPath( std::string path ) throw ( Exception ) = 0;
+            virtual ObjectPtr getObjectByPath( std::string path ) = 0;
 
             /** Get a CMIS folder from its ID.
               */
-            virtual libcmis::FolderPtr getFolder( std::string id ) throw ( Exception ) = 0;
+            virtual libcmis::FolderPtr getFolder( std::string id ) = 0;
 
             /** Get a CMIS object type from its ID.
               */
-            virtual ObjectTypePtr getType( std::string id ) throw ( Exception ) = 0;
+            virtual ObjectTypePtr getType( std::string id ) = 0;
 
             /** Get all the CMIS base object types known by the server.
               */
-            virtual std::vector< ObjectTypePtr > getBaseTypes( ) throw ( Exception ) = 0;
+            virtual std::vector< ObjectTypePtr > getBaseTypes( ) = 0;
 
             /** Enable or disable the SSL certificate verification.
 

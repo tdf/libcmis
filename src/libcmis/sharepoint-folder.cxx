@@ -80,7 +80,6 @@ string SharePointFolder::getParentId( )
 }
 
 vector< libcmis::ObjectPtr > SharePointFolder::getChildren( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
     string filesUrl = getStringProperty( "Files" );
@@ -98,7 +97,6 @@ vector< libcmis::ObjectPtr > SharePointFolder::getChildren( )
 }
 
 Json::JsonVector SharePointFolder::getChildrenImpl( string url )
-    throw ( libcmis::Exception )
 {
     string res;
     try
@@ -115,7 +113,6 @@ Json::JsonVector SharePointFolder::getChildrenImpl( string url )
 }
 
 libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& properties ) 
-    throw( libcmis::Exception )
 {
     string folderName;
     for ( PropertyPtrMap::const_iterator it = properties.begin() ; 
@@ -160,7 +157,6 @@ libcmis::DocumentPtr SharePointFolder::createDocument( const PropertyPtrMap& pro
                                                        boost::shared_ptr< ostream > os, 
                                                        string contentType, 
                                                        string fileName ) 
-    throw ( libcmis::Exception )
 {    
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -201,7 +197,6 @@ libcmis::DocumentPtr SharePointFolder::createDocument( const PropertyPtrMap& pro
 vector< string > SharePointFolder::removeTree( bool /*allVersions*/, 
                                                libcmis::UnfileObjects::Type /*unfile*/, 
                                                bool /*continueOnError*/ ) 
-    throw ( libcmis::Exception )
 {
     remove( ); 
     // Nothing to return here

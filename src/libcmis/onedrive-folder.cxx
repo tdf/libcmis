@@ -54,7 +54,6 @@ OneDriveFolder::~OneDriveFolder( )
 }
 
 vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectPtr > children;
     string query = getSession( )->getBindingUrl( ) + "/" + getId( ) + "/files";
@@ -83,7 +82,6 @@ vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( )
 
 libcmis::FolderPtr OneDriveFolder::createFolder( 
     const PropertyPtrMap& properties ) 
-        throw( libcmis::Exception )
 {
     Json propsJson = OneDriveUtils::toOneDriveJson( properties );
 
@@ -111,7 +109,6 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     const PropertyPtrMap& properties, 
     boost::shared_ptr< ostream > os, 
     string /*contentType*/, string fileName ) 
-    throw ( libcmis::Exception )
 {    
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -160,7 +157,6 @@ vector< string > OneDriveFolder::removeTree(
     bool /*allVersions*/, 
     libcmis::UnfileObjects::Type /*unfile*/, 
     bool /*continueOnError*/ ) 
-        throw ( libcmis::Exception )
 {
     remove( ); 
     // Nothing to return here

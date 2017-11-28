@@ -104,7 +104,6 @@ string GDriveDocument::getDownloadUrl( string streamId )
 }
 
 vector< libcmis::FolderPtr > GDriveDocument::getParents( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
 
@@ -122,7 +121,6 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
 }
 
 boost::shared_ptr< istream > GDriveDocument::getContentStream( string streamId )
-    throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;
     string streamUrl = getDownloadUrl( streamId );
@@ -142,7 +140,6 @@ boost::shared_ptr< istream > GDriveDocument::getContentStream( string streamId )
 
 void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os, 
                                    string contentType )
-                                throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -179,7 +176,6 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
                                        string contentType, 
                                        string fileName, 
                                        bool /*overwrite*/ ) 
-                                            throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -217,7 +213,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     uploadStream( os, contentType );
 }
 
-libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
+libcmis::DocumentPtr GDriveDocument::checkOut( )
 {
     // GDrive doesn't have CheckOut, so just return the same document here
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
@@ -226,7 +222,7 @@ libcmis::DocumentPtr GDriveDocument::checkOut( ) throw ( libcmis::Exception )
     return checkout;
 }
 
-void GDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
+void GDriveDocument::cancelCheckout( )
 {
     // Don't do anything since we don't have CheckOut
 }
@@ -238,7 +234,6 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
     boost::shared_ptr< std::ostream > stream,
     std::string contentType, 
     std::string fileName ) 
-        throw ( libcmis::Exception )
 {     
     // GDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
@@ -252,7 +247,6 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
         
 
 vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) 
-    throw ( libcmis::Exception )
 {   
     vector< libcmis::DocumentPtr > revisions;
     string versionUrl = getUrl( ) + "/revisions";

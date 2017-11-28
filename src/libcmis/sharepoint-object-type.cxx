@@ -93,14 +93,12 @@ SharePointObjectType::SharePointObjectType( const std::string& id ): ObjectType(
 }
 
 libcmis::ObjectTypePtr SharePointObjectType::getParentType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr parentTypePtr( new SharePointObjectType( m_parentTypeId ) );
     return parentTypePtr;
 }
 
 libcmis::ObjectTypePtr SharePointObjectType::getBaseType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr baseTypePtr( new SharePointObjectType( m_baseTypeId ) );
     return baseTypePtr;

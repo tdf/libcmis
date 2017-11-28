@@ -55,7 +55,7 @@ class CmisSoapFaultDetail : public SoapFaultDetail
         CmisSoapFaultDetail( xmlNodePtr node );
 
     public:
-        ~CmisSoapFaultDetail( ) throw ( ) { };
+        ~CmisSoapFaultDetail( ) noexcept { };
 
         std::string getType( ) { return m_type; }
         int getCode( ) { return m_code; }

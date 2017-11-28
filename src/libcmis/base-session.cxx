@@ -40,7 +40,7 @@
 using namespace std;
 
 BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
-        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose ) :
     Session( ),
     HttpSession( username, password, noSslCheck, oauth2, verbose ),
     m_bindingUrl( bindingUrl ),
@@ -50,7 +50,7 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
 }
 
 BaseSession::BaseSession( string sBindingUrl, string repository,
-             const HttpSession& httpSession ) throw ( libcmis::Exception ) :
+             const HttpSession& httpSession ) :
     Session( ),
     HttpSession( httpSession ),
     m_bindingUrl( sBindingUrl ),
@@ -140,7 +140,6 @@ void BaseSession::setNoSSLCertificateCheck( bool noCheck )
 }
 
 void BaseSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
-            throw ( libcmis::Exception )
 {
     m_oauth2Handler = new OAuth2Handler( this, oauth2 );
     m_oauth2Handler->setOAuth2Parser( OAuth2Providers::getOAuth2Parser( getBindingUrl( ) ) );
@@ -153,12 +152,12 @@ vector< libcmis::RepositoryPtr > BaseSession::getRepositories( )
     return m_repositories;
 }
 
-libcmis::FolderPtr BaseSession::getRootFolder() throw ( libcmis::Exception )
+libcmis::FolderPtr BaseSession::getRootFolder()
 {
     return getFolder( getRootId() );
 }
 
-libcmis::FolderPtr BaseSession::getFolder( string id ) throw ( libcmis::Exception )
+libcmis::FolderPtr BaseSession::getFolder( string id )
 {
     libcmis::ObjectPtr object = getObject( id );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );

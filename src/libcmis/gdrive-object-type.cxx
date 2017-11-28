@@ -128,14 +128,12 @@ GdriveObjectType::GdriveObjectType( const std::string& id ): ObjectType( )
 
 
 libcmis::ObjectTypePtr GdriveObjectType::getParentType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr parentTypePtr( new GdriveObjectType( m_parentTypeId ) );
     return parentTypePtr;
 }
 
 libcmis::ObjectTypePtr GdriveObjectType::getBaseType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr baseTypePtr( new GdriveObjectType( m_baseTypeId ) );
     return baseTypePtr;

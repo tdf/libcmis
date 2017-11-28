@@ -55,7 +55,6 @@ OneDriveDocument::~OneDriveDocument( )
 }
 
 vector< libcmis::FolderPtr > OneDriveDocument::getParents( ) 
-    throw ( libcmis::Exception )
 {
     vector< libcmis::FolderPtr > parents;
 
@@ -68,7 +67,6 @@ vector< libcmis::FolderPtr > OneDriveDocument::getParents( )
 }
 
 boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*streamId*/ )
-    throw ( libcmis::Exception )
 {
     boost::shared_ptr< istream > stream;
     string streamUrl = getStringProperty( "source" );
@@ -90,7 +88,6 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
                                          string /*contentType*/, 
                                          string fileName, 
                                          bool /*overwrite*/ ) 
-    throw ( libcmis::Exception )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -140,7 +137,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     refresh( );
 }
 
-libcmis::DocumentPtr OneDriveDocument::checkOut( ) throw ( libcmis::Exception )
+libcmis::DocumentPtr OneDriveDocument::checkOut( )
 {
     // OneDrive doesn't have CheckOut, so just return the same document here
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
@@ -149,7 +146,7 @@ libcmis::DocumentPtr OneDriveDocument::checkOut( ) throw ( libcmis::Exception )
     return checkout;
 }
 
-void OneDriveDocument::cancelCheckout( ) throw ( libcmis::Exception )
+void OneDriveDocument::cancelCheckout( )
 {
     // Don't do anything since we don't have CheckOut
 }
@@ -160,7 +157,6 @@ libcmis::DocumentPtr OneDriveDocument::checkIn( bool /*isMajor*/,
                                                 boost::shared_ptr< std::ostream > stream,
                                                 std::string contentType, 
                                                 std::string fileName ) 
-    throw ( libcmis::Exception )
 {     
     // OneDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
@@ -173,7 +169,6 @@ libcmis::DocumentPtr OneDriveDocument::checkIn( bool /*isMajor*/,
 }
 
 vector< libcmis::DocumentPtr > OneDriveDocument::getAllVersions( ) 
-    throw ( libcmis::Exception )
 {   
     return vector< libcmis::DocumentPtr > ( );
 }

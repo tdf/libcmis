@@ -65,7 +65,7 @@ RepositoryService& RepositoryService::operator=( const RepositoryService& copy )
     return *this;
 }
 
-map< string, string > RepositoryService::getRepositories( ) throw ( libcmis::Exception )
+map< string, string > RepositoryService::getRepositories( )
 {
     map< string, string > repositories;
 
@@ -83,7 +83,7 @@ map< string, string > RepositoryService::getRepositories( ) throw ( libcmis::Exc
     return repositories;
 }
 
-libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw ( libcmis::Exception )
+libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id )
 {
     libcmis::RepositoryPtr repository;
 
@@ -100,7 +100,7 @@ libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id ) throw (
     return repository;
 }
 
-libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, string typeId ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, string typeId )
 {
     libcmis::ObjectTypePtr type;
 
@@ -117,7 +117,7 @@ libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, stri
     return type;
 }
 
-vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( string repoId, string typeId ) throw ( libcmis::Exception )
+vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( string repoId, string typeId )
 {
     vector< libcmis::ObjectTypePtr > children;
 

@@ -31,7 +31,7 @@
 
 using namespace std;
 
-AtomRepository::AtomRepository( xmlNodePtr wsNode ) throw ( libcmis::Exception ):
+AtomRepository::AtomRepository( xmlNodePtr wsNode ):
     Repository( ),
     m_collections( ),
     m_uriTemplates( )

@@ -129,8 +129,7 @@ namespace libcmis
               */
             virtual boost::shared_ptr< Object > addSecondaryType(
                                                         std::string id,
-                                                        PropertyPtrMap properties )
-                throw ( Exception );
+                                                        PropertyPtrMap properties );
 
             /** Convenience function removing a secondary type from the object.
 
@@ -154,8 +153,7 @@ namespace libcmis
                     to throw a constraint exception if it doesn't allow the
                     operation.
               */
-            virtual boost::shared_ptr< Object > removeSecondaryType( std::string id )
-                throw ( Exception );
+            virtual boost::shared_ptr< Object > removeSecondaryType( std::string id );
 
             /** Gives access to the properties of the object.
 
@@ -179,8 +177,7 @@ namespace libcmis
                 \attention
                     The streamId of the rendition is used in getContentStream( )
               */
-            virtual std::vector< RenditionPtr> getRenditions( std::string filter = std::string( ) )
-                throw ( Exception );
+            virtual std::vector< RenditionPtr> getRenditions( std::string filter = std::string( ) );
             virtual AllowableActionsPtr getAllowableActions( ) { return m_allowableActions; }
 
             /** Update the object properties and return the updated object.
@@ -191,21 +188,21 @@ namespace libcmis
                     are still two different instances to ease memory handling.
               */
             virtual boost::shared_ptr< Object > updateProperties(
-                        const PropertyPtrMap& properties ) throw ( Exception ) = 0;
+                        const PropertyPtrMap& properties ) = 0;
 
             virtual ObjectTypePtr getTypeDescription( );
 
             /** Reload the data from the server.
               */
-            virtual void refresh( ) throw ( Exception ) = 0;
+            virtual void refresh( ) = 0;
             virtual time_t getRefreshTimestamp( ) { return m_refreshTimestamp; }
 
-            virtual void remove( bool allVersions = true ) throw ( Exception ) = 0;
+            virtual void remove( bool allVersions = true ) = 0;
 
-            virtual void move( boost::shared_ptr< Folder > source, boost::shared_ptr< Folder > destination ) throw ( Exception ) = 0;
+            virtual void move( boost::shared_ptr< Folder > source, boost::shared_ptr< Folder > destination ) = 0;
 
 
-            virtual std::string getThumbnailUrl( ) throw ( Exception );
+            virtual std::string getThumbnailUrl( );
 
             /** Dump the object as a string for debugging or display purpose.
               */

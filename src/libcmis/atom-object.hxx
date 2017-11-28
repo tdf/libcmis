@@ -45,7 +45,7 @@ class AtomLink
         std::map< std::string, std::string > m_others;
 
     public:
-        AtomLink( xmlNodePtr node ) throw ( libcmis::Exception );
+        AtomLink( xmlNodePtr node );
 
         std::string getRel( ) { return m_rel; }
         std::string getType( ) { return m_type; }
@@ -62,7 +62,7 @@ class AtomObject : public virtual libcmis::Object
         std::vector< AtomLink > m_links;
 
     public:
-        AtomObject( AtomPubSession* session ) throw ( libcmis::Exception );
+        AtomObject( AtomPubSession* session );
         AtomObject( const AtomObject& copy );
         ~AtomObject( );
 
@@ -70,17 +70,17 @@ class AtomObject : public virtual libcmis::Object
 
         // Overridden methods from libcmis::Object
         virtual libcmis::ObjectPtr updateProperties(
-                    const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+                    const std::map< std::string, libcmis::PropertyPtr >& properties );
 
         virtual libcmis::AllowableActionsPtr getAllowableActions( );
 
         /** Reload the data from the server.
               */
-        virtual void refresh( ) throw ( libcmis::Exception ) { refreshImpl( NULL ); }
+        virtual void refresh( ) { refreshImpl( NULL ); }
 
-        virtual void remove( bool allVersion = true ) throw ( libcmis::Exception );
+        virtual void remove( bool allVersion = true );
 
-        virtual void move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception );
+        virtual void move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination );
 
         static void writeAtomEntry( xmlTextWriterPtr writer,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
@@ -89,7 +89,7 @@ class AtomObject : public virtual libcmis::Object
     protected:
 
         std::string getInfosUrl( );
-        virtual void refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception );
+        virtual void refreshImpl( xmlDocPtr doc );
         virtual void extractInfos( xmlDocPtr doc );
 
         AtomPubSession* getSession( );

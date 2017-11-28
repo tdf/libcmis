@@ -132,8 +132,7 @@ namespace libcmis
       */
     std::string getXmlNodeAttributeValue( xmlNodePtr node,
                                           const char* attributeName,
-                                          const char* defaultValue = NULL )
-        throw ( Exception );
+                                          const char* defaultValue = NULL );
 
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */
@@ -142,11 +141,11 @@ namespace libcmis
     /// Write a UTC time object to an xsd:dateTime string
     std::string writeDateTime( boost::posix_time::ptime time );
 
-    bool parseBool( std::string str ) throw ( Exception );
+    bool parseBool( std::string str );
 
-    long parseInteger( std::string str ) throw ( Exception );
+    long parseInteger( std::string str );
 
-    double parseDouble( std::string str ) throw ( Exception );
+    double parseDouble( std::string str );
 
     /** Trim spaces on the left and right of a string.
      */

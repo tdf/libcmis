@@ -131,7 +131,7 @@ void SharePointObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
-void SharePointObject::refresh( ) throw ( libcmis::Exception )
+void SharePointObject::refresh( )
 {
     string res;
     try
@@ -146,7 +146,7 @@ void SharePointObject::refresh( ) throw ( libcmis::Exception )
     refreshImpl( json );
 }
 
-void SharePointObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
+void SharePointObject::remove( bool /*allVersions*/ )
 {
     try
     {
@@ -168,7 +168,7 @@ vector< string> SharePointObject::getMultiStringProperty( const string& property
 }
 
 libcmis::ObjectPtr SharePointObject::updateProperties(
-        const PropertyPtrMap& /*properties*/ ) throw ( libcmis::Exception )
+        const PropertyPtrMap& /*properties*/ )
 {
     // there are no updateable properties so just return the same object
     libcmis::ObjectPtr updated = getSession( )->getObject( getId( ) );
@@ -176,7 +176,6 @@ libcmis::ObjectPtr SharePointObject::updateProperties(
 }
 
 void SharePointObject::move( FolderPtr /*source*/, FolderPtr destination ) 
-                                        throw ( libcmis::Exception )
 {  
     if ( !getStringProperty( "cmis:checkinComment" ).empty( ) )
     {

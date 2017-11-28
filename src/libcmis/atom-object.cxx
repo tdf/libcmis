@@ -69,7 +69,7 @@ namespace
     };
 }
 
-AtomObject::AtomObject( AtomPubSession* session ) throw ( libcmis::Exception ) :
+AtomObject::AtomObject( AtomPubSession* session ) :
     libcmis::Object( session ),
     m_links( )
 {
@@ -96,7 +96,7 @@ AtomObject::~AtomObject( )
 {
 }
 
-libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& properties ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& properties )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::UpdateProperties ) )
         throw libcmis::Exception( string( "UpdateProperties is not allowed on object " ) + getId() );
@@ -187,7 +187,7 @@ libcmis::AllowableActionsPtr AtomObject::getAllowableActions( )
     return libcmis::Object::getAllowableActions();
 }
 
-void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
+void AtomObject::refreshImpl( xmlDocPtr doc )
 {
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
@@ -222,7 +222,7 @@ void AtomObject::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         xmlFreeDoc( doc );
 }
 
-void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
+void AtomObject::remove( bool allVersions )
 {
     if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::DeleteObject ) )
         throw libcmis::Exception( string( "DeleteObject not allowed on object " ) + getId() );
@@ -248,7 +248,7 @@ void AtomObject::remove( bool allVersions ) throw ( libcmis::Exception )
     }
 }
 
-void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination ) throw ( libcmis::Exception )
+void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::shared_ptr< libcmis::Folder > destination )
 {
     AtomFolder* atomDestination = dynamic_cast< AtomFolder* > ( destination.get() );
 
@@ -458,7 +458,7 @@ AtomLink* AtomObject::getLink( std::string rel, std::string type )
     return link;
 }
 
-AtomLink::AtomLink( xmlNodePtr node ) throw ( libcmis::Exception ):
+AtomLink::AtomLink( xmlNodePtr node ):
     m_rel( ), m_type( ), m_id( ), m_href( ), m_others( )
 {
     xmlAttrPtr prop = node->properties;

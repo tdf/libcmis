@@ -58,16 +58,14 @@ class BaseSession : public libcmis::Session,
         BaseSession( std::string sBindingUrl, std::string repository,
                      std::string username, std::string password,
                      bool noSslCheck = false,
-                     libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false )
-            throw ( libcmis::Exception );
+                     libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false );
 
         /** This constructor copies an existing http session.
             This has been mostly designed for SessionFactory to save
             a few HTTP requests when guessing the binding to use.
           */
         BaseSession( std::string sBindingUrl, std::string repository,
-                     const HttpSession& httpSession )
-            throw ( libcmis::Exception );
+                     const HttpSession& httpSession );
 
         BaseSession( const BaseSession& copy );
         ~BaseSession( );
@@ -78,7 +76,7 @@ class BaseSession : public libcmis::Session,
 
         // Utility methods
 
-        std::string getRootId( ) throw ( libcmis::Exception ) { return getRepository()->getRootId( ); }
+        std::string getRootId( ) { return getRepository()->getRootId( ); }
 
         std::string createUrl( const std::string& pattern, std::map< std::string, std::string > variables );
 
@@ -86,8 +84,7 @@ class BaseSession : public libcmis::Session,
 
         // HttpSession overridden methods
 
-        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
-            throw ( libcmis::Exception );
+        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 );
 
         // Session methods
 
@@ -95,9 +92,9 @@ class BaseSession : public libcmis::Session,
 
         virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
 
-        virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
+        virtual libcmis::FolderPtr getRootFolder();
 
-        virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
+        virtual libcmis::FolderPtr getFolder( std::string id );
 
     protected:
         BaseSession( );
