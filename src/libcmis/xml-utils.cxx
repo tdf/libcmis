@@ -385,7 +385,7 @@ namespace libcmis
             return t; // obviously not a time
 
         size_t teePos = dateTimeStr.find( 'T' );
-        if ( teePos == string::npos )
+        if ( teePos == string::npos || teePos == dateTimeStr.size() - 1 )
             return t; // obviously not a time
 
         string noTzStr = dateTimeStr.substr( 0, teePos + 1 );
