@@ -169,7 +169,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             if ( inHeaders )
             {
                 // Remove potential \r at the end
-                if ( line[line.length() - 1] == '\r' )
+                if ( !line.empty() && line[line.length() - 1] == '\r' )
                     line = line.substr( 0, line.length() - 1 );
 
                 if ( line.empty( ) )
