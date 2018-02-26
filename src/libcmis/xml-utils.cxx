@@ -459,10 +459,9 @@ namespace libcmis
         bool value = false;
         if ( boolStr == "true" || boolStr == "1" )
             value = true;
-        else if ( boolStr == "false" || boolStr == "0" )
-            value = false;
         else
-            throw Exception( string( "Invalid xsd:boolean input: " ) + boolStr );
+            // treat everything else, including absence of property, as 'false', not as an error
+            value = false;
         return value;
     }
 
