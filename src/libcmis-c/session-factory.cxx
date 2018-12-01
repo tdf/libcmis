@@ -83,11 +83,8 @@ namespace
         bool result = m_callback( user, pass );
 
         // Update the username and password with the input
-        string newUser( user );
-        username.swap( newUser );
-
-        string newPass( pass );
-        password.swap( newPass );
+        username = user;
+        password = pass;
 
         return result;
     }
