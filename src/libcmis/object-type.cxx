@@ -293,22 +293,22 @@ namespace libcmis
         }
     }
 
-    void ObjectType::refresh( ) throw ( Exception )
+    void ObjectType::refresh( )
     {
         throw Exception( "ObjectType::refresh() shouldn't be called" );
     }
 
-    ObjectTypePtr  ObjectType::getParentType( ) throw ( Exception )
+    ObjectTypePtr  ObjectType::getParentType( )
     {
         throw Exception( "ObjectType::getParentType() shouldn't be called" );
     }
 
-    ObjectTypePtr  ObjectType::getBaseType( ) throw ( Exception )
+    ObjectTypePtr  ObjectType::getBaseType( )
     {
         throw Exception( "ObjectType::getBaseType() shouldn't be called" );
     }
 
-    vector< ObjectTypePtr > ObjectType::getChildren( ) throw ( Exception )
+    vector< ObjectTypePtr > ObjectType::getChildren( )
     {
         throw Exception( "ObjectType::getChildren() shouldn't be called" );
     }

@@ -52,16 +52,15 @@ class RepositoryService
 
         RepositoryService& operator=( const RepositoryService& copy );
 
-        std::map< std::string, std::string > getRepositories( ) throw ( libcmis::Exception );
+        std::map< std::string, std::string > getRepositories( );
 
         /** Get the repository information based on its identifier.
           */
-        libcmis::RepositoryPtr getRepositoryInfo( std::string id ) throw ( libcmis::Exception );
+        libcmis::RepositoryPtr getRepositoryInfo( std::string id );
 
-        libcmis::ObjectTypePtr getTypeDefinition( std::string repoId, std::string typeId ) throw ( libcmis::Exception );
+        libcmis::ObjectTypePtr getTypeDefinition( std::string repoId, std::string typeId );
 
-        std::vector< libcmis::ObjectTypePtr > getTypeChildren( std::string repoId, std::string typeId )
-            throw ( libcmis::Exception );
+        std::vector< libcmis::ObjectTypePtr > getTypeChildren( std::string repoId, std::string typeId );
 
     private:
 

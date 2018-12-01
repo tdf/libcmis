@@ -47,8 +47,8 @@ namespace libcmis
             {
             }
 
-            ~Exception( ) throw () { }
-            virtual const char* what() const throw()
+            ~Exception( ) noexcept { }
+            virtual const char* what() const noexcept
             {
                 return m_message.c_str( );
             }

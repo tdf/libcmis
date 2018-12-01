@@ -66,21 +66,17 @@ class GDriveObject : public virtual libcmis::Object
         std::vector< std::string > getMultiStringProperty(
                 const std::string& propertyName );
 
-        virtual std::vector< libcmis::RenditionPtr> getRenditions( std::string filter = std::string( ) )
-            throw ( libcmis::Exception );
+        virtual std::vector< libcmis::RenditionPtr> getRenditions( std::string filter = std::string( ) );
 
         virtual boost::shared_ptr< Object > updateProperties(
-            const libcmis::PropertyPtrMap& properties )
-                throw ( libcmis::Exception );
+            const libcmis::PropertyPtrMap& properties );
 
-        virtual void refresh( ) throw ( libcmis::Exception );
+        virtual void refresh( );
 
-        virtual void remove( bool allVersions = true ) 
-            throw ( libcmis::Exception );
+        virtual void remove( bool allVersions = true );
 
         virtual void move( boost::shared_ptr< libcmis::Folder > source,
-                           boost::shared_ptr< libcmis::Folder > destination )
-            throw ( libcmis::Exception );   
+                           boost::shared_ptr< libcmis::Folder > destination );
     
     protected:
         GDriveSession* getSession( );    

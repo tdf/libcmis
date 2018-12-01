@@ -128,8 +128,7 @@ namespace
 }
 
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
-                          libcmis::OAuth2DataPtr oauth2, bool verbose )
-        throw ( libcmis::Exception ) :
+                          libcmis::OAuth2DataPtr oauth2, bool verbose ) :
     m_curlHandle( NULL ),
     m_no100Continue( false ),
     m_oauth2Handler( NULL ),
@@ -221,19 +220,19 @@ HttpSession::~HttpSession( )
     delete( m_oauth2Handler );
 }
 
-string& HttpSession::getUsername( ) throw ( CurlException )
+string& HttpSession::getUsername( )
 {
     checkCredentials( );
     return m_username;
 }
 
-string& HttpSession::getPassword( ) throw ( CurlException )
+string& HttpSession::getPassword( )
 {
     checkCredentials( );
     return m_password;
 }
 
-libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlException )
+libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url )
 {
     checkOAuth2( url );
 
@@ -289,7 +288,7 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url ) throw ( CurlE
     return response;
 }
 
-libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, vector< string > headers ) throw ( CurlException )
+libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, vector< string > headers )
 {
     checkOAuth2( url );
 
@@ -377,7 +376,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
 }
 
 libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istream& is,
-    const string& contentType, bool redirect ) throw ( CurlException )
+    const string& contentType, bool redirect )
 {
     checkOAuth2( url );
 
@@ -469,7 +468,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
     return response;
 }
 
-void HttpSession::httpDeleteRequest( string url ) throw ( CurlException )
+void HttpSession::httpDeleteRequest( string url )
 {
     checkOAuth2( url );
 
@@ -511,7 +510,7 @@ void HttpSession::httpDeleteRequest( string url ) throw ( CurlException )
     m_refreshedToken = false;
 }
 
-void HttpSession::checkCredentials( ) throw ( CurlException )
+void HttpSession::checkCredentials( )
 {
     // Check that we have the complete credentials
     libcmis::AuthProviderPtr authProvider = libcmis::SessionFactory::getAuthenticationProvider();
@@ -525,7 +524,7 @@ void HttpSession::checkCredentials( ) throw ( CurlException )
     }
 }
 
-void HttpSession::httpRunRequest( string url, vector< string > headers, bool redirect ) throw ( CurlException )
+void HttpSession::httpRunRequest( string url, vector< string > headers, bool redirect )
 {
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
@@ -696,7 +695,6 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
 
 void HttpSession::checkOAuth2( string url )
-    throw ( CurlException )
 try
 {
     if ( m_oauth2Handler )
@@ -719,12 +717,12 @@ long HttpSession::getHttpStatus( )
     return status;
 }
 
-void HttpSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 ) throw ( libcmis::Exception )
+void HttpSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
 {
     m_oauth2Handler = new OAuth2Handler( this, oauth2 );
 }
 
-void HttpSession::oauth2Authenticate( ) throw ( libcmis::Exception )
+void HttpSession::oauth2Authenticate( )
 {
     string authCode;
 
@@ -768,7 +766,7 @@ void HttpSession::setNoSSLCertificateCheck( bool noCheck )
     m_noSSLCheck = noCheck;
 }
 
-string HttpSession::getRefreshToken( ) throw ( libcmis::Exception )
+string HttpSession::getRefreshToken( )
 {
     string refreshToken;
     if ( m_oauth2Handler )
@@ -777,7 +775,6 @@ string HttpSession::getRefreshToken( ) throw ( libcmis::Exception )
 }
 
 void HttpSession::oauth2Refresh( )
-    throw ( CurlException )
 try
 {
     const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
@@ -795,7 +792,7 @@ void HttpSession::initProtocols( )
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
 }
 
-const char* CurlException::what( ) const throw ()
+const char* CurlException::what( ) const noexcept
 {
     if ( !isCancelled( ) )
     {

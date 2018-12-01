@@ -37,11 +37,9 @@ class GdriveObjectType: public libcmis::ObjectType
     public:
         GdriveObjectType( const std::string& id );
    
-        virtual libcmis::ObjectTypePtr getParentType( ) 
-                                            throw( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getParentType( );
        
-        virtual libcmis::ObjectTypePtr getBaseType( ) 
-                                            throw( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getBaseType( );
 };
 
 #endif

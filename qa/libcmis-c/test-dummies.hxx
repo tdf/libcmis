@@ -49,16 +49,16 @@ namespace dummies
             Session( );
             ~Session( );
 
-            virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
+            virtual libcmis::RepositoryPtr getRepository( );
             virtual bool setRepository( std::string repositoryId );
             virtual std::vector< libcmis::RepositoryPtr > getRepositories( );
-            virtual libcmis::FolderPtr getRootFolder() throw ( libcmis::Exception );
-            virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
-            virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
-            virtual libcmis::FolderPtr getFolder( std::string id ) throw ( libcmis::Exception );
-            virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
-            virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( ) throw ( libcmis::Exception );
-            virtual std::string getRefreshToken( ) throw ( libcmis::Exception );
+            virtual libcmis::FolderPtr getRootFolder();
+            virtual libcmis::ObjectPtr getObject( std::string id );
+            virtual libcmis::ObjectPtr getObjectByPath( std::string path );
+            virtual libcmis::FolderPtr getFolder( std::string id );
+            virtual libcmis::ObjectTypePtr getType( std::string id );
+            virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( );
+            virtual std::string getRefreshToken( );
             virtual void setNoSSLCertificateCheck( bool /*noCheck*/ ) { }
     };
 
@@ -102,9 +102,9 @@ namespace dummies
             ObjectType( bool rootType, bool triggersFaults );
             ~ObjectType( );
 
-            virtual boost::shared_ptr< libcmis::ObjectType >  getParentType( ) throw ( libcmis::Exception );
-            virtual boost::shared_ptr< libcmis::ObjectType >  getBaseType( ) throw ( libcmis::Exception );
-            virtual std::vector< boost::shared_ptr< libcmis::ObjectType > > getChildren( ) throw ( libcmis::Exception );
+            virtual boost::shared_ptr< libcmis::ObjectType >  getParentType( );
+            virtual boost::shared_ptr< libcmis::ObjectType >  getBaseType( );
+            virtual std::vector< boost::shared_ptr< libcmis::ObjectType > > getChildren( );
 
             virtual std::string toString( );
     };
@@ -136,16 +136,16 @@ namespace dummies
             virtual bool isImmutable( ) { return true; };
 
             virtual libcmis::ObjectPtr updateProperties(
-                    const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+                    const std::map< std::string, libcmis::PropertyPtr >& properties );
 
             virtual libcmis::ObjectTypePtr getTypeDescription( );
             virtual libcmis::AllowableActionsPtr getAllowableActions( );
 
-            virtual void refresh( ) throw ( libcmis::Exception );
+            virtual void refresh( );
 
-            virtual void remove( bool allVersions = true ) throw ( libcmis::Exception );
+            virtual void remove( bool allVersions = true );
             
-            virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination ) throw ( libcmis::Exception );
+            virtual void move( libcmis::FolderPtr source, libcmis::FolderPtr destination );
 
             virtual std::string toString( ) { return m_type + "::toString"; }
             
@@ -161,19 +161,19 @@ namespace dummies
             Folder( bool isRoot, bool triggersFaults );
             ~Folder( ) { }
             
-            virtual libcmis::FolderPtr getFolderParent( ) throw ( libcmis::Exception );
-            virtual std::vector< libcmis::ObjectPtr > getChildren( ) throw ( libcmis::Exception );
+            virtual libcmis::FolderPtr getFolderParent( );
+            virtual std::vector< libcmis::ObjectPtr > getChildren( );
             virtual std::string getPath( );
 
             virtual bool isRootFolder( );
 
-            virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties ) throw ( libcmis::Exception );
+            virtual libcmis::FolderPtr createFolder( const std::map< std::string, libcmis::PropertyPtr >& properties );
             virtual libcmis::DocumentPtr createDocument( const std::map< std::string, libcmis::PropertyPtr >& properties,
-                                    boost::shared_ptr< std::ostream > os, std::string contentType, std::string filename ) throw ( libcmis::Exception );
+                                    boost::shared_ptr< std::ostream > os, std::string contentType, std::string filename );
 
             virtual std::vector< std::string > removeTree( bool allVersion = true,
                                     libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete,
-                                    bool continueOnError = false ) throw ( libcmis::Exception );
+                                    bool continueOnError = false );
 
             virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }
             virtual std::string toString( ) { return dummies::Object::toString( ); }
@@ -191,13 +191,12 @@ namespace dummies
 
             std::string getContentString( ) { return m_contentString; }
 
-            virtual std::vector< libcmis::FolderPtr > getParents( ) throw ( libcmis::Exception );
+            virtual std::vector< libcmis::FolderPtr > getParents( );
             
-            virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) ) 
-                                                                                  throw ( libcmis::Exception );
+            virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) );
 
             virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
-                                           std::string fileName, bool overwrite = true ) throw ( libcmis::Exception );
+                                           std::string fileName, bool overwrite = true );
 
             virtual std::string getContentType( );
             
@@ -205,16 +204,16 @@ namespace dummies
 
             virtual long getContentLength( );
 
-            virtual libcmis::DocumentPtr checkOut( ) throw ( libcmis::Exception );
+            virtual libcmis::DocumentPtr checkOut( );
 
-            virtual void cancelCheckout( ) throw ( libcmis::Exception );
+            virtual void cancelCheckout( );
 
             virtual libcmis::DocumentPtr checkIn( bool isMajor, std::string comment,
                                   const std::map< std::string, libcmis::PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
-                                  std::string contentType, std::string filename ) throw ( libcmis::Exception );
+                                  std::string contentType, std::string filename );
 
-            virtual std::vector< libcmis::DocumentPtr > getAllVersions( ) throw ( libcmis::Exception );
+            virtual std::vector< libcmis::DocumentPtr > getAllVersions( );
 
             virtual std::vector< std::string > getPaths( ) { return dummies::Object::getPaths( ); }
             virtual std::string toString( ) { return dummies::Object::toString( ); }

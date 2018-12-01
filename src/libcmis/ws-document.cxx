@@ -42,21 +42,20 @@ WSDocument::~WSDocument( )
 {
 }
 
-vector< libcmis::FolderPtr > WSDocument::getParents( ) throw ( libcmis::Exception )
+vector< libcmis::FolderPtr > WSDocument::getParents( )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getNavigationService( ).getObjectParents( repoId, getId( ) );
 }
 
 boost::shared_ptr< istream > WSDocument::getContentStream( std::string /* streamId */ ) 
-                                                      throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).getContentStream( repoId, getId( ) );
 }
 
 void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType,
-                               string fileName, bool overwrite ) throw ( libcmis::Exception )
+                               string fileName, bool overwrite )
 {
     string repoId = getSession( )->getRepositoryId( );
     getSession( )->getObjectService( ).setContentStream( repoId, getId( ),
@@ -65,13 +64,13 @@ void WSDocument::setContentStream( boost::shared_ptr< ostream > os, string conte
     refresh( );
 }
 
-libcmis::DocumentPtr WSDocument::checkOut( ) throw ( libcmis::Exception )
+libcmis::DocumentPtr WSDocument::checkOut( )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getVersioningService( ).checkOut( repoId, getId( ) );
 }
 
-void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
+void WSDocument::cancelCheckout( )
 {
     string repoId = getSession( )->getRepositoryId( );
     getSession( )->getVersioningService( ).cancelCheckOut( repoId, getId( ) );
@@ -80,7 +79,7 @@ void WSDocument::cancelCheckout( ) throw ( libcmis::Exception )
 libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
                           const PropertyPtrMap& properties,
                           boost::shared_ptr< ostream > stream,
-                          string contentType, string fileName ) throw ( libcmis::Exception )
+                          string contentType, string fileName )
 {
     string repoId = getSession( )->getRepositoryId( );
     libcmis::DocumentPtr newVersion;
@@ -121,7 +120,7 @@ libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
     return newVersion;
 }
 
-vector< libcmis::DocumentPtr > WSDocument::getAllVersions( ) throw ( libcmis::Exception )
+vector< libcmis::DocumentPtr > WSDocument::getAllVersions( )
 {
     vector< libcmis::DocumentPtr > versions;
     string repoId = getSession( )->getRepositoryId( );

@@ -63,7 +63,7 @@ WSObjectType& WSObjectType::operator=( const WSObjectType& copy )
     return *this;
 }
 
-void WSObjectType::refresh( ) throw ( libcmis::Exception )
+void WSObjectType::refresh( )
 {
     libcmis::ObjectTypePtr type = m_session->getType( m_id );
     WSObjectType* const other = dynamic_cast< WSObjectType* >( type.get( ) );
@@ -71,17 +71,17 @@ void WSObjectType::refresh( ) throw ( libcmis::Exception )
         *this = *other;
 }
 
-libcmis::ObjectTypePtr WSObjectType::getParentType( ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr WSObjectType::getParentType( )
 {
     return m_session->getType( m_parentTypeId );
 }
 
-libcmis::ObjectTypePtr WSObjectType::getBaseType( ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr WSObjectType::getBaseType( )
 {
     return m_session->getType( m_baseTypeId );
 }
 
-vector< libcmis::ObjectTypePtr > WSObjectType::getChildren( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectTypePtr > WSObjectType::getChildren( )
 {
     vector< libcmis::ObjectTypePtr > children;
     children = m_session->getRepositoryService( ).getTypeChildren(

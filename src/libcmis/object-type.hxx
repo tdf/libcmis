@@ -94,7 +94,7 @@ namespace libcmis
                     This method needs to be implemented in subclasses or it will
                     do nothing
              */
-            virtual void refresh( ) throw ( Exception );
+            virtual void refresh( );
             virtual time_t getRefreshTimestamp( ) const;
 
             std::string getId( ) const;
@@ -104,9 +104,9 @@ namespace libcmis
             std::string getQueryName( ) const;
             std::string getDescription( ) const;
 
-            virtual boost::shared_ptr< ObjectType >  getParentType( ) throw ( Exception );
-            virtual boost::shared_ptr< ObjectType >  getBaseType( ) throw ( Exception );
-            virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( ) throw ( Exception );
+            virtual boost::shared_ptr< ObjectType >  getParentType( );
+            virtual boost::shared_ptr< ObjectType >  getBaseType( );
+            virtual std::vector< boost::shared_ptr< ObjectType > > getChildren( );
 
             /** Get the parent type id without extracting the complete parent type from
                 the repository. This is mainly provided for performance reasons.

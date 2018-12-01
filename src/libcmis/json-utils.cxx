@@ -128,7 +128,6 @@ void Json::swap( Json& rhs )
 }
 
 Json Json::operator[]( string key ) const 
-    throw ( libcmis::Exception )
 {
     ptree tJson;
     try
@@ -146,7 +145,6 @@ Json Json::operator[]( string key ) const
 }
 
 void Json::add( const std::string& key, const Json& json ) 
-    throw ( libcmis::Exception )
 {
     try
     {
@@ -168,7 +166,7 @@ Json::JsonVector Json::getList()
 	return list ;
 }
 
-void Json::add( const Json& json ) throw ( libcmis::Exception )
+void Json::add( const Json& json )
 {
     try
     {
@@ -180,7 +178,7 @@ void Json::add( const Json& json ) throw ( libcmis::Exception )
     }
 }
 
-Json Json::parse( const string& str ) throw ( libcmis:: Exception )
+Json Json::parse( const string& str )
 {
     ptree pTree;
     std::stringstream ss( str ); 

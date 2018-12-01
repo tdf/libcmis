@@ -42,28 +42,26 @@ WSFolder::~WSFolder( )
 {
 }
 
-vector< libcmis::ObjectPtr > WSFolder::getChildren( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectPtr > WSFolder::getChildren( )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getNavigationService( ).getChildren( repoId, getId( ) );
 }
 
 libcmis::FolderPtr WSFolder::createFolder( const PropertyPtrMap& properties )
-    throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).createFolder( repoId, properties, getId( ) );
 }
 
 libcmis::DocumentPtr WSFolder::createDocument( const PropertyPtrMap& properties,
-                        boost::shared_ptr< ostream > os, string contentType, string fileName ) throw ( libcmis::Exception )
+                        boost::shared_ptr< ostream > os, string contentType, string fileName )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).createDocument( repoId, properties, getId( ), os, contentType, fileName );
 }
 
 vector< string > WSFolder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile, bool continueOnError )
-    throw ( libcmis::Exception )
 {
     string repoId = getSession( )->getRepositoryId( );
     return getSession( )->getObjectService( ).deleteTree( repoId, getId( ), allVersion, unfile, continueOnError );

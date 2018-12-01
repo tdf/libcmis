@@ -62,7 +62,7 @@ namespace libcmis
         }
     }
 
-    ObjectAction::Type ObjectAction::parseType( string type ) throw ( Exception )
+    ObjectAction::Type ObjectAction::parseType( string type )
     {
         Type value = DeleteObject;
         if ( type == "canDeleteObject" )

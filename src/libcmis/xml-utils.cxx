@@ -360,7 +360,6 @@ namespace libcmis
     string getXmlNodeAttributeValue( xmlNodePtr node,
                                      const char* attributeName,
                                      const char* defaultValue )
-        throw ( Exception )
     {
         xmlChar* xmlStr = xmlGetProp( node, BAD_CAST( attributeName ) );
         if ( xmlStr == NULL )
@@ -454,7 +453,7 @@ namespace libcmis
         return str;
     }
 
-    bool parseBool( string boolStr ) throw ( Exception )
+    bool parseBool( string boolStr )
     {
         bool value = false;
         if ( boolStr == "true" || boolStr == "1" )
@@ -466,7 +465,7 @@ namespace libcmis
         return value;
     }
 
-    long parseInteger( string intStr ) throw ( Exception )
+    long parseInteger( string intStr )
     {
         char* end;
         errno = 0;
@@ -485,7 +484,7 @@ namespace libcmis
         return value;
     }
 
-    double parseDouble( string doubleStr ) throw ( Exception )
+    double parseDouble( string doubleStr )
     {
         char* end;
         errno = 0;

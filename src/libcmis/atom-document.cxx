@@ -62,7 +62,7 @@ AtomDocument::~AtomDocument( )
 {
 }
 
-vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Exception )
+vector< libcmis::FolderPtr > AtomDocument::getParents( )
 {
     AtomLink* parentsLink = getLink( "up", "" );
 
@@ -122,7 +122,7 @@ vector< libcmis::FolderPtr > AtomDocument::getParents( ) throw ( libcmis::Except
     return parents;
 }
 
-boost::shared_ptr< istream > AtomDocument::getContentStream( string /*streamId*/ ) throw ( libcmis::Exception )
+boost::shared_ptr< istream > AtomDocument::getContentStream( string /*streamId*/ )
 {
     if ( getAllowableActions().get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetContentStream ) )
         throw libcmis::Exception( string( "GetContentStream is not allowed on document " ) + getId() );
@@ -140,7 +140,7 @@ boost::shared_ptr< istream > AtomDocument::getContentStream( string /*streamId*/
     return stream;
 }
 
-void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType, string fileName, bool overwrite ) throw ( libcmis::Exception )
+void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string contentType, string fileName, bool overwrite )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
@@ -226,7 +226,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
     while ( tryBase64 );
 }
 
-libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
+libcmis::DocumentPtr AtomDocument::checkOut( )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckOut ) ) )
         throw libcmis::Exception( string( "CanCheckout not allowed on document " ) + getId() );
@@ -290,7 +290,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( ) throw ( libcmis::Exception )
     return pwc;
 }
 
-void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
+void AtomDocument::cancelCheckout( )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CancelCheckOut ) ) )
         throw libcmis::Exception( string( "CanCancelCheckout not allowed on document " ) + getId() );
@@ -315,7 +315,7 @@ void AtomDocument::cancelCheckout( ) throw ( libcmis::Exception )
 
 libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
                             const PropertyPtrMap& properties,
-                            boost::shared_ptr< ostream > stream, string contentType, string ) throw ( libcmis::Exception )
+                            boost::shared_ptr< ostream > stream, string contentType, string )
 {
     if ( ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::CheckIn ) ) )
         throw libcmis::Exception( string( "CanCheckIn not allowed on document " ) + getId() );
@@ -386,7 +386,7 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     return boost::dynamic_pointer_cast< libcmis::Document >( newVersion );
 }
 
-vector< libcmis::DocumentPtr > AtomDocument::getAllVersions( ) throw ( libcmis::Exception )
+vector< libcmis::DocumentPtr > AtomDocument::getAllVersions( )
 {
     if ( getAllowableActions( ).get() &&
                 !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetAllVersions ) )

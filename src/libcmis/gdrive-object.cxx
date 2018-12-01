@@ -137,7 +137,7 @@ void GDriveObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
-vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ ) throw ( libcmis::Exception )
+vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
 {
     if ( m_renditions.empty( ) )
     {
@@ -179,7 +179,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ ) throw (
 }
 
 libcmis::ObjectPtr GDriveObject::updateProperties(
-        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
+        const PropertyPtrMap& properties )
 {
     // Make Json object from properties
     Json json = GdriveUtils::toGdriveJson( properties );
@@ -208,7 +208,7 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     return updated;
 }
 
-void GDriveObject::refresh( ) throw ( libcmis::Exception )
+void GDriveObject::refresh( )
 {
     string res;
     try
@@ -223,7 +223,7 @@ void GDriveObject::refresh( ) throw ( libcmis::Exception )
     refreshImpl( json );
 }
 
-void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
+void GDriveObject::remove( bool /*allVersions*/ )
 {
     try
     {
@@ -236,7 +236,6 @@ void GDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
 }
 
 void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination ) 
-                                        throw ( libcmis::Exception )
 {  
     Json parentsJson;
     Json parentsValue = GdriveUtils::createJsonFromParentId( destination->getId( ) );

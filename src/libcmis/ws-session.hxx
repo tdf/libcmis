@@ -54,7 +54,7 @@ class WSSession : public BaseSession, public SoapSession
                    std::string username, std::string password,
                    bool noSslCheck = false,
                    libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
-                   bool verbose = false ) throw ( libcmis::Exception );
+                   bool verbose = false );
 
         /** This constructor uses the response of an HTTP request made
             before to spare some HTTP request. This constructor has mostly
@@ -62,7 +62,7 @@ class WSSession : public BaseSession, public SoapSession
           */
         WSSession( std::string bindingUrl, std::string repositoryId,
                    const HttpSession& HttpSession,
-                   libcmis::HttpResponsePtr response ) throw ( libcmis::Exception );
+                   libcmis::HttpResponsePtr response );
         WSSession( const WSSession& copy );
         ~WSSession( );
 
@@ -77,11 +77,9 @@ class WSSession : public BaseSession, public SoapSession
 
         /** Try hard to get a WSDL file at the given URL (tries to add ?wsdl if needed)
           */
-        std::string getWsdl( std::string url, libcmis::HttpResponsePtr response )
-            throw ( CurlException );
+        std::string getWsdl( std::string url, libcmis::HttpResponsePtr response );
 
-        std::vector< SoapResponsePtr > soapRequest( std::string& url, SoapRequest& request )
-            throw ( libcmis::Exception );
+        std::vector< SoapResponsePtr > soapRequest( std::string& url, SoapRequest& request );
 
         /** Get the service location URL given its name.
           */
@@ -98,29 +96,27 @@ class WSSession : public BaseSession, public SoapSession
 
         // Override session methods
 
-        virtual libcmis::RepositoryPtr getRepository( ) throw ( libcmis::Exception );
+        virtual libcmis::RepositoryPtr getRepository( );
 
         virtual bool setRepository( std::string repositoryId );
 
-        virtual libcmis::ObjectPtr getObject( std::string id ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObject( std::string id );
 
-        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path );
 
-        virtual libcmis::ObjectTypePtr getType( std::string id ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getType( std::string id );
 
-        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( ) throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( );
 
     private:
 
         // Default constructor shouldn't be called
         WSSession( );
 
-        void parseWsdl( std::string buf ) throw ( libcmis::Exception );
+        void parseWsdl( std::string buf );
         void initializeResponseFactory( );
-        void initializeRepositories( std::map< std::string, std::string > repositories )
-            throw ( libcmis::Exception );
-        void initialize( libcmis::HttpResponsePtr response = libcmis::HttpResponsePtr() )
-            throw ( libcmis::Exception );
+        void initializeRepositories( std::map< std::string, std::string > repositories );
+        void initialize( libcmis::HttpResponsePtr response = libcmis::HttpResponsePtr() );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );
         std::map< std::string, SoapFaultDetailCreator > getDetailMapping( );

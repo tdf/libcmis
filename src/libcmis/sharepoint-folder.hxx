@@ -46,26 +46,21 @@ class SharePointFolder : public libcmis::Folder, public SharePointObject
         std::string getType( ) { return std::string( "cmis:folder" );}
         std::string getBaseType( ) { return std::string( "cmis:folder" );}        
         virtual std::string getParentId( );
-        virtual std::vector< libcmis::ObjectPtr > getChildren( ) 
-            throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectPtr > getChildren( );
 
-        Json::JsonVector getChildrenImpl( std::string url )
-            throw ( libcmis::Exception );
+        Json::JsonVector getChildrenImpl( std::string url );
 
-        virtual libcmis::FolderPtr createFolder( const libcmis::PropertyPtrMap& properties )
-            throw ( libcmis::Exception );
+        virtual libcmis::FolderPtr createFolder( const libcmis::PropertyPtrMap& properties );
 
         virtual libcmis::DocumentPtr createDocument( const libcmis::PropertyPtrMap& properties, 
                                                      boost::shared_ptr< std::ostream > os, 
                                                      std::string contentType, 
-                                                     std::string fileName ) 
-            throw ( libcmis::Exception );
+                                                     std::string fileName );
 
         virtual std::vector< std::string > removeTree( bool allVersion = true, 
                                                        libcmis::UnfileObjects::Type 
                                                            unfile = libcmis::UnfileObjects::Delete, 
-                                                       bool continueOnError = false )
-            throw ( libcmis::Exception );
+                                                       bool continueOnError = false );
 };
 
 #endif

@@ -127,7 +127,7 @@ class TestFaultDetail : public SoapFaultDetail
         TestFaultDetail( ) : SoapFaultDetail( ) { };
 
     public:
-        ~TestFaultDetail( ) throw ( ) { };
+        ~TestFaultDetail( ) noexcept { };
 
         static SoapFaultDetailPtr create( xmlNodePtr )
         {

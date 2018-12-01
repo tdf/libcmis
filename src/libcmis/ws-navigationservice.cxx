@@ -65,7 +65,7 @@ NavigationService& NavigationService::operator=( const NavigationService& copy )
     return *this;
 }
 
-vector< libcmis::FolderPtr > NavigationService::getObjectParents( std::string repoId, std::string objectId ) throw ( libcmis::Exception )
+vector< libcmis::FolderPtr > NavigationService::getObjectParents( std::string repoId, std::string objectId )
 {
     vector< libcmis::FolderPtr > parents;
 
@@ -82,7 +82,7 @@ vector< libcmis::FolderPtr > NavigationService::getObjectParents( std::string re
     return parents;
 }
 
-vector< libcmis::ObjectPtr > NavigationService::getChildren( string repoId, string folderId ) throw ( libcmis::Exception )
+vector< libcmis::ObjectPtr > NavigationService::getChildren( string repoId, string folderId )
 {
     vector< libcmis::ObjectPtr > children;
 

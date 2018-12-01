@@ -44,7 +44,7 @@ using namespace std;
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
         string username, string password, bool noSslCheck,
-        libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( libcmis::Exception ) :
+        libcmis::OAuth2DataPtr oauth2, bool verbose ) :
     BaseSession( atomPubUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_repository( )
 {
@@ -53,8 +53,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
 }
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
-        const HttpSession& httpSession, libcmis::HttpResponsePtr response )
-            throw ( libcmis::Exception ) :
+        const HttpSession& httpSession, libcmis::HttpResponsePtr response ) :
     BaseSession( atomPubUrl, repositoryId, httpSession ),
     m_repository( )
 {
@@ -89,7 +88,7 @@ AtomPubSession::~AtomPubSession( )
 {
 }
 
-void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::Exception )
+void AtomPubSession::parseServiceDocument( const string& buf )
 {
     // parse the content
     const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 ), xmlFreeDoc );
@@ -148,7 +147,6 @@ void AtomPubSession::parseServiceDocument( const string& buf ) throw ( libcmis::
 }
 
 void AtomPubSession::initialize( libcmis::HttpResponsePtr response )
-    throw ( libcmis::Exception )
 {
     if ( m_repositories.empty() )
     {
@@ -174,12 +172,12 @@ void AtomPubSession::initialize( libcmis::HttpResponsePtr response )
     }
 }
 
-AtomRepositoryPtr AtomPubSession::getAtomRepository( ) throw ( libcmis::Exception )
+AtomRepositoryPtr AtomPubSession::getAtomRepository( )
 {
     return m_repository;
 }
 
-libcmis::RepositoryPtr AtomPubSession::getRepository( ) throw ( libcmis::Exception )
+libcmis::RepositoryPtr AtomPubSession::getRepository( )
 {
     return getAtomRepository( );
 }
@@ -245,7 +243,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc, Resu
     return cmisObject;
 }
 
-libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomPubSession::getObject( string id )
 {
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
@@ -275,7 +273,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id ) throw ( libcmis::Excep
     }
 }
 
-libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmis::Exception )
+libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path )
 {
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath );
     map< string, string > vars;
@@ -305,20 +303,19 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path ) throw ( libcmi
     }
 }
 
-libcmis::ObjectTypePtr AtomPubSession::getType( string id ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr AtomPubSession::getType( string id )
 {
     libcmis::ObjectTypePtr type( new AtomObjectType( this, id ) );
     return type;
 }
 
-vector< libcmis::ObjectTypePtr > AtomPubSession::getBaseTypes( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectTypePtr > AtomPubSession::getBaseTypes( )
 {
     string url = getAtomRepository( )->getCollectionUrl( Collection::Types );
     return getChildrenTypes( url );
 }
 
 vector< libcmis::ObjectTypePtr > AtomPubSession::getChildrenTypes( string url )
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectTypePtr > children;
     string buf;

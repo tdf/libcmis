@@ -40,7 +40,7 @@ namespace libcmis
         return paths;
     }
     
-    libcmis::FolderPtr Folder::getFolderParent( ) throw ( libcmis::Exception )
+    libcmis::FolderPtr Folder::getFolderParent( )
     {
         if ( getAllowableActions( ).get() && !getAllowableActions()->isAllowed( libcmis::ObjectAction::GetFolderParent ) )
             throw libcmis::Exception( string( "GetFolderParent not allowed on node " ) + getId() );

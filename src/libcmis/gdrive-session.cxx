@@ -41,8 +41,7 @@ GDriveSession::GDriveSession ( string baseUrl,
                                string username,
                                string password,
                                libcmis::OAuth2DataPtr oauth2,
-                               bool verbose )
-                                    throw ( libcmis::Exception ) :
+                               bool verbose ) :
     BaseSession( baseUrl, string(), username, password, false,
                  libcmis::OAuth2DataPtr(), verbose )
 
@@ -70,7 +69,6 @@ GDriveSession::~GDriveSession()
 }
 
 libcmis::RepositoryPtr GDriveSession::getRepository( )
-    throw ( libcmis::Exception )
 {
     // Return a dummy repository since GDrive doesn't have that notion
     libcmis::RepositoryPtr repo( new GdriveRepository( ) );
@@ -83,7 +81,6 @@ bool GDriveSession::setRepository( std::string )
 }
 
 libcmis::ObjectPtr GDriveSession::getObject( string objectId )
-    throw ( libcmis::Exception )
 {
     // Run the http request to get the properties definition
     string res;
@@ -123,7 +120,6 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
 }
 
 libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
-    throw ( libcmis::Exception )
 {
     size_t pos = 0;
     size_t endpos = 0;
@@ -182,14 +178,12 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
 }
 
 libcmis::ObjectTypePtr GDriveSession::getType( string id )
-    throw ( libcmis::Exception )
 {
     libcmis::ObjectTypePtr type( new GdriveObjectType( id ) );
     return type;
 }
 
 vector< libcmis::ObjectTypePtr > GDriveSession::getBaseTypes( )
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectTypePtr > types;
     // TODO Implement me

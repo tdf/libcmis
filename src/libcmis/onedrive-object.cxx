@@ -92,7 +92,7 @@ void OneDriveObject::refreshImpl( Json json )
     initializeFromJson( json );
 }
 
-void OneDriveObject::refresh( ) throw ( libcmis::Exception )
+void OneDriveObject::refresh( )
 {
     string res;
     try
@@ -107,7 +107,7 @@ void OneDriveObject::refresh( ) throw ( libcmis::Exception )
     refreshImpl( json );
 }
 
-void OneDriveObject::remove( bool /*allVersions*/ ) throw ( libcmis::Exception )
+void OneDriveObject::remove( bool /*allVersions*/ )
 {
     try
     {
@@ -139,7 +139,7 @@ vector< string> OneDriveObject::getMultiStringProperty( const string& propertyNa
 }
 
 libcmis::ObjectPtr OneDriveObject::updateProperties(
-        const PropertyPtrMap& properties ) throw ( libcmis::Exception )
+        const PropertyPtrMap& properties )
 {
     // Make Json object from properties
     Json json = OneDriveUtils::toOneDriveJson( properties );
@@ -169,7 +169,6 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
 }
 
 void OneDriveObject::move( FolderPtr /*source*/, FolderPtr destination ) 
-                                        throw ( libcmis::Exception )
 {  
     Json destJson;
     Json destId( destination->getId( ).c_str( ) );

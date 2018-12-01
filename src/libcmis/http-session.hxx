@@ -78,8 +78,8 @@ class CurlException : public std::exception
         {
         }
 
-        ~CurlException( ) throw () { }
-        virtual const char* what( ) const throw ();
+        ~CurlException( ) noexcept { }
+        virtual const char* what( ) const noexcept;
 
         CURLcode getErrorCode( ) const { return m_code; }
         std::string getErrorMessage( ) const { return m_message; }
@@ -111,17 +111,16 @@ class HttpSession
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
                      libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
-                     bool verbose = false )
-            throw ( libcmis::Exception );
+                     bool verbose = false );
 
         HttpSession( const HttpSession& copy );
         virtual ~HttpSession( );
 
         HttpSession& operator=( const HttpSession& copy );
 
-        std::string& getUsername( ) throw ( CurlException );
+        std::string& getUsername( );
 
-        std::string& getPassword( ) throw ( CurlException );
+        std::string& getPassword( );
 
         /** Don't throw the HTTP errors as CurlExceptions.
           */
@@ -130,27 +129,23 @@ class HttpSession
 
         /** Set the OAuth2 data and get the access / refresh tokens.
           */
-        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
-            throw ( libcmis::Exception );
+        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 );
 
-        libcmis::HttpResponsePtr httpGetRequest( std::string url )
-            throw ( CurlException );
+        libcmis::HttpResponsePtr httpGetRequest( std::string url );
         libcmis::HttpResponsePtr httpPutRequest( std::string url,
                                                  std::istream& is,
-                                                 std::vector< std::string > headers )
-            throw ( CurlException );
+                                                 std::vector< std::string > headers );
         libcmis::HttpResponsePtr httpPostRequest( const std::string& url,
                                                   std::istream& is,
                                                   const std::string& contentType,
-                                                  bool redirect = true )
-            throw ( CurlException );
-        void httpDeleteRequest( std::string url ) throw ( CurlException );
+                                                  bool redirect = true );
+        void httpDeleteRequest( std::string url );
 
         long getHttpStatus( );
 
         void setNoSSLCertificateCheck( bool noCheck );
 
-        std::string getRefreshToken( ) throw ( libcmis::Exception );
+        std::string getRefreshToken( );
 
     protected:
         HttpSession( );
@@ -159,17 +154,16 @@ class HttpSession
             This function is provided for BaseSession to customize
             the OAuth2 login parser.
           */
-        void oauth2Authenticate( ) throw ( libcmis::Exception );
+        void oauth2Authenticate( );
         void setAuthMethod( unsigned long authMethod ) { m_authMethod = authMethod; }
         virtual void httpRunRequest( std::string url,
                                     std::vector< std::string > headers = std::vector< std::string > ( ),
-                                    bool redirect = true )
-            throw ( CurlException );
+                                    bool redirect = true );
 
     private:
-        void checkCredentials( ) throw ( CurlException );
-        void checkOAuth2( std::string url ) throw ( CurlException );
-        void oauth2Refresh( ) throw ( CurlException );
+        void checkCredentials( );
+        void checkOAuth2( std::string url );
+        void oauth2Refresh( );
         void initProtocols( );
 };
 

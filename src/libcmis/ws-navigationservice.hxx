@@ -49,8 +49,8 @@ class NavigationService
 
         NavigationService& operator=( const NavigationService& copy );
 
-        std::vector< libcmis::FolderPtr > getObjectParents( std::string repoId, std::string objectId ) throw ( libcmis::Exception );
-        std::vector< libcmis::ObjectPtr > getChildren( std::string repoId, std::string folderId ) throw ( libcmis::Exception );
+        std::vector< libcmis::FolderPtr > getObjectParents( std::string repoId, std::string objectId );
+        std::vector< libcmis::ObjectPtr > getChildren( std::string repoId, std::string folderId );
 
     private:
 

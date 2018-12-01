@@ -38,65 +38,52 @@ class SharePointSession : public BaseSession
         SharePointSession( std::string baseUrl,
                        std::string username, 
                        std::string password,
-                       bool verbose = false )
-                   throw ( libcmis::Exception );
+                       bool verbose = false );
 
         SharePointSession( std::string baseUrl,
                         const HttpSession& httpSession,
-                        libcmis::HttpResponsePtr response ) throw ( libcmis::Exception );
+                        libcmis::HttpResponsePtr response );
 
         SharePointSession( const SharePointSession& copy );
 
         ~SharePointSession ( );
 
-        virtual libcmis::RepositoryPtr getRepository( ) 
-            throw ( libcmis::Exception );
+        virtual libcmis::RepositoryPtr getRepository( );
 
         virtual bool setRepository( std::string );
 
-        virtual libcmis::ObjectPtr getObject( std::string id ) 
-            throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObject( std::string id );
 
-        virtual libcmis::ObjectPtr getObjectByPath( std::string path ) 
-            throw ( libcmis::Exception );
+        virtual libcmis::ObjectPtr getObjectByPath( std::string path );
 
-        virtual libcmis::ObjectTypePtr getType( std::string id )             
-            throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getType( std::string id );
         
-        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( )
-            throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( );
 
        libcmis::ObjectPtr getObjectFromJson( Json& jsonRes,
-                                             std::string parentId = std::string( ) ) 
-            throw ( libcmis::Exception );
+                                             std::string parentId = std::string( ) );
 
-        Json getJsonFromUrl( std::string url )
-            throw ( libcmis::Exception );
+        Json getJsonFromUrl( std::string url );
 
-        void fetchDigestCode( )
-            throw ( libcmis::Exception );
+        void fetchDigestCode( );
 
         void httpRunRequest( std::string url,
                              std::vector< std::string > headers,
-                             bool redirect )
-            throw ( CurlException );
+                             bool redirect );
 
         libcmis::HttpResponsePtr httpPutRequest( std::string url,
                                                  std::istream& is,
-                                                 std::vector< std::string > headers )
-            throw ( CurlException );
+                                                 std::vector< std::string > headers );
         libcmis::HttpResponsePtr httpPostRequest( const std::string& url,
                                                   std::istream& is,
                                                   const std::string& contentType,
-                                                  bool redirect = true )
-            throw ( CurlException );
-        void httpDeleteRequest( std::string url ) throw ( CurlException );
+                                                  bool redirect = true );
+        void httpDeleteRequest( std::string url );
 
 
     private:
         SharePointSession( );
-        void fetchDigestCodeCurl( )
-            throw ( CurlException );
+        void fetchDigestCodeCurl( );
         std::string m_digestCode;
 };
 

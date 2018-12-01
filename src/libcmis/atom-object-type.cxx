@@ -35,7 +35,7 @@ using namespace std;
 using namespace boost;
 
 
-AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) throw ( libcmis::Exception ) :
+AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) :
     libcmis::ObjectType( ),
     m_session( session ),
     m_selfUrl( ),
@@ -45,7 +45,7 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) throw ( lib
     refresh( );
 }
 
-AtomObjectType::AtomObjectType( AtomPubSession* session, xmlNodePtr entryNd ) throw ( libcmis::Exception ) :
+AtomObjectType::AtomObjectType( AtomPubSession* session, xmlNodePtr entryNd ) :
     libcmis::ObjectType( ),
     m_session( session ),
     m_selfUrl( ),
@@ -81,22 +81,22 @@ AtomObjectType& AtomObjectType::operator=( const AtomObjectType& copy )
     return *this;
 }
 
-libcmis::ObjectTypePtr AtomObjectType::getParentType( ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr AtomObjectType::getParentType( )
 {
     return m_session->getType( m_parentTypeId );
 }
 
-libcmis::ObjectTypePtr AtomObjectType::getBaseType( ) throw ( libcmis::Exception )
+libcmis::ObjectTypePtr AtomObjectType::getBaseType( )
 {
     return m_session->getType( m_baseTypeId );
 }
 
-vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( ) throw ( libcmis::Exception )
+vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( )
 {
     return m_session->getChildrenTypes( m_childrenUrl );
 }
 
-void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
+void AtomObjectType::refreshImpl( xmlDocPtr doc )
 {
     bool createdDoc = ( NULL == doc );
     if ( createdDoc )
@@ -136,7 +136,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc ) throw ( libcmis::Exception )
         xmlFreeDoc( doc );
 }
 
-void AtomObjectType::extractInfos( xmlDocPtr doc ) throw ( libcmis::Exception )
+void AtomObjectType::extractInfos( xmlDocPtr doc )
 {
     xmlXPathContextPtr xpathCtx = xmlXPathNewContext( doc );
 

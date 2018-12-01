@@ -103,7 +103,6 @@ OneDriveObjectType::OneDriveObjectType( const std::string& id ): ObjectType( )
 }
 
 libcmis::ObjectTypePtr OneDriveObjectType::getParentType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr parentTypePtr;
     if ( m_parentTypeId != "" ) {
@@ -113,7 +112,6 @@ libcmis::ObjectTypePtr OneDriveObjectType::getParentType( )
 }
 
 libcmis::ObjectTypePtr OneDriveObjectType::getBaseType( )
-                                            throw( libcmis::Exception )
 {
     libcmis::ObjectTypePtr baseTypePtr( new OneDriveObjectType( m_baseTypeId ) );
     return baseTypePtr;

@@ -43,25 +43,21 @@ class OneDriveFolder : public libcmis::Folder, public OneDriveObject
 
         std::string getType( ) { return std::string( "cmis:folder" );}
         std::string getBaseType( ) { return std::string( "cmis:folder" );}        
-        virtual std::vector< libcmis::ObjectPtr > getChildren( ) 
-            throw ( libcmis::Exception );
+        virtual std::vector< libcmis::ObjectPtr > getChildren( );
 
         virtual libcmis::FolderPtr createFolder( 
-            const libcmis::PropertyPtrMap& properties )
-                throw ( libcmis::Exception );
+            const libcmis::PropertyPtrMap& properties );
 
         virtual libcmis::DocumentPtr createDocument( 
             const libcmis::PropertyPtrMap& properties, 
             boost::shared_ptr< std::ostream > os, 
             std::string contentType, 
-            std::string fileName ) 
-                throw ( libcmis::Exception );
+            std::string fileName );
 
         virtual std::vector< std::string > removeTree( 
             bool allVersion = true, 
             libcmis::UnfileObjects::Type unfile = libcmis::UnfileObjects::Delete, 
-            bool continueOnError = false ) 
-                throw ( libcmis::Exception );
+            bool continueOnError = false );
 };
 
 #endif

@@ -39,8 +39,7 @@ OneDriveSession::OneDriveSession ( string baseUrl,
                                string username,
                                string password,
                                libcmis::OAuth2DataPtr oauth2,
-                               bool verbose )
-                                    throw ( libcmis::Exception ) :
+                               bool verbose ) :
     BaseSession( baseUrl, string(), username, password, false,
                  libcmis::OAuth2DataPtr(), verbose )
 
@@ -68,7 +67,6 @@ OneDriveSession::~OneDriveSession()
 }
 
 libcmis::RepositoryPtr OneDriveSession::getRepository( )
-    throw ( libcmis::Exception )
 {
     // Return a dummy repository since OneDrive doesn't have that notion
     libcmis::RepositoryPtr repo( new OneDriveRepository( ) );
@@ -76,7 +74,6 @@ libcmis::RepositoryPtr OneDriveSession::getRepository( )
 }
 
 libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
-    throw ( libcmis::Exception )
 {
     // Run the http request to get the properties definition
     string res;
@@ -94,7 +91,6 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
 }
 
 libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes ) 
-            throw ( libcmis::Exception )
 {
     libcmis::ObjectPtr object;
     string kind = jsonRes["type"].toString( );
@@ -114,7 +110,6 @@ libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes )
 }
 
 libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
-    throw ( libcmis::Exception )
 {
     string id;
     if ( path == "/" )
@@ -157,7 +152,6 @@ libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
 }
 
 bool OneDriveSession::isAPathMatch( Json objectJson, string path )
-    throw ( libcmis::Exception )
 {
     string parentId = objectJson["parent_id"].toString( );
     string objectName = objectJson["name"].toString( );
@@ -190,14 +184,12 @@ bool OneDriveSession::isAPathMatch( Json objectJson, string path )
 }
 
 libcmis::ObjectTypePtr OneDriveSession::getType( string id )
-    throw ( libcmis::Exception )
 {
     libcmis::ObjectTypePtr type( new OneDriveObjectType( id ) );
     return type;
 }
 
 vector< libcmis::ObjectTypePtr > OneDriveSession::getBaseTypes( )
-    throw ( libcmis::Exception )
 {
     vector< libcmis::ObjectTypePtr > types;
     return types;

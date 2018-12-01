@@ -43,11 +43,11 @@ class WSObjectType : public libcmis::ObjectType
 
         WSObjectType& operator=( const WSObjectType& copy );
 
-        virtual void refresh( ) throw ( libcmis::Exception );
+        virtual void refresh( );
         
-        virtual libcmis::ObjectTypePtr getParentType( ) throw ( libcmis::Exception );
-        virtual libcmis::ObjectTypePtr getBaseType( ) throw ( libcmis::Exception );
-        virtual std::vector< libcmis::ObjectTypePtr > getChildren( ) throw ( libcmis::Exception );
+        virtual libcmis::ObjectTypePtr getParentType( );
+        virtual libcmis::ObjectTypePtr getBaseType( );
+        virtual std::vector< libcmis::ObjectTypePtr > getChildren( );
 
     private:
         WSObjectType( );

@@ -56,7 +56,7 @@ namespace libcmis
 
                 @return the parents folder if any.
               */
-            virtual std::vector< boost::shared_ptr< Folder > > getParents( ) throw ( Exception ) = 0;
+            virtual std::vector< boost::shared_ptr< Folder > > getParents( ) = 0;
             
             /** Get the content stream without using a temporary file.
 
@@ -74,7 +74,7 @@ namespace libcmis
                     guaranteed.
               */
             virtual boost::shared_ptr< std::istream > getContentStream( std::string streamId = std::string( ) ) 
-                        throw ( Exception ) = 0;
+                        = 0;
 
             /** Set or replace the content stream of the document.
 
@@ -88,7 +88,7 @@ namespace libcmis
                                 capability.
               */
             virtual void setContentStream( boost::shared_ptr< std::ostream > os, std::string contentType,
-                                           std::string filename, bool overwrite = true ) throw ( Exception ) = 0;
+                                           std::string filename, bool overwrite = true ) = 0;
 
             /** Get the content mime type.
               */
@@ -107,12 +107,12 @@ namespace libcmis
 
                 \return the Private Working Copy document
               */
-            virtual boost::shared_ptr< Document > checkOut( ) throw ( Exception ) = 0;
+            virtual boost::shared_ptr< Document > checkOut( ) = 0;
 
             /** Cancels the checkout if the document is a private working copy, or
                 throws an exception.
               */
-            virtual void cancelCheckout( ) throw ( Exception ) = 0;
+            virtual void cancelCheckout( ) = 0;
 
             /** Check in the private working copy and create a new version or throw
                 an exception.
@@ -131,9 +131,9 @@ namespace libcmis
             virtual boost::shared_ptr< Document > checkIn( bool isMajor, std::string comment,
                                   const std::map< std::string, PropertyPtr >& properties,
                                   boost::shared_ptr< std::ostream > stream,
-                                  std::string contentType, std::string fileName ) throw ( Exception ) = 0;
+                                  std::string contentType, std::string fileName ) = 0;
 
-            virtual std::vector< boost::shared_ptr< Document > > getAllVersions( ) throw ( Exception ) = 0;
+            virtual std::vector< boost::shared_ptr< Document > > getAllVersions( ) = 0;
 
             // virtual methods form Object
             virtual std::vector< std::string > getPaths( );

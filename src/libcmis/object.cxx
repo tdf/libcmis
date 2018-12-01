@@ -226,7 +226,6 @@ namespace libcmis
     }
 
     ObjectPtr Object::addSecondaryType( string id, PropertyPtrMap properties )
-        throw ( Exception )
     {
         // First make sure the cmis:secondaryObjectTypeIds property can be defined
         map< string, PropertyTypePtr >& propertyTypes = getTypeDescription( )->
@@ -253,7 +252,7 @@ namespace libcmis
         return updateProperties( newProperties );
     }
 
-    ObjectPtr Object::removeSecondaryType( string id ) throw ( Exception )
+    ObjectPtr Object::removeSecondaryType( string id )
     {
         // First make sure the cmis:secondaryObjectTypeIds property can be defined
         map< string, PropertyTypePtr >& propertyTypes = getTypeDescription( )->
@@ -297,12 +296,12 @@ namespace libcmis
         return m_typeDescription;
     }
 
-    vector< RenditionPtr> Object::getRenditions( string /*filter*/ ) throw ( Exception )
+    vector< RenditionPtr> Object::getRenditions( string /*filter*/ )
     {
         return m_renditions;
     }
 
-    string Object::getThumbnailUrl( ) throw ( Exception )
+    string Object::getThumbnailUrl( )
     {
         string url;
         vector< RenditionPtr > renditions = getRenditions( );

@@ -50,8 +50,7 @@ class OAuth2Handler
 
     public:
 
-        OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data )
-            throw ( libcmis::Exception );
+        OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data );
 
         OAuth2Handler( const OAuth2Handler& copy );
         ~OAuth2Handler( );
@@ -60,11 +59,11 @@ class OAuth2Handler
 
         std::string getAuthURL();
 
-        std::string getAccessToken( ) throw ( libcmis::Exception ) ;
-        std::string getRefreshToken( ) throw ( libcmis::Exception ) ;
+        std::string getAccessToken( ) ;
+        std::string getRefreshToken( ) ;
 
         // adding HTTP auth header
-        std::string getHttpHeader( ) throw ( libcmis::Exception ) ;
+        std::string getHttpHeader( ) ;
 
         /** Exchange the previously obtained authentication code with the
             access/refresh tokens.
@@ -73,8 +72,8 @@ class OAuth2Handler
                the authentication code normally obtained from authenticate
                method.
           */
-        void fetchTokens( std::string authCode ) throw ( libcmis::Exception );
-        void refresh( ) throw ( libcmis::Exception );
+        void fetchTokens( std::string authCode );
+        void refresh( );
 
         /** Get the authentication code given credentials.
 

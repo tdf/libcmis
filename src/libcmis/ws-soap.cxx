@@ -81,7 +81,7 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
 }
 
 // LCOV_EXCL_START
-const char* SoapFault::what( ) const throw ( )
+const char* SoapFault::what( ) const noexcept
 {
     return m_message.c_str( );
 }
@@ -117,7 +117,7 @@ SoapResponseFactory& SoapResponseFactory::operator=( const SoapResponseFactory& 
     return *this;
 }
 
-vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string& xml ) throw ( SoapFault )
+vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string& xml )
 {
     // Create a fake multipart
     RelatedMultipart multipart;
@@ -132,7 +132,7 @@ vector< SoapResponsePtr > SoapResponseFactory::parseResponse( string& xml ) thro
     return parseResponse( multipart );
 }
 
-vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& multipart ) throw ( SoapFault )
+vector< SoapResponsePtr > SoapResponseFactory::parseResponse( RelatedMultipart& multipart )
 {
     string xml;
     RelatedPartPtr part = multipart.getPart( multipart.getStartId( ) );
