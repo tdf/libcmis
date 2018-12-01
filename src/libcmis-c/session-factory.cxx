@@ -75,10 +75,10 @@ namespace
          */
         char user[CRED_MAX_LEN];
         strncpy(user, username.c_str( ), sizeof( user ) );
-        user[min( username.size( ), CRED_MAX_LEN )] = '\0';
+        user[CRED_MAX_LEN - 1] = '\0';
         char pass[CRED_MAX_LEN];
         strncpy(pass, password.c_str( ), sizeof( pass ) );
-        pass[min( password.size( ), CRED_MAX_LEN )] = '\0';
+        pass[CRED_MAX_LEN - 1] = '\0';
 
         bool result = m_callback( user, pass );
 
