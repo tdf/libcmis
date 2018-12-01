@@ -182,7 +182,7 @@ namespace libcmis
        {
            result = libcmis::parseBool( value );
        }
-       catch ( Exception )
+       catch ( const Exception& )
        {
        }
        return result;
