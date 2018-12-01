@@ -30,7 +30,13 @@
 #include <sstream>
 #include <stdlib.h>
 
+#include <boost/version.hpp>
+
+#if BOOST_VERSION >= 106800
+#include <boost/uuid/detail/sha1.hpp>
+#else
 #include <boost/uuid/sha1.hpp>
+#endif
 #include <curl/curl.h>
 
 #include "xml-utils.hxx"
