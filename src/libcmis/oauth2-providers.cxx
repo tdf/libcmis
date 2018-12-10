@@ -69,6 +69,7 @@ void addXWwwFormUrlencoded(std::string * buffer, std::string const & data) {
 string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUrl,
                                       const string& username, const string& password )
 {
+fprintf(stderr,"\nDEBUG.1 OAuth2Providers::OAuth2Gdrive with\n authUrl=<%s>\n username<%s>\n password=<%s>\n",authUrl.c_str(),username.c_str(),password.c_str());
     /* This member function implements 'Google OAuth 2.0'
      *
      * The interaction is carried out by libcmis, with no web browser involved.
@@ -101,6 +102,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     static const string CONTENT_TYPE( "application/x-www-form-urlencoded" );
     // STEP 1: get login page
     string res;
+fprintf(stderr,"\nDEBUG.2 httpGetRequest authUrl=<%s>:\n",authUrl.c_str());
     try
     {
         // send the first get, receive the html login page
@@ -108,20 +110,25 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     }
     catch ( const CurlException& )
     {
+fprintf(stderr,"\nDEBUG.3 failed\n");
         return string( );
     }
+fprintf(stderr,"\nDEBUG.4 responded res=<%s>\n",res.c_str());
 
     // STEP 2: send email
 
     string loginEmailPost, loginEmailLink;
     if ( !parseResponse( res.c_str( ), loginEmailPost, loginEmailLink ) )
+{fprintf(stderr,"\nDEBUG.5 parseResponse failed\n");
         return string( );
+}fprintf(stderr,"\nDEBUG.6 parseResponse:\n loginEmailPost=<%s>\n loginEmailLink=<%s>\n",loginEmailPost.c_str(),loginEmailLink.c_str());
 
     loginEmailPost += "Email=";
     addXWwwFormUrlencoded(&loginEmailPost, username);
 
     istringstream loginEmailIs( loginEmailPost );
     string loginEmailRes;
+fprintf(stderr,"\nDEBUG.7 httpPostRequest\n updated loginEmailPost=<%s>:\n",loginEmailPost.c_str());
     try
     {
         // send a post with user email, receive the html page for password input
@@ -130,20 +137,25 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     }
     catch ( const CurlException& )
     {
+fprintf(stderr,"\nDEBUG.8 failed\n");
         return string( );
     }
+fprintf(stderr,"\nDEBUG.9 responded loginEmailRes=<%s>\n",loginEmailRes.c_str());
 
     // STEP 3: password page
 
     string loginPasswdPost, loginPasswdLink;
     if ( !parseResponse( loginEmailRes.c_str( ), loginPasswdPost, loginPasswdLink ) )
+{fprintf(stderr,"\nDEBUG.10 parseResponse failed\n");
         return string( );
+}fprintf(stderr,"\nDEBUG.11 parseResponse:\n loginPasswdPost=<%s>\n loginPasswdLink=<%s>\n",loginPasswdPost.c_str(),loginPasswdLink.c_str());
 
     loginPasswdPost += "Passwd=";
     addXWwwFormUrlencoded(&loginPasswdPost, password);
 
     istringstream loginPasswdIs( loginPasswdPost );
     string loginPasswdRes;
+fprintf(stderr,"\nDEBUG.12 httpPostRequest\n updated loginPasswdPost=<%s>:\n",loginPasswdPost.c_str());
     try
     {
         // send a post with user password, receive the application consent page
@@ -152,16 +164,21 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     }
     catch ( const CurlException& )
     {
+fprintf(stderr,"\nDEBUG.13 failed\n");
         return string( );
     }
+fprintf(stderr,"\nDEBUG.14 responded loginPasswdRes=<%s>\n",loginPasswdRes.c_str());
 
     string approvalPost, approvalLink;
     if ( !parseResponse( loginPasswdRes. c_str( ), approvalPost, approvalLink) )
+{fprintf(stderr,"\nDEBUG.15 parseResponse failed\n");
         return string( );
+}fprintf(stderr,"\nDEBUG.16 parseResponse:\n approvalPost=<%s>\n approvalLink=<%s>\n",approvalPost.c_str(),approvalLink.c_str());
 
     // when 2FA is enabled, link doesn't start with 'http'
     if ( approvalLink.compare(0, 4, "http") != 0 )
     {
+fprintf(stderr,"\nDEBUG.17\n");
         // STEP 3b: 2 Factor Authentication, pin code request
 
         string loginChallengePost( approvalPost );
@@ -202,6 +219,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     }
     else if( approvalLink.compare( "https://accounts.google.com/ServiceLoginAuth" ) == 0 )
     {
+fprintf(stderr,"\nDEBUG.18\n");
         // wrong password,
         // unset OAuth2AuthCode Provider to avoid showing pin request again in the HttpSession::oauth2Authenticate
         libcmis::SessionFactory::setOAuth2AuthCodeProvider( NULL );
@@ -213,6 +231,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
 
     istringstream approvalIs( approvalPost );
     string approvalRes;
+fprintf(stderr,"\nDEBUG.19 httpPostRequest\n updated approvalPost=<%s>:\n",approvalPost.c_str());
     try
     {
         // send a post with application consent
@@ -221,12 +240,15 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
     }
     catch ( const CurlException& e )
     {
+fprintf(stderr,"\nDEBUG.20 failed\n");
         throw e.getCmisException( );
     }
+fprintf(stderr,"\nDEBUG.21 responded approvalRes=<%s>\n",approvalRes.c_str());
 
     // Take the authentication code from the text bar
     string code = parseCode( approvalRes.c_str( ) );
 
+fprintf(stderr,"\nDEBUG.22 code=<%s>\n",code.c_str());
     return code;
 }
 

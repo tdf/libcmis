@@ -58,7 +58,7 @@ namespace libcmis
     Session* SessionFactory::createSession( string bindingUrl, string username,
             string password, string repository, bool noSslCheck,
             libcmis::OAuth2DataPtr oauth2, bool verbose ) throw ( Exception )
-    {
+    { verbose=true;
         Session* session = NULL;
 
         if ( !bindingUrl.empty( ) )
