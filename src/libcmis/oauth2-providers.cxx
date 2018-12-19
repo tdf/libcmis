@@ -26,8 +26,6 @@
  * instead of those above.
  */
 
-#include <cassert>
-
 #include <libxml/HTMLparser.h>
 #include <libxml/xmlreader.h>
 
@@ -45,23 +43,29 @@ using namespace std;
 
 namespace {
 
-// See <https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer>:
-void addXWwwFormUrlencoded(std::string * buffer, std::string const & data) {
-    assert(buffer);
-    for (string::const_iterator i = data.begin(); i != data.end(); ++i) {
-        unsigned char c = static_cast<unsigned char>(*i);
-        if (c == ' ' || c == '*' || c == '-' || c == '.' || (c >= '0' && c <= '9')
-            || (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z'))
+// Encodes the given data according to the application/x-www-form-urlencoded format, see
+// <https://url.spec.whatwg.org/#concept-urlencoded-byte-serializer>:
+std::string escapeForm(const std::string& data)
+{
+    std::string res;
+    for ( string::const_iterator i = data.begin(); i != data.end(); ++i )
+    {
+        unsigned char c = static_cast<unsigned char>( *i );
+        if ( c == ' ' || c == '*' || c == '-' || c == '.' || ( c >= '0' && c <= '9' )
+             || ( c >= 'A' && c <= 'Z' ) || c == '_' || ( c >= 'a' && c <= 'z' ) )
         {
-            *buffer += static_cast<char>(c);
-        } else {
-            static const char hex[16] = {
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-            *buffer += '%';
-            *buffer += hex[c >> 4];
-            *buffer += hex[c & 0xF];
+            res += static_cast<char>( c );
+        }
+        else
+        {
+            static const char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7',
+                                          '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+            res += '%';
+            res += hex[c >> 4];
+            res += hex[c & 0xF];
         }
     }
+    return res;
 }
 
 }
@@ -118,7 +122,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         return string( );
 
     loginEmailPost += "Email=";
-    addXWwwFormUrlencoded(&loginEmailPost, username);
+    loginEmailPost += escapeForm( username );
 
     istringstream loginEmailIs( loginEmailPost );
     string loginEmailRes;
@@ -140,7 +144,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         return string( );
 
     loginPasswdPost += "Passwd=";
-    addXWwwFormUrlencoded(&loginPasswdPost, password);
+    loginPasswdPost += escapeForm( password );
 
     istringstream loginPasswdIs( loginPasswdPost );
     string loginPasswdRes;
