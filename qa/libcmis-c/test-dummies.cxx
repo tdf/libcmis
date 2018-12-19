@@ -49,6 +49,12 @@ void operator delete ( void* ptr ) throw ( )
     free( ptr );
 }
 
+#if __cplusplus > 201103L
+void operator delete ( void* ptr, std::size_t ) throw ( )
+{
+    free( ptr );
+}
+#endif
 
 namespace dummies
 {
