@@ -5,6 +5,7 @@ dist_libcmis_HEADERS = \
 	document.hxx \
 	exception.hxx \
 	folder.hxx \
+	libcmis.hxx
 	oauth2-data.hxx \
 	object-type.hxx \
 	object.hxx \
@@ -15,5 +16,4 @@ dist_libcmis_HEADERS = \
 	session-factory.hxx \
 	session.hxx \
 	xml-utils.hxx \
-	xmlserializable.hxx \
-	libcmis.hxx
+	xmlserializable.hxx

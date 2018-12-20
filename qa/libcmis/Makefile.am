@@ -1,26 +1,26 @@
 if !OS_WIN32
 mockup_tests = \
 	test-atom \
+	test-factory \
 	test-gdrive \
 	test-onedrive \
 	test-sharepoint \
-	test-ws \
-	test-factory
+	test-ws
 endif
 
 check_PROGRAMS = \
-	test-utils \
 	test-json \
+	test-utils \
 	${mockup_tests}
 
 test_utils_SOURCES =	\
 	test-commons.cxx \
 	test-decoder.cxx \
-	test-soap.cxx \
-	test-xmlutils.cxx \
-	test-helpers.hxx \
 	test-helpers.cxx \
-	test-main.cxx
+	test-helpers.hxx \
+	test-main.cxx \
+	test-soap.cxx \
+	test-xmlutils.cxx
 
 test_utils_CPPFLAGS = \
 	-I$(top_srcdir)/inc/libcmis \
@@ -59,10 +59,10 @@ test_atom_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_gdrive_SOURCES =	\
+	test-gdrive.cxx \
 	test-helpers.cxx \
 	test-helpers.hxx \
-	test-main.cxx \
-	test-gdrive.cxx
+	test-main.cxx
 
 test_gdrive_CPPFLAGS = \
 	-I$(top_srcdir)/inc/libcmis \
@@ -123,12 +123,12 @@ test_sharepoint_LDADD = \
 
 
 test_ws_SOURCES =	\
-	test-ws.cxx \
 	test-helpers.cxx \
 	test-helpers.hxx \
+	test-main.cxx \
 	test-mockup-helpers.cxx \
 	test-mockup-helpers.hxx \
-	test-main.cxx
+	test-ws.cxx
 
 test_ws_CPPFLAGS = \
 	-I$(top_srcdir)/inc/libcmis \
@@ -148,8 +148,8 @@ test_ws_LDADD = \
 test_json_SOURCES =	\
 	test-helpers.cxx \
 	test-helpers.hxx \
-	test-main.cxx \
-	test-jsonutils.cxx
+	test-jsonutils.cxx \
+	test-main.cxx
 
 test_json_CPPFLAGS = \
 	-I$(top_srcdir)/inc/libcmis \
@@ -170,9 +170,9 @@ test_factory_SOURCES =	\
 	test-factory.cxx \
 	test-helpers.cxx \
 	test-helpers.hxx \
+	test-main.cxx \
 	test-mockup-helpers.cxx \
-	test-mockup-helpers.hxx \
-	test-main.cxx
+	test-mockup-helpers.hxx
 
 test_factory_CPPFLAGS = \
 	-I$(top_srcdir)/inc/libcmis \

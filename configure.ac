@@ -189,19 +189,19 @@ AC_TYPE_SIZE_T
 
 AC_CONFIG_FILES([
 	Makefile
-	libcmis.pc
-	libcmis-c.pc
 	cppcheck-test.sh
 	inc/Makefile
-	inc/libcmis/Makefile
 	inc/libcmis-c/Makefile
-	src/Makefile
-	src/libcmis/Makefile
-	src/libcmis-c/Makefile
+	inc/libcmis/Makefile
+	libcmis-c.pc
+	libcmis.pc
 	qa/Makefile
-	qa/mockup/Makefile
-	qa/libcmis/Makefile
 	qa/libcmis-c/Makefile
+	qa/libcmis/Makefile
+	qa/mockup/Makefile
+	src/Makefile
+	src/libcmis-c/Makefile
+	src/libcmis/Makefile
 ])
 AC_OUTPUT
 

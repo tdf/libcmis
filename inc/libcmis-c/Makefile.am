@@ -5,15 +5,15 @@ dist_libcmis_c_HEADERS = \
 	document.h \
 	error.h \
 	folder.h \
-	object.h \
-	object-type.h \
-	property.h \
-	property-type.h \
+	libcmis-c.h \
 	oauth2-data.h \
+	object-type.h \
+	object.h \
+	property-type.h \
+	property.h \
 	rendition.h \
 	repository.h \
-	types.h \
-	session.h \
 	session-factory.h \
-	vectors.h \
-	libcmis-c.h
+	session.h \
+	types.h \
+	vectors.h

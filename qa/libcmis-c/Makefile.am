@@ -3,16 +3,16 @@ check_PROGRAMS = \
 	test-c-build
 
 test_api_SOURCES = \
-	test-api.cxx \
 	test-allowable-actions.cxx \
+	test-api.cxx \
 	test-document.cxx \
-	test-dummies.hxx \
 	test-dummies.cxx \
+	test-dummies.hxx \
 	test-folder.cxx \
-	test-object.cxx \
 	test-object-type.cxx \
-	test-property.cxx \
+	test-object.cxx \
 	test-property-type.cxx \
+	test-property.cxx \
 	test-repository.cxx \
 	test-session.cxx
 

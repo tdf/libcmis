@@ -12,16 +12,16 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	error.cxx \
 	folder.cxx \
 	internals.hxx \
-	object.cxx \
-	object-type.cxx \
-	property.cxx \
-	property-type.cxx \
-	repository.cxx \
-	session.cxx \
-	session-factory.cxx \
-	vectors.cxx \
 	oauth2-data.cxx \
-	rendition.cxx
+	object-type.cxx \
+	object.cxx \
+	property-type.cxx \
+	property.cxx \
+	rendition.cxx \
+	repository.cxx \
+	session-factory.cxx \
+	session.cxx \
+	vectors.cxx
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 5:0:0
 
