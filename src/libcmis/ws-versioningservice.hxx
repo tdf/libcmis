@@ -30,7 +30,7 @@
 
 #include <string>
 
-#include "document.hxx"
+#include <libcmis/document.hxx>
 
 class WSSession;
 

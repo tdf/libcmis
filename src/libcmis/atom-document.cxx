@@ -31,9 +31,10 @@
 
 #include <curl/curl.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "atom-document.hxx"
 #include "atom-session.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using namespace libcmis;

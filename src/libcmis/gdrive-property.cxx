@@ -27,7 +27,9 @@
  */
 
 #include "gdrive-property.hxx"
-#include "property-type.hxx"
+
+#include <libcmis/property-type.hxx>
+
 #include "gdrive-utils.hxx"
 
 using namespace std;

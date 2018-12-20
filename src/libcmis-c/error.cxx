@@ -29,7 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
+#include <libcmis-c/error.h>
+
 #include "internals.hxx"
 
 using namespace std;

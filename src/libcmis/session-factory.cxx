@@ -25,10 +25,12 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include <libcmis/session-factory.hxx>
+
 #include "atom-session.hxx"
 #include "gdrive-session.hxx"
 #include "onedrive-session.hxx"
-#include "session-factory.hxx"
 #include "sharepoint-session.hxx"
 #include "ws-session.hxx"
 

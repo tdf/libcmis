@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
+#include <libcmis-c/property-type.h>
+
 #include "internals.hxx"
-#include "property-type.h"
 
 void libcmis_vector_property_type_free( libcmis_vector_property_type* vector )
 {

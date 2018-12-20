@@ -31,10 +31,9 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
-#include "document.hxx"
-#include "session.hxx"
-#include "xmlserializable.hxx"
-
+#include <libcmis/document.hxx>
+#include <libcmis/session.hxx>
+#include <libcmis/xmlserializable.hxx>
 
 namespace test
 {

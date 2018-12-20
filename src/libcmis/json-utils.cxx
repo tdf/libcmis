@@ -31,9 +31,10 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 
+#include <libcmis/exception.hxx>
+#include <libcmis/xml-utils.hxx>
+
 #include "json-utils.hxx"
-#include "exception.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using namespace libcmis;

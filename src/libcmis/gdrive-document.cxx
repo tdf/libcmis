@@ -27,10 +27,12 @@
  */
 
 #include "gdrive-document.hxx"
+
+#include <libcmis/rendition.hxx>
+
 #include "gdrive-folder.hxx"
 #include "gdrive-session.hxx"
 #include "json-utils.hxx"
-#include "rendition.hxx"
 #include "gdrive-utils.hxx"
 
 using namespace std;

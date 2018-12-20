@@ -44,10 +44,11 @@
 #pragma clang diagnostic pop
 #endif
 
-#include "object-type.hxx"
-#include "property.hxx"
-#include "property-type.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/object-type.hxx>
+#include <libcmis/property.hxx>
+#include <libcmis/property-type.hxx>
+#include <libcmis/xml-utils.hxx>
+
 #include "test-helpers.hxx"
 
 using namespace boost;

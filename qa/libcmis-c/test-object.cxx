@@ -30,16 +30,17 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
-#include "allowable-actions.h"
-#include "error.h"
-#include "folder.h"
+#include <libcmis-c/allowable-actions.h>
+#include <libcmis-c/error.h>
+#include <libcmis-c/folder.h>
+#include <libcmis-c/object.h>
+#include <libcmis-c/object-type.h>
+#include <libcmis-c/property.h>
+#include <libcmis-c/property-type.h>
+#include <libcmis-c/vectors.h>
+
 #include "internals.hxx"
-#include "object.h"
-#include "object-type.h"
-#include "property.h"
-#include "property-type.h"
 #include "test-dummies.hxx"
-#include "vectors.h"
 
 using namespace std;
 

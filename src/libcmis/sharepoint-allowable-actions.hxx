@@ -29,7 +29,7 @@
 #ifndef _SHAREPOINT_ALLOWABLE_ACTIONS_HXX_
 #define _SHAREPOINT_ALLOWABLE_ACTIONS_HXX_
 
-#include <allowable-actions.hxx>
+#include <libcmis/allowable-actions.hxx>
 
 class SharePointAllowableActions: public libcmis::AllowableActions
 {

@@ -29,7 +29,8 @@
 #include <libxml/HTMLparser.h>
 #include <libxml/xmlreader.h>
 
-#include "session-factory.hxx"
+#include <libcmis/session-factory.hxx>
+
 #include "oauth2-providers.hxx"
 #include "http-session.hxx"
 

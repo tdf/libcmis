@@ -32,8 +32,9 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "ws-relatedmultipart.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using namespace boost::uuids;

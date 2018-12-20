@@ -27,11 +27,13 @@
  */
 
 #include "onedrive-document.hxx"
+
+#include <libcmis/rendition.hxx>
+
 #include "onedrive-folder.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-utils.hxx"
 #include "json-utils.hxx"
-#include "rendition.hxx"
 
 using namespace std;
 using namespace libcmis;

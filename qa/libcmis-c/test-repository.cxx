@@ -30,8 +30,9 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <libcmis-c/repository.h>
+
 #include "internals.hxx"
-#include "repository.h"
 #include "test-dummies.hxx"
 
 using namespace std;

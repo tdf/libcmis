@@ -28,8 +28,8 @@
 
 #include <sstream>
 
-#include "repository.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/repository.hxx>
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

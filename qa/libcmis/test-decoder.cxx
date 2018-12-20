@@ -31,7 +31,7 @@
 #include <cppunit/TestAssert.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-#include "xml-utils.hxx"
+#include <libcmis/xml-utils.hxx>
 
 #define BASE64_ENCODING string( "base64" )
 

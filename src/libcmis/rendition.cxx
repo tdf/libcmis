@@ -28,8 +28,8 @@
 
 #include <sstream>
 
-#include "rendition.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/rendition.hxx>
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

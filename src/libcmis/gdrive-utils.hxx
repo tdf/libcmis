@@ -30,7 +30,8 @@
 
 #include <string>
 
-#include "property.hxx"
+#include <libcmis/property.hxx>
+
 #include "json-utils.hxx"
 
 static const std::string GDRIVE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder" ;

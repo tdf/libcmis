@@ -30,8 +30,9 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <libcmis-c/property-type.h>
+
 #include "internals.hxx"
-#include "property-type.h"
 #include "test-dummies.hxx"
 
 using namespace std;

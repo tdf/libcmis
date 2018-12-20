@@ -26,9 +26,9 @@
  * instead of those above.
  */
 
-#include "allowable-actions.hxx"
-#include "object.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/allowable-actions.hxx>
+#include <libcmis/object.hxx>
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

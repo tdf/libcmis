@@ -44,9 +44,10 @@
 #pragma clang diagnostic pop
 #endif
 
-#include "oauth2-data.hxx"
+#include <libcmis/oauth2-data.hxx>
+#include <libcmis/object-type.hxx>
+
 #include "oauth2-handler.hxx"
-#include "object-type.hxx"
 
 using namespace libcmis;
 using namespace std;

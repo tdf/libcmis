@@ -29,8 +29,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "test-helpers.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

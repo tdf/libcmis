@@ -28,8 +28,9 @@
 
 #include <sstream>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "atom-object-type.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using namespace boost;

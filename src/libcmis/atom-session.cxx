@@ -34,11 +34,12 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-object-type.hxx"
 #include "atom-session.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 

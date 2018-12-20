@@ -29,7 +29,7 @@
 #ifndef _GDRIVE_ALLOWABLE_ACTIONS_HXX_
 #define _GDRIVE_ALLOWABLE_ACTIONS_HXX_
 
-#include <allowable-actions.hxx>
+#include <libcmis/allowable-actions.hxx>
 
 class GdriveAllowableActions: public libcmis::AllowableActions
 {

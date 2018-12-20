@@ -26,9 +26,10 @@
  * instead of those above.
  */
 
-#include "folder.h"
+#include <libcmis-c/folder.h>
+#include <libcmis-c/object.h>
+
 #include "internals.hxx"
-#include "object.h"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

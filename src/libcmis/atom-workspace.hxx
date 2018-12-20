@@ -35,8 +35,8 @@
 #include <curl/curl.h>
 #include <libxml/xpath.h>
 
-#include "exception.hxx"
-#include "repository.hxx"
+#include <libcmis/exception.hxx>
+#include <libcmis/repository.hxx>
 
 #define URI_TEMPLATE_VAR_ID std::string( "id" )
 #define URI_TEMPLATE_VAR_PATH std::string( "path" )

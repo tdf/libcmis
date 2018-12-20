@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
+#include <libcmis-c/property.h>
+
 #include "internals.hxx"
-#include "property.h"
 
 using namespace std;
 

@@ -30,7 +30,8 @@
 
 #include <string>
 
-#include "property.hxx"
+#include <libcmis/property.hxx>
+
 #include "json-utils.hxx"
 
 class SharePointUtils

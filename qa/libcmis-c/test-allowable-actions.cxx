@@ -30,7 +30,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
-#include "allowable-actions.h"
+#include <libcmis-c/allowable-actions.h>
+
 #include "internals.hxx"
 #include "test-dummies.hxx"
 

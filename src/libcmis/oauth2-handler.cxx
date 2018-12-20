@@ -26,10 +26,12 @@
  * instead of those above.
  */
 
-#include "session-factory.hxx"
 #include "oauth2-handler.hxx"
+
+#include <libcmis/session-factory.hxx>
+#include <libcmis/xml-utils.hxx>
+
 #include "json-utils.hxx"
-#include "xml-utils.hxx"
 #include "oauth2-providers.hxx"
 
 using namespace std;

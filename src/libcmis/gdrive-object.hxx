@@ -28,9 +28,10 @@
 #ifndef _GDRIVE_OBJECT_HXX_
 #define _GDRIVE_OBJECT_HXX_
 
+#include <libcmis/object.hxx>
+
 #include "gdrive-session.hxx"
 #include "json-utils.hxx"
-#include "object.hxx"
 
 /** Class representing an object for Google Drive protocol.
 

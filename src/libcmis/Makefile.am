@@ -1,5 +1,5 @@
 AM_CXXFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
 	$(CURL_CFLAGS) \

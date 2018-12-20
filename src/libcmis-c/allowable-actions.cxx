@@ -26,7 +26,8 @@
  * instead of those above.
  */
 
-#include "allowable-actions.h"
+#include <libcmis-c/allowable-actions.h>
+
 #include "internals.hxx"
 
 void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable )

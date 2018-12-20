@@ -28,8 +28,9 @@
 #ifndef _GDRIVE_SESSION_HXX_
 #define _GDRIVE_SESSION_HXX_
 
+#include <libcmis/repository.hxx>
+
 #include "base-session.hxx"
-#include "repository.hxx"
 
 class GDriveSession : public BaseSession
 {

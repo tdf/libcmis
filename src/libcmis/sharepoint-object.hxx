@@ -28,9 +28,10 @@
 #ifndef _SHAREPOINT_OBJECT_HXX_
 #define _SHAREPOINT_OBJECT_HXX_
 
+#include <libcmis/object.hxx>
+
 #include "sharepoint-session.hxx"
 #include "json-utils.hxx"
-#include "object.hxx"
 
 // Class representing an object for SharePoint protocol.
 class SharePointObject : public virtual libcmis::Object

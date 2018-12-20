@@ -29,8 +29,9 @@
 #ifndef _ONEDRIVE_FOLDER_HXX_
 #define _ONEDRIVE_FOLDER_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "onedrive-object.hxx"
 #include "json-utils.hxx"
 

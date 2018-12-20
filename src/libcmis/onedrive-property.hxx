@@ -29,8 +29,9 @@
 #ifndef _ONEDRIVE_PROPERTY_HXX_
 #define _ONEDRIVE_PROPERTY_HXX_
 
+#include <libcmis/property.hxx>
+
 #include "json-utils.hxx"
-#include "property.hxx"
 
 // reference: http://msdn.microsoft.com/en-us/library/hh243648.aspx
 class OneDriveProperty : public libcmis::Property

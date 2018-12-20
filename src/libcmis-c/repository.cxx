@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
+#include <libcmis-c/repository.h>
+
 #include "internals.hxx"
-#include "repository.h"
 
 using std::nothrow;
 

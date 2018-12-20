@@ -35,8 +35,8 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "property.hxx"
-#include "exception.hxx"
+#include <libcmis/exception.hxx>
+#include <libcmis/property.hxx>
 
 class Json
 {

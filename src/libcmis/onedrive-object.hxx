@@ -28,9 +28,10 @@
 #ifndef _ONEDRIVE_OBJECT_HXX_
 #define _ONEDRIVE_OBJECT_HXX_
 
+#include <libcmis/object.hxx>
+
 #include "onedrive-session.hxx"
 #include "json-utils.hxx"
-#include "object.hxx"
 
 // Class representing an object for OneDrive protocol.
 class OneDriveObject : public virtual libcmis::Object

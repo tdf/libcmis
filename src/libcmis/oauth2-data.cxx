@@ -26,7 +26,7 @@
  * instead of those above.
  */
 
-#include "oauth2-data.hxx"
+#include <libcmis/oauth2-data.hxx>
 
 using namespace std;
 

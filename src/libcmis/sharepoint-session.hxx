@@ -28,8 +28,9 @@
 #ifndef _SHAREPOINT_SESSION_HXX_
 #define _SHAREPOINT_SESSION_HXX_
 
+#include <libcmis/repository.hxx>
+
 #include "base-session.hxx"
-#include "repository.hxx"
 #include "json-utils.hxx"
 
 class SharePointSession : public BaseSession

@@ -29,8 +29,9 @@
 #ifndef _GDRIVE_PROPERTY_HXX_
 #define _GDRIVE_PROPERTY_HXX_
 
+#include <libcmis/property.hxx>
+
 #include "json-utils.hxx"
-#include "property.hxx"
 
 class GDriveProperty : public libcmis::Property
 {

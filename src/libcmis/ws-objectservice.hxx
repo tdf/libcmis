@@ -32,10 +32,11 @@
 #include <string>
 #include <vector>
 
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+#include <libcmis/object.hxx>
+
 #include "base-session.hxx"
-#include "document.hxx"
-#include "folder.hxx"
-#include "object.hxx"
 #include "ws-soap.hxx"
 
 class WSSession;

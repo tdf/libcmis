@@ -27,7 +27,9 @@
  */
 
 #include "sharepoint-property.hxx"
-#include "property-type.hxx"
+
+#include <libcmis/property-type.hxx>
+
 #include "sharepoint-utils.hxx"
 
 using namespace std;

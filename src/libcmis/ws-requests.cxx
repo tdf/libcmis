@@ -26,12 +26,13 @@
  * instead of those above.
  */
 
+#include <libcmis/xml-utils.hxx>
+
 #include "ws-document.hxx"
 #include "ws-folder.hxx"
 #include "ws-object.hxx"
 #include "ws-object-type.hxx"
 #include "ws-requests.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

@@ -32,9 +32,10 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <libcmis/session-factory.hxx>
+#include <libcmis/xml-utils.hxx>
+
 #include "oauth2-handler.hxx"
-#include "session-factory.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 

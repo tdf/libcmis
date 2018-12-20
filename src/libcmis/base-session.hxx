@@ -38,11 +38,12 @@
 #include <libxml/xmlstring.h>
 #include <libxml/xpath.h>
 
-#include "exception.hxx"
-#include "oauth2-data.hxx"
-#include "session.hxx"
+#include <libcmis/exception.hxx>
+#include <libcmis/oauth2-data.hxx>
+#include <libcmis/session.hxx>
+#include <libcmis/xml-utils.hxx>
+
 #include "http-session.hxx"
-#include "xml-utils.hxx"
 
 class OAuth2Handler;
 

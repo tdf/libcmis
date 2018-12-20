@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
+#include <libcmis-c/object-type.h>
+
 #include "internals.hxx"
-#include "object-type.h"
 
 using namespace std;
 

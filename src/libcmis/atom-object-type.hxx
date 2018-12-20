@@ -28,8 +28,9 @@
 #ifndef _ATOM_OBJECT_TYPE_HXX_
 #define _ATOM_OBJECT_TYPE_HXX_
 
+#include <libcmis/object-type.hxx>
+
 #include "atom-session.hxx"
-#include "object-type.hxx"
 
 class AtomObjectType : public libcmis::ObjectType
 {

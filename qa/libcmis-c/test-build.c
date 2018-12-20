@@ -26,7 +26,7 @@
  * instead of those above.
  */
 
-#include "libcmis-c.h"
+#include <libcmis-c/libcmis-c.h>
 
 int main ( int argc, char ** argv )
 {

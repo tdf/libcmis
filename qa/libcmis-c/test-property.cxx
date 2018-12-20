@@ -30,11 +30,12 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <libcmis-c/property.h>
+#include <libcmis-c/property-type.h>
+#include <libcmis-c/vectors.h>
+
 #include "internals.hxx"
-#include "property.h"
-#include "property-type.h"
 #include "test-dummies.hxx"
-#include "vectors.h"
 
 using namespace std;
 

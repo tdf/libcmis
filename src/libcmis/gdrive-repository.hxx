@@ -29,7 +29,7 @@
 #ifndef _GDRIVE_REPOSITORY_HXX_
 #define _GDRIVE_REPOSITORY_HXX_
 
-#include <repository.hxx>
+#include <libcmis/repository.hxx>
 
 class GdriveRepository: public libcmis::Repository
 {

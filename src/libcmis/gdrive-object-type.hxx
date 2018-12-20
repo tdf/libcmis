@@ -29,7 +29,8 @@
 #ifndef _GDRIVE_OBJECT_TYPE_HXX_
 #define _GDRIVE_OBJECT_TYPE_HXX_
 
-#include "object-type.hxx"
+#include <libcmis/object-type.hxx>
+
 #include "json-utils.hxx"
 
 class GdriveObjectType: public libcmis::ObjectType

@@ -33,12 +33,13 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-object.hxx"
 #include "atom-object-type.hxx"
 #include "atom-session.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

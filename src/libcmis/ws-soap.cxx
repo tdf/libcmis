@@ -33,8 +33,9 @@
 #include <libxml/xpath.h>
 #include <libxml/xmlstring.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "ws-soap.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using namespace boost::uuids;

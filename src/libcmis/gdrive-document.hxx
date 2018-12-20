@@ -29,11 +29,12 @@
 #ifndef _GDRIVE_DOCUMENT_HXX_
 #define _GDRIVE_DOCUMENT_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+#include <libcmis/rendition.hxx>
+
 #include "gdrive-object.hxx"
 #include "json-utils.hxx"
-#include "rendition.hxx"
 
 class GDriveDocument : public libcmis::Document, public GDriveObject
 {

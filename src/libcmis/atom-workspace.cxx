@@ -27,7 +27,8 @@
  */
 
 #include "atom-workspace.hxx"
-#include "xml-utils.hxx"
+
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

@@ -26,7 +26,8 @@
  * instead of those above.
  */
 
-#include "folder.h"
+#include <libcmis-c/folder.h>
+
 #include "internals.hxx"
 
 using namespace std;

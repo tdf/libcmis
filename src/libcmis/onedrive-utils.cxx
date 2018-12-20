@@ -27,8 +27,10 @@
  */
 
 #include "onedrive-utils.hxx"
+
+#include <libcmis/xml-utils.hxx>
+
 #include "json-utils.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

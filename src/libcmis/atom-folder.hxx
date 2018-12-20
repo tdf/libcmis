@@ -30,8 +30,9 @@
 
 #include <string>
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "atom-object.hxx"
 
 class AtomFolder : public libcmis::Folder, public AtomObject

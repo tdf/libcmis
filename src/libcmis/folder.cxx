@@ -26,8 +26,8 @@
  * instead of those above.
  */
 
-#include "folder.hxx"
-#include "session.hxx"
+#include <libcmis/folder.hxx>
+#include <libcmis/session.hxx>
 
 using namespace std;
 

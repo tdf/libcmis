@@ -29,7 +29,7 @@
 #ifndef _ONEDRIVE_ALLOWABLE_ACTIONS_HXX_
 #define _ONEDRIVE_ALLOWABLE_ACTIONS_HXX_
 
-#include <allowable-actions.hxx>
+#include <libcmis/allowable-actions.hxx>
 
 class OneDriveAllowableActions: public libcmis::AllowableActions
 {

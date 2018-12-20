@@ -29,10 +29,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-session.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

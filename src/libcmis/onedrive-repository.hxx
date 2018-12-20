@@ -28,7 +28,7 @@
 #ifndef _ONEDRIVE_REPOSITORY_HXX_
 #define _ONEDRIVE_REPOSITORY_HXX_
 
-#include <repository.hxx>
+#include <libcmis/repository.hxx>
 
 class OneDriveRepository: public libcmis::Repository
 {

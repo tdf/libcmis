@@ -18,7 +18,6 @@ test_api_SOURCES = \
 
 test_api_CXXFLAGS = \
 	-I$(top_srcdir)/inc \
-	-I$(top_srcdir)/inc/libcmis-c/ \
 	-I$(top_srcdir)/src/libcmis-c/ \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS)
@@ -36,7 +35,6 @@ test_c_build_SOURCES = \
 
 test_c_build_CFLAGS = \
 	-I$(top_srcdir)/inc \
-	-I$(top_srcdir)/inc/libcmis-c/ \
 	$(XML2_CFLAGS)
 
 test_c_build_LDADD = \

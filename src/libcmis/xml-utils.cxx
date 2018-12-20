@@ -39,7 +39,7 @@
 #endif
 #include <curl/curl.h>
 
-#include "xml-utils.hxx"
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

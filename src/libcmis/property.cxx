@@ -28,9 +28,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "object-type.hxx"
-#include "property.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/object-type.hxx>
+#include <libcmis/property.hxx>
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

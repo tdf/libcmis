@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
+#include <libcmis-c/vectors.h>
+
 #include "internals.hxx"
-#include "vectors.h"
 
 
 void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector )

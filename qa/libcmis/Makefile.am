@@ -23,7 +23,7 @@ test_utils_SOURCES =	\
 	test-xmlutils.cxx
 
 test_utils_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
 	$(CURL_CFLAGS) \
@@ -43,7 +43,7 @@ test_atom_SOURCES =	\
 	test-main.cxx
 
 test_atom_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
@@ -63,7 +63,7 @@ test_gdrive_SOURCES =	\
 	test-main.cxx
 
 test_gdrive_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
@@ -83,7 +83,7 @@ test_onedrive_SOURCES =	\
 	test-onedrive.cxx
 
 test_onedrive_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
@@ -103,7 +103,7 @@ test_sharepoint_SOURCES =	\
 	test-sharepoint.cxx
 
 test_sharepoint_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
@@ -126,7 +126,7 @@ test_ws_SOURCES =	\
 	test-ws.cxx
 
 test_ws_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
@@ -146,7 +146,7 @@ test_json_SOURCES =	\
 	test-main.cxx
 
 test_json_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
@@ -168,7 +168,7 @@ test_factory_SOURCES =	\
 	test-mockup-helpers.hxx
 
 test_factory_CPPFLAGS = \
-	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \

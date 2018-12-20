@@ -28,8 +28,9 @@
 
 #include <utility>
 
+#include <libcmis-c/session.h>
+
 #include "internals.hxx"
-#include "session.h"
 
 using namespace std;
 

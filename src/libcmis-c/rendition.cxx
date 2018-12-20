@@ -26,7 +26,8 @@
  * instead of those above.
  */
 
-#include "rendition.h"
+#include <libcmis-c/rendition.h>
+
 #include "internals.hxx"
 
 using namespace std;

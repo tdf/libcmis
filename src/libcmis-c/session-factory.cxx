@@ -32,10 +32,11 @@
 
 #include <libcmis/session-factory.hxx>
 
+#include <libcmis-c/session.h>
+#include <libcmis-c/session-factory.h>
+#include <libcmis-c/vectors.h>
+
 #include "internals.hxx"
-#include "session.h"
-#include "session-factory.h"
-#include "vectors.h"
 
 using namespace std;
 

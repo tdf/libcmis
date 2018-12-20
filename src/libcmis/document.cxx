@@ -26,8 +26,8 @@
  * instead of those above.
  */
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
 
 using namespace std;
 using libcmis::PropertyPtrMap;

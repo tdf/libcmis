@@ -28,8 +28,9 @@
 #ifndef _WS_OBJECT_HXX_
 #define _WS_OBJECT_HXX_
 
-#include "folder.hxx"
-#include "object.hxx"
+#include <libcmis/folder.hxx>
+#include <libcmis/object.hxx>
+
 #include "ws-session.hxx"
 
 class WSObject : public virtual libcmis::Object

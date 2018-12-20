@@ -37,12 +37,13 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
-#include "document.hxx"
-#include "exception.hxx"
-#include "folder.hxx"
-#include "object.hxx"
-#include "object-type.hxx"
-#include "repository.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/exception.hxx>
+#include <libcmis/folder.hxx>
+#include <libcmis/object.hxx>
+#include <libcmis/object-type.hxx>
+#include <libcmis/repository.hxx>
+
 #include "ws-soap.hxx"
 
 class CmisSoapFaultDetail : public SoapFaultDetail

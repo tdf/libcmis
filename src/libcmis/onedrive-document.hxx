@@ -29,11 +29,12 @@
 #ifndef _ONEDRIVE_DOCUMENT_HXX_
 #define _ONEDRIVE_DOCUMENT_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+#include <libcmis/rendition.hxx>
+
 #include "onedrive-object.hxx"
 #include "json-utils.hxx"
-#include "rendition.hxx"
 
 class OneDriveDocument : public libcmis::Document, public OneDriveObject
 {

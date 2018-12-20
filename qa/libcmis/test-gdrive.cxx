@@ -42,14 +42,15 @@
 #pragma clang diagnostic pop
 #endif
 
+#include <libcmis/document.hxx>
+#include <libcmis/session-factory.hxx>
+
 #include <mockup-config.h>
 
 #include "gdrive-session.hxx"
 #include "gdrive-property.hxx"
 #include "oauth2-handler.hxx"
 #include "gdrive-object.hxx"
-#include "document.hxx"
-#include "session-factory.hxx"
 
 using namespace std;
 using namespace libcmis;

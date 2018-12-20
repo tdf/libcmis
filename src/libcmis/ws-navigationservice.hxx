@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-#include "folder.hxx"
+#include <libcmis/folder.hxx>
 
 class WSSession;
 

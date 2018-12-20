@@ -29,7 +29,8 @@
 #ifndef _ONEDRIVE_OBJECT_TYPE_HXX_
 #define _ONEDRIVE_OBJECT_TYPE_HXX_
 
-#include "object-type.hxx"
+#include <libcmis/object-type.hxx>
+
 #include "json-utils.hxx"
 
 class OneDriveObjectType: public libcmis::ObjectType

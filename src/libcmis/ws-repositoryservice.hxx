@@ -32,8 +32,9 @@
 #include <string>
 #include <vector>
 
+#include <libcmis/repository.hxx>
+
 #include "base-session.hxx"
-#include "repository.hxx"
 #include "ws-soap.hxx"
 
 class WSSession;

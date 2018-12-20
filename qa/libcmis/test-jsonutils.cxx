@@ -44,9 +44,10 @@
 #pragma clang diagnostic pop
 #endif
 
+#include <libcmis/property.hxx>
+#include <libcmis/property-type.hxx>
+
 #include "json-utils.hxx"
-#include "property.hxx"
-#include "property-type.hxx"
 
 using namespace std;
 using namespace libcmis;

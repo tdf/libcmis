@@ -47,11 +47,12 @@
 #pragma clang diagnostic pop
 #endif
 
+#include <libcmis/document.hxx>
+#include <libcmis/session-factory.hxx>
+
 #include <mockup-config.h>
 #include "test-helpers.hxx"
 #include "atom-session.hxx"
-#include "session-factory.hxx"
-#include "document.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

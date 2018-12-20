@@ -37,9 +37,9 @@
 #include <libxml/xmlstring.h>
 #include <libxml/xpath.h>
 
-#include "exception.hxx"
-#include "oauth2-data.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/exception.hxx>
+#include <libcmis/oauth2-data.hxx>
+#include <libcmis/xml-utils.hxx>
 
 class OAuth2Handler;
 

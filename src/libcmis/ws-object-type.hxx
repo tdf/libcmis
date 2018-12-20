@@ -28,8 +28,9 @@
 #ifndef _WS_OBJECT_TYPE_HXX_
 #define _WS_OBJECT_TYPE_HXX_
 
+#include <libcmis/object-type.hxx>
+
 #include "ws-session.hxx"
-#include "object-type.hxx"
 
 class WSObjectType : public libcmis::ObjectType
 {

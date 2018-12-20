@@ -42,7 +42,8 @@
 #pragma clang diagnostic pop
 #endif
 
-#include <session-factory.hxx>
+#include <libcmis/session-factory.hxx>
+
 #include <atom-session.hxx>
 #include <ws-session.hxx>
 #include <gdrive-session.hxx>

@@ -31,7 +31,7 @@
 #include <map>
 #include <ostream>
 
-#include "object.hxx"
+#include <libcmis/object.hxx>
 
 class AtomPubSession;
 

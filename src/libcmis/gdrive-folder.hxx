@@ -29,8 +29,9 @@
 #ifndef _GDRIVE_FOLDER_HXX_
 #define _GDRIVE_FOLDER_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "gdrive-object.hxx"
 #include "json-utils.hxx"
 

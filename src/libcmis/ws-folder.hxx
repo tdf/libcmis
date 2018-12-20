@@ -28,8 +28,9 @@
 #ifndef _WS_FOLDER_HXX_
 #define _WS_FOLDER_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "ws-object.hxx"
 #include "ws-session.hxx"
 

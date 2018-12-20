@@ -28,8 +28,9 @@
 #ifndef _ATOM_DOCUMENT_HXX_
 #define _ATOM_DOCUMENT_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "atom-object.hxx"
 
 class AtomDocument : public libcmis::Document, public AtomObject

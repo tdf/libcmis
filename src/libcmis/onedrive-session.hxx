@@ -28,8 +28,9 @@
 #ifndef _ONEDRIVE_SESSION_HXX_
 #define _ONEDRIVE_SESSION_HXX_
 
+#include <libcmis/repository.hxx>
+
 #include "base-session.hxx"
-#include "repository.hxx"
 #include "json-utils.hxx"
 
 class OneDriveSession : public BaseSession

@@ -28,7 +28,7 @@
 #ifndef _SHAREPOINT_REPOSITORY_HXX_
 #define _SHAREPOINT_REPOSITORY_HXX_
 
-#include <repository.hxx>
+#include <libcmis/repository.hxx>
 
 class SharePointRepository: public libcmis::Repository
 {

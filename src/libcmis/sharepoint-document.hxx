@@ -29,8 +29,9 @@
 #ifndef _SHAREPOINT_DOCUMENT_HXX_
 #define _SHAREPOINT_DOCUMENT_HXX_
 
-#include "document.hxx"
-#include "folder.hxx"
+#include <libcmis/document.hxx>
+#include <libcmis/folder.hxx>
+
 #include "sharepoint-object.hxx"
 #include "json-utils.hxx"
 

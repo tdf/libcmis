@@ -27,7 +27,9 @@
  */
 
 #include "onedrive-property.hxx"
-#include "property-type.hxx"
+
+#include <libcmis/property-type.hxx>
+
 #include "onedrive-utils.hxx"
 
 using namespace std;

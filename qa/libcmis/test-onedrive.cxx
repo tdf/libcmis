@@ -44,11 +44,13 @@
 #include <mockup-config.h>
 
 #include <fstream>
+
+#include <libcmis/document.hxx>
+
 #include "onedrive-object.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-session.hxx"
 #include "oauth2-handler.hxx"
-#include "document.hxx"
 
 using namespace std;
 using namespace libcmis;

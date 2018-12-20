@@ -28,9 +28,10 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "sharepoint-utils.hxx"
 #include "json-utils.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 using libcmis::PropertyPtrMap;

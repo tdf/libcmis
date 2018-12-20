@@ -33,9 +33,10 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <libcmis/xml-utils.hxx>
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
-#include "xml-utils.hxx"
 
 using namespace std;
 

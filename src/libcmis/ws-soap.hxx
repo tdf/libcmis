@@ -35,8 +35,9 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include <libcmis/xmlserializable.hxx>
+
 #include "ws-relatedmultipart.hxx"
-#include "xmlserializable.hxx"
 
 /** Interface for soap sessions to communicate to response objects.
 

@@ -28,9 +28,9 @@
 
 #include <algorithm>
 
-#include "object.hxx"
-#include "session.hxx"
-#include "xml-utils.hxx"
+#include <libcmis/object.hxx>
+#include <libcmis/session.hxx>
+#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 
