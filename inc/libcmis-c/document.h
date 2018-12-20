@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_vector_document_free( libcmis_vector_document_Ptr vector );
 size_t libcmis_vector_document_size( libcmis_vector_document_Ptr vector );

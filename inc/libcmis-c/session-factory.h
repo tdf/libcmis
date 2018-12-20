@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
 void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );

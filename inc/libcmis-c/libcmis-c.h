@@ -28,22 +28,22 @@
 #ifndef _LIBCMIS_C_H_
 #define _LIBCMIS_C_H_
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
-#include "allowable-actions.h"
-#include "document.h"
-#include "error.h"
-#include "folder.h"
-#include "object.h"
-#include "object-type.h"
-#include "property.h"
-#include "property-type.h"
-#include "oauth2-data.h"
-#include "rendition.h"
-#include "repository.h"
-#include "types.h"
-#include "session.h"
-#include "session-factory.h"
-#include "vectors.h"
+#include "libcmis-c/allowable-actions.h"
+#include "libcmis-c/document.h"
+#include "libcmis-c/error.h"
+#include "libcmis-c/folder.h"
+#include "libcmis-c/object.h"
+#include "libcmis-c/object-type.h"
+#include "libcmis-c/property.h"
+#include "libcmis-c/property-type.h"
+#include "libcmis-c/oauth2-data.h"
+#include "libcmis-c/rendition.h"
+#include "libcmis-c/repository.h"
+#include "libcmis-c/types.h"
+#include "libcmis-c/session.h"
+#include "libcmis-c/session-factory.h"
+#include "libcmis-c/vectors.h"
 
 #endif

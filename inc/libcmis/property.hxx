@@ -37,8 +37,8 @@
 #include <string>
 #include <vector>
 
-#include "property-type.hxx"
-#include "xmlserializable.hxx"
+#include "libcmis/property-type.hxx"
+#include "libcmis/xmlserializable.hxx"
 
 namespace libcmis
 {

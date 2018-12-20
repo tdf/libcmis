@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 libcmis_vector_property_Ptr libcmis_vector_property_create( );
 void libcmis_vector_property_free( libcmis_vector_property_Ptr vector );

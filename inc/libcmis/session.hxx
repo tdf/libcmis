@@ -32,10 +32,10 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
-#include "object-type.hxx"
-#include "object.hxx"
-#include "folder.hxx"
-#include "repository.hxx"
+#include "libcmis/object-type.hxx"
+#include "libcmis/object.hxx"
+#include "libcmis/folder.hxx"
+#include "libcmis/repository.hxx"
 
 namespace libcmis
 {

@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 libcmis_OAuth2DataPtr libcmis_oauth2data_create(
         char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,

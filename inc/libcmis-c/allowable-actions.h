@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
 

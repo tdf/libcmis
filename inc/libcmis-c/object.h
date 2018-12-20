@@ -30,7 +30,7 @@
 
 #include <time.h>
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 #ifdef __cplusplus
 extern "C" {

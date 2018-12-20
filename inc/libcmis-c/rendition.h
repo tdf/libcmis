@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_rendition_free( libcmis_RenditionPtr rendition );
 

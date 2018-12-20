@@ -34,7 +34,7 @@ extern "C" {
 
 #include <libxml/tree.h>
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_vector_repository_free( libcmis_vector_Repository_Ptr vector );
 size_t libcmis_vector_repository_size( libcmis_vector_Repository_Ptr vector );

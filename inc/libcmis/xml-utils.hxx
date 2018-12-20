@@ -38,7 +38,7 @@
 #include <libxml/xpathInternals.h>
 #include <libxml/xmlwriter.h>
 
-#include "exception.hxx"
+#include "libcmis/exception.hxx"
 
 #define NS_CMIS_PREFIX      "cmis"
 #define NS_CMISRA_PREFIX    "cmisra"

@@ -32,10 +32,10 @@
 #include <map>
 #include <string>
 
-#include "exception.hxx"
-#include "oauth2-data.hxx"
-#include "repository.hxx"
-#include "session.hxx"
+#include "libcmis/exception.hxx"
+#include "libcmis/oauth2-data.hxx"
+#include "libcmis/repository.hxx"
+#include "libcmis/session.hxx"
 
 namespace libcmis
 {

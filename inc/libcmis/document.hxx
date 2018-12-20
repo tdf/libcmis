@@ -34,8 +34,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "exception.hxx"
-#include "object.hxx"
+#include "libcmis/exception.hxx"
+#include "libcmis/object.hxx"
 
 namespace libcmis
 {

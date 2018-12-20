@@ -34,7 +34,7 @@ extern "C" {
 
 #include <time.h>
 
-#include "types.h"
+#include "libcmis-c/types.h"
 
 void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector );
 size_t libcmis_vector_bool_size( libcmis_vector_bool_Ptr vector );

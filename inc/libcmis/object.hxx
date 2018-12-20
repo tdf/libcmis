@@ -41,12 +41,12 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
-#include "allowable-actions.hxx"
-#include "exception.hxx"
-#include "object-type.hxx"
-#include "property.hxx"
-#include "xmlserializable.hxx"
-#include "rendition.hxx"
+#include "libcmis/allowable-actions.hxx"
+#include "libcmis/exception.hxx"
+#include "libcmis/object-type.hxx"
+#include "libcmis/property.hxx"
+#include "libcmis/xmlserializable.hxx"
+#include "libcmis/rendition.hxx"
 
 namespace libcmis
 {

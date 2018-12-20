@@ -34,8 +34,8 @@
 #include <string>
 #include <vector>
 
-#include "exception.hxx"
-#include "property-type.hxx"
+#include "libcmis/exception.hxx"
+#include "libcmis/property-type.hxx"
 
 namespace libcmis
 {
