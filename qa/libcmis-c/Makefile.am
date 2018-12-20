@@ -1,5 +1,3 @@
-
-if ENABLE_TESTS
 check_PROGRAMS = \
 	test-api \
 	test-c-build
@@ -50,5 +48,3 @@ test_c_build_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 TESTS = test-api
-
-endif

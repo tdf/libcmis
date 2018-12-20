@@ -1,5 +1,3 @@
-if ENABLE_TESTS
-
 if !OS_WIN32
 mockup_tests = \
 	test-atom \
@@ -192,5 +190,3 @@ test_factory_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 TESTS = test-utils test-json ${mockup_tests}
-
-endif
