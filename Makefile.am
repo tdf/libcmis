@@ -8,11 +8,6 @@ endif
 
 ACLOCAL_AMFLAGS = -I m4
 
-libcmis-@LIBCMIS_API_VERSION@.pc: libcmis.pc
-		@cp -f $< $@
-libcmis-c-@LIBCMIS_API_VERSION@.pc: libcmis-c.pc
-		@cp -f $< $@
-
 pkgconfig_DATA = \
 		  libcmis-@LIBCMIS_API_VERSION@.pc \
 		  libcmis-c-@LIBCMIS_API_VERSION@.pc

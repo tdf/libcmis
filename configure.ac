@@ -193,8 +193,8 @@ AC_CONFIG_FILES([
 	inc/Makefile
 	inc/libcmis-c/Makefile
 	inc/libcmis/Makefile
-	libcmis-c.pc
-	libcmis.pc
+	libcmis-c-$LIBCMIS_API_VERSION.pc:libcmis-c.pc.in
+	libcmis-$LIBCMIS_API_VERSION.pc:libcmis.pc.in
 	qa/Makefile
 	qa/libcmis-c/Makefile
 	qa/libcmis/Makefile
