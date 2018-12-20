@@ -3,8 +3,7 @@ AM_CXXFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
 	$(CURL_CFLAGS) \
-	$(BOOST_CPPFLAGS) \
-	-O0
+	$(BOOST_CPPFLAGS)
 
 noinst_LTLIBRARIES = libcmis.la
 
