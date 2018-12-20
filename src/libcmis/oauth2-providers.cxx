@@ -26,12 +26,13 @@
  * instead of those above.
  */
 
+#include "oauth2-providers.hxx"
+
 #include <libxml/HTMLparser.h>
 #include <libxml/xmlreader.h>
 
 #include <libcmis/session-factory.hxx>
 
-#include "oauth2-providers.hxx"
 #include "http-session.hxx"
 
 #define CHALLENGE_PAGE_ACTION "/signin"

@@ -25,12 +25,14 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "onedrive-session.hxx"
+
 #include "oauth2-handler.hxx"
 #include "onedrive-object-type.hxx"
 #include "onedrive-document.hxx"
 #include "onedrive-folder.hxx"
 #include "onedrive-object.hxx"
-#include "onedrive-session.hxx"
 #include "onedrive-repository.hxx"
 
 using namespace std;

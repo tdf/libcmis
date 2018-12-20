@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "atom-object.hxx"
+
 #include <algorithm>
 #include <locale>
 #include <sstream>
@@ -37,7 +39,6 @@
 
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
-#include "atom-object.hxx"
 #include "atom-object-type.hxx"
 #include "atom-session.hxx"
 

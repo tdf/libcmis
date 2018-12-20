@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
-#include "sharepoint-document.hxx"
 #include "sharepoint-folder.hxx"
+
+#include "sharepoint-document.hxx"
 #include "sharepoint-session.hxx"
 #include "sharepoint-property.hxx"
 #include "sharepoint-utils.hxx"

@@ -25,8 +25,9 @@
  * instead of those above.
  */
 
-#include "sharepoint-allowable-actions.hxx"
 #include "sharepoint-object.hxx"
+
+#include "sharepoint-allowable-actions.hxx"
 #include "sharepoint-property.hxx"
 #include "sharepoint-repository.hxx"
 #include "sharepoint-utils.hxx"

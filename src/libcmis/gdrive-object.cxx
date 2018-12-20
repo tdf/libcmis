@@ -27,6 +27,7 @@
  */
 
 #include "gdrive-object.hxx"
+
 #include "gdrive-property.hxx"
 #include "gdrive-allowable-actions.hxx"
 #include "gdrive-repository.hxx"

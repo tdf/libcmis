@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
-#include <libcmis-c/folder.h>
 #include <libcmis-c/object.h>
+
+#include <libcmis-c/folder.h>
 
 #include "internals.hxx"
 

@@ -27,6 +27,7 @@
  */
 
 #include "sharepoint-document.hxx"
+
 #include "sharepoint-session.hxx"
 #include "sharepoint-utils.hxx"
 #include "json-utils.hxx"

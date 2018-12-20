@@ -27,6 +27,7 @@
  */
 
 #include <libcmis/folder.hxx>
+
 #include <libcmis/session.hxx>
 
 using namespace std;

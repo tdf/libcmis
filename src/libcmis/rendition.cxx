@@ -26,9 +26,10 @@
  * instead of those above.
  */
 
+#include <libcmis/rendition.hxx>
+
 #include <sstream>
 
-#include <libcmis/rendition.hxx>
 #include <libcmis/xml-utils.hxx>
 
 using namespace std;

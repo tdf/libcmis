@@ -26,11 +26,12 @@
  * instead of those above.
  */
 
+#include "sharepoint-utils.hxx"
+
 #include <boost/shared_ptr.hpp>
 
 #include <libcmis/xml-utils.hxx>
 
-#include "sharepoint-utils.hxx"
 #include "json-utils.hxx"
 
 using namespace std;

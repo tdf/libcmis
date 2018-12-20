@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "base-session.hxx"
+
 #include <cctype>
 #include <string>
 
@@ -35,7 +38,6 @@
 #include <libcmis/session-factory.hxx>
 #include <libcmis/xml-utils.hxx>
 
-#include "base-session.hxx"
 #include "oauth2-handler.hxx"
 
 using namespace std;

@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
-#include "onedrive-document.hxx"
 #include "onedrive-folder.hxx"
+
+#include "onedrive-document.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-utils.hxx"

@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <libcmis-c/session-factory.h>
+
 #include <map>
 #include <string>
 #include <stdlib.h> 
@@ -33,7 +35,6 @@
 #include <libcmis/session-factory.hxx>
 
 #include <libcmis-c/session.h>
-#include <libcmis-c/session-factory.h>
 #include <libcmis-c/vectors.h>
 
 #include "internals.hxx"

@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "http-session.hxx"
+
 #include <cctype>
 #include <string>
 

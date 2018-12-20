@@ -27,6 +27,7 @@
  */
 
 #include <libcmis/allowable-actions.hxx>
+
 #include <libcmis/object.hxx>
 #include <libcmis/xml-utils.hxx>
 

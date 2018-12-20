@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "json-utils.hxx"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -33,8 +35,6 @@
 
 #include <libcmis/exception.hxx>
 #include <libcmis/xml-utils.hxx>
-
-#include "json-utils.hxx"
 
 using namespace std;
 using namespace libcmis;

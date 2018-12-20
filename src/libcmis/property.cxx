@@ -26,10 +26,11 @@
  * instead of those above.
  */
 
+#include <libcmis/property.hxx>
+
 #include <boost/algorithm/string.hpp>
 
 #include <libcmis/object-type.hxx>
-#include <libcmis/property.hxx>
 #include <libcmis/xml-utils.hxx>
 
 using namespace std;

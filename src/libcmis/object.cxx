@@ -26,9 +26,10 @@
  * instead of those above.
  */
 
+#include <libcmis/object.hxx>
+
 #include <algorithm>
 
-#include <libcmis/object.hxx>
 #include <libcmis/session.hxx>
 #include <libcmis/xml-utils.hxx>
 

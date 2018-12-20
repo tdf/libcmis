@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "atom-document.hxx"
+
 #include <algorithm>
 #include <stdlib.h>
 #include <sstream>
@@ -33,7 +36,6 @@
 
 #include <libcmis/xml-utils.hxx>
 
-#include "atom-document.hxx"
 #include "atom-session.hxx"
 
 using namespace std;

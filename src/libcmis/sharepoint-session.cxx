@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "sharepoint-session.hxx"
+
 #include <libcmis/session-factory.hxx>
 
 #include "sharepoint-document.hxx"
@@ -33,7 +35,6 @@
 #include "sharepoint-object.hxx"
 #include "sharepoint-object-type.hxx"
 #include "sharepoint-repository.hxx"
-#include "sharepoint-session.hxx"
 #include "sharepoint-utils.hxx"
 
 using namespace std;

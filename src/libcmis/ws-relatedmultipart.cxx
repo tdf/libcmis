@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "ws-relatedmultipart.hxx"
+
 #include <algorithm>
 #include <sstream>
 #include <boost/uuid/uuid_generators.hpp>
@@ -33,8 +35,6 @@
 #include <curl/curl.h>
 
 #include <libcmis/xml-utils.hxx>
-
-#include "ws-relatedmultipart.hxx"
 
 using namespace std;
 using namespace boost::uuids;

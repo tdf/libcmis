@@ -26,10 +26,10 @@
  * instead of those above.
  */
 
+#include <libcmis-c/error.h>
+
 #include <stdlib.h>
 #include <string.h>
-
-#include <libcmis-c/error.h>
 
 #include "internals.hxx"
 

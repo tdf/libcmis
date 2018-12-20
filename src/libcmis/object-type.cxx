@@ -27,6 +27,7 @@
 */
 
 #include <libcmis/object-type.hxx>
+
 #include <libcmis/xml-utils.hxx>
 #include <libcmis/property.hxx>
 

@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "ws-soap.hxx"
+
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <libxml/parser.h>
@@ -34,8 +36,6 @@
 #include <libxml/xmlstring.h>
 
 #include <libcmis/xml-utils.hxx>
-
-#include "ws-soap.hxx"
 
 using namespace std;
 using namespace boost::uuids;

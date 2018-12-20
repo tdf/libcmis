@@ -27,6 +27,7 @@
  */
 
 #include "ws-navigationservice.hxx"
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
 

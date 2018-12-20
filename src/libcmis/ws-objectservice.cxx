@@ -27,6 +27,7 @@
  */
 
 #include "ws-objectservice.hxx"
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
 

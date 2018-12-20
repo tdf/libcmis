@@ -27,6 +27,7 @@
  */
 
 #include "gdrive-folder.hxx"
+
 #include "gdrive-session.hxx"
 #include "gdrive-document.hxx"
 #include "gdrive-property.hxx"

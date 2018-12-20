@@ -26,10 +26,11 @@
  * instead of those above.
  */
 
+#include "gdrive-session.hxx"
+
 #include <libcmis/object-type.hxx>
 
 #include "oauth2-handler.hxx"
-#include "gdrive-session.hxx"
 #include "gdrive-document.hxx"
 #include "gdrive-folder.hxx"
 #include "gdrive-repository.hxx"

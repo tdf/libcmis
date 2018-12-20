@@ -26,8 +26,9 @@
  * instead of those above.
  */
 
-#include <libcmis/object-type.hxx>
 #include <libcmis/property-type.hxx>
+
+#include <libcmis/object-type.hxx>
 #include <libcmis/xml-utils.hxx>
 
 using namespace std;

@@ -27,6 +27,7 @@
  */
 
 #include "ws-object.hxx"
+
 #include "ws-document.hxx"
 #include "ws-folder.hxx"
 

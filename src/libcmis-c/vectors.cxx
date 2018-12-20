@@ -30,7 +30,6 @@
 
 #include "internals.hxx"
 
-
 void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector )
 {
     delete vector;

@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <libcmis/xml-utils.hxx>
+
 #include <errno.h>
 #include <sstream>
 #include <stdlib.h>
@@ -38,8 +40,6 @@
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <curl/curl.h>
-
-#include <libcmis/xml-utils.hxx>
 
 using namespace std;
 

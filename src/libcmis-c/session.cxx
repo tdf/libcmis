@@ -26,9 +26,9 @@
  * instead of those above.
  */
 
-#include <utility>
-
 #include <libcmis-c/session.h>
+
+#include <utility>
 
 #include "internals.hxx"
 

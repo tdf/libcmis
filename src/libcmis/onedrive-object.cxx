@@ -25,8 +25,9 @@
  * instead of those above.
  */
 
-#include "onedrive-allowable-actions.hxx"
 #include "onedrive-object.hxx"
+
+#include "onedrive-allowable-actions.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-repository.hxx"
 #include "onedrive-utils.hxx"

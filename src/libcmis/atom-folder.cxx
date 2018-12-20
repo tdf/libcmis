@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "atom-folder.hxx"
+
 #include <sstream>
 
 #include <boost/shared_ptr.hpp>
@@ -32,7 +35,6 @@
 #include <libcmis/xml-utils.hxx>
 
 #include "atom-document.hxx"
-#include "atom-folder.hxx"
 #include "atom-session.hxx"
 
 using namespace std;

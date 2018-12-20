@@ -26,11 +26,11 @@
  * instead of those above.
  */
 
+#include "atom-object-type.hxx"
+
 #include <sstream>
 
 #include <libcmis/xml-utils.hxx>
-
-#include "atom-object-type.hxx"
 
 using namespace std;
 using namespace boost;

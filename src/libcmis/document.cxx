@@ -27,6 +27,7 @@
  */
 
 #include <libcmis/document.hxx>
+
 #include <libcmis/folder.hxx>
 
 using namespace std;

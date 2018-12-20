@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include "ws-session.hxx"
+
 #include <sstream>
 
 #include <boost/date_time.hpp>
@@ -36,7 +38,6 @@
 #include <libcmis/xml-utils.hxx>
 
 #include "ws-requests.hxx"
-#include "ws-session.hxx"
 
 using namespace std;
 

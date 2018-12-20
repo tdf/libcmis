@@ -25,6 +25,9 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
+
+#include "atom-session.hxx"
+
 #include <string>
 
 #include <boost/algorithm/string.hpp>
@@ -39,7 +42,6 @@
 #include "atom-document.hxx"
 #include "atom-folder.hxx"
 #include "atom-object-type.hxx"
-#include "atom-session.hxx"
 
 using namespace std;
 
