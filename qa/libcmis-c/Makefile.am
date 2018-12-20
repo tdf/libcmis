@@ -18,7 +18,12 @@ test_api_SOURCES = \
 	test-repository.cxx \
 	test-session.cxx
 
-test_api_CXXFLAGS = -I$(top_srcdir)/src/ -I$(top_srcdir)/src/libcmis-c/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
+test_api_CXXFLAGS = \
+	-I$(top_srcdir)/inc \
+	-I$(top_srcdir)/inc/libcmis-c/ \
+	-I$(top_srcdir)/src/libcmis-c/ \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS)
 
 test_api_LDADD = \
 	$(top_builddir)/src/libcmis-c/libcmis-c-@LIBCMIS_API_VERSION@.la \
@@ -31,7 +36,10 @@ test_api_LDADD = \
 test_c_build_SOURCES = \
 	test-build.c
 
-test_c_build_CFLAGS = -I$(top_srcdir)/src/ -I$(top_srcdir)/src/libcmis-c/ $(XML2_CFLAGS)
+test_c_build_CFLAGS = \
+	-I$(top_srcdir)/inc \
+	-I$(top_srcdir)/inc/libcmis-c/ \
+	$(XML2_CFLAGS)
 
 test_c_build_LDADD = \
 	$(top_builddir)/src/libcmis-c/libcmis-c-@LIBCMIS_API_VERSION@.la \

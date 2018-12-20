@@ -1,7 +1,10 @@
 SUBDIRS = libcmis libcmis-c 
 
 if ENABLE_CLIENT
-AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
+AM_CXXFLAGS = \
+	-I$(top_srcdir)/inc \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS)
 
 bin_PROGRAMS = cmis-client
 

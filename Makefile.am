@@ -1,6 +1,6 @@
 include $(top_srcdir)/coverage.mk
 
-SUBDIRS = src qa
+SUBDIRS = inc src qa
 ACLOCAL_AMFLAGS = -I m4
 
 libcmis-@LIBCMIS_API_VERSION@.pc: libcmis.pc

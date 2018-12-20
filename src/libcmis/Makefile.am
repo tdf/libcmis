@@ -1,22 +1,10 @@
-AM_CXXFLAGS = -I$(top_srcdir)/src/libcmis $(XML2_CFLAGS) $(CURL_CFLAGS) $(BOOST_CPPFLAGS) -O0
-
-libcmis_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
-    allowable-actions.hxx \
-	document.hxx \
-	exception.hxx \
-	folder.hxx \
-	oauth2-data.hxx \
-	object-type.hxx \
-	object.hxx \
-	property-type.hxx \
-	property.hxx \
-	rendition.hxx \
-	repository.hxx \
-	session-factory.hxx \
-	session.hxx \
-	xml-utils.hxx \
-	xmlserializable.hxx \
-	libcmis.hxx
+AM_CXXFLAGS = \
+	-I$(top_srcdir)/inc/libcmis \
+	-I$(top_srcdir)/src/libcmis \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS) \
+	-O0
 
 noinst_LTLIBRARIES = libcmis.la
 
@@ -26,7 +14,6 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	dummy.cxx
 
 libcmis_la_SOURCES = \
-	$(libcmis_headers_public) \
 	session-factory.cxx \
 	base-session.hxx \
 	base-session.cxx \
@@ -146,5 +133,3 @@ libcmis_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
-
-libcmis_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis

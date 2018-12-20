@@ -1,0 +1,1 @@
+SUBDIRS = libcmis libcmis-c

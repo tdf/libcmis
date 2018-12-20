@@ -192,6 +192,9 @@ AC_CONFIG_FILES([
 	libcmis.pc
 	libcmis-c.pc
     cppcheck-test.sh
+	inc/Makefile
+	inc/libcmis/Makefile
+	inc/libcmis-c/Makefile
 	src/Makefile
 	src/libcmis/Makefile
 	src/libcmis-c/Makefile

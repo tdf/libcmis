@@ -1,23 +1,9 @@
 
-libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = -I$(top_srcdir)/src/ $(XML2_CFLAGS) $(BOOST_CPPFLAGS)
-
-libcmis_c_@LIBCMIS_API_VERSION@_la_include_HEADERS = \
-	allowable-actions.h \
-	document.h \
-	error.h \
-	folder.h \
-	object.h \
-	object-type.h \
-	property.h \
-	property-type.h \
-	oauth2-data.h \
-	rendition.h \
-	repository.h \
-	types.h \
-	session.h \
-	session-factory.h \
-	vectors.h \
-	libcmis-c.h
+libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = \
+	-I$(top_srcdir)/inc \
+	-I$(top_srcdir)/inc/libcmis-c \
+	$(XML2_CFLAGS) \
+	$(BOOST_CPPFLAGS)
 
 lib_LTLIBRARIES = libcmis-c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
@@ -45,5 +31,3 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	$(CURL_LIBS) \
 	$(BOOST_SMART_PTR_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
-
-libcmis_c_@LIBCMIS_API_VERSION@_la_includedir = $(includedir)/libcmis-c-@LIBCMIS_API_VERSION@/libcmis-c
