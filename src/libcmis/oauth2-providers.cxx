@@ -290,13 +290,12 @@ string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& auth
 
     string header = resp->getHeaders()["Location"];
     string code;
-    int start = header.find("code=");
-    int notFound = ( int ) ( string::npos );
-    if ( start != notFound )
+    auto start = header.find("code=");
+    if ( start != string::npos )
     {   
         start += 5;
-        int end = header.find("&");
-        if ( end != notFound )
+        auto end = header.find("&");
+        if ( end != string::npos )
             code = header.substr( start, end - start );
         else code = header.substr( start );
     }
