@@ -28,6 +28,8 @@
 
 #include "oauth2-providers.hxx"
 
+#include <boost/algorithm/string.hpp>
+
 #include <libxml/HTMLparser.h>
 #include <libxml/xmlreader.h>
 
@@ -302,13 +304,13 @@ string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& auth
 
 OAuth2Parser OAuth2Providers::getOAuth2Parser( const std::string& url )
 {
-    if ( url.find( "https://api.alfresco.com/" ) == 0 )
+    if ( boost::starts_with( url, "https://api.alfresco.com/" ) )
         // For Alfresco in the cloud, only match the hostname as there can be several
         // binding URLs created with it.
         return OAuth2Alfresco;
-    else if ( url.find( "https://www.googleapis.com/drive/v2" ) == 0 )
+    else if ( boost::starts_with( url, "https://www.googleapis.com/drive/v2" ) )
         return OAuth2Gdrive;
-    else if ( url.find( "https://apis.live.net/v5.0" ) == 0 )
+    else if ( boost::starts_with( url, "https://apis.live.net/v5.0" ) )
         return OAuth2Onedrive;
 
     return OAuth2Gdrive;
