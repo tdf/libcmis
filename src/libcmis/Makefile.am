@@ -5,7 +5,7 @@ AM_CXXFLAGS = \
 	$(CURL_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
-if HAVE_VISIBILITY
+if ENABLE_VISIBILITY
 AM_CXXFLAGS += -fvisibility=hidden
 endif
 
@@ -17,7 +17,7 @@ libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	dummy.cxx
 
 libcmis_la_CPPFLAGS = -DLIBCMIS_BUILD
-if HAVE_VISIBILITY
+if ENABLE_VISIBILITY
 libcmis_la_CPPFLAGS += -DLIBCMIS_VISIBILITY
 endif
 

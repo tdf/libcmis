@@ -102,7 +102,7 @@ AC_TRY_COMPILE([], [], [have_visibility=yes], [have_visibility=no])
 AC_MSG_RESULT([$have_visibility])
 CPPFLAGS="$saved_CPPFLAGS"
 AX_GCC_FUNC_ATTRIBUTE([visibility])
-AM_CONDITIONAL([HAVE_VISIBILITY], [
+AM_CONDITIONAL([ENABLE_VISIBILITY], [
 	test "x$have_visibility" = "xyes" && test "x$ax_cv_have_func_attribute_visibility" = "xyes"])
 
 # =============
@@ -123,7 +123,7 @@ AS_IF([test "x$with_man" != "xno"], [
 	])
 ], [build_man=no])
 AC_SUBST(DOCBOOK2MAN)
-AM_CONDITIONAL([WITH_LIBCMIS_MAN], [test "x$build_man" != "xno"])
+AM_CONDITIONAL([ENABLE_MAN], [test "x$build_man" != "xno"])
 
 # ========
 # Cppcheck

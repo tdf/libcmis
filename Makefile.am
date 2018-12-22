@@ -13,7 +13,7 @@ pkgconfig_DATA = \
 		  libcmis-c-@LIBCMIS_API_VERSION@.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-if WITH_LIBCMIS_MAN
+if ENABLE_MAN
 cmis-client.1: doc/cmis-client.xml
 	$(DOCBOOK2MAN) $<
 
