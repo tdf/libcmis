@@ -33,6 +33,8 @@
 #include <string.h>
 #include <iostream>
 
+#include <boost/algorithm/string.hpp>
+
 #include "internals.hxx"
 
 using namespace std;
@@ -279,7 +281,7 @@ const struct HttpRequest* curl_mockup_getRequest( const char* urlBase,
         {
             lcl_splitUrl( it->m_url, url, params );
 
-            bool matchBaseUrl = urlBaseString.empty() || ( url.find( urlBaseString ) == 0 );
+            bool matchBaseUrl = urlBaseString.empty() || boost::starts_with( url, urlBaseString );
             bool matchParams = matchParamString.empty( ) || ( params.find( matchParamString ) != string::npos );
             bool matchBodyPart = !matchBody || ( it->m_body.find( matchBodyStr ) != string::npos );
 
@@ -331,8 +333,7 @@ int curl_mockup_getRequestsCount( const char* urlBase,
         {
             lcl_splitUrl( it->m_url, url, params );
 
-            bool matchBaseUrl = urlBaseString.empty() ||
-                                  ( url.find( urlBaseString ) == 0 );
+	    bool matchBaseUrl = urlBaseString.empty() || boost::starts_with( url, urlBaseString );
             bool matchParams = matchParamString.empty( ) ||
                                   ( params.find( matchParamString ) != string::npos );
             bool matchBodyPart = matchBodyStr.empty() ||
