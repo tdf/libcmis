@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <boost/algorithm/string.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
@@ -123,7 +124,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
 
     // Parse the multipart
     string bodyFixed( body );
-    if ( bodyFixed.find( "--" + m_boundary + "\r\n" ) == 0 )
+    if ( boost::starts_with( bodyFixed, "--" + m_boundary + "\r\n" ) )
         bodyFixed = "\r\n" + bodyFixed;
 
     if ( bodyFixed[bodyFixed.length() - 1 ] != '\n' )
@@ -144,7 +145,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
     while ( pos != string::npos )
     {
         string line = bodyFixed.substr( lastPos, pos - lastPos );
-        if ( line.find( boundaryString ) == 0 )
+        if ( boost::starts_with( line, boundaryString ) )
         {
             // Found a part start
             inPart = true;
@@ -201,7 +202,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         }
 
         // If we found the end of the multipart, no need to continue looping
-        if ( line.find( endBoundaryString ) == 0 )
+        if ( boost::starts_with( line, endBoundaryString ) )
             break;
 
         lastPos = pos + lineEnd.length();
