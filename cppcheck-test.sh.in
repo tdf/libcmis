@@ -1,6 +1,0 @@
-#!/bin/sh
-@CPPCHECK@ -q --enable=style,performance,portability \
-           -j @CPPCHECK_PARALLELISM@ \
-           --suppressions-list=@SRCDIR@/cppcheck-suppress \
-           --error-exitcode=1 @SRCDIR@
-exit $?

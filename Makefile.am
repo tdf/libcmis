@@ -38,12 +38,6 @@ EXTRA_DIST = \
 	cppcheck-suppress \
 	qa/libcmis/data
 
-if ENABLE_CPPCHECK
-LOG_COMPILER = $(SHELL)
-TESTS = cppcheck-test.sh
-endif
-
-
 DISTCLEANFILES = \
 	cmis-client.1 \
 	libcmis-@LIBCMIS_API_VERSION@.pc \
@@ -63,3 +57,8 @@ dist-hook:
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
 
+cppcheck:
+	@CPPCHECK@ -q --enable=style,performance,portability \
+		-j @CPPCHECK_PARALLELISM@ \
+		--suppressions-list=@SRCDIR@/cppcheck-suppress \
+		--error-exitcode=1 @SRCDIR@

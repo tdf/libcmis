@@ -117,7 +117,6 @@ AM_CONDITIONAL([WITH_LIBCMIS_MAN], [test "x$build_man" != "xno"])
 # ========
 AC_PATH_PROG(CPPCHECK,[cppcheck],[])
 AS_IF([test "x$ac_cv_path_CPPCHECK" != "x"], [enable_cppcheck=yes], [enable_cppcheck=no])
-AM_CONDITIONAL(ENABLE_CPPCHECK, [test "x$ac_cv_path_CPPCHECK" != "x"])
 AC_SUBST(CPPCHECK)
 AC_PATH_PROG([NPROC], [nproc], [])
 AS_IF([test "x$NPROC" != "x"], [CPPCHECK_PARALLELISM=`$NPROC`], [CPPCHECK_PARALLELISM=1])
@@ -182,7 +181,6 @@ AC_TYPE_SIZE_T
 
 AC_CONFIG_FILES([
 	Makefile
-	cppcheck-test.sh
 	inc/Makefile
 	inc/libcmis-c/Makefile
 	inc/libcmis/Makefile
@@ -207,7 +205,6 @@ libcmis $VERSION:
               client: ${enable_client}
               werror: ${enable_werror}
                tests: ${enable_tests}
-      cppcheck tests: ${enable_cppcheck}
        test coverage: ${enable_coverage}
                 mans: ${build_man}
 ])
