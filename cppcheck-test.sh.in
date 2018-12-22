@@ -1,5 +1,5 @@
 #!/bin/sh
-@CPPCHECK@ -q --enable=style,performance,portability,information \
+@CPPCHECK@ -q --enable=style,performance,portability \
            --suppressions-list=./cppcheck-suppress \
            --error-exitcode=1 @SRCDIR@
 exit $?
