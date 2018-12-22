@@ -34,7 +34,7 @@
 #else
 #define LIBCMIS_C_API __declspec(dllimport)
 #endif
-#else // !DLL_EXPORT
+#else /* !DLL_EXPORT */
 #ifdef LIBCMIS_C_VISIBILITY
 #define LIBCMIS_C_API __attribute__((visibility("default")))
 #else
