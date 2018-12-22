@@ -139,16 +139,12 @@ AS_IF([test x"$GCC" = xyes], [
 ])
 
 # Check for curl
-PKG_CHECK_MODULES(CURL,[
-	libcurl
-])
+PKG_CHECK_MODULES(CURL, [libcurl])
 AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 # Check for lixml2
-PKG_CHECK_MODULES(XML2,[
-	libxml-2.0
-])
+PKG_CHECK_MODULES(XML2, [libxml-2.0])
 AC_SUBST(XML2_CFLAGS)
 AC_SUBST(XML2_LIBS)
 
