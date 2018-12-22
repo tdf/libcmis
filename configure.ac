@@ -125,6 +125,9 @@ AC_PATH_PROG(CPPCHECK,[cppcheck],[])
 AS_IF([test "x$ac_cv_path_CPPCHECK" != "x"], [enable_cppcheck=yes], [enable_cppcheck=no])
 AM_CONDITIONAL(ENABLE_CPPCHECK, [test "x$ac_cv_path_CPPCHECK" != "x"])
 AC_SUBST(CPPCHECK)
+AC_PATH_PROG([NPROC], [nproc], [])
+AS_IF([test "x$NPROC" != "x"], [CPPCHECK_PARALLELISM=`$NPROC`], [CPPCHECK_PARALLELISM=1])
+AC_SUBST([CPPCHECK_PARALLELISM])
 
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
