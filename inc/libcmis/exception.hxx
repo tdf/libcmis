@@ -31,9 +31,11 @@
 #include <exception>
 #include <string>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {
-    class Exception : public std::exception
+    class LIBCMIS_API Exception : public std::exception
     {
         private:
             std::string m_message;

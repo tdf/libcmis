@@ -92,6 +92,19 @@ AS_CASE([$host], [*-*-mingw*], [native_win32=yes], [native_win32=no])
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 
+# ====================
+# Check for visibility
+# ====================
+AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
+saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -fvisibility=hidden"
+AC_TRY_COMPILE([], [], [have_visibility=yes], [have_visibility=no])
+AC_MSG_RESULT([$have_visibility])
+CPPFLAGS="$saved_CPPFLAGS"
+AX_GCC_FUNC_ATTRIBUTE([visibility])
+AM_CONDITIONAL([HAVE_VISIBILITY], [
+	test "x$have_visibility" = "xyes" && test "x$ax_cv_have_func_attribute_visibility" = "xyes"])
+
 # =============
 # Documentation
 # =============

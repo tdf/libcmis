@@ -34,31 +34,32 @@ extern "C" {
 
 #include <time.h>
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector );
-size_t libcmis_vector_bool_size( libcmis_vector_bool_Ptr vector );
-bool libcmis_vector_bool_get( libcmis_vector_bool_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_bool_size( libcmis_vector_bool_Ptr vector );
+LIBCMIS_C_API bool libcmis_vector_bool_get( libcmis_vector_bool_Ptr vector, size_t i );
 
 
-void libcmis_vector_string_free( libcmis_vector_string_Ptr vector );
-size_t libcmis_vector_string_size( libcmis_vector_string_Ptr vector );
-const char* libcmis_vector_string_get( libcmis_vector_string_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_string_free( libcmis_vector_string_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_string_size( libcmis_vector_string_Ptr vector );
+LIBCMIS_C_API const char* libcmis_vector_string_get( libcmis_vector_string_Ptr vector, size_t i );
 
 
-void libcmis_vector_long_free( libcmis_vector_long_Ptr vector );
-size_t libcmis_vector_long_size( libcmis_vector_long_Ptr vector );
-long libcmis_vector_long_get( libcmis_vector_long_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_long_free( libcmis_vector_long_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_long_size( libcmis_vector_long_Ptr vector );
+LIBCMIS_C_API long libcmis_vector_long_get( libcmis_vector_long_Ptr vector, size_t i );
 
 
-void libcmis_vector_double_free( libcmis_vector_double_Ptr vector );
-size_t libcmis_vector_double_size( libcmis_vector_double_Ptr vector );
-double libcmis_vector_double_get( libcmis_vector_double_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_double_free( libcmis_vector_double_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_double_size( libcmis_vector_double_Ptr vector );
+LIBCMIS_C_API double libcmis_vector_double_get( libcmis_vector_double_Ptr vector, size_t i );
 
 
-void libcmis_vector_time_free( libcmis_vector_time_Ptr vector );
-size_t libcmis_vector_time_size( libcmis_vector_time_Ptr vector );
-time_t libcmis_vector_time_get( libcmis_vector_time_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_time_free( libcmis_vector_time_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_time_size( libcmis_vector_time_Ptr vector );
+LIBCMIS_C_API time_t libcmis_vector_time_get( libcmis_vector_time_Ptr vector, size_t i );
 
 #ifdef __cplusplus
 }

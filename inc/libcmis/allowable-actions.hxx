@@ -35,12 +35,13 @@
 #include <libxml/tree.h>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 
 namespace libcmis
 {
     class Object;
 
-    class ObjectAction
+    class LIBCMIS_API ObjectAction
     {
         public:
             enum Type
@@ -98,7 +99,7 @@ namespace libcmis
 
     /** Class providing access to the allowed actions on an object.
       */
-    class AllowableActions
+    class LIBCMIS_API AllowableActions
     {
         protected:
             std::map< ObjectAction::Type, bool > m_states;

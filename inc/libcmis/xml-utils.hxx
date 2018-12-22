@@ -39,6 +39,7 @@
 #include <libxml/xmlwriter.h>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 
 #define NS_CMIS_PREFIX      "cmis"
 #define NS_CMISRA_PREFIX    "cmisra"
@@ -63,7 +64,7 @@ namespace libcmis
         An instance of this class can hold remaining un-decoded data to use
         for a future decode call.
       */
-    class EncodedData
+    class LIBCMIS_API EncodedData
     {
         private:
             xmlTextWriterPtr m_writer;
@@ -95,7 +96,7 @@ namespace libcmis
             void encodeBase64( const char* buf, size_t len );
     };
 
-    class HttpResponse
+    class LIBCMIS_API HttpResponse
     {
         private:
             std::map< std::string, std::string > m_headers;
@@ -112,54 +113,54 @@ namespace libcmis
     };
     typedef boost::shared_ptr< HttpResponse > HttpResponsePtr;
 
-    void registerNamespaces( xmlXPathContextPtr xpathCtx );
+    LIBCMIS_API void registerNamespaces( xmlXPathContextPtr xpathCtx );
 
     /** Register the CMIS and WSDL / SOAP namespaces
       */
-    void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx );
+    LIBCMIS_API void registerCmisWSNamespaces( xmlXPathContextPtr xpathCtx );
 
     /** Register only the WSD / SOAP namespaces.
       */
-    void registerSoapNamespaces( xmlXPathContextPtr xpathCtx );
+    LIBCMIS_API void registerSoapNamespaces( xmlXPathContextPtr xpathCtx );
 
-    std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req );
+    LIBCMIS_API std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req );
 
-    xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
+    LIBCMIS_API xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
     /** Utility extracting an attribute value from an Xml Node,
         based on the attribute name. If the defaultValue is NULL and
         the attribute can't be found then throw an exception.
       */
-    std::string getXmlNodeAttributeValue( xmlNodePtr node,
+    LIBCMIS_API std::string getXmlNodeAttributeValue( xmlNodePtr node,
                                           const char* attributeName,
                                           const char* defaultValue = NULL );
 
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */
-    boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
+    LIBCMIS_API boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
 
     /// Write a UTC time object to an xsd:dateTime string
-    std::string writeDateTime( boost::posix_time::ptime time );
+    LIBCMIS_API std::string writeDateTime( boost::posix_time::ptime time );
 
-    bool parseBool( std::string str );
+    LIBCMIS_API bool parseBool( std::string str );
 
-    long parseInteger( std::string str );
+    LIBCMIS_API long parseInteger( std::string str );
 
-    double parseDouble( std::string str );
+    LIBCMIS_API double parseDouble( std::string str );
 
     /** Trim spaces on the left and right of a string.
      */
-    std::string trim( const std::string& str );
+    LIBCMIS_API std::string trim( const std::string& str );
 
-    std::string base64encode( const std::string& str );
+    LIBCMIS_API std::string base64encode( const std::string& str );
 
-    std::string sha1( const std::string& str );
+    LIBCMIS_API std::string sha1( const std::string& str );
 
-    int stringstream_write_callback(void * context, const char * s, int len);
+    LIBCMIS_API int stringstream_write_callback(void * context, const char * s, int len);
 
-    std::string escape( std::string str );
+    LIBCMIS_API std::string escape( std::string str );
 
-    std::string unescape( std::string str );
+    LIBCMIS_API std::string unescape( std::string str );
 }
 
 #endif

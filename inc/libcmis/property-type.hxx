@@ -33,12 +33,14 @@
 
 #include <string>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {
     class ObjectType;
     typedef boost::shared_ptr< ObjectType > ObjectTypePtr;
 
-    class PropertyType
+    class LIBCMIS_API PropertyType
     {
         public:
 

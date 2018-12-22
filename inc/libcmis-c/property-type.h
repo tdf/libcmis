@@ -32,50 +32,51 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
 
-void libcmis_vector_property_type_free( libcmis_vector_property_type_Ptr vector );
-size_t libcmis_vector_property_type_size( libcmis_vector_property_type_Ptr vector );
-libcmis_PropertyTypePtr libcmis_vector_property_type_get( libcmis_vector_property_type_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_property_type_free( libcmis_vector_property_type_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_property_type_size( libcmis_vector_property_type_Ptr vector );
+LIBCMIS_C_API libcmis_PropertyTypePtr libcmis_vector_property_type_get( libcmis_vector_property_type_Ptr vector, size_t i );
 
-void libcmis_property_type_free( libcmis_PropertyTypePtr type );
-
-/** The resulting value needs to be free'd.
-  */
-char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API void libcmis_property_type_free( libcmis_PropertyTypePtr type );
 
 /** The resulting value needs to be free'd.
   */
-char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API char* libcmis_property_type_getId( libcmis_PropertyTypePtr type );
 
 /** The resulting value needs to be free'd.
   */
-char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API char* libcmis_property_type_getLocalName( libcmis_PropertyTypePtr type );
 
 /** The resulting value needs to be free'd.
   */
-char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API char* libcmis_property_type_getLocalNamespace( libcmis_PropertyTypePtr type );
 
 /** The resulting value needs to be free'd.
   */
-char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type );
-
-libcmis_property_type_Type libcmis_property_type_getType( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API char* libcmis_property_type_getDisplayName( libcmis_PropertyTypePtr type );
 
 /** The resulting value needs to be free'd.
   */
-char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API char* libcmis_property_type_getQueryName( libcmis_PropertyTypePtr type );
 
-bool libcmis_property_type_isMultiValued( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isUpdatable( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isInherited( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isRequired( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isQueryable( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isOrderable( libcmis_PropertyTypePtr type );
-bool libcmis_property_type_isOpenChoice( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API libcmis_property_type_Type libcmis_property_type_getType( libcmis_PropertyTypePtr type );
 
-void libcmis_property_type_update( libcmis_PropertyTypePtr propDef,
+/** The resulting value needs to be free'd.
+  */
+LIBCMIS_C_API char* libcmis_property_type_getXmlType( libcmis_PropertyTypePtr type );
+
+LIBCMIS_C_API bool libcmis_property_type_isMultiValued( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isUpdatable( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isInherited( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isRequired( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isQueryable( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isOrderable( libcmis_PropertyTypePtr type );
+LIBCMIS_C_API bool libcmis_property_type_isOpenChoice( libcmis_PropertyTypePtr type );
+
+LIBCMIS_C_API void libcmis_property_type_update( libcmis_PropertyTypePtr propDef,
                                    libcmis_vector_object_type_Ptr types );
 
 #ifdef __cplusplus

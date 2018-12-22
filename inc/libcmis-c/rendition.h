@@ -33,21 +33,22 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-void libcmis_rendition_free( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API void libcmis_rendition_free( libcmis_RenditionPtr rendition );
 
-bool libcmis_rendition_isThumbnail( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API bool libcmis_rendition_isThumbnail( libcmis_RenditionPtr rendition );
 
-const char* libcmis_rendition_getStreamId( libcmis_RenditionPtr rendition );
-const char* libcmis_rendition_getMimeType( libcmis_RenditionPtr rendition );
-const char* libcmis_rendition_getKind( libcmis_RenditionPtr rendition );
-const char* libcmis_rendition_getUrl( libcmis_RenditionPtr rendition );
-const char* libcmis_rendition_getTitle( libcmis_RenditionPtr rendition );
-long libcmis_rendition_getLength( libcmis_RenditionPtr rendition );
-long libcmis_rendition_getWidth( libcmis_RenditionPtr rendition );
-long libcmis_rendition_getHeight( libcmis_RenditionPtr rendition );
-const char* libcmis_rendition_getRenditionDocumentId( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getStreamId( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getMimeType( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getKind( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getUrl( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getTitle( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API long libcmis_rendition_getLength( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API long libcmis_rendition_getWidth( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API long libcmis_rendition_getHeight( libcmis_RenditionPtr rendition );
+LIBCMIS_C_API const char* libcmis_rendition_getRenditionDocumentId( libcmis_RenditionPtr rendition );
 
 #ifdef __cplusplus
 }

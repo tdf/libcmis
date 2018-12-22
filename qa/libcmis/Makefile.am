@@ -30,7 +30,7 @@ test_utils_CPPFLAGS = \
 	$(BOOST_CPPFLAGS)
 
 test_utils_LDADD = \
-	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(top_builddir)/src/libcmis/libcmis.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
@@ -153,9 +153,10 @@ test_json_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_json_LDADD = \
-	$(top_builddir)/src/libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
+	$(top_builddir)/src/libcmis/libcmis.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(CURL_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 

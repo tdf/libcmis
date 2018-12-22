@@ -5,7 +5,8 @@ dist_libcmis_HEADERS = \
 	document.hxx \
 	exception.hxx \
 	folder.hxx \
-	libcmis.hxx
+	libcmis-api.h \
+	libcmis.hxx \
 	oauth2-data.hxx \
 	object-type.hxx \
 	object.hxx \

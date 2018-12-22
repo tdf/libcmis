@@ -32,13 +32,14 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-libcmis_ErrorPtr libcmis_error_create( );
-void           libcmis_error_free( libcmis_ErrorPtr e );
+LIBCMIS_C_API libcmis_ErrorPtr libcmis_error_create( );
+LIBCMIS_C_API void           libcmis_error_free( libcmis_ErrorPtr e );
 
-const char* libcmis_error_getMessage( libcmis_ErrorPtr e );
-const char* libcmis_error_getType( libcmis_ErrorPtr e );
+LIBCMIS_C_API const char* libcmis_error_getMessage( libcmis_ErrorPtr e );
+LIBCMIS_C_API const char* libcmis_error_getType( libcmis_ErrorPtr e );
 
 #ifdef __cplusplus
 }

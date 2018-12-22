@@ -30,11 +30,13 @@
 
 #include <libxml/xmlwriter.h>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {
 
     /// Interface for objects dumpable as XML
-    class XmlSerializable
+    class LIBCMIS_API XmlSerializable
     {
         public:
             virtual ~XmlSerializable( ) { }

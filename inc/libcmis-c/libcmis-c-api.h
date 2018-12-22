@@ -25,25 +25,21 @@
  * in which case the provisions of the GPLv2+ or the LGPLv2+ are applicable
  * instead of those above.
  */
-#ifndef _LIBCMIS_HXX_
-#define _LIBCMIS_HXX_
+#ifndef _LIBCMIS_C_API_H_
+#define _LIBCMIS_C_API_H_
 
-#include "libcmis/libcmis-api.h"
-
-#include "libcmis/allowable-actions.hxx"
-#include "libcmis/document.hxx"
-#include "libcmis/exception.hxx"
-#include "libcmis/folder.hxx"
-#include "libcmis/oauth2-data.hxx"
-#include "libcmis/object-type.hxx"
-#include "libcmis/object.hxx"
-#include "libcmis/property-type.hxx"
-#include "libcmis/property.hxx"
-#include "libcmis/rendition.hxx"
-#include "libcmis/repository.hxx"
-#include "libcmis/session-factory.hxx"
-#include "libcmis/session.hxx"
-#include "libcmis/xml-utils.hxx"
-#include "libcmis/xmlserializable.hxx"
+#ifdef DLL_EXPORT
+#ifdef LIBCMIS_C_BUILD
+#define LIBCMIS_C_API __declspec(dllexport)
+#else
+#define LIBCMIS_C_API __declspec(dllimport)
+#endif
+#else // !DLL_EXPORT
+#ifdef LIBCMIS_C_VISIBILITY
+#define LIBCMIS_C_API __attribute__((visibility("default")))
+#else
+#define LIBCMIS_C_API
+#endif
+#endif
 
 #endif

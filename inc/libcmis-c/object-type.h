@@ -32,79 +32,80 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
 
-void libcmis_vector_object_type_free( libcmis_vector_object_type_Ptr vector );
-size_t libcmis_vector_object_type_size( libcmis_vector_object_type_Ptr vector );
-libcmis_ObjectTypePtr libcmis_vector_object_type_get( libcmis_vector_object_type_Ptr vector, size_t i );
+LIBCMIS_C_API void libcmis_vector_object_type_free( libcmis_vector_object_type_Ptr vector );
+LIBCMIS_C_API size_t libcmis_vector_object_type_size( libcmis_vector_object_type_Ptr vector );
+LIBCMIS_C_API libcmis_ObjectTypePtr libcmis_vector_object_type_get( libcmis_vector_object_type_Ptr vector, size_t i );
 
 
-void libcmis_object_type_free( libcmis_ObjectTypePtr type );
-
-/** The resulting value needs to be freed
-  */
-char* libcmis_object_type_getId( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API void libcmis_object_type_free( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getId( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getLocalName( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getLocalNamespace( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getQueryName( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getDisplayName( libcmis_ObjectTypePtr type );
 
-libcmis_ObjectTypePtr libcmis_object_type_getParentType(
+/** The resulting value needs to be freed
+  */
+LIBCMIS_C_API char* libcmis_object_type_getDescription( libcmis_ObjectTypePtr type );
+
+LIBCMIS_C_API libcmis_ObjectTypePtr libcmis_object_type_getParentType(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
-libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
+LIBCMIS_C_API libcmis_ObjectTypePtr libcmis_object_type_getBaseType(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
-libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
+LIBCMIS_C_API libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         libcmis_ObjectTypePtr type,
         libcmis_ErrorPtr error );
 
 /** The resulting value needs to be freed
     \since libcmis 0.4
   */
-char* libcmis_object_type_getParentTypeId( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getParentTypeId( libcmis_ObjectTypePtr type );
 
 /** The resulting value needs to be freed
     \since libcmis 0.4
   */
-char* libcmis_object_type_getBaseTypeId( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_getBaseTypeId( libcmis_ObjectTypePtr type );
 
-bool libcmis_object_type_isCreatable( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isFileable( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isQueryable( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isFulltextIndexed( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isIncludedInSupertypeQuery( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isControllablePolicy( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isControllableACL( libcmis_ObjectTypePtr type );
-bool libcmis_object_type_isVersionable( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isCreatable( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isFileable( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isQueryable( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isFulltextIndexed( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isIncludedInSupertypeQuery( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isControllablePolicy( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isControllableACL( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API bool libcmis_object_type_isVersionable( libcmis_ObjectTypePtr type );
 
-libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAllowed( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API libcmis_object_type_ContentStreamAllowed libcmis_object_type_getContentStreamAllowed( libcmis_ObjectTypePtr type );
 
-libcmis_vector_property_type_Ptr libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
-libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
+LIBCMIS_C_API libcmis_vector_property_type_Ptr libcmis_object_type_getPropertiesTypes( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API libcmis_PropertyTypePtr libcmis_object_type_getPropertyType( libcmis_ObjectTypePtr type, const char* id );
 
 
 /** The resulting value needs to be freed
   */
-char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );
+LIBCMIS_C_API char* libcmis_object_type_toString( libcmis_ObjectTypePtr type );
 
 #ifdef __cplusplus
 }

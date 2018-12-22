@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 #include "libcmis/object.hxx"
 
 namespace libcmis
@@ -40,7 +41,7 @@ namespace libcmis
     class Document;
     class Session;
     
-    struct UnfileObjects {
+    struct LIBCMIS_API UnfileObjects {
         enum Type
         {
             Unfile,
@@ -51,7 +52,7 @@ namespace libcmis
 
     /** Class representing a CMIS folder.
       */
-    class Folder : public virtual Object
+    class LIBCMIS_API Folder : public virtual Object
     {
         public:
             Folder( Session* session ) : Object( session ) { }

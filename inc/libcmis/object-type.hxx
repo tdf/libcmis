@@ -35,13 +35,14 @@
 #include <vector>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 #include "libcmis/property-type.hxx"
 
 namespace libcmis
 {
     /** Class representing a CMIS object type definition.
       */
-    class ObjectType
+    class LIBCMIS_API ObjectType
     {
         public:
 

@@ -28,6 +28,7 @@
 #ifndef _LIBCMIS_C_H_
 #define _LIBCMIS_C_H_
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
 #include "libcmis-c/allowable-actions.h"

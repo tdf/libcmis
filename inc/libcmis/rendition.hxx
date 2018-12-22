@@ -34,9 +34,11 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {  
-    class Rendition
+    class LIBCMIS_API Rendition
     {
         private:
             Rendition( );

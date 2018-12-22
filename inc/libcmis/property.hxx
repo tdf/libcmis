@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 
+#include "libcmis/libcmis-api.h"
 #include "libcmis/property-type.hxx"
 #include "libcmis/xmlserializable.hxx"
 
@@ -44,7 +45,7 @@ namespace libcmis
 {
     class ObjectType;
 
-    class Property : public XmlSerializable
+    class LIBCMIS_API Property : public XmlSerializable
     {
         private:
             PropertyTypePtr m_propertyType;

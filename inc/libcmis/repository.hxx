@@ -34,13 +34,15 @@
 #include <boost/shared_ptr.hpp>
 #include <libxml/tree.h>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {
     /** Class representing a repository and its infos.
 
         \sa 2.2.2.2 section of the CMIS specifications
       */
-    class Repository
+    class LIBCMIS_API Repository
     {
         public:
 

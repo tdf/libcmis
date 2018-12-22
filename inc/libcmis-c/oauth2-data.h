@@ -33,22 +33,23 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-libcmis_OAuth2DataPtr libcmis_oauth2data_create(
+LIBCMIS_C_API libcmis_OAuth2DataPtr libcmis_oauth2data_create(
         char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,
         char* clientId, char* clientSecret );
 
-void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API void libcmis_oauth2data_free( libcmis_OAuth2DataPtr oauth2 );
 
-bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API bool libcmis_oauth2data_isComplete( libcmis_OAuth2DataPtr oauth2 );
 
-const char* libcmis_oauth2data_getAuthUrl( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getTokenUrl( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getClientId( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getScope( libcmis_OAuth2DataPtr oauth2 );
-const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getAuthUrl( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getTokenUrl( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getClientId( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getClientSecret( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getScope( libcmis_OAuth2DataPtr oauth2 );
+LIBCMIS_C_API const char* libcmis_oauth2data_getRedirectUri( libcmis_OAuth2DataPtr oauth2 );
 
 #ifdef __cplusplus
 }

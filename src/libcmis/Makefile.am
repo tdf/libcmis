@@ -5,12 +5,21 @@ AM_CXXFLAGS = \
 	$(CURL_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
+if HAVE_VISIBILITY
+AM_CXXFLAGS += -fvisibility=hidden
+endif
+
 noinst_LTLIBRARIES = libcmis.la
 
 lib_LTLIBRARIES = libcmis-@LIBCMIS_API_VERSION@.la
 
 libcmis_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	dummy.cxx
+
+libcmis_la_CPPFLAGS = -DLIBCMIS_BUILD
+if HAVE_VISIBILITY
+libcmis_la_CPPFLAGS += -DLIBCMIS_VISIBILITY
+endif
 
 libcmis_la_SOURCES = \
 	allowable-actions.cxx \

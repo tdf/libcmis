@@ -32,6 +32,7 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+#include "libcmis/libcmis-api.h"
 #include "libcmis/object-type.hxx"
 #include "libcmis/object.hxx"
 #include "libcmis/folder.hxx"
@@ -39,7 +40,7 @@
 
 namespace libcmis
 {
-    class Session
+    class LIBCMIS_API Session
     {
         public:
 

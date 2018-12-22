@@ -35,6 +35,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 #include "libcmis/object.hxx"
 
 namespace libcmis
@@ -44,7 +45,7 @@ namespace libcmis
 
     /** Interface for a CMIS Document object.
       */
-    class Document : public virtual Object
+    class LIBCMIS_API Document : public virtual Object
     {
         public:
             Document( Session* session ) : Object( session ) { }

@@ -31,11 +31,13 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+#include "libcmis/libcmis-api.h"
+
 namespace libcmis
 {
     /** Class storing the data needed for OAuth2 authentication.
       */
-    class OAuth2Data
+    class LIBCMIS_API OAuth2Data
     {
         private:
 

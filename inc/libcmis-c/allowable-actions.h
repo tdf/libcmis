@@ -32,14 +32,15 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
+LIBCMIS_C_API void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
 
-bool libcmis_allowable_actions_isAllowed( libcmis_AllowableActionsPtr allowable,
+LIBCMIS_C_API bool libcmis_allowable_actions_isAllowed( libcmis_AllowableActionsPtr allowable,
         libcmis_allowable_actions_Type action );
 
-bool libcmis_allowable_actions_isDefined( libcmis_AllowableActionsPtr allowable,
+LIBCMIS_C_API bool libcmis_allowable_actions_isDefined( libcmis_AllowableActionsPtr allowable,
         libcmis_allowable_actions_Type action );
 
 #ifdef __cplusplus

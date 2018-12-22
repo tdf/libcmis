@@ -32,46 +32,47 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-void libcmis_session_free( libcmis_SessionPtr session );
+LIBCMIS_C_API void libcmis_session_free( libcmis_SessionPtr session );
 
-libcmis_RepositoryPtr libcmis_session_getRepository(
+LIBCMIS_C_API libcmis_RepositoryPtr libcmis_session_getRepository(
         libcmis_SessionPtr session,
         libcmis_ErrorPtr error );
 
-libcmis_vector_Repository_Ptr libcmis_session_getRepositories(
+LIBCMIS_C_API libcmis_vector_Repository_Ptr libcmis_session_getRepositories(
         libcmis_SessionPtr session );
 
-bool libcmis_session_setRepository(
+LIBCMIS_C_API bool libcmis_session_setRepository(
         libcmis_SessionPtr session,
         const char* repositoryId );
 
-libcmis_FolderPtr libcmis_session_getRootFolder(
+LIBCMIS_C_API libcmis_FolderPtr libcmis_session_getRootFolder(
         libcmis_SessionPtr session,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectPtr libcmis_session_getObject(
+LIBCMIS_C_API libcmis_ObjectPtr libcmis_session_getObject(
         libcmis_SessionPtr session,
         const char* id,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectPtr libcmis_session_getObjectByPath(
+LIBCMIS_C_API libcmis_ObjectPtr libcmis_session_getObjectByPath(
         libcmis_SessionPtr session,
         const char* path,
         libcmis_ErrorPtr error );
 
-libcmis_FolderPtr libcmis_session_getFolder(
+LIBCMIS_C_API libcmis_FolderPtr libcmis_session_getFolder(
         libcmis_SessionPtr session,
         const char* id,
         libcmis_ErrorPtr error );
 
-libcmis_ObjectTypePtr libcmis_session_getType(
+LIBCMIS_C_API libcmis_ObjectTypePtr libcmis_session_getType(
         libcmis_SessionPtr session,
         const char* id,
         libcmis_ErrorPtr error );
 
-libcmis_vector_object_type_Ptr libcmis_session_getBaseTypes(
+LIBCMIS_C_API libcmis_vector_object_type_Ptr libcmis_session_getBaseTypes(
         libcmis_SessionPtr session,
         libcmis_ErrorPtr error );
 

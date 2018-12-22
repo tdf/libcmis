@@ -33,6 +33,7 @@
 #include <string>
 
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 #include "libcmis/oauth2-data.hxx"
 #include "libcmis/repository.hxx"
 #include "libcmis/session.hxx"
@@ -46,7 +47,7 @@ namespace libcmis
     typedef char* ( *OAuth2AuthCodeProvider )( const char* authUrl,
         const char* username, const char* password );
 
-    class AuthProvider 
+    class LIBCMIS_API AuthProvider
     {
         public:
             virtual ~AuthProvider() { };
@@ -61,7 +62,7 @@ namespace libcmis
   
     /** Handler class used to request user input when an invalid SSL certificate is encountered.
      */ 
-    class CertValidationHandler
+    class LIBCMIS_API CertValidationHandler
     {
         public:
              virtual ~CertValidationHandler( ){ };
@@ -79,7 +80,7 @@ namespace libcmis
     };
     typedef boost::shared_ptr< CertValidationHandler > CertValidationHandlerPtr;
 
-    class SessionFactory
+    class LIBCMIS_API SessionFactory
     {
         private:
 

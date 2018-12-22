@@ -5,6 +5,12 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS = \
 	$(XML2_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
+libcmis_c_@LIBCMIS_API_VERSION@_la_CPPFLAGS = -DLIBCMIS_C_BUILD
+if HAVE_VISIBILITY
+libcmis_c_@LIBCMIS_API_VERSION@_la_CXXFLAGS += -fvisibility=hidden
+libcmis_c_@LIBCMIS_API_VERSION@_la_CPPFLAGS += -DLIBCMIS_C_VISIBILITY
+endif
+
 lib_LTLIBRARIES = libcmis-c-@LIBCMIS_API_VERSION@.la
 libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	allowable-actions.cxx \

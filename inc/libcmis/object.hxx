@@ -43,6 +43,7 @@
 
 #include "libcmis/allowable-actions.hxx"
 #include "libcmis/exception.hxx"
+#include "libcmis/libcmis-api.h"
 #include "libcmis/object-type.hxx"
 #include "libcmis/property.hxx"
 #include "libcmis/xmlserializable.hxx"
@@ -55,7 +56,7 @@ namespace libcmis
 
     /** Class representing any CMIS object.
       */
-    class Object : public XmlSerializable
+    class LIBCMIS_API Object : public XmlSerializable
     {
         protected:
             Session* m_session;

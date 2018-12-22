@@ -32,25 +32,26 @@
 extern "C" {
 #endif
 
+#include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
 
-void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
-void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );
-void libcmis_setOAuth2AuthCodeProvider( libcmis_oauth2AuthCodeProvider callback );
-libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( );
+LIBCMIS_C_API void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
+LIBCMIS_C_API void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );
+LIBCMIS_C_API void libcmis_setOAuth2AuthCodeProvider( libcmis_oauth2AuthCodeProvider callback );
+LIBCMIS_C_API libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( );
 
-void libcmis_setProxySettings(
+LIBCMIS_C_API void libcmis_setProxySettings(
         char* proxy,
         char* noProxy,
         char* proxyUser,
         char* proxyPass );
 
-const char* libcmis_getProxy( );
-const char* libcmis_getNoProxy( );
-const char* libcmis_getProxyUser( );
-const char* libcmis_getProxyPass( );
+LIBCMIS_C_API const char* libcmis_getProxy( );
+LIBCMIS_C_API const char* libcmis_getNoProxy( );
+LIBCMIS_C_API const char* libcmis_getProxyUser( );
+LIBCMIS_C_API const char* libcmis_getProxyPass( );
 
-libcmis_SessionPtr libcmis_createSession(
+LIBCMIS_C_API libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
         char* repositoryId,
         char* username,
@@ -64,7 +65,7 @@ libcmis_SessionPtr libcmis_createSession(
     \deprecated
         use libcmis_createSession and libcmis_session_getRepositories instead
   */
-libcmis_vector_Repository_Ptr libcmis_getRepositories(
+LIBCMIS_C_API libcmis_vector_Repository_Ptr libcmis_getRepositories(
         char* bindingUrl,
         char* username,
         char* password,
