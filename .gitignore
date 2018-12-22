@@ -8,7 +8,7 @@ INSTALL
 install-sh
 libtool
 ltmain.sh
-m4
+m4/l*.m4
 Makefile
 Makefile.in
 missing
