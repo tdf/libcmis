@@ -27,12 +27,13 @@
  */
 
 #include "mockup-config.h"
-#include "internals.hxx"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+
+#include "internals.hxx"
 
 using namespace std;
 
