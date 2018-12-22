@@ -33,6 +33,7 @@
 #include <sstream>
 #include <stdlib.h>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/version.hpp>
 
 #if BOOST_VERSION >= 106800
@@ -516,16 +517,7 @@ namespace libcmis
 
     string trim( const string& str )
     {
-        string spaces = " \t\r\n";
-
-        string result( str );
-        result = result.erase (0, str.find_first_not_of ( spaces ) );
-
-        string::size_type pos ( result.find_last_not_of ( spaces ) );
-        if ( pos == string::npos )
-            return "";
-        else
-            return result.erase( result.find_last_not_of( spaces ) + 1 );
+        return boost::trim_copy_if( str, boost::is_any_of( " \t\r\n" ) );
     }
 
     std::string base64encode( const std::string& str )
