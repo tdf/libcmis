@@ -29,6 +29,7 @@
 #include <libcmis/xml-utils.hxx>
 
 #include <errno.h>
+#include <memory>
 #include <sstream>
 #include <stdlib.h>
 
@@ -568,19 +569,13 @@ namespace libcmis
 
     string escape( string str )
     {
-        char* escaped = curl_easy_escape( NULL, str.c_str(), str.length() );
-        string result = escaped;
-        curl_free( escaped );
-
-        return result;
+        std::unique_ptr< char, void(*)( void* ) > escaped{ curl_easy_escape( NULL, str.c_str(), str.length() ), curl_free };
+        return escaped.get();
     }
 
     string unescape( string str )
     {
-        char* unescaped = curl_easy_unescape( NULL, str.c_str(), str.length(), NULL );
-        string result = unescaped;
-        curl_free( unescaped );
-
-        return result;
+        std::unique_ptr< char, void(*)( void* ) > unescaped{ curl_easy_unescape( NULL, str.c_str(), str.length(), NULL ), curl_free };
+        return unescaped.get();
     }
 }
