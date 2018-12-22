@@ -41,6 +41,11 @@
 #endif
 #include <curl/curl.h>
 
+#if LIBCURL_VERSION_VALUE < 0x070F04
+#define curl_easy_escape( dummy, str, len ) curl_escape( str, len )
+#define curl_easy_unescape( dummy, str, len, dummy2 ) curl_unescape( str, len )
+#endif
+
 using namespace std;
 
 namespace
@@ -563,11 +568,7 @@ namespace libcmis
 
     string escape( string str )
     {
-#if LIBCURL_VERSION_VALUE >= 0x070F04
         char* escaped = curl_easy_escape( NULL, str.c_str(), str.length() );
-#else
-        char* escaped = curl_escape( str.c_str(), str.length() );
-#endif
         string result = escaped;
         curl_free( escaped );
 
@@ -576,11 +577,7 @@ namespace libcmis
 
     string unescape( string str )
     {
-#if LIBCURL_VERSION_VALUE >= 0x070F04
         char* unescaped = curl_easy_unescape( NULL, str.c_str(), str.length(), NULL );
-#else
-        char* unescaped = curl_unescape( str.c_str(), str.length() );
-#endif
         string result = unescaped;
         curl_free( unescaped );
 
