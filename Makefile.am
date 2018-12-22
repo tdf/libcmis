@@ -17,15 +17,8 @@ if WITH_LIBCMIS_MAN
 cmis-client.1: doc/cmis-client.xml
 	$(DOCBOOK2MAN) $<
 
-install-man: cmis-client.1
-	mkdir -p $(DESTDIR)$(mandir)/man1/
-	$(INSTALL_DATA) cmis-client.1 $(DESTDIR)$(mandir)/man1/
-
-uninstall-man:
-	-rm -rf $(DESTDIR)$(mandir)/man1/
+man_MANS = cmis-client.1
 endif
-
-dist_man_MANS = doc/cmis-client.xml
 
 EXTRA_DIST = \
 	libcmis.pc.in \
