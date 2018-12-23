@@ -31,7 +31,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
 
 #include <libcmis/exception.hxx>
 #include <libcmis/xml-utils.hxx>
@@ -160,7 +159,7 @@ void Json::add( const std::string& key, const Json& json )
 Json::JsonVector Json::getList()
 {
     JsonVector list;
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, m_tJson.get_child(""))
+    for ( const auto &v: m_tJson.get_child("") )
     {
         list.push_back( Json( v.second  ) );
     }
@@ -200,7 +199,7 @@ Json Json::parse( const string& str )
 Json::JsonObject Json::getObjects( )
 {
     JsonObject objs;
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, m_tJson.get_child(""))
+    for ( const auto &v: m_tJson.get_child("") )
     {
         Json jsonValue( v.second ); 
         objs.insert( JsonObject::value_type(v.first, jsonValue ) );
