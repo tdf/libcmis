@@ -95,9 +95,9 @@ void curl_slist_free_all( struct curl_slist * list )
     }
 }
 
-void curl_free( void * /*p*/ )
+void curl_free( void * p )
 {
-    /* TODO Implement me */
+    free( p );
 }
 
 CURLcode curl_global_init( long )
