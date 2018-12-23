@@ -29,6 +29,7 @@
 #include "http-session.hxx"
 
 #include <cctype>
+#include <memory>
 #include <string>
 
 #include <libxml/parser.h>
@@ -743,12 +744,11 @@ void HttpSession::oauth2Authenticate( )
             libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
             if ( fallbackProvider != NULL )
             {
-                char * code = fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() );
-                if ( code != NULL )
-                {
-                    authCode = string( code );
-                    free( code );
-                }
+                unique_ptr< char, void (*)( void * ) > code{
+                    fallbackProvider( m_oauth2Handler->getAuthURL().c_str(), getUsername().c_str(), getPassword().c_str() ),
+                    free };
+                if ( code )
+                    authCode = string( code.get() );
             }
         }
     }
