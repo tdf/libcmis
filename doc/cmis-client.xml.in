@@ -269,7 +269,7 @@
         <varlistentry>
           <term>--oauth2-client-id <replaceable class="parameter">client_id</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   Application client id to use in the OAuth2 authentication flow.
               </para>
           </listitem>
@@ -277,7 +277,7 @@
         <varlistentry>
           <term>--oauth2-client-secret <replaceable class="parameter">client_secret</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   Application client secret to use in the OAuth2 authentication flow.
               </para>
           </listitem>
@@ -285,7 +285,7 @@
         <varlistentry>
           <term>--oauth2-auth-url <replaceable class="parameter">url</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   URL to authenticate the user in the OAuth2 authentication flow.
               </para>
           </listitem>
@@ -293,7 +293,7 @@
         <varlistentry>
           <term>--oauth2-token-url <replaceable class="parameter">url</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   URL to authenticate the application in the OAuth2 authentication flow.
                   The access and refresh tokens are provided by this URL.
               </para>
@@ -302,7 +302,7 @@
         <varlistentry>
           <term>--oauth2-redirect-uri <replaceable class="parameter">uri</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   URI where the OAuth2 authentication flow will redirect after a sucessful
                   authentication.
               </para>
@@ -311,7 +311,7 @@
         <varlistentry>
           <term>--oauth2-scope <replaceable class="parameter">scope</replaceable></term>
           <listitem>
-              <para>
+            <para>
                   Requested scope to access in the OAuth2 authentication flow.
               </para>
           </listitem>
@@ -386,68 +386,68 @@
       <title>COMMANDS</title>
       <variablelist>
         <varlistentry>
-            <term>help</term>
-            <listitem>
+          <term>help</term>
+          <listitem>
             <para>
                                                     Show the help and exit.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>list-repos</term>
-            <listitem>
+          <term>list-repos</term>
+          <listitem>
             <para>
                                                     List the repositories available on the server.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>repo-infos</term>
-            <listitem>
+          <term>repo-infos</term>
+          <listitem>
             <para>
                                                     Displays the informations and capabilities of the selected repository
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>show-root</term>
-            <listitem>
+          <term>show-root</term>
+          <listitem>
             <para>
                                                     Displays the root node infos and children.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>get-content <replaceable class="parameter">id</replaceable></term>
-            <listitem>
+          <term>get-content <replaceable class="parameter">id</replaceable></term>
+          <listitem>
             <para>
                                                     Download the content of the CMIS object corresponding to 
                                                     <replaceable class="parameter">id</replaceable> in the current directory.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>set-content <replaceable class="parameter">id</replaceable></term>
-            <listitem>
+          <term>set-content <replaceable class="parameter">id</replaceable></term>
+          <listitem>
             <para>
                                                     Upload a file as the content stream of the CMIS object corresponding to 
                                                     <replaceable class="parameter">id</replaceable>.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>create-folder <replaceable class="parameter">parent-id name</replaceable></term>
-            <listitem>
+          <term>create-folder <replaceable class="parameter">parent-id name</replaceable></term>
+          <listitem>
             <para>
                 Create a sub folder in folder <replaceable class="parameter">parent-id</replaceable>
                 named <replaceable class="parameter">name</replaceable>. The default type of the folder
                 to create is cmis:folder, but this can be changed using --object-type option.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>create-document <replaceable class="parameter">parent-id name</replaceable></term>
-            <listitem>
+          <term>create-document <replaceable class="parameter">parent-id name</replaceable></term>
+          <listitem>
             <para>
                 Create a document in folder <replaceable class="parameter">parent-id</replaceable>
                 named <replaceable class="parameter">name</replaceable>. The default type of the document
@@ -457,82 +457,82 @@
                 Note that the --input-file and --input-type may be mandatory, depending on the type of
                 the document to create and its constraints.
             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>update-object <replaceable class="parameter">object-id</replaceable></term>
-            <listitem>
+          <term>update-object <replaceable class="parameter">object-id</replaceable></term>
+          <listitem>
             <para>
                 Replace the writeable properties given with --object-property option on the object
                 matching id <replaceable class="parameter">object-id</replaceable>.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>type-by-id <replaceable class="parameter">arg...</replaceable></term>
-            <listitem>
+          <term>type-by-id <replaceable class="parameter">arg...</replaceable></term>
+          <listitem>
             <para>
                                                     Displays the infos and children (if any) of all the CMIS types corresponding
                                                     to the listed ids.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>show-by-id <replaceable class="parameter">arg...</replaceable></term>
-            <listitem>
+          <term>show-by-id <replaceable class="parameter">arg...</replaceable></term>
+          <listitem>
             <para>
                                                     Displays the infos and children (if any) of all the CMIS objects corresponding
                                                     to the listed ids.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>show-by-path <replaceable class="parameter">arg...</replaceable></term>
-            <listitem>
+          <term>show-by-path <replaceable class="parameter">arg...</replaceable></term>
+          <listitem>
             <para>
                                                     Displays the infos and children (if any) of all the CMIS objects corresponding
                                                     to the listed paths.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>delete <replaceable class="parameter">arg...</replaceable></term>
-            <listitem>
+          <term>delete <replaceable class="parameter">arg...</replaceable></term>
+          <listitem>
             <para>
                 Deletes the CMIS objects corresponding to the listed ids. If the node
                 is a folder, its content will be removed as well.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>checkout <replaceable class="parameter">arg</replaceable></term>
-            <listitem>
+          <term>checkout <replaceable class="parameter">arg</replaceable></term>
+          <listitem>
             <para>
                 Checkout the document corresponding to the provided id and display
                 the infos of the created private working copy.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>cancel-checkout <replaceable class="parameter">arg</replaceable></term>
-            <listitem>
+          <term>cancel-checkout <replaceable class="parameter">arg</replaceable></term>
+          <listitem>
             <para>
                 Cancel the Private Working Copy corresponding to the node id.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>get-versions <replaceable class="parameter">arg</replaceable></term>
-            <listitem>
+          <term>get-versions <replaceable class="parameter">arg</replaceable></term>
+          <listitem>
             <para>
                                                     Display the versions (if any) of all the CMIS object corresponding
                                                     to the provided id.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
         <varlistentry>
-            <term>checkin <replaceable class="parameter">arg</replaceable></term>
-            <listitem>
+          <term>checkin <replaceable class="parameter">arg</replaceable></term>
+          <listitem>
             <para>
                 Check in the private working copy corresponding to the provided id and display
                 the infos of the resulting document. Use the --major and --message options to
@@ -541,7 +541,7 @@
                 Note that repositories without the ability to update the private working copies
                 will need the --input-file, --input-type and --object-property options.
                                             </para>
-            </listitem>
+          </listitem>
         </varlistentry>
       </variablelist>
     </refsect2>
@@ -567,5 +567,4 @@
     <title>REPORTING BUGS</title>
     <para>Report bugs to &lt;<ulink url="https://github.com/tdf/libcmis/issues">https://github.com/tdf/libcmis/issues</ulink>&gt;.</para>
   </refsect1>
-
 </refentry>
