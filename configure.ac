@@ -194,6 +194,7 @@ AC_TYPE_SIZE_T
 
 AC_CONFIG_FILES([
 	Makefile
+	doc/cmis-client.xml
 	inc/Makefile
 	inc/libcmis-c/Makefile
 	inc/libcmis/Makefile

@@ -47,3 +47,4 @@ libcmis-lcov
 *.log
 test-driver
 qa/libcmis/libtest.a
+doc/cmis-client.xml

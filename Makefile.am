@@ -26,7 +26,7 @@ EXTRA_DIST = \
 	COPYING.MPL \
 	COPYING.GPL \
 	COPYING.LGPL \
-	doc/cmis-client.xml \
+	doc/cmis-client.xml.in \
 	cppcheck-suppress \
 	qa/libcmis/data
 
