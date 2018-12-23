@@ -178,12 +178,9 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         string loginChallengeLink( approvalLink );
 
         libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
-        unique_ptr< char, void (*)( void * ) > code{ fallbackProvider( "", "", "" ), free };
-        string pin;
-        if ( code )
-            pin = code.get();
+        unique_ptr< char, void (*)( void * ) > pin{ fallbackProvider( "", "", "" ), free };
 
-        if( pin.empty() )
+        if( !pin )
         {
             // unset OAuth2AuthCode Provider to avoid showing pin request again in the HttpSession::oauth2Authenticate
             libcmis::SessionFactory::setOAuth2AuthCodeProvider( NULL );
@@ -192,7 +189,7 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
 
         loginChallengeLink = "https://accounts.google.com" + loginChallengeLink;
         loginChallengePost += string( PIN_INPUT_NAME ) + "=";
-        loginChallengePost += string( pin );
+        loginChallengePost += string( pin.get() );
 
         istringstream loginChallengeIs( loginChallengePost );
         string loginChallengeRes;
