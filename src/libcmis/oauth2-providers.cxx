@@ -28,6 +28,8 @@
 
 #include "oauth2-providers.hxx"
 
+#include <memory>
+
 #include <boost/algorithm/string.hpp>
 
 #include <libxml/HTMLparser.h>
@@ -176,7 +178,10 @@ string OAuth2Providers::OAuth2Gdrive( HttpSession* session, const string& authUr
         string loginChallengeLink( approvalLink );
 
         libcmis::OAuth2AuthCodeProvider fallbackProvider = libcmis::SessionFactory::getOAuth2AuthCodeProvider( );
-        string pin( fallbackProvider( "", "", "" ) );
+        unique_ptr< char, void (*)( void * ) > code{ fallbackProvider( "", "", "" ), free };
+        string pin;
+        if ( code )
+            pin = code.get();
 
         if( pin.empty() )
         {
