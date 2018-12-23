@@ -42,7 +42,7 @@ namespace libcmis
 {
     /** This callback provides the OAuth2 code or NULL.
 
-        The resulting char* will be freed later.
+        The returned string must be free()d by the caller.
       */
     typedef char* ( *OAuth2AuthCodeProvider )( const char* authUrl,
         const char* username, const char* password );
