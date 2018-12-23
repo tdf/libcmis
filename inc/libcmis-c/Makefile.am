@@ -1,4 +1,4 @@
-libcmis_cdir = $(includedir)/libcmis-@LIBCMIS_API_VERSION@/libcmis-c
+libcmis_cdir = $(includedir)/libcmis-c-@LIBCMIS_API_VERSION@/libcmis-c
 
 dist_libcmis_c_HEADERS = \
 	allowable-actions.h \
