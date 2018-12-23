@@ -26,7 +26,7 @@
  * instead of those above.
  */
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
@@ -184,7 +184,7 @@ void FactoryTest::createSessionAtomTest( )
 {
     lcl_init_mockup_atom( );
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_ATOM, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY ) );
     CPPUNIT_ASSERT_MESSAGE( "Not an AtomPubSession",
@@ -215,7 +215,7 @@ void FactoryTest::createSessionWSTest( )
 {
     lcl_init_mockup_ws( );
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_WS, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a WSSession",
@@ -251,7 +251,7 @@ void FactoryTest::createSessionGDriveTest( )
                                  OAUTH_SCOPE, OAUTH_REDIRECT_URI,
                                  OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET ));
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_GDRIVE, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY, false,
             oauth2Data ) );
@@ -269,7 +269,7 @@ void FactoryTest::createSessionOneDriveTest( )
                                  OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET ));
 
     libcmis::SessionFactory::setOAuth2AuthCodeProvider( authCodeFallback );
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_ONEDRIVE, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY, false,
             oauth2Data ) );
@@ -281,7 +281,7 @@ void FactoryTest::createSessionSharePointTest( )
 {
     lcl_init_mockup_sharepoint( );
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_SHAREPOINT, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a SharePoint Session",
@@ -297,7 +297,7 @@ void FactoryTest::createSessionSharePointDefaultAuthTest( )
 
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_SHAREPOINT, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY ) );
     CPPUNIT_ASSERT_MESSAGE( "Not a SharePoint Session",
@@ -329,7 +329,7 @@ void FactoryTest::createSessionNoCmisTest( )
                              "<p>Some non CMIS content</p>", 200, false );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    boost::scoped_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
+    unique_ptr< libcmis::Session > session( libcmis::SessionFactory::createSession(
             BINDING_BAD, SERVER_USERNAME, SERVER_PASSWORD,
             SERVER_REPOSITORY ) );
     CPPUNIT_ASSERT_MESSAGE( "Session should be NULL", !session );
