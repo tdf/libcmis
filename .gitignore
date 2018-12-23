@@ -46,3 +46,4 @@ libcmis-lcov
 *.trs
 *.log
 test-driver
+qa/libcmis/libtest.a

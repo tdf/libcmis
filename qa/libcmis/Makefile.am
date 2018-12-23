@@ -13,12 +13,31 @@ check_PROGRAMS = \
 	test-utils \
 	${mockup_tests}
 
+check_LIBRARIES = \
+	libtest.a
+
+libtest_a_SOURCES = \
+	test-helpers.cxx \
+	test-helpers.hxx \
+	test-main.cxx
+
+if !OS_WIN32
+libtest_a_SOURCES += \
+	test-mockup-helpers.cxx \
+	test-mockup-helpers.hxx
+endif
+
+libtest_a_CPPFLAGS = \
+	-I$(top_srcdir)/inc \
+	-I$(top_srcdir)/src/libcmis \
+	-I$(top_srcdir)/qa/mockup \
+	$(XML2_CFLAGS) \
+	$(CURL_CFLAGS) \
+	$(BOOST_CPPFLAGS)
+
 test_utils_SOURCES =	\
 	test-commons.cxx \
 	test-decoder.cxx \
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx \
 	test-soap.cxx \
 	test-xmlutils.cxx
 
@@ -30,6 +49,7 @@ test_utils_CPPFLAGS = \
 	$(BOOST_CPPFLAGS)
 
 test_utils_LDADD = \
+	libtest.a \
 	$(top_builddir)/src/libcmis/libcmis.la \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
@@ -37,10 +57,7 @@ test_utils_LDADD = \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_atom_SOURCES =	\
-	test-atom.cxx \
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx
+	test-atom.cxx
 
 test_atom_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
@@ -51,16 +68,14 @@ test_atom_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_atom_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_gdrive_SOURCES =	\
-	test-gdrive.cxx \
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx
+	test-gdrive.cxx
 
 test_gdrive_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
@@ -71,15 +86,13 @@ test_gdrive_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_gdrive_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_onedrive_SOURCES =	\
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx \
 	test-onedrive.cxx
 
 test_onedrive_CPPFLAGS = \
@@ -91,15 +104,13 @@ test_onedrive_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_onedrive_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_sharepoint_SOURCES =	\
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx \
 	test-sharepoint.cxx
 
 test_sharepoint_CPPFLAGS = \
@@ -111,6 +122,7 @@ test_sharepoint_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_sharepoint_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
@@ -118,11 +130,6 @@ test_sharepoint_LDADD = \
 
 
 test_ws_SOURCES =	\
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx \
-	test-mockup-helpers.cxx \
-	test-mockup-helpers.hxx \
 	test-ws.cxx
 
 test_ws_CPPFLAGS = \
@@ -134,16 +141,14 @@ test_ws_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_ws_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_json_SOURCES =	\
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-jsonutils.cxx \
-	test-main.cxx
+	test-jsonutils.cxx
 
 test_json_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
@@ -153,6 +158,7 @@ test_json_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_json_LDADD = \
+	libtest.a \
 	$(top_builddir)/src/libcmis/libcmis.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
@@ -161,12 +167,7 @@ test_json_LDADD = \
 
 
 test_factory_SOURCES =	\
-	test-factory.cxx \
-	test-helpers.cxx \
-	test-helpers.hxx \
-	test-main.cxx \
-	test-mockup-helpers.cxx \
-	test-mockup-helpers.hxx
+	test-factory.cxx
 
 test_factory_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
@@ -177,6 +178,7 @@ test_factory_CPPFLAGS = \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
 test_factory_LDADD = \
+	libtest.a \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
