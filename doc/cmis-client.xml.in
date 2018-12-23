@@ -14,8 +14,8 @@
       <application>cmis-client</application>
     </refname>
     <refpurpose>
-	command line CMIS client tool.
-	</refpurpose>
+      command line CMIS client tool.
+    </refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <refsynopsisdivinfo>
@@ -160,9 +160,9 @@
     </refsect1info>
     <title>DESCRIPTION</title>
     <para>
-			The <command>cmis-client</command> tool sends queries over the net to a CMIS-enabled server
-			to access or modify its content. It is originally demonstrating what libcmis is capable of.
-	</para>
+      The <command>cmis-client</command> tool sends queries over the net to a CMIS-enabled server
+      to access or modify its content. It is originally demonstrating what libcmis is capable of.
+    </para>
   </refsect1>
   <refsect1>
     <title>OPTIONS</title>
@@ -173,17 +173,17 @@
           <term>-v, --verbose</term>
           <listitem>
             <para>
-							Shows a lot of information to monitor what is happening behind the scene.
-							This helps a lot to debug libcmis.
-						</para>
+              Shows a lot of information to monitor what is happening behind the scene.
+              This helps a lot to debug libcmis.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>--help</term>
           <listitem>
             <para>
-							Show the help and exit. This is equivalent to use the help command.
-						</para>
+              Show the help and exit. This is equivalent to use the help command.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -191,7 +191,7 @@
           <listitem>
             <para><replaceable class="parameter">url://to/binding</replaceable> needs to point to the service document of
               either AtomPub or WebService binding.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -202,33 +202,33 @@
               If there is only one repository on the server, this parameter is not needed and that
               repository will be automatically selected. Use this parameter if there are several
               repositories on the server.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>-u,--username <replaceable class="parameter">login</replaceable></term>
           <listitem>
             <para>
-							Connect as <replaceable class="parameter">login</replaceable> to the CMIS server.
-							If not provided connect anonymously.
-						</para>
+              Connect as <replaceable class="parameter">login</replaceable> to the CMIS server.
+              If not provided connect anonymously.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>-p,--password <replaceable class="parameter">secret</replaceable></term>
           <listitem>
             <para>
-							Use <replaceable class="parameter">secret</replaceable> to authenticate on the CMIS server.
-						</para>
+              Use <replaceable class="parameter">secret</replaceable> to authenticate on the CMIS server.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>--no-ssl-check</term>
           <listitem>
             <para>
-                            Disables the SSL certificate verifications. Lowers the security, but may be handy
-                            to work around bad certificates like expired or self-signed ones.
-						</para>
+                Disables the SSL certificate verifications. Lowers the security, but may be handy
+                to work around bad certificates like expired or self-signed ones.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -237,23 +237,23 @@
             <para>
                 Use <replaceable class="parameter">url</replaceable> as the HTTP proxy.
                 Setting this value will override the system proxy settings.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>--proxy-username <replaceable class="parameter">login</replaceable></term>
           <listitem>
             <para>
-							Use <replaceable class="parameter">login</replaceable> to authenticate on the HTTP proxy.
-						</para>
+              Use <replaceable class="parameter">login</replaceable> to authenticate on the HTTP proxy.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>--proxy-password <replaceable class="parameter">secret</replaceable></term>
           <listitem>
             <para>
-							Use <replaceable class="parameter">secret</replaceable> to authenticate on the HTTP proxy.
-						</para>
+              Use <replaceable class="parameter">secret</replaceable> to authenticate on the HTTP proxy.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -263,7 +263,7 @@
                 Proxy settings won't apply to hostnames and domain names listed 
                 in <replaceable class="parameter">list</replaceable>.
                 This value is a coma separated list.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -271,7 +271,7 @@
           <listitem>
             <para>
                   Application client id to use in the OAuth2 authentication flow.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -279,7 +279,7 @@
           <listitem>
             <para>
                   Application client secret to use in the OAuth2 authentication flow.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -287,7 +287,7 @@
           <listitem>
             <para>
                   URL to authenticate the user in the OAuth2 authentication flow.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -296,7 +296,7 @@
             <para>
                   URL to authenticate the application in the OAuth2 authentication flow.
                   The access and refresh tokens are provided by this URL.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -305,7 +305,7 @@
             <para>
                   URI where the OAuth2 authentication flow will redirect after a sucessful
                   authentication.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -313,7 +313,7 @@
           <listitem>
             <para>
                   Requested scope to access in the OAuth2 authentication flow.
-              </para>
+            </para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -327,7 +327,7 @@
             <para>
               Upload <replaceable class="parameter">path/to/file</replaceable> as the new content stream
               of the object.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -335,7 +335,7 @@
           <listitem>
             <para>
               Set the mime type of the new content stream of the object to <replaceable class="parameter">mime/type</replaceable>.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -343,7 +343,7 @@
           <listitem>
             <para>
               Set the remote content stream filename of the new content stream of the object to <replaceable class="parameter">name.ext</replaceable>.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -352,7 +352,7 @@
             <para>
               Set the object type of the CMIS object to be created to <replaceable class="parameter">some:cmistype</replaceable>.
               This is the equivalent of --object-property cmis:objectTypeId=some:cmistype.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -361,7 +361,7 @@
             <para>
               Set a property to be updated or added to the CMIS object. <replaceable class="parameter">prop-id</replaceable> is
               the property definition id and <replaceable class="parameter">prop-value</replaceable> is the value to set on it.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -369,7 +369,7 @@
           <listitem>
             <para>
               Create a major version when performing a checkin.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -377,7 +377,7 @@
           <listitem>
             <para>
               Set the checking message.
-						</para>
+            </para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -389,50 +389,50 @@
           <term>help</term>
           <listitem>
             <para>
-                                                    Show the help and exit.
-                                            </para>
+              Show the help and exit.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>list-repos</term>
           <listitem>
             <para>
-                                                    List the repositories available on the server.
-                                            </para>
+              List the repositories available on the server.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>repo-infos</term>
           <listitem>
             <para>
-                                                    Displays the informations and capabilities of the selected repository
-                                            </para>
+              Displays the informations and capabilities of the selected repository
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>show-root</term>
           <listitem>
             <para>
-                                                    Displays the root node infos and children.
-                                            </para>
+              Displays the root node infos and children.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>get-content <replaceable class="parameter">id</replaceable></term>
           <listitem>
             <para>
-                                                    Download the content of the CMIS object corresponding to 
-                                                    <replaceable class="parameter">id</replaceable> in the current directory.
-                                            </para>
+              Download the content of the CMIS object corresponding to 
+              <replaceable class="parameter">id</replaceable> in the current directory.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>set-content <replaceable class="parameter">id</replaceable></term>
           <listitem>
             <para>
-                                                    Upload a file as the content stream of the CMIS object corresponding to 
-                                                    <replaceable class="parameter">id</replaceable>.
-                                            </para>
+              Upload a file as the content stream of the CMIS object corresponding to
+              <replaceable class="parameter">id</replaceable>.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -442,7 +442,7 @@
                 Create a sub folder in folder <replaceable class="parameter">parent-id</replaceable>
                 named <replaceable class="parameter">name</replaceable>. The default type of the folder
                 to create is cmis:folder, but this can be changed using --object-type option.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -465,34 +465,34 @@
             <para>
                 Replace the writeable properties given with --object-property option on the object
                 matching id <replaceable class="parameter">object-id</replaceable>.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>type-by-id <replaceable class="parameter">arg...</replaceable></term>
           <listitem>
             <para>
-                                                    Displays the infos and children (if any) of all the CMIS types corresponding
-                                                    to the listed ids.
-                                            </para>
+                Displays the infos and children (if any) of all the CMIS types corresponding
+                to the listed ids.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>show-by-id <replaceable class="parameter">arg...</replaceable></term>
           <listitem>
             <para>
-                                                    Displays the infos and children (if any) of all the CMIS objects corresponding
-                                                    to the listed ids.
-                                            </para>
+                Displays the infos and children (if any) of all the CMIS objects corresponding
+                to the listed ids.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>show-by-path <replaceable class="parameter">arg...</replaceable></term>
           <listitem>
             <para>
-                                                    Displays the infos and children (if any) of all the CMIS objects corresponding
-                                                    to the listed paths.
-                                            </para>
+                Displays the infos and children (if any) of all the CMIS objects corresponding
+                to the listed paths.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -501,7 +501,7 @@
             <para>
                 Deletes the CMIS objects corresponding to the listed ids. If the node
                 is a folder, its content will be removed as well.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -510,7 +510,7 @@
             <para>
                 Checkout the document corresponding to the provided id and display
                 the infos of the created private working copy.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -518,16 +518,16 @@
           <listitem>
             <para>
                 Cancel the Private Working Copy corresponding to the node id.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>get-versions <replaceable class="parameter">arg</replaceable></term>
           <listitem>
             <para>
-                                                    Display the versions (if any) of all the CMIS object corresponding
-                                                    to the provided id.
-                                            </para>
+                Display the versions (if any) of all the CMIS object corresponding
+                to the provided id.
+            </para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -540,7 +540,7 @@
 
                 Note that repositories without the ability to update the private working copies
                 will need the --input-file, --input-type and --object-property options.
-                                            </para>
+            </para>
           </listitem>
         </varlistentry>
       </variablelist>
