@@ -7,7 +7,7 @@
   <refmeta>
     <refentrytitle>cmis-client</refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo>cmis-client 0.2.0</refmiscinfo>
+    <refmiscinfo>@PACKAGE_STRING@</refmiscinfo>
   </refmeta>
   <refnamediv>
     <refname>
