@@ -28,6 +28,7 @@
 
 #include "mockup-config.h"
 
+#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -217,14 +218,12 @@ namespace mockup
         return code;
     }
 
-    Configuration* config = new Configuration( );
+    unique_ptr<Configuration> config{ new Configuration( ) };
 }
 
 void curl_mockup_reset( )
 {
-    if ( mockup::config != NULL )
-        delete mockup::config;
-    mockup::config = new mockup::Configuration( );
+    mockup::config.reset( new mockup::Configuration( ) );
 }
 
 void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const char* method,
