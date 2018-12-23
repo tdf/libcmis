@@ -32,10 +32,10 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 
 #include <boost/program_options.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include <libcmis/libcmis.hxx>
 
@@ -381,7 +381,7 @@ void CmisClient::execute( )
         }
         else if ( "show-root" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             libcmis::FolderPtr root = session->getRootFolder();
             if ( root.get() )
@@ -392,7 +392,7 @@ void CmisClient::execute( )
         }
         else if ( "repo-infos" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
             libcmis::RepositoryPtr repo = session->getRepository( );
 
             if ( repo )
@@ -405,7 +405,7 @@ void CmisClient::execute( )
         }
         else if ( "type-by-id" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the types to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -430,7 +430,7 @@ void CmisClient::execute( )
         }
         else if ( "show-by-id" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -451,7 +451,7 @@ void CmisClient::execute( )
         }
         else if ( "show-by-path" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the paths of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -472,7 +472,7 @@ void CmisClient::execute( )
         }
         else if ( "get-content" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
             if ( objIds.empty( ) )
@@ -497,7 +497,7 @@ void CmisClient::execute( )
         }
         else if ( "set-content" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > objIds = m_vm["args"].as< vector< string > >( );
             if ( objIds.empty( ) )
@@ -531,7 +531,7 @@ void CmisClient::execute( )
         }
         else if ( "create-folder" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > args = m_vm["args"].as< vector< string > >( );
             if ( args.size() < 2 )
@@ -596,7 +596,7 @@ void CmisClient::execute( )
         }
         else if ( "create-document" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > args = m_vm["args"].as< vector< string > >( );
             if ( args.size() < 2 )
@@ -691,7 +691,7 @@ void CmisClient::execute( )
         }
         else if ( "update-object" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > args = m_vm["args"].as< vector< string > >( );
             if ( args.size() != 1 )
@@ -726,7 +726,7 @@ void CmisClient::execute( )
         }
         else if ( "move-object" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             vector< string > args = m_vm["args"].as< vector< string > > ( );
             if ( args.size() != 3 )
@@ -754,7 +754,7 @@ void CmisClient::execute( )
         }
         else if ( "delete" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -826,7 +826,7 @@ void CmisClient::execute( )
         }
         else if ( "checkout" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -857,7 +857,7 @@ void CmisClient::execute( )
         }
         else if ( "cancel-checkout" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -883,7 +883,7 @@ void CmisClient::execute( )
         }
         else if ( "checkin" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
@@ -964,7 +964,7 @@ void CmisClient::execute( )
         }
         else if ( "get-versions" == command )
         {
-            boost::scoped_ptr<libcmis::Session> session( getSession( ) );
+            unique_ptr<libcmis::Session> session( getSession( ) );
 
             // Get the ids of the objects to fetch
             if ( m_vm.count( "args" ) == 0 )
