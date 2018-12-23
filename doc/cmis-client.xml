@@ -563,4 +563,9 @@
       </author>
     </para>
   </refsect1>
+  <refsect1>
+    <title>REPORTING BUGS</title>
+    <para>Report bugs to &lt;<ulink url="https://github.com/tdf/libcmis/issues">https://github.com/tdf/libcmis/issues</ulink>&gt;.</para>
+  </refsect1>
+
 </refentry>
