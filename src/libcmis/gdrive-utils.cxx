@@ -109,10 +109,12 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
         
         // Convert the key back to the gdrive key
         // take one of the two: cmis:name and cmis:contentStreamFileName
-        if ( key != "cmis:name" || key != "cmis:contentStreamFleName" || !duplicated )
+        const bool isName = key == "cmis:name" || key == "cmis:contentStreamFileName";
+
+        if ( !isName || !duplicated )
             propsJson.add( toGdriveKey( key ), value );
 
-        if ( key == "cmis:name" || key =="cmis:contentStreamFileName" )
+        if ( isName )
             duplicated = true;
     }
 
