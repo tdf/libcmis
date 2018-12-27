@@ -82,3 +82,15 @@
 0.5.2
 
   * Fixed Google Drive login, broken by Google's new 2-page login sequence
+  * Added support for Google Drive two-factor authentication
+  * Fixed access to SharePoint root folder (tdf#101385)
+  * Limited the maximal number of redirections to 20 (rhbz#1410197)
+  * Switched library implementation to C++11 (the API remains
+    C++98-compatible)
+  * Fixed build with boost >= 1.68.0 (#19)
+  * Fixed encoding of OAuth2 credentials
+  * Dropped cppcheck run from "make check". A new "make cppcheck" target
+    was created for it
+  * Added proper API symbol exporting
+  * Speeded up building of tests a bit
+  * Fixed a few issues found by coverity and cppcheck
