@@ -91,22 +91,19 @@ namespace
 
     bool CinAuthProvider::authenticationQuery( string& username, string& password )
     {
-        bool cancelled = true;
+        bool cancelled = false;
         bool askUsername = username.empty();
+
         if ( askUsername )
         {
             if ( m_user.empty() )
             {
                 cout << "Username (empty to cancel): ";
-                getline( cin, username );
-                cancelled = username.empty();
-                m_user = username;
+                getline( cin, m_user );
             }
-            else
-            {
-                cancelled = false;
-                username = m_user;
-            }
+
+            cancelled = m_user.empty();
+            username = m_user;
         }
 
         if ( !cancelled && ( askUsername || password.empty( ) ) )
@@ -114,16 +111,13 @@ namespace
             if ( m_pass.empty() )
             {
                 cout << "Password (empty to cancel): ";
-                getline( cin, password );
-                cancelled = password.empty();
-                m_pass = password;
+                getline( cin, m_pass );
             }
-            else
-            {
-                password = m_pass;
-                cancelled = false;
-            }
+
+            cancelled = m_pass.empty();
+            password = m_pass;
         }
+
         return !cancelled;
     }
 
