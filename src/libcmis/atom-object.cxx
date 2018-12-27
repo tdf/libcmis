@@ -55,7 +55,7 @@ namespace
 
         public:
             MatchLink( string rel, string type ) : m_rel( rel ), m_type( type ) { }
-            bool operator() ( AtomLink link )
+            bool operator() ( const AtomLink &link )
             {
                 bool matchesRel = link.getRel( ) == m_rel;
 
