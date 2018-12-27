@@ -47,11 +47,11 @@ class AtomLink
     public:
         AtomLink( xmlNodePtr node );
 
-        std::string getRel( ) { return m_rel; }
-        std::string getType( ) { return m_type; }
-        std::string getId( ) { return m_id; }
-        bool hasId( ) { return !m_id.empty( ); }
-        std::string getHref( ) { return m_href; }
+        std::string getRel( ) const { return m_rel; }
+        std::string getType( ) const { return m_type; }
+        std::string getId( ) const { return m_id; }
+        bool hasId( ) const { return !m_id.empty( ); }
+        std::string getHref( ) const { return m_href; }
         std::map< std::string, std::string >& getOthers( ) { return m_others; }
 };
 
