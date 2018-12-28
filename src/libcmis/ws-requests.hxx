@@ -299,7 +299,7 @@ class UpdatePropertiesResponse : public SoapResponse
         std::string getObjectId( ) { return m_id; }
 };
 
-class DeleteObject : public SoapRequest
+class DeleteObjectRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -307,14 +307,14 @@ class DeleteObject : public SoapRequest
         bool m_allVersions;
 
     public:
-        DeleteObject( std::string repoId, std::string objectId, bool allVersions ) :
+        DeleteObjectRequest( std::string repoId, std::string objectId, bool allVersions ) :
             m_repositoryId( repoId ),
             m_objectId( objectId ),
             m_allVersions( allVersions )
         {
         }
 
-        ~DeleteObject( ) { }
+        ~DeleteObjectRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
