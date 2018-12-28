@@ -128,7 +128,7 @@ libcmis::ObjectPtr ObjectService::updateProperties(
 {
     libcmis::ObjectPtr object;
 
-    UpdateProperties request( repoId, objectId, properties, changeToken );
+    UpdatePropertiesRequest request( repoId, objectId, properties, changeToken );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

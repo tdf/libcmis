@@ -257,7 +257,7 @@ class GetObjectByPathRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class UpdateProperties : public SoapRequest
+class UpdatePropertiesRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -266,7 +266,7 @@ class UpdateProperties : public SoapRequest
         std::string m_changeToken;
 
     public:
-        UpdateProperties( std::string repoId, std::string objectId,
+        UpdatePropertiesRequest( std::string repoId, std::string objectId,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string changeToken ) :
             m_repositoryId( repoId ),
@@ -276,7 +276,7 @@ class UpdateProperties : public SoapRequest
         {
         }
 
-        ~UpdateProperties( ) { }
+        ~UpdatePropertiesRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
