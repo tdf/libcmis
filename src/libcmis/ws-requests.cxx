@@ -842,7 +842,7 @@ SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, Soa
     return SoapResponsePtr( response );
 }
 
-void GetAllVersions::toXml( xmlTextWriterPtr writer )
+void GetAllVersionsRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getAllVersions" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
