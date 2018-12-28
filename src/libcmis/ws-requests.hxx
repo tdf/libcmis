@@ -203,21 +203,20 @@ class GetTypeChildrenResponse : public SoapResponse
         std::vector< libcmis::ObjectTypePtr > getChildren( ) { return m_children; }
 };
 
-#undef GetObject
-class GetObject : public SoapRequest
+class GetObjectRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_id;
 
     public:
-        GetObject( std::string repoId, std::string id ) :
+        GetObjectRequest( std::string repoId, std::string id ) :
             m_repositoryId( repoId ),
             m_id( id )
         {
         }
 
-        ~GetObject( ) { }
+        ~GetObjectRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };

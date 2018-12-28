@@ -269,7 +269,7 @@ SoapResponsePtr GetTypeChildrenResponse::create( xmlNodePtr node, RelatedMultipa
     return SoapResponsePtr( response );
 }
 
-void GetObject::toXml( xmlTextWriterPtr writer )
+void GetObjectRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObject" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
