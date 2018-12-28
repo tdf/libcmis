@@ -319,7 +319,7 @@ class DeleteObjectRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class DeleteTree : public SoapRequest
+class DeleteTreeRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -329,7 +329,7 @@ class DeleteTree : public SoapRequest
         bool m_continueOnFailure;
 
     public:
-        DeleteTree( std::string repoId,
+        DeleteTreeRequest( std::string repoId,
                 std::string folderId,
                 bool allVersions,
                 libcmis::UnfileObjects::Type unfile,
@@ -342,7 +342,7 @@ class DeleteTree : public SoapRequest
         {
         }
 
-        ~DeleteTree( ) { }
+        ~DeleteTreeRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
