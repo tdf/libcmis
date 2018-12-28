@@ -747,20 +747,20 @@ class CheckInResponse : public SoapResponse
         std::string getObjectId( ) { return m_objectId; }
 };
 
-class GetAllVersions : public SoapRequest
+class GetAllVersionsRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_objectId;
 
     public:
-        GetAllVersions( std::string repoId, std::string objectId ) :
+        GetAllVersionsRequest( std::string repoId, std::string objectId ) :
             m_repositoryId( repoId ),
             m_objectId( objectId )
         {
         }
 
-        ~GetAllVersions( ) { }
+        ~GetAllVersionsRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };

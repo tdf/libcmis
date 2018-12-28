@@ -122,7 +122,7 @@ vector< libcmis::DocumentPtr > VersioningService::getAllVersions( string repoId,
 {
     vector< libcmis::DocumentPtr > versions;
 
-    GetAllVersions request( repoId, objectId );
+    GetAllVersionsRequest request( repoId, objectId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
