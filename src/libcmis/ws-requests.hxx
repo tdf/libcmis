@@ -497,7 +497,7 @@ class GetChildrenResponse : public SoapResponse
         std::vector< libcmis::ObjectPtr > getChildren( ) { return m_children; }
 };
 
-class CreateFolder : public SoapRequest
+class CreateFolderRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -505,7 +505,7 @@ class CreateFolder : public SoapRequest
         std::string m_folderId;
 
     public:
-        CreateFolder( std::string repoId,
+        CreateFolderRequest( std::string repoId,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId ) :
             m_repositoryId( repoId ),
@@ -514,7 +514,7 @@ class CreateFolder : public SoapRequest
         {
         }
 
-        ~CreateFolder( ) { }
+        ~CreateFolderRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
