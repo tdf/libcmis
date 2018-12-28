@@ -460,21 +460,21 @@ class GetObjectParentsResponse : public SoapResponse
         std::vector< libcmis::FolderPtr > getParents( ) { return m_parents; }
 };
 
-class GetChildren : public SoapRequest
+class GetChildrenRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_folderId;
 
     public:
-        GetChildren( std::string repoId,
+        GetChildrenRequest( std::string repoId,
                 std::string folderId ) :
             m_repositoryId( repoId ),
             m_folderId( folderId )
         {
         }
 
-        ~GetChildren( ) { }
+        ~GetChildrenRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
