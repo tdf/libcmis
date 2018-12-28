@@ -387,20 +387,20 @@ class MoveObjectRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class GetContentStream : public SoapRequest
+class GetContentStreamRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_objectId;
 
     public:
-        GetContentStream( std::string repoId, std::string objectId ) :
+        GetContentStreamRequest( std::string repoId, std::string objectId ) :
             m_repositoryId( repoId ),
             m_objectId( objectId )
         {
         }
 
-        ~GetContentStream( ) { }
+        ~GetContentStreamRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };

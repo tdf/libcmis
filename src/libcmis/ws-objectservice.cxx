@@ -178,7 +178,7 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
 {
     boost::shared_ptr< istream > stream;
 
-    GetContentStream request( repoId, objectId );
+    GetContentStreamRequest request( repoId, objectId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
