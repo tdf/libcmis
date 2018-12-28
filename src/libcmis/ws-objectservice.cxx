@@ -203,7 +203,7 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyPtr
 {
     libcmis::FolderPtr folder;
 
-    CreateFolder request( repoId, properties, folderId );
+    CreateFolderRequest request( repoId, properties, folderId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
