@@ -167,20 +167,20 @@ class GetTypeDefinitionResponse : public SoapResponse
         libcmis::ObjectTypePtr getType( ) { return m_type; }
 };
 
-class GetTypeChildren : public SoapRequest
+class GetTypeChildrenRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_typeId;
 
     public:
-        GetTypeChildren( std::string repoId, std::string typeId ) :
+        GetTypeChildrenRequest( std::string repoId, std::string typeId ) :
             m_repositoryId( repoId ),
             m_typeId( typeId )
         {
         }
 
-        ~GetTypeChildren( ) { }
+        ~GetTypeChildrenRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };

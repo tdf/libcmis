@@ -122,7 +122,7 @@ vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( string repo
 {
     vector< libcmis::ObjectTypePtr > children;
 
-    GetTypeChildren request( repoId, typeId );
+    GetTypeChildrenRequest request( repoId, typeId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
