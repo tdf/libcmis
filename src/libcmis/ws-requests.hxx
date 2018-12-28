@@ -567,7 +567,7 @@ class CreateDocumentRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class SetContentStream : public SoapRequest
+class SetContentStreamRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -579,7 +579,7 @@ class SetContentStream : public SoapRequest
         std::string m_filename;
 
     public:
-        SetContentStream( std::string repoId,
+        SetContentStreamRequest( std::string repoId,
                 std::string objectId,
                 bool overwrite,
                 std::string changeToken,
@@ -596,7 +596,7 @@ class SetContentStream : public SoapRequest
         {
         }
 
-        ~SetContentStream( ) { }
+        ~SetContentStreamRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
