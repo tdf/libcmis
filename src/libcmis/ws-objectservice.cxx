@@ -71,7 +71,7 @@ libcmis::ObjectPtr ObjectService::getObject( string repoId, string id )
 {
     libcmis::ObjectPtr object;
 
-    class GetObject request( repoId, id );
+    GetObjectRequest request( repoId, id );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
