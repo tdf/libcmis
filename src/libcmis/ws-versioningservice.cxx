@@ -90,7 +90,7 @@ libcmis::DocumentPtr VersioningService::checkOut( string repoId, string document
 
 void VersioningService::cancelCheckOut( string repoId, string documentId )
 {
-    CancelCheckOut request( repoId, documentId );
+    CancelCheckOutRequest request( repoId, documentId );
     m_session->soapRequest( m_url, request );
 }
 

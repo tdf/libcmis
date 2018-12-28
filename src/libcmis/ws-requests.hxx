@@ -676,21 +676,21 @@ class CheckOutResponse : public SoapResponse
         std::string getObjectId( ) { return m_objectId; }
 };
 
-class CancelCheckOut : public SoapRequest
+class CancelCheckOutRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_objectId;
 
     public:
-        CancelCheckOut( std::string repoId,
+        CancelCheckOutRequest( std::string repoId,
                 std::string objectId ) :
             m_repositoryId( repoId ),
             m_objectId( objectId )
         {
         }
 
-        ~CancelCheckOut( ) { }
+        ~CancelCheckOutRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
