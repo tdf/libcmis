@@ -423,21 +423,21 @@ class GetContentStreamResponse : public SoapResponse
         boost::shared_ptr< std::istream> getStream( ) { return m_stream; }
 };
 
-class GetObjectParents : public SoapRequest
+class GetObjectParentsRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_objectId;
 
     public:
-        GetObjectParents( std::string repoId,
+        GetObjectParentsRequest( std::string repoId,
                 std::string objectId ) :
             m_repositoryId( repoId ),
             m_objectId( objectId )
         {
         }
 
-        ~GetObjectParents( ) { }
+        ~GetObjectParentsRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
