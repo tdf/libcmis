@@ -88,7 +88,7 @@ libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id )
 {
     libcmis::RepositoryPtr repository;
 
-    GetRepositoryInfo request( id );
+    GetRepositoryInfoRequest request( id );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
