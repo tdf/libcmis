@@ -709,7 +709,7 @@ void SetContentStreamRequest::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-void GetRenditions::toXml( xmlTextWriterPtr writer )
+void GetRenditionsRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRenditions" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );

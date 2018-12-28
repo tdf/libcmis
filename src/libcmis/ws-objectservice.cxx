@@ -106,7 +106,7 @@ vector< libcmis::RenditionPtr > ObjectService::getRenditions(
 {
     vector< libcmis::RenditionPtr > renditions;
 
-    GetRenditions request( repoId, objectId, filter );
+    GetRenditionsRequest request( repoId, objectId, filter );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

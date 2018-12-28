@@ -601,7 +601,7 @@ class SetContentStreamRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class GetRenditions : public SoapRequest
+class GetRenditionsRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -609,14 +609,14 @@ class GetRenditions : public SoapRequest
         std::string m_filter;
 
     public:
-        GetRenditions( std::string repoId, std::string objectId, std::string filter ) :
+        GetRenditionsRequest( std::string repoId, std::string objectId, std::string filter ) :
             m_repositoryId( repoId ),
             m_objectId( objectId ),
             m_filter( filter )
         {
         }
 
-        ~GetRenditions( ) { }
+        ~GetRenditionsRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
