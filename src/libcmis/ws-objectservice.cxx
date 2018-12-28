@@ -170,7 +170,7 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
 
 void ObjectService::move( string repoId, string objectId, string destId, string srcId )
 {
-    MoveObject request( repoId, objectId, destId, srcId );
+    MoveObjectRequest request( repoId, objectId, destId, srcId );
     m_session->soapRequest( m_url, request );
 }
 
