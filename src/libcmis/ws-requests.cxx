@@ -317,7 +317,7 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
     return SoapResponsePtr( response );
 }
 
-void GetObjectByPath::toXml( xmlTextWriterPtr writer )
+void GetObjectByPathRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectByPath" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
