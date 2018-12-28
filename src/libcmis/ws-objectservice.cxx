@@ -155,7 +155,7 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
 {
     vector< string > failedIds;
 
-    DeleteTree request( repoId, folderId, allVersions, unfile, continueOnFailure );
+    DeleteTreeRequest request( repoId, folderId, allVersions, unfile, continueOnFailure );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
