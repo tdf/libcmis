@@ -131,7 +131,7 @@ SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
     return SoapFaultDetailPtr( new CmisSoapFaultDetail( node ) );
 }
 
-void GetRepositories::toXml( xmlTextWriterPtr writer )
+void GetRepositoriesRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );

@@ -70,7 +70,7 @@ map< string, string > RepositoryService::getRepositories( )
 {
     map< string, string > repositories;
 
-    GetRepositories request;
+    GetRepositoriesRequest request;
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
 
     if ( responses.size() == 1 )

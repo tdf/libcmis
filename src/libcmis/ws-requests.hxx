@@ -74,11 +74,11 @@ void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart,
 
 /** getRepositories request.
   */
-class GetRepositories : public SoapRequest
+class GetRepositoriesRequest : public SoapRequest
 {
     public:
-        GetRepositories( ) { };
-        ~GetRepositories( ) { };
+        GetRepositoriesRequest( ) { };
+        ~GetRepositoriesRequest( ) { };
 
         void toXml( xmlTextWriterPtr writer );
 };
