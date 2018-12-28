@@ -224,7 +224,7 @@ libcmis::DocumentPtr ObjectService::createDocument( string repoId, const Propert
 {
     libcmis::DocumentPtr document;
 
-    CreateDocument request( repoId, properties, folderId, stream, contentType, fileName );
+    CreateDocumentRequest request( repoId, properties, folderId, stream, contentType, fileName );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

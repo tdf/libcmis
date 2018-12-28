@@ -658,7 +658,7 @@ SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&
     return SoapResponsePtr( response );
 }
 
-void CreateDocument::toXml( xmlTextWriterPtr writer )
+void CreateDocumentRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createDocument" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
