@@ -783,7 +783,7 @@ void CancelCheckOutRequest::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-void CheckIn::toXml( xmlTextWriterPtr writer )
+void CheckInRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkIn" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );

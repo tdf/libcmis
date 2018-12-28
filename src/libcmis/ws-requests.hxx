@@ -695,7 +695,7 @@ class CancelCheckOutRequest : public SoapRequest
         void toXml( xmlTextWriterPtr writer );
 };
 
-class CheckIn : public SoapRequest
+class CheckInRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
@@ -708,7 +708,7 @@ class CheckIn : public SoapRequest
         std::string m_comment;
 
     public:
-        CheckIn( std::string repoId,
+        CheckInRequest( std::string repoId,
                 std::string objectId, bool isMajor,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream,
@@ -724,7 +724,7 @@ class CheckIn : public SoapRequest
         {
         }
 
-        ~CheckIn( ) { }
+        ~CheckInRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
