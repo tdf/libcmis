@@ -87,7 +87,7 @@ vector< libcmis::ObjectPtr > NavigationService::getChildren( string repoId, stri
 {
     vector< libcmis::ObjectPtr > children;
 
-    GetChildren request( repoId, folderId );
+    GetChildrenRequest request( repoId, folderId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

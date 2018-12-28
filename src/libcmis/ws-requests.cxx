@@ -558,7 +558,7 @@ SoapResponsePtr GetObjectParentsResponse::create( xmlNodePtr node, RelatedMultip
     return SoapResponsePtr( response );
 }
 
-void GetChildren::toXml( xmlTextWriterPtr writer )
+void GetChildrenRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getChildren" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
