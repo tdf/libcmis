@@ -105,7 +105,7 @@ libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, stri
 {
     libcmis::ObjectTypePtr type;
 
-    GetTypeDefinition request( repoId, typeId );
+    GetTypeDefinitionRequest request( repoId, typeId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

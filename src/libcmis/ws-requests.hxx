@@ -131,20 +131,20 @@ class GetRepositoryInfoResponse : public SoapResponse
         libcmis::RepositoryPtr getRepository( ) { return m_repository; }
 };
 
-class GetTypeDefinition : public SoapRequest
+class GetTypeDefinitionRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_typeId;
 
     public:
-        GetTypeDefinition( std::string repoId, std::string typeId ) :
+        GetTypeDefinitionRequest( std::string repoId, std::string typeId ) :
             m_repositoryId( repoId ),
             m_typeId( typeId )
         {
         }
 
-        ~GetTypeDefinition( ) { }
+        ~GetTypeDefinitionRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };

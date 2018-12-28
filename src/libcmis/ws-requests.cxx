@@ -204,7 +204,7 @@ SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMulti
     return SoapResponsePtr( response );
 }
 
-void GetTypeDefinition::toXml( xmlTextWriterPtr writer )
+void GetTypeDefinitionRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeDefinition" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
