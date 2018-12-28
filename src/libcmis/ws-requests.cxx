@@ -378,7 +378,7 @@ SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultip
     return SoapResponsePtr( response );
 }
 
-void DeleteObject::toXml( xmlTextWriterPtr writer )
+void DeleteObjectRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteObject" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
