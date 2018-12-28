@@ -194,7 +194,7 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
 void ObjectService::setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
         boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName )
 {
-    SetContentStream request( repoId, objectId, overwrite, changeToken, stream, contentType, fileName );
+    SetContentStreamRequest request( repoId, objectId, overwrite, changeToken, stream, contentType, fileName );
     m_session->soapRequest( m_url, request );
 }
 
