@@ -462,7 +462,7 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
     return SoapResponsePtr( response );
 }
 
-void MoveObject::toXml( xmlTextWriterPtr writer )
+void MoveObjectRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:moveObject" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
