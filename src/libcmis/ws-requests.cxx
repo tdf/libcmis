@@ -476,7 +476,7 @@ void MoveObjectRequest::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-void GetContentStream::toXml( xmlTextWriterPtr writer )
+void GetContentStreamRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getContentStream" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
