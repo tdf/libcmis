@@ -71,7 +71,7 @@ libcmis::DocumentPtr VersioningService::checkOut( string repoId, string document
 {
     libcmis::DocumentPtr pwc;
 
-    CheckOut request( repoId, documentId );
+    CheckOutRequest request( repoId, documentId );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

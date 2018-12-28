@@ -639,21 +639,21 @@ class GetRenditionsResponse : public SoapResponse
         std::vector< libcmis::RenditionPtr > getRenditions( ) { return m_renditions; }
 };
 
-class CheckOut : public SoapRequest
+class CheckOutRequest : public SoapRequest
 {
     private:
         std::string m_repositoryId;
         std::string m_objectId;
 
     public:
-        CheckOut( std::string repoId,
+        CheckOutRequest( std::string repoId,
                 std::string objectId ) :
             m_repositoryId( repoId ),
             m_objectId( objectId )
         {
         }
 
-        ~CheckOut( ) { }
+        ~CheckOutRequest( ) { }
 
         void toXml( xmlTextWriterPtr writer );
 };
