@@ -738,7 +738,7 @@ SoapResponsePtr GetRenditionsResponse::create( xmlNodePtr node, RelatedMultipart
     return SoapResponsePtr( response );
 }
 
-void CheckOut::toXml( xmlTextWriterPtr writer )
+void CheckOutRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkOut" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
