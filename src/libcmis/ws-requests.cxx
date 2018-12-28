@@ -177,7 +177,7 @@ SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipa
     return SoapResponsePtr( response );
 }
 
-void GetRepositoryInfo::toXml( xmlTextWriterPtr writer )
+void GetRepositoryInfoRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositoryInfo" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );

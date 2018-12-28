@@ -101,14 +101,14 @@ class GetRepositoriesResponse : public SoapResponse
         std::map< std::string, std::string > getRepositories( ) { return m_repositories; }
 };
 
-class GetRepositoryInfo : public SoapRequest
+class GetRepositoryInfoRequest : public SoapRequest
 {
     private:
         std::string m_id;
 
     public:
-        GetRepositoryInfo( std::string id ) : m_id( id ) { };
-        ~GetRepositoryInfo( ) { };
+        GetRepositoryInfoRequest( std::string id ) : m_id( id ) { };
+        ~GetRepositoryInfoRequest( ) { };
 
         void toXml( xmlTextWriterPtr writer );
 };
