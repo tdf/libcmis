@@ -331,7 +331,7 @@ void GetObjectByPathRequest::toXml( xmlTextWriterPtr writer )
     xmlTextWriterEndElement( writer );
 }
 
-void UpdateProperties::toXml( xmlTextWriterPtr writer )
+void UpdatePropertiesRequest::toXml( xmlTextWriterPtr writer )
 {
     xmlTextWriterStartElement( writer, BAD_CAST( "cmism:updateProperties" ) );
     xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
