@@ -101,7 +101,7 @@ libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId,
 {
     libcmis::DocumentPtr newVersion;
 
-    CheckIn request( repoId, objectId, isMajor, properties, stream, contentType, fileName, comment );
+    CheckInRequest request( repoId, objectId, isMajor, properties, stream, contentType, fileName, comment );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
