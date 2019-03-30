@@ -62,15 +62,6 @@ BaseSession::BaseSession( string sBindingUrl, string repository,
 {
 }
 
-BaseSession::BaseSession( const BaseSession& copy ) :
-    Session( ),
-    HttpSession( copy ),
-    m_bindingUrl( copy.m_bindingUrl ),
-    m_repositoryId( copy.m_repositoryId ),
-    m_repositories( copy.m_repositories )
-{
-}
-
 BaseSession::BaseSession( ) :
     Session( ),
     HttpSession( ),
@@ -78,19 +69,6 @@ BaseSession::BaseSession( ) :
     m_repositoryId( ),
     m_repositories( )
 {
-}
-
-BaseSession& BaseSession::operator=( const BaseSession& copy )
-{
-    if ( this != &copy )
-    {
-        HttpSession::operator=( copy );
-        m_bindingUrl = copy.m_bindingUrl;
-        m_repositoryId = copy.m_repositoryId;
-        m_repositories = copy.m_repositories;
-    }
-
-    return *this;
 }
 
 BaseSession::~BaseSession( )

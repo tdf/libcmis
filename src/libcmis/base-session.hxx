@@ -68,10 +68,7 @@ class BaseSession : public libcmis::Session,
         BaseSession( std::string sBindingUrl, std::string repository,
                      const HttpSession& httpSession );
 
-        BaseSession( const BaseSession& copy );
         ~BaseSession( );
-
-        BaseSession& operator=( const BaseSession& copy );
 
         std::string& getRepositoryId( ) { return m_repositoryId; }
 
@@ -99,6 +96,9 @@ class BaseSession : public libcmis::Session,
 
     protected:
         BaseSession( );
+
+        BaseSession( const BaseSession& copy ) = delete;
+        BaseSession& operator=( const BaseSession& copy ) = delete;
 };
 
 #endif
