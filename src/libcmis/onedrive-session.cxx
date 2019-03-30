@@ -54,11 +54,6 @@ OneDriveSession::OneDriveSession ( string baseUrl,
     }
 }
 
-OneDriveSession::OneDriveSession( const OneDriveSession& copy ) :
-    BaseSession( copy )
-{
-}
-
 OneDriveSession::OneDriveSession() :
     BaseSession()
 {
