@@ -1,0 +1,9 @@
+path_classifiers:
+    library:
+        - src/inc
+        - src/libcmis
+        - src/libcmis-c
+    test:
+        - qa
+    tool:
+        - src/cmis-client.cxx
