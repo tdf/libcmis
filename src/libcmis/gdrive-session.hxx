@@ -41,8 +41,6 @@ class GDriveSession : public BaseSession
                        libcmis::OAuth2DataPtr oauth2,
                        bool verbose = false );
 
-        GDriveSession( const GDriveSession& copy );
-
         ~GDriveSession ( );
 
         virtual libcmis::RepositoryPtr getRepository( );
@@ -59,6 +57,8 @@ class GDriveSession : public BaseSession
 
     private:
         GDriveSession( );
+        GDriveSession( const GDriveSession& copy ) = delete;
+        GDriveSession& operator=( const GDriveSession& copy ) = delete;
 };
 
 #endif /* _GDRIVE_SESSION_HXX_ */

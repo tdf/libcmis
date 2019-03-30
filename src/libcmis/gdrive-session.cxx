@@ -56,11 +56,6 @@ GDriveSession::GDriveSession ( string baseUrl,
     }
 }
 
-GDriveSession::GDriveSession( const GDriveSession& copy ) :
-    BaseSession( copy )
-{
-}
-
 GDriveSession::GDriveSession() :
     BaseSession()
 {
