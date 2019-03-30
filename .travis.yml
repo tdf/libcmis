@@ -1,14 +1,20 @@
 language: cpp
 sudo: required
 
+addons:
+    apt:
+        update: true
+        packages:
+            - docbook-to-man
+            - libboost-date-time-dev
+            - libboost-dev
+            - libboost-program-options-dev
+            - libcppunit-dev
+            - libxml2-dev
+
 compiler:
   - gcc
   - clang
-
-before_script:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libxml2-dev libcppunit-dev docbook-to-man
-  - sudo apt-get install -y libboost-program-options-dev libboost-date-time-dev libboost-dev
 
 script:
   - ./autogen.sh
