@@ -26,6 +26,9 @@
  * instead of those above.
  */
 
+#ifndef INCLUDED_QA_MOCKUP_INTERNALS_HXX
+#define INCLUDED_QA_MOCKUP_INTERNALS_HXX
+
 #include <map>
 #include <string>
 #include <vector>
@@ -126,3 +129,5 @@ namespace mockup
             std::string m_badSSLCertificate;
     };
 }
+
+#endif
