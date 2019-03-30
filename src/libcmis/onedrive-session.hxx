@@ -42,8 +42,6 @@ class OneDriveSession : public BaseSession
                        libcmis::OAuth2DataPtr oauth2,
                        bool verbose = false );
 
-        OneDriveSession( const OneDriveSession& copy );
-
         ~OneDriveSession ( );
 
         virtual libcmis::RepositoryPtr getRepository( );
@@ -64,6 +62,8 @@ class OneDriveSession : public BaseSession
 
     private:
         OneDriveSession( );
+        OneDriveSession( const OneDriveSession& copy ) = delete;
+        OneDriveSession& operator=( const OneDriveSession& copy ) = delete;
 };
 
 #endif /* _ONEDRIVE_SESSION_HXX_ */
