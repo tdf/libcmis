@@ -45,8 +45,6 @@ class SharePointSession : public BaseSession
                         const HttpSession& httpSession,
                         libcmis::HttpResponsePtr response );
 
-        SharePointSession( const SharePointSession& copy );
-
         ~SharePointSession ( );
 
         virtual libcmis::RepositoryPtr getRepository( );
@@ -84,6 +82,8 @@ class SharePointSession : public BaseSession
 
     private:
         SharePointSession( );
+        SharePointSession( const SharePointSession& copy ) = delete;
+        SharePointSession& operator=( const SharePointSession& copy ) = delete;
         void fetchDigestCodeCurl( );
         std::string m_digestCode;
 };
