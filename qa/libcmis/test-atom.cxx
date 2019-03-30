@@ -30,6 +30,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
 
+#include <memory>
 #include <sstream>
 
 #define SERVER_URL string( "http://mockup/binding" )
@@ -56,6 +57,8 @@
 
 using namespace std;
 using libcmis::PropertyPtrMap;
+
+typedef std::unique_ptr<AtomPubSession> AtomPubSessionPtr;
 
 class AtomTest : public CppUnit::TestFixture
 {
@@ -138,7 +141,7 @@ class AtomTest : public CppUnit::TestFixture
         CPPUNIT_TEST( moveTest );
         CPPUNIT_TEST_SUITE_END( );
 
-        AtomPubSession getTestSession( string username = string( ), string password = string( ) );
+        AtomPubSessionPtr getTestSession( string username = string( ), string password = string( ) );
 };
 
 class TestAuthProvider : public libcmis::AuthProvider
@@ -345,10 +348,10 @@ void AtomTest::getTypeTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "cmis:folder" );
-    libcmis::ObjectTypePtr actual = session.getType( expectedId );
+    libcmis::ObjectTypePtr actual = session->getType( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched type", expectedId, actual->getId( ) );
 }
@@ -358,12 +361,12 @@ void AtomTest::getUnexistantTypeTest( )
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "bad_type" );
     try
     {
-        session.getType( expectedId );
+        session->getType( expectedId );
         CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
     }
     catch ( const libcmis::Exception& e )
@@ -381,9 +384,9 @@ void AtomTest::getTypeParentsTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", DATA_DIR "/atom/type-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectTypePtr actual = session.getType( "DocumentLevel2" );
+    libcmis::ObjectTypePtr actual = session->getType( "DocumentLevel2" );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Parent type", string( "DocumentLevel1" ), actual->getParentType( )->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Base type", string( "cmis:document" ), actual->getBaseType( )->getId( ) );
@@ -397,9 +400,9 @@ void AtomTest::getTypeChildrenTest( )
     curl_mockup_addResponse( "http://mockup/mock/types", "typeId=cmis:document", "GET", DATA_DIR "/atom/typechildren-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectTypePtr actual = session.getType( "cmis:document" );
+    libcmis::ObjectTypePtr actual = session->getType( "cmis:document" );
     vector< libcmis::ObjectTypePtr > children = actual->getChildren( );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 1 ), children.size( ) );
@@ -412,10 +415,10 @@ void AtomTest::getObjectTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "valid-object" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", expectedId, actual->getId( ) );
 }
@@ -427,10 +430,10 @@ void AtomTest::getDocumentTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "test-document" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     // Do we have a document?
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( actual );
@@ -459,10 +462,10 @@ void AtomTest::getDocumentRelationshipsTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "test-document" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     // Do we have a document?
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( actual );
@@ -492,10 +495,10 @@ void AtomTest::getFolderTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "valid-object" );
-    libcmis::FolderPtr actual = session.getFolder( expectedId );
+    libcmis::FolderPtr actual = session->getFolder( expectedId );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", expectedId, actual->getId( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder name", string( "Valid Object" ), actual->getName( ) );
@@ -522,9 +525,9 @@ void AtomTest::getFolderBadTypeTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::FolderPtr actual = session.getFolder( "test-document" );
+    libcmis::FolderPtr actual = session->getFolder( "test-document" );
 
     CPPUNIT_ASSERT_MESSAGE( "returned folder should be an empty pointer", NULL == actual );
 }
@@ -534,12 +537,12 @@ void AtomTest::getUnexistantObjectTest( )
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string id( "bad_object" );
     try
     {
-        session.getObject( id );
+        session->getObject( id );
         CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
     }
     catch ( const libcmis::Exception& e )
@@ -556,9 +559,9 @@ void AtomTest::getByPathValidTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr actual = session.getObjectByPath( string( "/Valid Object" ) );
+    libcmis::ObjectPtr actual = session->getObjectByPath( string( "/Valid Object" ) );
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", string( "valid-object" ), actual->getId( ) );
 }
@@ -568,11 +571,11 @@ void AtomTest::getByPathInvalidTest( )
     curl_mockup_reset( );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     try
     {
-        session.getObjectByPath( string( "/some/invalid/path" ) );
+        session->getObjectByPath( string( "/some/invalid/path" ) );
         CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
     }
     catch ( const libcmis::Exception& e )
@@ -591,10 +594,10 @@ void AtomTest::getRenditionsTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "test-document" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     std::vector< libcmis::RenditionPtr > renditions = actual->getRenditions( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad renditions count", size_t( 2 ), renditions.size( ) );
@@ -619,10 +622,10 @@ void AtomTest::getAllowableActionsTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "valid-object" );
-    libcmis::FolderPtr actual = session.getFolder( expectedId );
+    libcmis::FolderPtr actual = session->getFolder( expectedId );
 
     boost::shared_ptr< libcmis::AllowableActions > toCheck = actual->getAllowableActions( );
     CPPUNIT_ASSERT_MESSAGE( "ApplyACL allowable action not defined... are all the actions read?",
@@ -641,10 +644,10 @@ void AtomTest::getAllowableActionsNotIncludedTest( )
     curl_mockup_addResponse( "http://mockup/mock/allowableactions", "id=valid-object", "GET", DATA_DIR "/atom/allowable-actions.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     string expectedId( "valid-object" );
-    libcmis::FolderPtr actual = session.getFolder( expectedId );
+    libcmis::FolderPtr actual = session->getFolder( expectedId );
 
     // In some cases (mostly when getting folder children), we may not have the allowable actions
     // included in the object answer. Test that we are querying them when needed in those cases.
@@ -666,9 +669,9 @@ void AtomTest::getChildrenTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    vector< libcmis::ObjectPtr > children = session.getRootFolder()->getChildren( );
+    vector< libcmis::ObjectPtr > children = session->getRootFolder()->getChildren( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of children", size_t( 5 ), children.size() );
 
     int folderCount = 0;
@@ -694,9 +697,9 @@ void AtomTest::getDocumentParentsTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     CPPUNIT_ASSERT_MESSAGE( "Document expected", document != NULL );
@@ -722,9 +725,9 @@ void AtomTest::getContentStreamTest( )
     curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "GET", expectedContent.c_str( ), 0, false );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     try
@@ -751,9 +754,9 @@ void AtomTest::setContentStreamTest( )
     curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "PUT", "Updated", 0, false );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     try
@@ -785,10 +788,10 @@ void AtomTest::updatePropertiesTest( )
     curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "PUT", DATA_DIR "/atom/test-document-updated.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     // Values for the test
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     string propertyName( "cmis:name" );
     string expectedValue( "New name" );
 
@@ -833,10 +836,10 @@ void AtomTest::updatePropertiesEmptyTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     // Values for the test
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
 
     // Just leave the map empty and update
     PropertyPtrMap emptyProperties;
@@ -859,13 +862,13 @@ void AtomTest::createFolderTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -920,13 +923,13 @@ void AtomTest::createFolderBadTypeTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", DATA_DIR "/atom/type-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -985,13 +988,13 @@ void AtomTest::createDocumentTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:document", "GET", DATA_DIR "/atom/type-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:document" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -1057,9 +1060,9 @@ void AtomTest::deleteDocumentTest( )
     curl_mockup_addResponse( "http://mockup/mock/id", "id=test-document", "DELETE", "", 204, false );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     document->remove( );
@@ -1077,9 +1080,9 @@ void AtomTest::deleteFolderTreeTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=cmis:folder", "GET", DATA_DIR "/atom/type-folder.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "valid-object" );
+    libcmis::ObjectPtr object = session->getObject( "valid-object" );
     libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( object.get() );
 
     folder->removeTree( );
@@ -1098,9 +1101,9 @@ void AtomTest::checkOutTest( )
     curl_mockup_addResponse( "http://mockup/mock/checkedout", "", "POST", DATA_DIR "/atom/working-copy.xml", 201 );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     libcmis::DocumentPtr pwc = document->checkOut( );
@@ -1120,10 +1123,10 @@ void AtomTest::cancelCheckOutTest( )
     curl_mockup_addResponse( "http://mockup/mock/type", "id=DocumentLevel2", "GET", DATA_DIR "/atom/type-docLevel2.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     // First get a checked out document
-    libcmis::ObjectPtr object = session.getObject( "working-copy" );
+    libcmis::ObjectPtr object = session->getObject( "working-copy" );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     pwc->cancelCheckout( );
@@ -1143,10 +1146,10 @@ void AtomTest::checkInTest( )
            "Location: http://mockup/mock/id?id=valid-object" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     // First get a checked out document
-    libcmis::ObjectPtr object = session.getObject( "working-copy" );
+    libcmis::ObjectPtr object = session->getObject( "working-copy" );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     // Do the checkin
@@ -1182,10 +1185,10 @@ void AtomTest::getAllVersionsTest( )
     curl_mockup_addResponse( "http://mockup/mock/versions", "id=test-document", "GET", DATA_DIR "/atom/get-versions.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
     // First get a document
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::DocumentPtr doc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     // Get all the versions (method to check)
@@ -1206,14 +1209,14 @@ void AtomTest::moveTest( )
     curl_mockup_addResponse( "http://mockup/mock/children", "id=valid-object", "POST", DATA_DIR "/atom/test-document.xml" );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    AtomPubSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
+    AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    libcmis::ObjectPtr object = session.getObject( "test-document" );
+    libcmis::ObjectPtr object = session->getObject( "test-document" );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     string destFolderId = "valid-object";
     libcmis::FolderPtr src = document->getParents( ).front( );
-    libcmis::FolderPtr dest = session.getFolder( destFolderId );
+    libcmis::FolderPtr dest = session->getFolder( destFolderId );
 
     document->move( src, dest );
 
@@ -1233,15 +1236,15 @@ void AtomTest::moveTest( )
     curl_mockup_HttpRequest_free( request );
 }
 
-AtomPubSession AtomTest::getTestSession( string username, string password )
+AtomPubSessionPtr AtomTest::getTestSession( string username, string password )
 {
-    AtomPubSession session;
+    AtomPubSessionPtr session( new AtomPubSession( ) );
     string buf;
     test::loadFromFile( DATA_DIR "/atom/workspaces.xml", buf );
-    session.parseServiceDocument( buf );
+    session->parseServiceDocument( buf );
 
-    session.m_username = username;
-    session.m_password = password;
+    session->m_username = username;
+    session->m_password = password;
 
     return session;
 }

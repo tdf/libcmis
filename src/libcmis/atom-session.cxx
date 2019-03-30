@@ -63,28 +63,10 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
     initialize( response );
 }
 
-AtomPubSession::AtomPubSession( const AtomPubSession& copy ) :
-    BaseSession( copy ),
-    m_repository( copy.m_repository )
-{
-}
-
 AtomPubSession::AtomPubSession( ) :
     BaseSession( ),
     m_repository( )
 {
-}
-
-
-AtomPubSession& AtomPubSession::operator=( const AtomPubSession& copy )
-{
-    if ( this != &copy )
-    {
-        BaseSession::operator=( copy );
-        m_repository = copy.m_repository;
-    }
-
-    return *this;
 }
 
 AtomPubSession::~AtomPubSession( )
