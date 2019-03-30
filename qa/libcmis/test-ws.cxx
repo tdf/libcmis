@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <memory>
+
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <cppunit/TestAssert.h>
@@ -104,6 +106,8 @@ namespace
         return ns;
     }
 }
+
+typedef std::unique_ptr<WSSession> WSSessionPtr;
 
 class WSTest : public CppUnit::TestFixture
 {
@@ -190,7 +194,7 @@ class WSTest : public CppUnit::TestFixture
         CPPUNIT_TEST_SUITE_END( );
 
         libcmis::RepositoryPtr getTestRepository( );
-        WSSession getTestSession( string username, string password, bool noRepos = false );
+        WSSessionPtr getTestSession( string username, string password, bool noRepos = false );
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WSTest );
@@ -201,8 +205,8 @@ void WSTest::getRepositoriesTest()
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repositories.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
-    map< string, string > actual = session.getRepositoryService().getRepositories( );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    map< string, string > actual = session->getRepositoryService().getRepositories( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of repositories", size_t( 1 ), actual.size( ) );
 
     // Test the sent request
@@ -217,9 +221,9 @@ void WSTest::getRepositoryInfosTest()
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string validId = "mock";
-    libcmis::RepositoryPtr actual = session.getRepositoryService().getRepositoryInfo( validId );
+    libcmis::RepositoryPtr actual = session->getRepositoryService().getRepositoryInfo( validId );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Root folder is wrong", string( "root-folder" ), actual->getRootId( ) );
 
     // Test the sent request
@@ -236,11 +240,11 @@ void WSTest::getRepositoryInfosBadTest()
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/repository-infos-bad.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string badId = "bad";
     try
     {
-        session.getRepositoryService().getRepositoryInfo( badId );
+        session->getRepositoryService().getRepositoryInfo( badId );
     }
     catch( const libcmis::Exception& e )
     {
@@ -263,9 +267,9 @@ void WSTest::getTypeTest( )
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "cmis:folder" );
-    libcmis::ObjectTypePtr actual = session.getType( id );
+    libcmis::ObjectTypePtr actual = session->getType( id );
 
     // Check the returned type
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
@@ -286,9 +290,9 @@ void WSTest::getTypeRefreshTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService",
                          DATA_DIR "/ws/type-docLevel2.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "DocumentLevel2" );
-    libcmis::ObjectTypePtr actual = session.getType( id );
+    libcmis::ObjectTypePtr actual = session->getType( id );
 
     // Check the returned type
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong id", id, actual->getId( ) );
@@ -311,9 +315,9 @@ void WSTest::objectTypeCopyTest( )
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "cmis:folder" );
-    libcmis::ObjectTypePtr expected = session.getType( id );
+    libcmis::ObjectTypePtr expected = session->getType( id );
     WSObjectType* type = dynamic_cast< WSObjectType* >( expected.get( ) );
 
     {
@@ -338,11 +342,11 @@ void WSTest::getUnexistantTypeTest( )
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-bad.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
     string id( "bad_type" );
     try
     {
-        session.getType( id );
+        session->getType( id );
     }
     catch ( const libcmis::Exception& e )
     {
@@ -373,10 +377,10 @@ void WSTest::getTypeParentsTest( )
                          DATA_DIR "/ws/type-document.http",
                          "<cmism:typeId>cmis:document</cmism:typeId>" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "DocumentLevel2";
-    libcmis::ObjectTypePtr actual = session.getType( id );
+    libcmis::ObjectTypePtr actual = session->getType( id );
 
     // Check the resulting type
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Parent type Id", string( "DocumentLevel1" ),
@@ -408,10 +412,10 @@ void WSTest::getTypeChildrenTest( )
                          DATA_DIR "/ws/type-document.http",
                          "<cmism:typeId>cmis:document</cmism:typeId>" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "cmis:document";
-    libcmis::ObjectTypePtr actual = session.getType( id );
+    libcmis::ObjectTypePtr actual = session->getType( id );
     vector< libcmis::ObjectTypePtr > children = actual->getChildren();
 
     // Check the actual children returned
@@ -436,11 +440,11 @@ void WSTest::getObjectTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // Run the tested method
     string expectedId( "valid-object" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     // Check the returned object
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object",
@@ -466,10 +470,10 @@ void WSTest::getDocumentTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string expectedId( "test-document" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     // Do we have a document?
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( actual );
@@ -509,11 +513,11 @@ void WSTest::getFolderTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // Run the method under test
     string expectedId( "valid-object" );
-    libcmis::FolderPtr actual = session.getFolder( expectedId );
+    libcmis::FolderPtr actual = session->getFolder( expectedId );
 
     // Check the returned folder
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong folder ID", expectedId, actual->getId( ) );
@@ -540,10 +544,10 @@ void WSTest::getByPathValidTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string path = "/Valid Object";
-    libcmis::ObjectPtr actual = session.getObjectByPath( path );
+    libcmis::ObjectPtr actual = session->getObjectByPath( path );
 
     // Check the returned object
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong Id for fetched object", string( "valid-object" ), actual->getId( ) );
@@ -565,12 +569,12 @@ void WSTest::getByPathInvalidTest( )
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/getbypath-bad.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string path = "/some/invalid/path";
     try
     {
-        session.getObjectByPath( path );
+        session->getObjectByPath( path );
         CPPUNIT_FAIL( "Exception should be thrown: invalid Path" );
     }
     catch ( const libcmis::Exception& e )
@@ -598,11 +602,11 @@ void WSTest::getDocumentParentsTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
     test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    vector< libcmis::FolderPtr > actual = session.getNavigationService().
-                                            getObjectParents( session.m_repositoryId,
+    vector< libcmis::FolderPtr > actual = session->getNavigationService().
+                                            getObjectParents( session->m_repositoryId,
                                                               id );
 
     // Check the actual parents
@@ -627,12 +631,12 @@ void WSTest::getChildrenTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http", "<cmism:typeId>DocumentLevel2</cmism:typeId>" );
     test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/root-children.http" );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
 
     string id = "root-folder";
-    vector< libcmis::ObjectPtr > children = session.getNavigationService().
-                                                getChildren( session.m_repositoryId,
+    vector< libcmis::ObjectPtr > children = session->getNavigationService().
+                                                getChildren( session->m_repositoryId,
                                                              id );
 
     // Check the returned children
@@ -671,10 +675,10 @@ void WSTest::getContentStreamTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-content-stream.http", "<cmism:getContentStream " );
 
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     boost::shared_ptr< istream >  is = document->getContentStream( );
@@ -702,10 +706,10 @@ void WSTest::setContentStreamTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/set-content-stream.http", "<cmism:setContentStream " );
     curl_mockup_addResponse( "http://mockup/mock/content/data.txt", "id=test-document", "PUT", "Updated", 0, false );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     try
@@ -758,10 +762,10 @@ void WSTest::getRenditionsTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/get-renditions.http", "<cmism:getRenditions " );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string expectedId( "test-document" );
-    libcmis::ObjectPtr actual = session.getObject( expectedId );
+    libcmis::ObjectPtr actual = session->getObject( expectedId );
 
     std::vector< libcmis::RenditionPtr > renditions = actual->getRenditions( );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Bad renditions count", size_t( 2 ), renditions.size( ) );
@@ -784,11 +788,11 @@ void WSTest::updatePropertiesTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // Values for the test
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     string propertyName( "cmis:name" );
     string expectedValue( "New name" );
 
@@ -835,11 +839,11 @@ void WSTest::updatePropertiesEmptyTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http", "<cmism:getObject " );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // Values for the test
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
 
     // Just leave the map empty and update
     PropertyPtrMap emptyProperties;
@@ -862,13 +866,13 @@ void WSTest::createFolderTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder.http", "<cmism:createFolder " );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -924,13 +928,13 @@ void WSTest::createFolderBadTypeTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/create-folder-bad-type.http", "<cmism:createFolder " );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:folder" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:folder" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -987,16 +991,16 @@ void WSTest::createDocumentTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/root-folder.http", "<cmism:getObject " );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
-    libcmis::FolderPtr parent = session.getRootFolder( );
+    libcmis::FolderPtr parent = session->getRootFolder( );
 
     // Make the mockup know about cmis:document now
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-document.http" );
 
     // Prepare the properties for the new object, object type is cmis:folder
     PropertyPtrMap props;
-    libcmis::ObjectTypePtr type = session.getType( "cmis:document" );
+    libcmis::ObjectTypePtr type = session->getType( "cmis:document" );
     map< string, libcmis::PropertyTypePtr > propTypes = type->getPropertiesTypes( );
 
     // Set the object name
@@ -1070,10 +1074,10 @@ void WSTest::deleteDocumentTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-object.http", "<cmism:deleteObject " );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     // Run the tested method. Here we delete the object with all its versions
@@ -1097,10 +1101,10 @@ void WSTest::deleteFolderTreeTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-folder.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/delete-tree.http", "<cmism:deleteTree " );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "valid-object";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::Folder* folder = dynamic_cast< libcmis::Folder* >( object.get() );
 
     vector<string> failed = folder->removeTree( true, libcmis::UnfileObjects::Delete, false );
@@ -1131,10 +1135,10 @@ void WSTest::moveTest( )
     test::addWsResponse( "http://mockup/ws/services/NavigationService", DATA_DIR "/ws/test-document-parents.http" );
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/move-object.http", "<cmism:moveObject " );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     string destFolderId = "valid-object";
@@ -1142,7 +1146,7 @@ void WSTest::moveTest( )
 
     // Tell the mockup about the destination folder
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/valid-object.http", "<cmism:getObject " );
-    libcmis::FolderPtr dest = session.getFolder( destFolderId );
+    libcmis::FolderPtr dest = session->getFolder( destFolderId );
 
     document->move( src, dest );
 
@@ -1168,11 +1172,11 @@ void WSTest::addSecondaryTypeTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/update-properties.http", "<cmism:updateProperties " );
     curl_mockup_setCredentials( SERVER_USERNAME, SERVER_PASSWORD );
 
-    WSSession session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session  = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // Values for the test
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     string secondaryType = "secondary-type";
     string propertyName = "secondary-prop";
     string expectedValue = "some-value";
@@ -1180,7 +1184,7 @@ void WSTest::addSecondaryTypeTest( )
     // Fill the map of properties to change
     PropertyPtrMap newProperties;
 
-    libcmis::ObjectTypePtr objectType = session.getType( secondaryType );
+    libcmis::ObjectTypePtr objectType = session->getType( secondaryType );
     map< string, libcmis::PropertyTypePtr >::iterator it = objectType->getPropertiesTypes( ).find( propertyName );
     vector< string > values;
     values.push_back( expectedValue );
@@ -1232,10 +1236,10 @@ void WSTest::checkOutTest( )
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
     test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkout.http" );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::Document* document = dynamic_cast< libcmis::Document* >( object.get() );
 
     libcmis::DocumentPtr pwc = document->checkOut( );
@@ -1264,11 +1268,11 @@ void WSTest::cancelCheckOutTest( )
     test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/cancel-checkout.http" );
     test::addWsResponse( "http://mockup/ws/services/RepositoryService", DATA_DIR "/ws/type-docLevel2.http" );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // First get a checked out document
     string id = "working-copy";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     pwc->cancelCheckout( );
@@ -1291,11 +1295,11 @@ void WSTest::checkInTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/checked-in.http", "<cmism:objectId>test-document</cmism:objectId>" );
     test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/checkin.http" );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // First get a checked out document
     string id = "working-copy";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
     // Do the checkin
@@ -1346,11 +1350,11 @@ void WSTest::getAllVersionsTest( )
     test::addWsResponse( "http://mockup/ws/services/ObjectService", DATA_DIR "/ws/test-document.http" );
     test::addWsResponse( "http://mockup/ws/services/VersioningService", DATA_DIR "/ws/get-versions.http" );
 
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
 
     // First get a document
     string id = "test-document";
-    libcmis::ObjectPtr object = session.getObject( id );
+    libcmis::ObjectPtr object = session->getObject( id );
     string seriesId = object->getStringProperty( "cmis:versionSeriesId" );
     libcmis::DocumentPtr doc = boost::dynamic_pointer_cast< libcmis::Document >( object );
 
@@ -1372,8 +1376,8 @@ void WSTest::getAllVersionsTest( )
 
 void WSTest::navigationServiceCopyTest()
 {
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
-    NavigationService service( &session );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    NavigationService service( session.get() );
 
     {
         NavigationService copy( service );
@@ -1391,8 +1395,8 @@ void WSTest::navigationServiceCopyTest()
 
 void WSTest::repositoryServiceCopyTest()
 {
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
-    RepositoryService service( &session );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    RepositoryService service( session.get() );
 
     {
         RepositoryService copy( service );
@@ -1410,8 +1414,8 @@ void WSTest::repositoryServiceCopyTest()
 
 void WSTest::objectServiceCopyTest()
 {
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
-    ObjectService service( &session );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    ObjectService service( session.get() );
 
     {
         ObjectService copy( service );
@@ -1429,8 +1433,8 @@ void WSTest::objectServiceCopyTest()
 
 void WSTest::versioningServiceCopyTest()
 {
-    WSSession session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
-    VersioningService service( &session );
+    WSSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD, true );
+    VersioningService service( session.get() );
 
     {
         VersioningService copy( service );
@@ -1446,23 +1450,23 @@ void WSTest::versioningServiceCopyTest()
     }
 }
 
-WSSession WSTest::getTestSession( string username, string password, bool noRepos )
+WSSessionPtr WSTest::getTestSession( string username, string password, bool noRepos )
 {
-    WSSession session;
-    session.m_username = username;
-    session.m_password = password;
+    WSSessionPtr session( new WSSession( ) );
+    session->m_username = username;
+    session->m_password = password;
 
     string buf;
     test::loadFromFile( DATA_DIR "/ws/CMISWS-Service.wsdl", buf );
-    session.parseWsdl( buf );
-    session.initializeResponseFactory( );
+    session->parseWsdl( buf );
+    session->initializeResponseFactory( );
 
     // Manually define the repositories to avoid the HTTP query
     if ( noRepos )
     {
         libcmis::RepositoryPtr repo = getTestRepository( );
-        session.m_repositories.push_back( repo );
-        session.m_repositoryId = repo->getId( );
+        session->m_repositories.push_back( repo );
+        session->m_repositoryId = repo->getId( );
     }
 
     return session;

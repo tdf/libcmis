@@ -63,10 +63,7 @@ class WSSession : public BaseSession, public SoapSession
         WSSession( std::string bindingUrl, std::string repositoryId,
                    const HttpSession& HttpSession,
                    libcmis::HttpResponsePtr response );
-        WSSession( const WSSession& copy );
         ~WSSession( );
-
-        WSSession& operator=( const WSSession& copy );
 
         // Utility methods
 
@@ -112,6 +109,8 @@ class WSSession : public BaseSession, public SoapSession
 
         // Default constructor shouldn't be called
         WSSession( );
+        WSSession( const WSSession& copy ) = delete;
+        WSSession& operator=( const WSSession& copy ) = delete;
 
         void parseWsdl( std::string buf );
         void initializeResponseFactory( );
