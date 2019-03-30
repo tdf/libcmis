@@ -50,10 +50,7 @@ class AtomPubSession : public BaseSession
         AtomPubSession( std::string sAtomPubUrl, std::string repositoryId,
                         const HttpSession& httpSession,
                         libcmis::HttpResponsePtr response );
-        AtomPubSession( const AtomPubSession& copy );
         ~AtomPubSession( );
-
-        AtomPubSession& operator=( const AtomPubSession& copy );
 
         AtomRepositoryPtr getAtomRepository( );
 
@@ -82,6 +79,9 @@ class AtomPubSession : public BaseSession
         /** Defaults constructor shouldn't be used
           */
         AtomPubSession( );
+        AtomPubSession( const AtomPubSession& copy ) = delete;
+        AtomPubSession& operator=( const AtomPubSession& copy ) = delete;
+
         void parseServiceDocument( const std::string& buf );
 
         void initialize( libcmis::HttpResponsePtr response );
