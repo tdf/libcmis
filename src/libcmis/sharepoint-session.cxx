@@ -80,11 +80,6 @@ SharePointSession::SharePointSession( string baseUrl,
     fetchDigestCode( );
 }
 
-SharePointSession::SharePointSession( const SharePointSession& copy ) :
-    BaseSession( copy ), m_digestCode( copy.m_digestCode )
-{
-}
-
 SharePointSession::SharePointSession() :
     BaseSession(), m_digestCode( string( ) )
 {
