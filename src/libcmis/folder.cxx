@@ -78,11 +78,8 @@ namespace libcmis
         buf << "Folder Parent Id: " << getParentId( ) << endl;
         buf << "Children [Name (Id)]:" << endl;
 
-        vector< libcmis::ObjectPtr > children = getChildren( );
-        for ( vector< libcmis::ObjectPtr >::iterator it = children.begin( );
-                it != children.end(); ++it )
+        for(libcmis::ObjectPtr child : getChildren( ))
         {
-            libcmis::ObjectPtr child = *it;
             buf << "    " << child->getName() << " (" << child->getId() << ")" << endl;
         }
 
