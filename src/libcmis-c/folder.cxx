@@ -289,11 +289,10 @@ libcmis_DocumentPtr libcmis_folder_createDocument(
                 PropertyPtrMap propertiesMap;
                 if ( properties != NULL )
                 {
-                    for ( vector< libcmis::PropertyPtr >::iterator it = properties->handle.begin( );
-                            it != properties->handle.end( ); ++it )
+                   for ( libcmis::PropertyPtr property : properties->handle )
                     {
-                        string id = ( *it )->getPropertyType( )->getId( );
-                        propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, *it ) );
+                        string id = property->getPropertyType( )->getId( );
+                        propertiesMap.insert( pair< string, libcmis::PropertyPtr >( id, property ) );
                     }
                 }
 
