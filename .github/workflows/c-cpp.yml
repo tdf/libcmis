@@ -13,8 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        install: libtool 
+    - name: dependencies
+      run: apt install libtool 
     - name: autoconf
       run: autoconf
     - name: configure
