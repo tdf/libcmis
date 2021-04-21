@@ -342,8 +342,10 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories )
 
         session = libcmis::SessionFactory::createSession( url, username, password, repoId, noSslCheck, oauth2Data, verbose );
     }
-
-    return session;
+    if ( session != NULL )
+        return session;
+    else
+        throw libcmis::Exception( "Unable to create session" );
 }
 
 void CmisClient::execute( )
