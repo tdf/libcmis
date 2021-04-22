@@ -14,12 +14,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: dependencies
       run: sudo apt install libtool docbook2x libboost-all-dev libcurl4-openssl-dev libxml2-dev libcppunit-dev
-    - name: autoreconf
-      run: autoreconf --install
-    - name: autoconf
-      run: autoconf
-    - name: configure
-      run: ./configure
+    - name: autogen
+      run: ./autogen.sh
     - name: make
       run: make
     - name: make check
