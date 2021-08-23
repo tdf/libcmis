@@ -60,7 +60,7 @@
 #define CONTEXTINFO_URL string ( "http://mockup/sharepoint/_api/contextinfo" )
 #define BINDING_BAD "http://mockup/bad"
 #define BINDING_GDRIVE  string ( "https://www.googleapis.com/drive/v2" )
-#define BINDING_ONEDRIVE  string ( "https://apis.live.net/v5.0" )
+#define BINDING_ONEDRIVE  string ( "https://graph.microsoft.com/v1.0" )
 #define SERVER_REPOSITORY string( "mock" )
 #define SERVER_USERNAME "tester"
 #define SERVER_PASSWORD "somepass"

@@ -249,8 +249,8 @@ void GDriveTest::sessionAuthenticationTest( )
     string expectedTokenRequest =
         string( "code=AuthCode") +
         string( "&client_id=") + CLIENT_ID +
-        string( "&client_secret=") + CLIENT_SECRET +
         string( "&redirect_uri=") + REDIRECT_URI +
+        string( "&scope=") + SCOPE +
         string( "&grant_type=authorization_code" );
 
     string tokenRequest( curl_mockup_getRequestBody( TOKEN_URL.c_str(), empty.c_str( ),
@@ -317,8 +317,8 @@ void GDriveTest::sessionAuthenticationTestWith2FA( )
     string expectedTokenRequest =
         string( "code=AuthCode") +
         string( "&client_id=") + CLIENT_ID +
-        string( "&client_secret=") + CLIENT_SECRET +
         string( "&redirect_uri=") + REDIRECT_URI +
+        string( "&scope=") + SCOPE +
         string( "&grant_type=authorization_code" );
 
     string tokenRequest( curl_mockup_getRequestBody( TOKEN_URL.c_str(), empty.c_str( ),
