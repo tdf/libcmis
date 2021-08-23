@@ -63,6 +63,45 @@ OneDriveSession::~OneDriveSession()
 {
 }
 
+void OneDriveSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
+{
+    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
+    m_oauth2Handler->setOAuth2Parser( OAuth2Providers::getOAuth2Parser( getBindingUrl( ) ) );
+
+    oauth2Authenticate( );
+}
+
+void OneDriveSession::oauth2Authenticate()
+{
+    // treat the supplied password as refresh token
+    if (!m_password.empty())
+    {
+        try
+        {
+            m_inOAuth2Authentication = true;
+
+            m_oauth2Handler->setRefreshToken(m_password);
+            // Try to get new access tokens using the stored refreshtoken
+            m_oauth2Handler->refresh();
+            m_inOAuth2Authentication = false;
+        }
+        catch (const CurlException &e)
+        {
+            m_inOAuth2Authentication = false;
+            // refresh token expired or invalid, trigger initial auth (that in turn will hit the fallback with copy'n'paste method)
+            BaseSession::oauth2Authenticate();
+        }
+    }
+    else
+    {
+        BaseSession::oauth2Authenticate();
+    }
+}
+
+string OneDriveSession::getRefreshToken() {
+    return HttpSession::getRefreshToken();
+}
+
 libcmis::RepositoryPtr OneDriveSession::getRepository( )
 {
     // Return a dummy repository since OneDrive doesn't have that notion

@@ -148,7 +148,7 @@ class HttpSession
 
         void setNoSSLCertificateCheck( bool noCheck );
 
-        std::string getRefreshToken( );
+        virtual std::string getRefreshToken( );
 
     protected:
         HttpSession( );

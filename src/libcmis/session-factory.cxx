@@ -66,7 +66,7 @@ namespace libcmis
         if ( !bindingUrl.empty( ) )
         {
             // Try the special cases based on the binding URL
-            if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
+            if ( bindingUrl == "https://www.googleapis.com/drive/v3" )
             {
                 session = new GDriveSession( bindingUrl, username, password,
                                              oauth2, verbose );

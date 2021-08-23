@@ -35,7 +35,8 @@
 #include "json-utils.hxx"
 
 static const std::string GDRIVE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder" ;
-static const std::string GDRIVE_UPLOAD_LINKS = "https://www.googleapis.com/upload/drive/v2/files/";
+static const std::string GDRIVE_UPLOAD_LINK = "https://www.googleapis.com/upload/drive/v3/files/";
+static const std::string GDRIVE_METADATA_LINK = "https://www.googleapis.com/drive/v3/files/";
 
 class GdriveUtils
 {

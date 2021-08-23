@@ -92,8 +92,11 @@ void OAuth2Handler::fetchTokens( string authCode )
         "code="              + authCode +
         "&client_id="        + m_data->getClientId() +
         "&redirect_uri="     + m_data->getRedirectUri() +
-        "&scope="            + libcmis::escape( m_data->getScope() ) +
         "&grant_type=authorization_code" ;
+    if(boost::starts_with(m_data->getTokenUrl(), "https://oauth2.googleapis.com/"))
+        post += "&client_secret="    + m_data->getClientSecret();
+    else
+        post += "&scope="            + libcmis::escape( m_data->getScope() );
 
     istringstream is( post );
 
@@ -104,7 +107,7 @@ void OAuth2Handler::fetchTokens( string authCode )
         resp = m_session->httpPostRequest ( m_data->getTokenUrl(), is,
                                         "application/x-www-form-urlencoded" );
     }
-    catch ( const CurlException& )
+    catch ( const CurlException& e)
     {
         throw libcmis::Exception(
                 "Couldn't get tokens from the authorization code ");
@@ -122,6 +125,8 @@ void OAuth2Handler::refresh( )
         "refresh_token="     + m_refresh +
         "&client_id="        + m_data->getClientId() +
         "&grant_type=refresh_token" ;
+    if(boost::starts_with(m_data->getTokenUrl(), "https://oauth2.googleapis.com/"))
+        post += "&client_secret="    + m_data->getClientSecret();
 
     istringstream is( post );
     libcmis::HttpResponsePtr resp;
@@ -130,7 +135,7 @@ void OAuth2Handler::refresh( )
         resp = m_session->httpPostRequest( m_data->getTokenUrl( ), is,
                                            "application/x-www-form-urlencoded" );
     }
-    catch (const CurlException& )
+    catch (const CurlException& e )
     {
         throw libcmis::Exception( "Couldn't refresh token ");
     }
@@ -156,6 +161,11 @@ string OAuth2Handler::getAccessToken( )
 string OAuth2Handler::getRefreshToken( )
 {
     return m_refresh;
+}
+
+void OAuth2Handler::setRefreshToken( string refreshToken )
+{
+    m_refresh = refreshToken;
 }
 
 string OAuth2Handler::getHttpHeader( )
