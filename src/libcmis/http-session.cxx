@@ -293,6 +293,94 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url )
     return response;
 }
 
+libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is, vector< string > headers )
+{
+    checkOAuth2( url );
+
+    // Duplicate istream in case we need to retry
+    string isStr( static_cast< stringstream const&>( stringstream( ) << is.rdbuf( ) ).str( ) );
+
+    istringstream isOriginal( isStr ), isBackup( isStr );
+
+    // Reset the handle for the request
+    curl_easy_reset( m_curlHandle );
+    initProtocols( );
+
+    libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
+
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+
+    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
+
+    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+
+    // Get the stream length
+    is.seekg( 0, ios::end );
+    long size = is.tellg( );
+    is.seekg( 0, ios::beg );
+    curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
+    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
+    curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
+    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
+    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+
+    // If we know for sure that 100-Continue won't be accepted,
+    // don't even try with it to save one HTTP request.
+    if ( m_no100Continue )
+        headers.push_back( "Expect:" );
+    try
+    {
+        httpRunRequest( url, headers );
+        response->getData( )->finish();
+    }
+    catch ( const CurlException& )
+    {
+        long status = getHttpStatus( );
+        /** If we had a HTTP 417 response, this is likely to be due to some
+            HTTP 1.0 proxy / server not accepting the "Expect: 100-continue"
+            header. Try to disable this header and try again.
+        */
+        if ( status == 417 && !m_no100Continue)
+        {
+            // Remember that we don't want 100-Continue for the future requests
+            m_no100Continue = true;
+            response = httpPutRequest( url, isBackup, headers );
+        }
+
+        // If the access token is expired, we get 401 error,
+        // Need to use the refresh token to get a new one.
+        if ( status == 401 && !getRefreshToken( ).empty( ) && !m_refreshedToken )
+        {
+
+            // Refresh the token
+            oauth2Refresh();
+
+            // Resend the query
+            try
+            {
+                // Avoid infinite recursive call
+                m_refreshedToken = true;
+                response = httpPutRequest( url, isBackup, headers );
+                m_refreshedToken = false;
+            }
+            catch (const CurlException&)
+            {
+                m_refreshedToken = false;
+                throw;
+            }
+        }
+        // Has tried but failed
+        if ( ( status != 417 || m_no100Continue ) &&
+             ( status != 401 || getRefreshToken( ).empty( ) || m_refreshedToken ) ) throw;
+    }
+    m_refreshedToken = false;
+    return response;
+}
+
 libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, vector< string > headers )
 {
     checkOAuth2( url );

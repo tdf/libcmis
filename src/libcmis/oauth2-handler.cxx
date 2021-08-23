@@ -91,8 +91,8 @@ void OAuth2Handler::fetchTokens( string authCode )
     string post =
         "code="              + authCode +
         "&client_id="        + m_data->getClientId() +
-        "&client_secret="    + m_data->getClientSecret() +
         "&redirect_uri="     + m_data->getRedirectUri() +
+        "&scope="            + libcmis::escape( m_data->getScope() ) +
         "&grant_type=authorization_code" ;
 
     istringstream is( post );
@@ -121,7 +121,6 @@ void OAuth2Handler::refresh( )
     string post =
         "refresh_token="     + m_refresh +
         "&client_id="        + m_data->getClientId() +
-        "&client_secret="    + m_data->getClientSecret() +
         "&grant_type=refresh_token" ;
 
     istringstream is( post );

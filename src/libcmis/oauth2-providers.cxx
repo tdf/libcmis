@@ -311,7 +311,7 @@ OAuth2Parser OAuth2Providers::getOAuth2Parser( const std::string& url )
         return OAuth2Alfresco;
     else if ( boost::starts_with( url, "https://www.googleapis.com/drive/v2" ) )
         return OAuth2Gdrive;
-    else if ( boost::starts_with( url, "https://apis.live.net/v5.0" ) )
+    else if ( boost::starts_with( url, "https://graph.microsoft.com/v1.0" ) )
         return OAuth2Onedrive;
 
     return OAuth2Gdrive;

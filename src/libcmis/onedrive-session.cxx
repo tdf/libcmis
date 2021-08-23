@@ -74,7 +74,9 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
 {
     // Run the http request to get the properties definition
     string res;
-    string objectLink = m_bindingUrl + "/" + objectId;
+    string objectLink = m_bindingUrl + "/me/drive/items/" + objectId;
+    if (objectId == getRootId())
+        objectLink = m_bindingUrl + objectId;
     try
     {
         res = httpGetRequest( objectLink )->getStream()->str();
@@ -90,12 +92,11 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
 libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes ) 
 {
     libcmis::ObjectPtr object;
-    string kind = jsonRes["type"].toString( );
-    if ( kind == "folder" || kind == "album" )
+    if ( jsonRes["folder"].toString() != "" )
     {
         object.reset( new OneDriveFolder( this, jsonRes ) );
     }
-    else if ( kind == "file" )
+    else if ( jsonRes["file"].toString() != "" )
     {
         object.reset( new OneDriveDocument( this, jsonRes ) );
     }
@@ -108,44 +109,18 @@ libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes )
 
 libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
 {
-    string id;
-    if ( path == "/" )
+    string res;
+    string objectQuery = m_bindingUrl + "/me/drive/root:" + libcmis::escape( path );
+    try
     {
-        id = "me/skydrive";
+        res = httpGetRequest( objectQuery )->getStream( )->str( );
     }
-    else
+    catch ( const CurlException& e )
     {
-        path = "/SkyDrive" + path;
-        size_t pos = path.rfind("/");
-        string name = libcmis::escape( path.substr( pos + 1, path.size( ) ) );
-        string res;
-        string objectQuery = m_bindingUrl + "/me/skydrive/search?q=" + name;
-        try
-        {
-            res = httpGetRequest( objectQuery )->getStream( )->str( );
-        }
-        catch ( const CurlException& e )
-        {
-            throw e.getCmisException( );
-        }
-        Json jsonRes = Json::parse( res );
-        Json::JsonVector objs = jsonRes["data"].getList( );
-        
-        // Searching for a match in the path to the object
-        for ( unsigned int i = 0; i < objs.size( ); i++ )
-        {   
-            if ( isAPathMatch( objs[i], path ) )
-            {
-                id = objs[i]["id"].toString( );
-                break;
-            }
-        }
+        throw libcmis::Exception( "No file could be found for path " + path + ": " + e.what() );
     }
-    if ( id.empty( ) )
-    {
-        throw libcmis::Exception( "No file could be found" );
-    }
-    return getObject( id );
+    Json jsonRes = Json::parse( res );
+    return getObjectFromJson( jsonRes );
 }
 
 bool OneDriveSession::isAPathMatch( Json objectJson, string path )

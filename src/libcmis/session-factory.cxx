@@ -71,7 +71,7 @@ namespace libcmis
                 session = new GDriveSession( bindingUrl, username, password,
                                              oauth2, verbose );
             }
-            else if ( bindingUrl == "https://apis.live.net/v5.0" )
+            else if ( bindingUrl == "https://graph.microsoft.com/v1.0" )
             {
                 session = new OneDriveSession( bindingUrl, username, password,
                                                oauth2, verbose);

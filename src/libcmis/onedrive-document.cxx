@@ -73,7 +73,7 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
     boost::shared_ptr< istream > stream;
     string streamUrl = getStringProperty( "source" );
     if ( streamUrl.empty( ) )
-        throw libcmis::Exception( "can not found stream url" );
+        throw libcmis::Exception( "could not find stream url" );
 
     try
     {
@@ -89,15 +89,15 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
 void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os, 
                                          string /*contentType*/, 
                                          string fileName, 
-                                         bool /*overwrite*/ ) 
+                                         bool bReplaceExisting )
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
-    
+
     string metaUrl = getUrl( );
 
     // Update file name meta information
-    if ( !fileName.empty( ) && fileName != getContentFilename( ) )
+    if ( bReplaceExisting && !fileName.empty( ) && fileName != getContentFilename( ) )
     {
         Json metaJson;
         Json fileJson( fileName.c_str( ) );
@@ -108,7 +108,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         headers.push_back( "Content-Type: application/json" );
         try
         {
-            getSession()->httpPutRequest( metaUrl, is, headers );
+            getSession()->httpPatchRequest( metaUrl, is, headers );
         }
         catch ( const CurlException& e )
         {
@@ -117,9 +117,9 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     }
 
     fileName = libcmis::escape( getStringProperty( "cmis:name" ) );
-    string putUrl = getSession( )->getBindingUrl( ) + "/" + 
-                    getStringProperty( "cmis:parentId" ) + "/files/" +
-                    fileName + "?overwrite=true";
+    string putUrl = getSession( )->getBindingUrl( ) + "/me/drive/items/" +
+                    getStringProperty( "cmis:parentId" ) + ":/" +
+                    fileName + ":/content";
     
     // Upload stream
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
@@ -142,6 +142,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
 libcmis::DocumentPtr OneDriveDocument::checkOut( )
 {
     // OneDrive doesn't have CheckOut, so just return the same document here
+    // TODO: no longer true - onedrive now has checkout/checkin
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
     libcmis::DocumentPtr checkout =
         boost::dynamic_pointer_cast< libcmis::Document > ( obj );
