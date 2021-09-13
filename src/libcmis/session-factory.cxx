@@ -66,12 +66,12 @@ namespace libcmis
         if ( !bindingUrl.empty( ) )
         {
             // Try the special cases based on the binding URL
-            if ( bindingUrl == "https://www.googleapis.com/drive/v2" )
+            if ( bindingUrl == "https://www.googleapis.com/drive/v3" )
             {
                 session = new GDriveSession( bindingUrl, username, password,
                                              oauth2, verbose );
             }
-            else if ( bindingUrl == "https://apis.live.net/v5.0" )
+            else if ( bindingUrl == "https://graph.microsoft.com/v1.0" )
             {
                 session = new OneDriveSession( bindingUrl, username, password,
                                                oauth2, verbose);

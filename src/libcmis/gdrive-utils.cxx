@@ -44,17 +44,17 @@ string GdriveUtils::toCmisKey( const string& key )
         convertedKey = "cmis:createdBy";
     else if ( key == "description" )
         convertedKey = "cmis:description";
-    else if ( key == "createdDate" )
+    else if ( key == "createdTime" )
         convertedKey = "cmis:creationDate";
     else if ( key == "lastModifyingUserName" )
         convertedKey = "cmis:lastModifiedBy";
-    else if ( key == "modifiedDate" )
+    else if ( key == "modifiedTime" )
         convertedKey = "cmis:lastModificationDate";
-    else if ( key == "title" )
+    else if ( key == "name" )
         convertedKey = "cmis:contentStreamFileName";
     else if ( key == "mimeType" )
         convertedKey = "cmis:contentStreamMimeType";
-    else if ( key == "fileSize" )
+    else if ( key == "size" )
         convertedKey = "cmis:contentStreamLength";
     else if ( key == "editable" )
         convertedKey = "cmis:isImmutable";
@@ -72,21 +72,21 @@ string GdriveUtils::toGdriveKey( const string& key )
     else if ( key == "cmis:createdBy" )
         convertedKey = "ownerNames";
     else if ( key == "cmis:creationDate" )
-        convertedKey = "createdDate";
+        convertedKey = "createdTime";
     else if ( key == "cmis:description" )
         convertedKey = "description";
     else if ( key == "cmis:lastModifiedBy" )
         convertedKey = "lastModifyingUserName";
     else if ( key == "cmis:lastModificationDate" )
-        convertedKey = "modifiedDate";
+        convertedKey = "modifiedTime";
     else if ( key == "cmis:contentStreamFileName" )
-        convertedKey = "title";
+        convertedKey = "name";
     else if ( key == "cmis:name" )
-        convertedKey = "title";
+        convertedKey = "name";
     else if ( key == "cmis:contentStreamMimeType" )
         convertedKey = "mimeType";
     else if ( key == "cmis:contentStreamLength" )
-        convertedKey = "fileSize";
+        convertedKey = "size";
     else if ( key == "cmis:isImmutable" )
         convertedKey = "editable";
     else if ( key == "cmis:parentId" )
@@ -124,9 +124,9 @@ Json GdriveUtils::toGdriveJson( const PropertyPtrMap& properties )
 bool GdriveUtils::checkUpdatable( const string& key )
 {
     // taken from https://developers.google.com/drive/v2/reference/files
-    bool updatable = ( key == "title" ||
+    bool updatable = ( key == "name" ||
                   key == "description" ||
-                  key == "modifiedDate" ||
+                  key == "modifiedTime" ||
                   key == "lastViewedByMeDate" );
     return updatable;    
 }
@@ -143,18 +143,11 @@ bool GdriveUtils::checkMultiValued( const string& key )
 
 Json GdriveUtils::createJsonFromParentId( const string& parentId )
 {
-    Json parentValue( parentId.c_str( ) );
-    
     // parents is a Json array
     Json firstParent;
-    firstParent.add( "id", parentValue );
+    firstParent.add( Json( parentId.c_str() ) );
     
-    Json::JsonVector parents;
-    parents.insert( parents.begin( ), firstParent );
-    
-    Json parentsValue( parents );
-
-    return parentsValue;
+    return firstParent;
 }
 
 vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )

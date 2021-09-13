@@ -35,7 +35,7 @@ OneDriveRepository::OneDriveRepository( ) :
     m_description = "One Drive repository";
     m_productName = "One Drive";
     m_productVersion = "v5";
-    m_rootId = "me/skydrive";
+    m_rootId = "/me/drive/root";
  
     m_capabilities[ ACL ] = "discover";
     m_capabilities[ AllVersionsSearchable ] = "true";

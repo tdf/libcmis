@@ -62,8 +62,8 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     // Instead of sending multiple queries for children,
     // we send a single query to search for objects where parents
     // include the folderID.
-    string query = getSession( )->getBindingUrl( ) + 
-        "/files?q=\"" + getId( ) + "\"+in+parents+and+trashed+=+false";
+    string query = GDRIVE_METADATA_LINK + "?q=\"" + getId( ) + "\"+in+parents+and+trashed+=+false" +
+        "&fields=files(kind,id,name,parents,mimeType,createdTime,modifiedTime,thumbnailLink,size)";
 
     string res;
     try
@@ -76,7 +76,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     }
 
     Json jsonRes = Json::parse( res );
-    Json::JsonVector objs = jsonRes["items"].getList( );
+    Json::JsonVector objs = jsonRes["files"].getList( );
     
     // Create children objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
@@ -95,7 +95,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
 string GDriveFolder::uploadProperties( Json properties )
 {
     // URL for uploading meta data
-    string metaUrl =  getSession()->getBindingUrl() + "/files/";
+    string metaUrl =  GDRIVE_METADATA_LINK + "?fields=kind,id,name,parents,mimeType,createdTime,modifiedTime";
 
     // add parents to the properties    
     properties.add( "parents", GdriveUtils::createJsonFromParentId( getId( ) ) );
@@ -147,9 +147,15 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     
     Json propsJson = GdriveUtils::toGdriveJson( properties );
 
-    // Add filename to properties
-    Json jsonFilename( fileName.c_str( ) );
-    propsJson.add( "title", jsonFilename );
+    if(!fileName.empty()) {
+        // use provided filename
+        Json jsonFilename( fileName.c_str( ) );
+
+        propsJson.add( "name", jsonFilename );
+    }
+    if(!contentType.empty()) {
+        propsJson.add( "mimeType", Json(contentType.c_str()));
+    }
     
     // Upload meta-datas
     string res = uploadProperties( propsJson);
@@ -171,12 +177,9 @@ vector< string > GDriveFolder::removeTree(
     libcmis::UnfileObjects::Type /*unfile*/, 
     bool /*continueOnError*/ ) 
 {
-    // Object remove doesn't work with folder
-    // Using trash instead
     try
     {   
-        istringstream is( "" );
-        getSession( )->httpPostRequest( getUrl( ) + "/trash", is, "" );
+        getSession( )->httpDeleteRequest( GDRIVE_METADATA_LINK + getId( ) );
     }
     catch ( const CurlException& e )
     {

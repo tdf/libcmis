@@ -145,23 +145,17 @@ void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
-    if ( !isImmutable( ) )
-        throw libcmis::Exception( string ( "Document " + getId( )+ 
-                                    " is not editable" ) );
-    string putUrl = getUploadUrl( ) + getId( );
-    putUrl += "?uploadType=media";
-    
-    // If it's a Google document, convert it 
-    if ( isGoogleDoc( ) )
-        putUrl  += "&convert=true";
+
+    string putUrl = GDRIVE_UPLOAD_LINK + getId( ) + "?uploadType=media";
 
     // Upload stream
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
     vector <string> headers;
     headers.push_back( string( "Content-Type: " ) + contentType );
+    string res;
     try
     {
-        getSession()->httpPutRequest( putUrl, *is, headers );
+        res = getSession()->httpPatchRequest( putUrl, *is, headers )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -181,35 +175,10 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
 {
     if ( !os.get( ) )
         throw libcmis::Exception( "Missing stream" );
-    
-    if ( !isImmutable( ) )
-        throw libcmis::Exception( string ( "Document " + getId( )+ 
-                                    " is not editable" ) );
-    string metaUrl = getUrl( );
 
-    // If it's a Google document, convert it 
-    if ( isGoogleDoc( ) )
-        metaUrl += "?convert=true";
-
-    // Update file name meta information
-    if ( !fileName.empty( ) && fileName != getContentFilename( ) )
-    {
-        Json metaJson;
-        Json fileJson( fileName.c_str( ) );
-        metaJson.add("title", fileJson );
-
-        std::istringstream is( metaJson.toString( ) );
-        vector<string> headers;
-        headers.push_back( "Content-Type: application/json" );
-        try
-        {
-            getSession()->httpPutRequest( metaUrl, is, headers );
-        }
-        catch ( const CurlException& e )
-        {
-            throw e.getCmisException( );
-        }
-    }
+    // TODO: when would the filename need an update?
+    if (!fileName.empty() && fileName != getContentFilename())
+        std::cout << "filename change is not implemented in setContentStream" << std::endl;
 
     // Upload stream
     uploadStream( os, contentType );
@@ -251,7 +220,7 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
 vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( ) 
 {   
     vector< libcmis::DocumentPtr > revisions;
-    string versionUrl = getUrl( ) + "/revisions";
+    string versionUrl = GDRIVE_METADATA_LINK + getId( ) + "/revisions";
     // Run the http request to get the properties definition
     string res;
     try
@@ -263,7 +232,7 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
         throw e.getCmisException( );
     }
     Json jsonRes = Json::parse( res );        
-    Json::JsonVector objs = jsonRes["items"].getList( );
+    Json::JsonVector objs = jsonRes["revisions"].getList( );
    
     string parentId = getStringProperty( "cmis:parentId" );
 

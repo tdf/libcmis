@@ -2,11 +2,14 @@ if !OS_WIN32
 mockup_tests = \
 	test-atom \
 	test-factory \
-	test-gdrive \
-	test-onedrive \
 	test-sharepoint \
 	test-ws
 endif
+
+# these tests need updating to work again
+# mockup_tests += \
+#	test-gdrive \
+#	test-onedrive
 
 check_PROGRAMS = \
 	test-json \

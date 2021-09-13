@@ -56,14 +56,20 @@ class OneDriveSession : public BaseSession
         
         virtual std::vector< libcmis::ObjectTypePtr > getBaseTypes( );
 
-       libcmis::ObjectPtr getObjectFromJson( Json& jsonRes );
+        libcmis::ObjectPtr getObjectFromJson( Json& jsonRes );
 
-       bool isAPathMatch( Json objectJson, std::string path );
+        bool isAPathMatch( Json objectJson, std::string path );
+
+        virtual std::string getRefreshToken();
 
     private:
         OneDriveSession( );
         OneDriveSession( const OneDriveSession& copy ) = delete;
         OneDriveSession& operator=( const OneDriveSession& copy ) = delete;
+
+        virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 );
+
+        void oauth2Authenticate( );
 };
 
 #endif /* _ONEDRIVE_SESSION_HXX_ */

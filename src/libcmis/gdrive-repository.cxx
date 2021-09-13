@@ -35,7 +35,7 @@ GdriveRepository::GdriveRepository( ) :
     m_name = "Google Drive";
     m_description = "Google Drive repository";
     m_productName = "Google Drive";
-    m_productVersion = "v2";
+    m_productVersion = "v3";
     m_rootId = "root";
  
     m_capabilities[ ACL ] = "discover";

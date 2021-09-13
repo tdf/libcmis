@@ -44,16 +44,16 @@ string OneDriveUtils::toCmisKey( const string& key )
         convertedKey = "cmis:createdBy";
     else if ( key == "description" )
         convertedKey = "cmis:description";
-    else if ( key == "created_time" )
+    else if ( key == "createdDateTime" )
         convertedKey = "cmis:creationDate";
-    else if ( key == "updated_time" )
+    else if ( key == "lastModifiedDateTime" )
         convertedKey = "cmis:lastModificationDate";
     else if ( key == "name" )
         convertedKey = "cmis:name";
     else if ( key == "size" )
         convertedKey = "cmis:contentStreamLength";
-    else if ( key == "parent_id" )
-        convertedKey = "cmis:parentId";
+    else if ( key == "@microsoft.graph.downloadUrl" )
+        convertedKey = "source";
     else convertedKey = key;
     return convertedKey;
 }
@@ -75,8 +75,6 @@ string OneDriveUtils::toOneDriveKey( const string& key )
         convertedKey = "name";
     else if ( key == "cmis:contentStreamLength" )
         convertedKey = "file_size";
-    else if ( key == "cmis:parentId" )
-        convertedKey = "parent_id";
     else convertedKey = key;
     return convertedKey;
 }

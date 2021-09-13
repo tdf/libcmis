@@ -95,6 +95,8 @@ namespace libcmis
                 certificate exception feature available on common web browser.
               */
             virtual void setNoSSLCertificateCheck( bool noCheck ) = 0;
+
+            virtual std::string getRefreshToken() { return ""; };
     };
 }
 

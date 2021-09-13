@@ -65,7 +65,7 @@ void OneDriveObject::initializeFromJson ( Json json, string /*id*/, string /*nam
     Json::JsonObject objs = json.getObjects( );
     Json::JsonObject::iterator it;
     PropertyPtr property;
-    bool isFolder = json["type"].toString( ) == "folder";
+    bool isFolder = json["folder"].toString( ) != "";
     for ( it = objs.begin( ); it != objs.end( ); ++it)
     {
         property.reset( new OneDriveProperty( it->first, it->second ) );
@@ -74,7 +74,12 @@ void OneDriveObject::initializeFromJson ( Json json, string /*id*/, string /*nam
         {
             property.reset( new OneDriveProperty( "cmis:contentStreamFileName", it->second ) );
             m_properties[ property->getPropertyType( )->getId()] = property;
-        }
+        } else if ( it->first == "parentReference" ) {
+            if (it->second["id"].toString() != "") {
+                property.reset( new OneDriveProperty( "cmis:parentId", it->second["id"] ) );
+                m_properties[ property->getPropertyType( )->getId()] = property;
+            }
+       }
     }
 
     m_refreshTimestamp = time( NULL );
@@ -122,7 +127,7 @@ void OneDriveObject::remove( bool /*allVersions*/ )
 
 string OneDriveObject::getUrl( )
 {
-    return getSession( )->getBindingUrl( ) + "/" + getId( );
+    return getSession( )->getBindingUrl( ) + "/me/drive/items/" + getId( );
 }
 
 string OneDriveObject::getUploadUrl( )
@@ -152,7 +157,7 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
     }
     catch ( const CurlException& e )
     {   

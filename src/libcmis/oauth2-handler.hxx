@@ -61,6 +61,7 @@ class OAuth2Handler
 
         std::string getAccessToken( ) ;
         std::string getRefreshToken( ) ;
+        void setRefreshToken( std::string refreshToken ) ;
 
         // adding HTTP auth header
         std::string getHttpHeader( ) ;

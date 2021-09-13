@@ -132,6 +132,9 @@ class HttpSession
         virtual void setOAuth2Data( libcmis::OAuth2DataPtr oauth2 );
 
         libcmis::HttpResponsePtr httpGetRequest( std::string url );
+        libcmis::HttpResponsePtr httpPatchRequest( std::string url,
+                                                 std::istream& is,
+                                                 std::vector< std::string > headers );
         libcmis::HttpResponsePtr httpPutRequest( std::string url,
                                                  std::istream& is,
                                                  std::vector< std::string > headers );
@@ -145,7 +148,7 @@ class HttpSession
 
         void setNoSSLCertificateCheck( bool noCheck );
 
-        std::string getRefreshToken( );
+        virtual std::string getRefreshToken( );
 
     protected:
         HttpSession( );

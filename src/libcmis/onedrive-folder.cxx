@@ -57,7 +57,9 @@ OneDriveFolder::~OneDriveFolder( )
 vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( ) 
 {
     vector< libcmis::ObjectPtr > children;
-    string query = getSession( )->getBindingUrl( ) + "/" + getId( ) + "/files";
+    // TODO: limited to 200 items by default - to get more one would have to
+    // follow @odata.nextLink or change pagination size
+    string query = getSession( )->getBindingUrl( ) + "/me/drive/items/" + getId( ) + "/children";
 
     string res;
     try
@@ -70,7 +72,7 @@ vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( )
     }
 
     Json jsonRes = Json::parse( res );
-    Json::JsonVector objs = jsonRes["data"].getList( );
+    Json::JsonVector objs = jsonRes["value"].getList( );
     
     // Create children objects from Json objects
     for(unsigned int i = 0; i < objs.size(); i++)
@@ -85,8 +87,7 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
     const PropertyPtrMap& properties ) 
 {
     Json propsJson = OneDriveUtils::toOneDriveJson( properties );
-
-    string uploadUrl = getSession( )->getBindingUrl( ) + "/" + getId( );
+    string uploadUrl = getSession( )->getBindingUrl( ) + "/me/drive/items/" + getId( ) + "/children";
     
     std::istringstream is( propsJson.toString( ) );
     string response;
@@ -126,9 +127,10 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
         }
     }
 
+    // TODO: limited to 4MB, larger uploads need dedicated UploadSession
     fileName = libcmis::escape( fileName );
-    string newDocUrl = getSession( )->getBindingUrl( ) + "/" +
-                       getId( ) + "/files/" + fileName;
+    string newDocUrl = getSession( )->getBindingUrl( ) + "/me/drive/items/" +
+                       getId( ) + ":/" + fileName + ":/content";
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
     vector< string > headers;
     string res;

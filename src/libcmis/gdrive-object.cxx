@@ -89,8 +89,8 @@ void GDriveObject::initializeFromJson ( Json json, string id, string name )
             property.reset( new GDriveProperty( it->first, it->second ) );
             m_properties[ property->getPropertyType( )->getId()] = property;
            
-            // we map "title" to both "cmis:name" and "cmis:getContentStreamFileName"
-            if ( it->first == "title" )
+            // we map "name" to both "cmis:name" and "cmis:getContentStreamFileName"
+            if ( it->first == "name" )
             {
                 property.reset( new GDriveProperty( "cmis:name", it->second) );
                 m_properties[ property->getPropertyType( )->getId()] = property;
@@ -142,16 +142,13 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
 {
     if ( m_renditions.empty( ) )
     {
-        string downloadUrl = getStringProperty( "downloadUrl" );
-        if ( !downloadUrl.empty( ) )
+        string downloadUrl = GDRIVE_METADATA_LINK + getId( ) + "?alt=media";
+        string mimeType = getStringProperty( "cmis:contentStreamMimeType" );
+        if ( !mimeType.empty( ) )
         {
-            string mimeType = getStringProperty( "cmis:contentStreamMimeType" );
-            if ( !mimeType.empty( ) )
-            { 
-                RenditionPtr rendition( 
-                    new Rendition( mimeType, mimeType, mimeType, downloadUrl ));
-                m_renditions.push_back( rendition );
-            }
+            RenditionPtr rendition(
+                new Rendition( mimeType, mimeType, mimeType, downloadUrl ));
+            m_renditions.push_back( rendition );
         }
 
         vector< string > exportLinks = getMultiStringProperty( "exportLinks" );
@@ -159,7 +156,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
         { 
             int pos = (*it).find(":\"");
             if ( pos == -1 ) continue;
-            string mimeType = (*it).substr( 0, pos );
+            mimeType = (*it).substr( 0, pos );
             string url = (*it).substr( pos + 2, (*it).length( ) - pos - 3 );
             RenditionPtr rendition(
                 new Rendition( mimeType, mimeType, mimeType, url ) );
@@ -170,7 +167,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
         string thumbnailLink = getStringProperty( "thumbnailLink" );
         if ( !thumbnailLink.empty( ) )
         {
-            string mimeType = "cmis:thumbnail";   
+            mimeType = "cmis:thumbnail";
             RenditionPtr rendition( 
                 new Rendition( mimeType, mimeType, mimeType, thumbnailLink ));
             m_renditions.push_back( rendition );
@@ -192,7 +189,7 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
     }
     catch ( const CurlException& e )
     {   
@@ -228,7 +225,7 @@ void GDriveObject::remove( bool /*allVersions*/ )
 {
     try
     {
-        getSession( )->httpDeleteRequest( getUrl( ) );
+        getSession( )->httpDeleteRequest( GDRIVE_METADATA_LINK + getId( ) );
     }
     catch ( const CurlException& e )
     {
@@ -239,8 +236,8 @@ void GDriveObject::remove( bool /*allVersions*/ )
 void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination ) 
 {  
     Json parentsJson;
-    Json parentsValue = GdriveUtils::createJsonFromParentId( destination->getId( ) );
-    parentsJson.add( "parents", parentsValue );
+    parentsJson.add( "addParents", Json(destination->getId( ).c_str()) );
+    parentsJson.add( "removeParents", Json(getStringProperty( "cmis:parentId" ).c_str()) );
     
     istringstream is( parentsJson.toString( ) );
     libcmis::HttpResponsePtr response;
@@ -248,7 +245,7 @@ void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPutRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
     }
     catch ( const CurlException& e )
     {   
@@ -262,12 +259,10 @@ void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
 
 string GDriveObject::getUrl( )
 {
-    return getSession( )->getBindingUrl( ) + "/files/" + getId( );
-}
-
-string GDriveObject::getUploadUrl( )
-{
-    return GDRIVE_UPLOAD_LINKS;
+    // thumbnailLink causes some operations to fail with internal server error,
+    // see https://issuetracker.google.com/issues/36760667
+    return GDRIVE_METADATA_LINK + getId( ) +
+                "?fields=kind,id,name,parents,mimeType,createdTime,modifiedTime,size";
 }
 
 vector< string> GDriveObject::getMultiStringProperty( const string& propertyName )
