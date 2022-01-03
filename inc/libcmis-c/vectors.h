@@ -28,14 +28,14 @@
 #ifndef _LIBCMIS_VECTORS_HXX_
 #define _LIBCMIS_VECTORS_HXX_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <time.h>
 
 #include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBCMIS_C_API void libcmis_vector_bool_free( libcmis_vector_bool_Ptr vector );
 LIBCMIS_C_API size_t libcmis_vector_bool_size( libcmis_vector_bool_Ptr vector );

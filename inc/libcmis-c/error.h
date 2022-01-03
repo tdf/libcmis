@@ -28,12 +28,12 @@
 #ifndef _LIBCMIS_ERROR_H_
 #define _LIBCMIS_ERROR_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API libcmis_ErrorPtr libcmis_error_create( );
 LIBCMIS_C_API void           libcmis_error_free( libcmis_ErrorPtr e );

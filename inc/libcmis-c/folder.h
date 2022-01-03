@@ -28,12 +28,12 @@
 #ifndef _LIBCMIS_FOLDER_H_
 #define _LIBCMIS_FOLDER_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API void libcmis_vector_folder_free( libcmis_vector_folder_Ptr vector );
 LIBCMIS_C_API size_t libcmis_vector_folder_size( libcmis_vector_folder_Ptr vector );

@@ -28,12 +28,12 @@
 #ifndef _SESSION_FACTORY_H_
 #define _SESSION_FACTORY_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
 LIBCMIS_C_API void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );

@@ -29,12 +29,12 @@
 #ifndef _LIBCMIS_RENDITION_H_
 #define _LIBCMIS_RENDITION_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API void libcmis_rendition_free( libcmis_RenditionPtr rendition );
 

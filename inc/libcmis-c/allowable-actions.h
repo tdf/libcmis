@@ -28,12 +28,12 @@
 #ifndef _LIBCMIS_ALLOWABLE_ACTIONS_H_
 #define _LIBCMIS_ALLOWABLE_ACTIONS_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API void libcmis_allowable_actions_free( libcmis_AllowableActionsPtr allowable );
 

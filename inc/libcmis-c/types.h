@@ -30,11 +30,12 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
-#else
+#endif
+#include <stddef.h>
+
+#ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stddef.h>
 
 
 /* Vectors of simple types */

@@ -28,14 +28,14 @@
 #ifndef _REPOSITORY_H_
 #define _REPOSITORY_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <libxml/tree.h>
 
 #include "libcmis-c/libcmis-c-api.h"
 #include "libcmis-c/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 LIBCMIS_C_API void libcmis_vector_repository_free( libcmis_vector_Repository_Ptr vector );
 LIBCMIS_C_API size_t libcmis_vector_repository_size( libcmis_vector_Repository_Ptr vector );

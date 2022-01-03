@@ -29,12 +29,12 @@
 #ifndef _LIBCMIS_OAUTH2_DATA_H_
 #define _LIBCMIS_OAUTH2_DATA_H_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API libcmis_OAuth2DataPtr libcmis_oauth2data_create(
         char* authUrl, char* tokenUrl, char* scopes, char* redirectUri,

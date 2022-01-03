@@ -28,12 +28,12 @@
 #ifndef _LIBCMIS_PROPERTY_HXX_
 #define _LIBCMIS_PROPERTY_HXX_
 
+#include "libcmis-c/libcmis-c-api.h"
+#include "libcmis-c/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "libcmis-c/libcmis-c-api.h"
-#include "libcmis-c/types.h"
 
 LIBCMIS_C_API libcmis_vector_property_Ptr libcmis_vector_property_create( );
 LIBCMIS_C_API void libcmis_vector_property_free( libcmis_vector_property_Ptr vector );
