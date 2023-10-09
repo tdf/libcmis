@@ -116,7 +116,7 @@ AC_ARG_WITH(man,
 AS_IF([test "x$with_man" != "xno"], [
 	build_man=yes
 	AS_IF([test -z "$DOCBOOK2MAN"], [
-		AC_PATH_PROGS([DOCBOOK2MAN], [docbook2x-man docbook-to-man docbook2man.pl])
+		AC_PATH_PROGS([DOCBOOK2MAN], [docbook2x-man docbook-to-man docbook2man.pl docbook2man])
 		AS_IF([test -z "$DOCBOOK2MAN"], [
 			AC_MSG_ERROR([docbook-to-man is missing. Install docbook2X package.])
 		])
