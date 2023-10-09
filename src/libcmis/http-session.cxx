@@ -325,8 +325,13 @@ libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is,
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
+#if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+#else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+#endif
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
@@ -412,8 +417,13 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
     curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
+#if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+#else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+#endif
 
     // If we know for sure that 100-Continue won't be accepted,
     // don't even try with it to save one HTTP request.
@@ -500,8 +510,13 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
     curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
+#if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+#else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+#endif
 
     vector< string > headers;
     headers.push_back( string( "Content-Type:" ) + contentType );
@@ -880,8 +895,13 @@ catch ( const libcmis::Exception& e )
 void HttpSession::initProtocols( )
 {
     const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
+#if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS_STR, protocols);
+    curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
+#else
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
+#endif
 }
 
 const char* CurlException::what( ) const noexcept
