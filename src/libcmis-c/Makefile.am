@@ -29,7 +29,7 @@ libcmis_c_@LIBCMIS_API_VERSION@_la_SOURCES = \
 	session.cxx \
 	vectors.cxx
 
-libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 5:0:0
+libcmis_c_@LIBCMIS_API_VERSION@_la_LDFLAGS = -export-dynamic -no-undefined -version-info 6:0:0
 
 libcmis_c_@LIBCMIS_API_VERSION@_la_LIBADD = \
 	../libcmis/libcmis-@LIBCMIS_API_VERSION@.la \
