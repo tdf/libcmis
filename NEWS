@@ -94,3 +94,7 @@
   * Added proper API symbol exporting
   * Speeded up building of tests a bit
   * Fixed a few issues found by coverity and cppcheck
+
+0.6.0
+
+  * Merged outstanding LibreOffice, etc. modifications
