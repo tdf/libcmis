@@ -133,8 +133,10 @@ namespace
 }
 
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
-                          libcmis::OAuth2DataPtr oauth2, bool verbose ) :
+                          libcmis::OAuth2DataPtr oauth2, bool verbose,
+                          libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     m_curlHandle( NULL ),
+    m_CurlInitProtocolsFunction(initProtocolsFunction),
     m_no100Continue( false ),
     m_oauth2Handler( NULL ),
     m_username( username ),
@@ -903,6 +905,10 @@ void HttpSession::initProtocols( )
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
 #endif
+    if (m_CurlInitProtocolsFunction)
+    {
+        (*m_CurlInitProtocolsFunction)(m_curlHandle);
+    }
 }
 
 const char* CurlException::what( ) const noexcept

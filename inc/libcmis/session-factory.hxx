@@ -38,6 +38,9 @@
 #include "libcmis/repository.hxx"
 #include "libcmis/session.hxx"
 
+// needed for a callback type
+typedef void CURL;
+
 namespace libcmis
 {
     /** This callback provides the OAuth2 code or NULL.
@@ -80,6 +83,8 @@ namespace libcmis
     };
     typedef boost::shared_ptr< CertValidationHandler > CertValidationHandlerPtr;
 
+    typedef void(*CurlInitProtocolsFunction)(CURL *);
+
     class LIBCMIS_API SessionFactory
     {
         private:
@@ -108,6 +113,8 @@ namespace libcmis
               */
             static void setCertificateValidationHandler( CertValidationHandlerPtr handler ) { s_certValidationHandler = handler; }
             static CertValidationHandlerPtr getCertificateValidationHandler( ) { return s_certValidationHandler; }
+
+            static void setCurlInitProtocolsFunction(CurlInitProtocolsFunction);
 
             static void setProxySettings( std::string proxy,
                     std::string noProxy,

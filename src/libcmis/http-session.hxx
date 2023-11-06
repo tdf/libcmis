@@ -43,6 +43,10 @@
 
 class OAuth2Handler;
 
+namespace libcmis {
+    typedef void(*CurlInitProtocolsFunction)(CURL *);
+}
+
 class CurlException : public std::exception
 {
     private:
@@ -93,6 +97,7 @@ class HttpSession
 {
     protected:
         CURL* m_curlHandle;
+        libcmis::CurlInitProtocolsFunction m_CurlInitProtocolsFunction = nullptr;
     private:
         bool  m_no100Continue;
     protected:
@@ -111,7 +116,8 @@ class HttpSession
         HttpSession( std::string username, std::string password,
                      bool noSslCheck = false,
                      libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
-                     bool verbose = false );
+                     bool verbose = false,
+                     libcmis::CurlInitProtocolsFunction = nullptr);
 
         HttpSession( const HttpSession& copy );
         virtual ~HttpSession( );
