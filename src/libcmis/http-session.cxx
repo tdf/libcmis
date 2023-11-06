@@ -894,11 +894,12 @@ catch ( const libcmis::Exception& e )
 
 void HttpSession::initProtocols( )
 {
-    const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    auto const protocols = "https,http";
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS_STR, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
 #else
+    const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
 #endif
