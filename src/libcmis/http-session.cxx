@@ -31,6 +31,7 @@
 #include <cctype>
 #include <memory>
 #include <string>
+#include <assert.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -108,6 +109,27 @@ namespace
                 errCode = CURLIOE_UNKNOWNCMD;
         }
         return errCode;
+    }
+
+    int lcl_seekStream(void* data, curl_off_t offset, int origin)
+    {
+        std::ios_base::seekdir dir = {};
+        switch (origin)
+        {
+            case SEEK_SET: dir = std::ios_base::beg; break;
+            case SEEK_CUR: dir = std::ios_base::cur; break;
+            case SEEK_END: dir = std::ios_base::end; break;
+            default: assert(false); break;
+        }
+        istream& is = *(static_cast<istream*>(data));
+        is.clear();
+        is.seekg(offset, dir);
+        if (!is.good())
+        {
+            fprintf(stderr, "rewind failed\n");
+            return CURL_SEEKFUNC_FAIL;
+        }
+        return CURL_SEEKFUNC_OK;
     }
 
     template<typename T>
@@ -328,7 +350,7 @@ libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is,
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
@@ -420,7 +442,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
@@ -513,7 +535,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
