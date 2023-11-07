@@ -31,6 +31,7 @@
 #include <cctype>
 #include <memory>
 #include <string>
+#include <assert.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -110,6 +111,27 @@ namespace
         return errCode;
     }
 
+    int lcl_seekStream(void* data, curl_off_t offset, int origin)
+    {
+        std::ios_base::seekdir dir = {};
+        switch (origin)
+        {
+            case SEEK_SET: dir = std::ios_base::beg; break;
+            case SEEK_CUR: dir = std::ios_base::cur; break;
+            case SEEK_END: dir = std::ios_base::end; break;
+            default: assert(false); break;
+        }
+        istream& is = *(static_cast<istream*>(data));
+        is.clear();
+        is.seekg(offset, dir);
+        if (!is.good())
+        {
+            fprintf(stderr, "rewind failed\n");
+            return CURL_SEEKFUNC_FAIL;
+        }
+        return CURL_SEEKFUNC_OK;
+    }
+
     template<typename T>
     class ScopeGuard
     {
@@ -133,8 +155,10 @@ namespace
 }
 
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
-                          libcmis::OAuth2DataPtr oauth2, bool verbose ) :
+                          libcmis::OAuth2DataPtr oauth2, bool verbose,
+                          libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     m_curlHandle( NULL ),
+    m_CurlInitProtocolsFunction(initProtocolsFunction),
     m_no100Continue( false ),
     m_oauth2Handler( NULL ),
     m_username( username ),
@@ -326,7 +350,7 @@ libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is,
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
@@ -418,7 +442,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
@@ -511,7 +535,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
     curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_ioctlStream );
+    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
     curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
     curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
@@ -894,14 +918,19 @@ catch ( const libcmis::Exception& e )
 
 void HttpSession::initProtocols( )
 {
-    const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
+    auto const protocols = "https,http";
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS_STR, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
 #else
+    const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
     curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
     curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
 #endif
+    if (m_CurlInitProtocolsFunction)
+    {
+        (*m_CurlInitProtocolsFunction)(m_curlHandle);
+    }
 }
 
 const char* CurlException::what( ) const noexcept
