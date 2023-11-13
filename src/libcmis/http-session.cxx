@@ -84,6 +84,7 @@ namespace
         return is.gcount( ) / size;
     }
 
+#if (LIBCURL_VERSION_MAJOR < 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR < 85)
     curlioerr lcl_ioctlStream( CURL* /*handle*/, int cmd, void* data )
     {
         curlioerr errCode = CURLIOE_OK;
@@ -110,6 +111,7 @@ namespace
         }
         return errCode;
     }
+#endif
 
     int lcl_seekStream(void* data, curl_off_t offset, int origin)
     {
