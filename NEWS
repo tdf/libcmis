@@ -98,3 +98,7 @@
 0.6.0
 
   * Merged outstanding LibreOffice, etc. modifications
+
+0.6.1
+
+  * add a callback that can be used to configure libcurl
