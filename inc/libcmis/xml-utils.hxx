@@ -34,6 +34,7 @@
 #include <string>
 
 #include <boost/date_time.hpp>
+#include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/xmlwriter.h>
