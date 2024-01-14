@@ -44,8 +44,8 @@ namespace libcmis
         public:
             Exception( std::string message, std::string type = "runtime" ) :
                 exception( ),
-                m_message( message ),
-                m_type( type )
+                m_message( std::move(message) ),
+                m_type( std::move(type) )
             {
             }
 

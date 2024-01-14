@@ -102,11 +102,11 @@ namespace libcmis
             bool isOrderable( ) { return m_orderable; }
             bool isOpenChoice( ) { return m_openChoice; }
 
-            void setId( std::string id ) { m_id = id; }
-            void setLocalName( std::string localName ) { m_localName = localName; }
-            void setLocalNamespace( std::string localNamespace ) { m_localNamespace = localNamespace; }
-            void setDisplayName( std::string displayName ) { m_displayName = displayName; }
-            void setQueryName( std::string queryName ) { m_queryName = queryName; }
+            void setId( const std::string& id ) { m_id = id; }
+            void setLocalName( const std::string& localName ) { m_localName = localName; }
+            void setLocalNamespace( const std::string& localNamespace ) { m_localNamespace = localNamespace; }
+            void setDisplayName( const std::string& displayName ) { m_displayName = displayName; }
+            void setQueryName( const std::string& queryName ) { m_queryName = queryName; }
             void setType( Type type ) { m_type = type; }
             void setMultiValued( bool multivalued ) { m_multiValued = multivalued; }
             void setUpdatable( bool updatable ) { m_updatable = updatable; }

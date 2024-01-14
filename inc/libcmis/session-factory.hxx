@@ -111,7 +111,7 @@ namespace libcmis
             /** Set the handler to ask the user what to do with invalid SSL certificates. If not set,
                 every invalid certificate will raise an exception.
               */
-            static void setCertificateValidationHandler( CertValidationHandlerPtr handler ) { s_certValidationHandler = handler; }
+            static void setCertificateValidationHandler(const CertValidationHandlerPtr& handler ) { s_certValidationHandler = handler; }
             static CertValidationHandlerPtr getCertificateValidationHandler( ) { return s_certValidationHandler; }
 
             static void setCurlInitProtocolsFunction(CurlInitProtocolsFunction);
