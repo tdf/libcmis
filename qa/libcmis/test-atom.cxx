@@ -363,9 +363,9 @@ void AtomTest::getUnexistantTypeTest( )
 
     AtomPubSessionPtr session = getTestSession( SERVER_USERNAME, SERVER_PASSWORD );
 
-    string expectedId( "bad_type" );
     try
     {
+        string expectedId( "bad_type" );
         session->getType( expectedId );
         CPPUNIT_FAIL( "Exception should be raised: invalid ID" );
     }

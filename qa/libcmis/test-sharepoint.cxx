@@ -366,7 +366,6 @@ void SharePointTest::setContentStreamTest( )
 
     SharePointSessionPtr session = getTestSession( USERNAME, PASSWORD );
     string authorUrl = objectId + "/Author";
-    string expectedContent( "Test content stream" );
     string putUrl = objectId + "/%24value";
 
     curl_mockup_addResponse ( objectId.c_str( ), "",
@@ -379,6 +378,7 @@ void SharePointTest::setContentStreamTest( )
     libcmis::DocumentPtr document = boost::dynamic_pointer_cast< libcmis::Document >( object );
     try
     {
+        string expectedContent( "Test content stream" );
         boost::shared_ptr< ostream > os ( new stringstream ( expectedContent ) );
         string filename( "aFileName" );
         document->setContentStream( os, "text/plain", filename );

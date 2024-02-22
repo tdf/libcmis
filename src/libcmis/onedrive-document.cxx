@@ -121,9 +121,9 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     
     // Upload stream
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-    vector <string> headers;
     try
     {
+        vector <string> headers;
         getSession()->httpPutRequest( putUrl, *is, headers );
     }
     catch ( const CurlException& e )

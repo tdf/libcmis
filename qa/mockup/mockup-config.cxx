@@ -274,10 +274,10 @@ const struct HttpRequest* curl_mockup_getRequest( const char* urlBase,
     for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
             it != mockup::config->m_requests.end( ) && request == NULL; ++it )
     {
-        string url;
-        string params;
         if ( it->m_method == string( method ) )
         {
+            string url;
+            string params;
             lcl_splitUrl( it->m_url, url, params );
 
             bool matchBaseUrl = urlBaseString.empty() || boost::starts_with( url, urlBaseString );
@@ -326,10 +326,10 @@ int curl_mockup_getRequestsCount( const char* urlBase,
     for ( vector< mockup::Request >::iterator it = mockup::config->m_requests.begin( );
             it != mockup::config->m_requests.end( ); ++it )
     {
-        string url;
-        string params;
         if ( it->m_method == string( method ) )
         {
+            string url;
+            string params;
             lcl_splitUrl( it->m_url, url, params );
 
 	    bool matchBaseUrl = urlBaseString.empty() || boost::starts_with( url, urlBaseString );

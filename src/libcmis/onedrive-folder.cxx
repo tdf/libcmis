@@ -130,11 +130,11 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     string newDocUrl = getSession( )->getBindingUrl( ) + "/me/drive/items/" +
                        getId( ) + ":/" + fileName + ":/content";
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
-    vector< string > headers;
     string res;
     // this will only create the file and return it's id, name and source url
     try
     {
+        vector< string > headers;
         res = getSession( )->httpPutRequest( newDocUrl, *is, headers )
                                 ->getStream( )->str( );
     }

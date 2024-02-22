@@ -123,11 +123,10 @@ vector< libcmis::DocumentPtr > WSDocument::getAllVersions( )
 {
     vector< libcmis::DocumentPtr > versions;
     string repoId = getSession( )->getRepositoryId( );
-    string versionSeries;
     PropertyPtrMap::const_iterator it = getProperties( ).find( string( "cmis:versionSeriesId" ) );
     if ( it != getProperties( ).end( ) && !it->second->getStrings( ).empty( ) )
     {
-        versionSeries = it->second->getStrings( ).front( );
+        string versionSeries = it->second->getStrings( ).front( );
         versions = getSession( )->getVersioningService( ).getAllVersions( repoId, versionSeries );
     }
     return versions;

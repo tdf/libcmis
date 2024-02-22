@@ -150,10 +150,9 @@ void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
     boost::shared_ptr< istream> is ( new istream ( os->rdbuf( ) ) );
     vector <string> headers;
     headers.push_back( string( "Content-Type: " ) + contentType );
-    string res;
     try
     {
-        res = getSession()->httpPatchRequest( putUrl, *is, headers )->getStream()->str();
+        string res = getSession()->httpPatchRequest( putUrl, *is, headers )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
