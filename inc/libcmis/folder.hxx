@@ -55,7 +55,6 @@ namespace libcmis
     class LIBCMIS_API Folder : public virtual Object
     {
         public:
-            Folder( Session* session ) : Object( session ) { }
             virtual ~Folder() { }
 
             virtual std::vector< std::string > getPaths( );

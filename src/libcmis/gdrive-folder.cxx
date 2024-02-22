@@ -38,14 +38,12 @@ using namespace libcmis;
 
 GDriveFolder::GDriveFolder( GDriveSession* session ):
     libcmis::Object( session ),
-    libcmis::Folder( session ),
     GDriveObject( session )
 {
 }
 
 GDriveFolder::GDriveFolder( GDriveSession* session, Json json ):
     libcmis::Object( session ),
-    libcmis::Folder( session ),
     GDriveObject( session, json )
 {
 }

@@ -46,7 +46,6 @@ namespace
 
 AtomFolder::AtomFolder( AtomPubSession* session, xmlNodePtr entryNd ) :
     libcmis::Object( session ),
-    libcmis::Folder( session ),
     AtomObject( session )
 {
     xmlDocPtr doc = libcmis::wrapInDoc( entryNd );

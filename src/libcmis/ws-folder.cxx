@@ -33,7 +33,6 @@ using libcmis::PropertyPtrMap;
 
 WSFolder::WSFolder( const WSObject& object ) :
     libcmis::Object( object ),
-    libcmis::Folder( const_cast< WSObject& >( object ).getSession( ) ),
     WSObject( object )
 {
 }
