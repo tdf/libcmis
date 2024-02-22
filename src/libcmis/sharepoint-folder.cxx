@@ -38,14 +38,12 @@ using namespace libcmis;
 
 SharePointFolder::SharePointFolder( SharePointSession* session ):
     libcmis::Object( session ),
-    libcmis::Folder( session ),
     SharePointObject( session )
 {
 }
 
 SharePointFolder::SharePointFolder( SharePointSession* session, Json json, string parentId ):
     libcmis::Object( session ),
-    libcmis::Folder( session ),
     SharePointObject( session, json, parentId )
 {
 }

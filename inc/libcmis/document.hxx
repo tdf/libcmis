@@ -48,7 +48,6 @@ namespace libcmis
     class LIBCMIS_API Document : public virtual Object
     {
         public:
-            Document( Session* session ) : Object( session ) { }
             virtual ~Document( ) { }
 
             /** Get the folder parents for the document.

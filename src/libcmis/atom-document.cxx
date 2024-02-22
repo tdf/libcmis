@@ -43,7 +43,6 @@ using namespace libcmis;
 
 AtomDocument::AtomDocument( AtomPubSession* session ) :
     libcmis::Object( session ),
-    libcmis::Document( session ),
     AtomObject( session ),
     m_contentUrl( )
 {
@@ -52,7 +51,6 @@ AtomDocument::AtomDocument( AtomPubSession* session ) :
 
 AtomDocument::AtomDocument( AtomPubSession* session, xmlNodePtr entryNd ) :
     libcmis::Object( session ),
-    libcmis::Document( session ),
     AtomObject( session ),
     m_contentUrl( )
 {

@@ -37,14 +37,12 @@ using namespace libcmis;
 
 SharePointDocument::SharePointDocument( SharePointSession* session ) :
     libcmis::Object( session),
-    libcmis::Document( session ),
     SharePointObject( session )
 {
 }
 
 SharePointDocument::SharePointDocument( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session),
-    libcmis::Document( session ),
     SharePointObject( session, json, parentId, name )
 {
 }

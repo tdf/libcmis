@@ -40,14 +40,12 @@ using namespace libcmis;
 
 OneDriveDocument::OneDriveDocument( OneDriveSession* session ) :
     libcmis::Object( session),
-    libcmis::Document( session ),
     OneDriveObject( session )
 {
 }
 
 OneDriveDocument::OneDriveDocument( OneDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
-    libcmis::Document( session ),
     OneDriveObject( session, json, id, name )
 {
 }
