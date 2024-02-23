@@ -183,6 +183,7 @@ HttpSession::HttpSession( string username, string password, bool noSslCheck,
 
 HttpSession::HttpSession( const HttpSession& copy ) :
     m_curlHandle( NULL ),
+    m_CurlInitProtocolsFunction( copy.m_CurlInitProtocolsFunction ),
     m_no100Continue( copy.m_no100Continue ),
     m_oauth2Handler( copy.m_oauth2Handler ),
     m_username( copy.m_username ),
