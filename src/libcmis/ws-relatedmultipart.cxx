@@ -263,7 +263,7 @@ string RelatedMultipart::getContentType( )
         string startType = start->getContentType( );
         size_t pos = startType.find( ";" );
         if ( pos != string::npos )
-            startType.pop_back();
+            startType = startType.substr( 0, pos );
 
         type += "type=\"" + startType + "\";";
     }
