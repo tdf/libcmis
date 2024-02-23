@@ -172,7 +172,7 @@ class SoapRequest : public libcmis::XmlSerializable
 
     protected:
 
-        std::string createEnvelope( std::string& username, std::string& password );
+        std::string createEnvelope( const std::string& username, const std::string& password );
 };
 
 #endif

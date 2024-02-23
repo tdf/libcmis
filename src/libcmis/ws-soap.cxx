@@ -244,7 +244,7 @@ RelatedMultipart& SoapRequest::getMultipart( string& username, string& password 
     return m_multipart;
 }
 
-string SoapRequest::createEnvelope( string& username, string& password )
+string SoapRequest::createEnvelope( const string& username, const string& password )
 {
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );

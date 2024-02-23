@@ -240,7 +240,7 @@ string RelatedMultipart::addPart( RelatedPartPtr part )
     return cid;
 }
 
-void RelatedMultipart::setStart( string& cid, string& startInfo )
+void RelatedMultipart::setStart( string& cid, const string& startInfo )
 {
     RelatedPartPtr start = getPart( cid );
 
