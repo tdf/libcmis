@@ -154,7 +154,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             {
                 // Remove potential \r at the end of the body part
                 if ( partBody[partBody.length() - 1] == '\r' )
-                    partBody = partBody.substr( 0, partBody.length() - 1 );
+                    partBody.pop_back();
 
                 RelatedPartPtr relatedPart( new RelatedPart( name, type, partBody ) );
                 m_parts[cid] = relatedPart;
@@ -172,7 +172,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             {
                 // Remove potential \r at the end
                 if ( !line.empty() && line[line.length() - 1] == '\r' )
-                    line = line.substr( 0, line.length() - 1 );
+                    line.pop_back();
 
                 if ( line.empty( ) )
                     inHeaders = false;

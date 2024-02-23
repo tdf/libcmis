@@ -150,11 +150,10 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
         RelatedMultipart& multipart = request.getMultipart( getUsername( ), getPassword( ) );
         libcmis::HttpResponsePtr response = httpPostRequest( url, *multipart.toStream( ).get( ), multipart.getContentType( ) );
 
-        string responseType;
         map< string, string >::iterator it = response->getHeaders( ).find( "Content-Type" );
         if ( it != response->getHeaders( ).end( ) )
         {
-            responseType = it->second;
+            string responseType = it->second;
             if ( string::npos != responseType.find( "multipart/related" ) )
             {
                 RelatedMultipart answer( response->getStream( )->str( ), responseType );

@@ -243,13 +243,12 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories )
     }
 
     // Look for proxy settings
-    string proxyUrl;
-    string proxyUser;
-    string proxyPass;
-    string noproxy;
     if ( m_vm.count( "proxy" ) > 0 )
     {
-        proxyUrl = m_vm["proxy"].as< string >();
+        string proxyUser;
+        string proxyPass;
+        string noproxy;
+        string proxyUrl = m_vm["proxy"].as< string >();
 
         if ( m_vm.count( "proxy-user" ) > 0 )
             proxyUser = m_vm["proxy-user"].as< string >();
@@ -936,7 +935,7 @@ void CmisClient::execute( )
 
                 bool major = false;
                 if ( m_vm.count( "major" ) > 0 )
-                    major = "yes";
+                    major = true;
 
                 string comment;
                 if ( m_vm.count( "message" ) > 0 )
