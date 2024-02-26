@@ -27,6 +27,7 @@
  */
 
 #include "gdrive-document.hxx"
+#include <algorithm>
 
 #include <libcmis/rendition.hxx>
 
@@ -69,14 +70,16 @@ string GDriveDocument::getDownloadUrl( string streamId )
     if ( !streamId.empty( ) )
     {
         // Find the rendition associated with the streamId
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
+        std::vector<RenditionPtr>::iterator it = std::find_if(renditions.begin(), renditions.end(),
+            [streamId](const RenditionPtr& ptr)
+          {
+                return ptr->getStreamId() == streamId;
+          }
+        );
+
+        if (it != renditions.end())
         {
-            if ( (*it)->getStreamId( ) == streamId )
-            {
-                streamUrl = (*it)->getUrl( );
-                break;
-            }
+            streamUrl = (*it)->getUrl();
         }
     }
     else
@@ -84,20 +87,31 @@ string GDriveDocument::getDownloadUrl( string streamId )
         // Automatically find the rendition
 
         // Prefer ODF format
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
-            if ( (*it)->getMimeType( ).find( "opendocument") != string::npos )
-                return (*it)->getUrl( );
+        auto odfIt = std::find_if(renditions.begin(), renditions.end(), [](const RenditionPtr& ptr)
+          {
+            return ptr->getMimeType().find("opendocument") != std::string::npos;
+          }
+        );
+
+        if (odfIt != renditions.end())
+        {
+            return (*odfIt)->getUrl();
+        }
 
         // Then MS format
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
-            if ( (*it)->getMimeType( ).find( "officedocument") != string::npos )
-                return (*it)->getUrl( );
+        auto msIt = std::find_if(renditions.begin(), renditions.end(), [](const RenditionPtr& ptr)
+          {
+            return ptr->getMimeType().find("officedocument") != std::string::npos;
+          }
+        );
+
+        if (msIt != renditions.end())
+        {
+            return (*msIt)->getUrl();
+        }
 
         // If not found, take the first one
-        streamUrl = renditions.front( )->getUrl( );
-
+        streamUrl = renditions.front()->getUrl();
     }
 
     return streamUrl;
