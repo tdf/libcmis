@@ -88,7 +88,7 @@ class RelatedMultipart
 
         /** Get the entry corresponding to the given ID.
           */
-        RelatedPartPtr getPart( std::string& cid );
+        RelatedPartPtr getPart( const std::string& cid );
 
         /** Get the id of the multipart start entry.
           */
@@ -108,7 +108,7 @@ class RelatedMultipart
             \param cid the Content-Id of the start entry
             \param startInfo the type to use as start-info in the Content-Type
           */
-        void setStart( std::string& cid, const std::string& startInfo );
+        void setStart( const std::string& cid, const std::string& startInfo );
 
         /** Compute the content type for the multipart object to set as the
             Content-Type HTTP header.

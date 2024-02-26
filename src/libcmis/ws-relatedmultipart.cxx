@@ -223,7 +223,7 @@ vector< string > RelatedMultipart::getIds( )
     return ids;
 }
 
-RelatedPartPtr RelatedMultipart::getPart( string& cid )
+RelatedPartPtr RelatedMultipart::getPart( const string& cid )
 {
     RelatedPartPtr part;
     map< string, RelatedPartPtr >::iterator it = m_parts.find( cid );
@@ -240,7 +240,7 @@ string RelatedMultipart::addPart( RelatedPartPtr part )
     return cid;
 }
 
-void RelatedMultipart::setStart( string& cid, const string& startInfo )
+void RelatedMultipart::setStart( const string& cid, const string& startInfo )
 {
     RelatedPartPtr start = getPart( cid );
 
