@@ -83,21 +83,13 @@ string GDriveDocument::getDownloadUrl( string streamId )
 
         // Prefer ODF format
         for (const auto& renditionPtr : renditions)
-        {
             if (renditionPtr->getMimeType().find("opendocument") != std::string::npos)
-            {
                 return renditionPtr->getUrl();
-            }
-        }
 
         // Then MS format
         for (const auto& renditionPtr : renditions)
-        {
             if (renditionPtr->getMimeType().find("officedocument") != std::string::npos)
-            {
                 return renditionPtr->getUrl();
-            }
-        }
 
         // If not found, take the first one
         streamUrl = renditions.front()->getUrl();
