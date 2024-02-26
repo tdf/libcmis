@@ -68,7 +68,6 @@ string GDriveDocument::getDownloadUrl( string streamId )
 
     if ( !streamId.empty( ) )
     {
-        // Find the rendition associated with the streamId
         for (const auto& renditionPtr : renditions)
         {
             if (renditionPtr->getStreamId() == streamId)
@@ -76,7 +75,7 @@ string GDriveDocument::getDownloadUrl( string streamId )
                 streamUrl = renditionPtr->getUrl();
                 break;
             }
-	}
+        }
     }
     else
     {
