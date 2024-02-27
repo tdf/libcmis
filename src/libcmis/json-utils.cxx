@@ -159,9 +159,9 @@ void Json::add( const std::string& key, const Json& json )
 Json::JsonVector Json::getList()
 {
     JsonVector list;
-    for (const auto& v : m_tJson.get_child(""))
+    for ( const auto& v : m_tJson.get_child("") )
     {
-        list.push_back(Json(v.second));
+        list.push_back( Json( v.second ) );
     }
     return list;
 }

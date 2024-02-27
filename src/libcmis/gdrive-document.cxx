@@ -68,11 +68,11 @@ string GDriveDocument::getDownloadUrl( string streamId )
 
     if ( !streamId.empty( ) )
     {
-        for (const auto& renditionPtr : renditions)
+        for ( const auto& renditionPtr : renditions )
         {
-            if (renditionPtr->getStreamId() == streamId)
+            if ( renditionPtr->getStreamId( ) == streamId )
             {
-                streamUrl = renditionPtr->getUrl();
+                streamUrl = renditionPtr->getUrl( );
                 break;
             }
         }
@@ -82,17 +82,17 @@ string GDriveDocument::getDownloadUrl( string streamId )
         // Automatically find the rendition
 
         // Prefer ODF format
-        for (const auto& renditionPtr : renditions)
-            if (renditionPtr->getMimeType().find("opendocument") != std::string::npos)
-                return renditionPtr->getUrl();
+        for ( const auto& renditionPtr : renditions )
+            if ( renditionPtr->getMimeType( ).find( "opendocument" ) != std::string::npos )
+                return renditionPtr->getUrl( );
 
         // Then MS format
-        for (const auto& renditionPtr : renditions)
-            if (renditionPtr->getMimeType().find("officedocument") != std::string::npos)
-                return renditionPtr->getUrl();
+        for ( const auto& renditionPtr : renditions )
+            if ( renditionPtr->getMimeType( ).find( "officedocument" ) != std::string::npos )
+                return renditionPtr->getUrl( );
 
         // If not found, take the first one
-        streamUrl = renditions.front()->getUrl();
+        streamUrl = renditions.front( )->getUrl( );
     }
 
     return streamUrl;
