@@ -68,13 +68,11 @@ string GDriveDocument::getDownloadUrl( string streamId )
 
     if ( !streamId.empty( ) )
     {
-        // Find the rendition associated with the streamId
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
+        for ( const auto& renditionPtr : renditions )
         {
-            if ( (*it)->getStreamId( ) == streamId )
+            if ( renditionPtr->getStreamId( ) == streamId )
             {
-                streamUrl = (*it)->getUrl( );
+                streamUrl = renditionPtr->getUrl( );
                 break;
             }
         }
@@ -84,20 +82,17 @@ string GDriveDocument::getDownloadUrl( string streamId )
         // Automatically find the rendition
 
         // Prefer ODF format
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
-            if ( (*it)->getMimeType( ).find( "opendocument") != string::npos )
-                return (*it)->getUrl( );
+        for ( const auto& renditionPtr : renditions )
+            if ( renditionPtr->getMimeType( ).find( "opendocument" ) != std::string::npos )
+                return renditionPtr->getUrl( );
 
         // Then MS format
-        for ( vector< RenditionPtr >::iterator it = renditions.begin( ) ; 
-            it != renditions.end(); ++it )
-            if ( (*it)->getMimeType( ).find( "officedocument") != string::npos )
-                return (*it)->getUrl( );
+        for ( const auto& renditionPtr : renditions )
+            if ( renditionPtr->getMimeType( ).find( "officedocument" ) != std::string::npos )
+                return renditionPtr->getUrl( );
 
         // If not found, take the first one
         streamUrl = renditions.front( )->getUrl( );
-
     }
 
     return streamUrl;
