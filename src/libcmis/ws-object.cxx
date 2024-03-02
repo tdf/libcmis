@@ -105,7 +105,7 @@ libcmis::ObjectPtr WSObject::updateProperties(
 void WSObject::refresh( )
 {
     libcmis::ObjectPtr object = m_session->getObject( getId( ) );
-    WSObject* const other = dynamic_cast< WSObject* >( object.get( ) );
+    const WSObject* const other = dynamic_cast< WSObject* >( object.get( ) );
     if ( other != NULL )
         *this = *other;
 }
