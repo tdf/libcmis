@@ -95,7 +95,7 @@ boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault
     return exception;
 }
 
-void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boost::shared_ptr< ostream > os, string& contentType, string filename )
+void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boost::shared_ptr< ostream > os, string& contentType, const string& filename )
 {
     // Get the stream as a string
     istream is( os->rdbuf( ) );

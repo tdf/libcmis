@@ -70,7 +70,7 @@ class CmisSoapFaultDetail : public SoapFaultDetail
 boost::shared_ptr< libcmis::Exception > getCmisException( const SoapFault& fault );
 
 void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart,
-        boost::shared_ptr< std::ostream >, std::string& contentType, std::string filename );
+        boost::shared_ptr< std::ostream >, std::string& contentType, const std::string& filename );
 
 /** getRepositories request.
   */

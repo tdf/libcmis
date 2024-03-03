@@ -41,8 +41,8 @@
 
 using namespace std;
 
-WSSession::WSSession( string bindingUrl, string repositoryId, string username,
-        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2,
+WSSession::WSSession( const string& bindingUrl, const string& repositoryId, const string& username,
+        const string& password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2,
         bool verbose ) :
     BaseSession( bindingUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
     m_servicesUrls( ),
@@ -58,7 +58,7 @@ WSSession::WSSession( string bindingUrl, string repositoryId, string username,
     initialize( );
 }
 
-WSSession::WSSession( string bindingUrl, string repositoryId,
+WSSession::WSSession( const string& bindingUrl, const string& repositoryId,
                       const HttpSession& httpSession,
                       libcmis::HttpResponsePtr response ) :
     BaseSession( bindingUrl, repositoryId, httpSession ),
@@ -185,7 +185,7 @@ vector< SoapResponsePtr > WSSession::soapRequest( string& url, SoapRequest& requ
     return responses;
 }
 
-void WSSession::parseWsdl( string buf )
+void WSSession::parseWsdl( const string& buf )
 {
     // parse the content
     const boost::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), m_bindingUrl.c_str(), NULL, 0 ), xmlFreeDoc );
@@ -249,10 +249,10 @@ void WSSession::initializeResponseFactory( )
     m_responseFactory.setSession( this );
 }
 
-void WSSession::initializeRepositories( map< string, string > repositories )
+void WSSession::initializeRepositories( const map< string, string >& repositories )
 {
-    for ( map< string, string >::iterator it = repositories.begin( );
-          it != repositories.end( ); ++it )
+    for ( map< string, string >::const_iterator it = repositories.cbegin( );
+          it != repositories.cend( ); ++it )
     {
         string repoId = it->first;
         m_repositories.push_back( getRepositoryService( ).getRepositoryInfo( repoId ) );

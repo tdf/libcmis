@@ -57,11 +57,11 @@ class RepositoryService
 
         /** Get the repository information based on its identifier.
           */
-        libcmis::RepositoryPtr getRepositoryInfo( std::string id );
+        libcmis::RepositoryPtr getRepositoryInfo( const std::string& id );
 
-        libcmis::ObjectTypePtr getTypeDefinition( std::string repoId, std::string typeId );
+        libcmis::ObjectTypePtr getTypeDefinition( const std::string& repoId, const std::string& typeId );
 
-        std::vector< libcmis::ObjectTypePtr > getTypeChildren( std::string repoId, std::string typeId );
+        std::vector< libcmis::ObjectTypePtr > getTypeChildren( const std::string& repoId, const std::string& typeId );
 
     private:
 

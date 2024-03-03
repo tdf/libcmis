@@ -84,7 +84,7 @@ map< string, string > RepositoryService::getRepositories( )
     return repositories;
 }
 
-libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id )
+libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( const string& id )
 {
     libcmis::RepositoryPtr repository;
 
@@ -101,7 +101,7 @@ libcmis::RepositoryPtr RepositoryService::getRepositoryInfo( string id )
     return repository;
 }
 
-libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, string typeId )
+libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( const string& repoId, const string& typeId )
 {
     libcmis::ObjectTypePtr type;
 
@@ -118,7 +118,7 @@ libcmis::ObjectTypePtr RepositoryService::getTypeDefinition( string repoId, stri
     return type;
 }
 
-vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( string repoId, string typeId )
+vector< libcmis::ObjectTypePtr > RepositoryService::getTypeChildren( const string& repoId, const string& typeId )
 {
     vector< libcmis::ObjectTypePtr > children;
 

@@ -67,7 +67,7 @@ ObjectService& ObjectService::operator=( const ObjectService& copy )
     return *this;
 }
 
-libcmis::ObjectPtr ObjectService::getObject( string repoId, string id )
+libcmis::ObjectPtr ObjectService::getObject( const string& repoId, const string& id )
 {
     libcmis::ObjectPtr object;
 
@@ -84,7 +84,7 @@ libcmis::ObjectPtr ObjectService::getObject( string repoId, string id )
     return object;
 }
 
-libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path )
+libcmis::ObjectPtr ObjectService::getObjectByPath( const string& repoId, const string& path )
 {
     libcmis::ObjectPtr object;
 
@@ -102,7 +102,7 @@ libcmis::ObjectPtr ObjectService::getObjectByPath( string repoId, string path )
 }
 
 vector< libcmis::RenditionPtr > ObjectService::getRenditions(
-        string repoId, string objectId, string filter )
+        const string& repoId, const string& objectId, const string& filter )
 {
     vector< libcmis::RenditionPtr > renditions;
 
@@ -144,13 +144,13 @@ libcmis::ObjectPtr ObjectService::updateProperties(
     return object;
 }
 
-void ObjectService::deleteObject( string repoId, string id, bool allVersions )
+void ObjectService::deleteObject( const string& repoId, const string& id, bool allVersions )
 {
     DeleteObjectRequest request( repoId, id, allVersions );
     m_session->soapRequest( m_url, request );
 }
         
-vector< string > ObjectService::deleteTree( std::string repoId, std::string folderId, bool allVersions,
+vector< string > ObjectService::deleteTree( const std::string& repoId, const std::string& folderId, bool allVersions,
         libcmis::UnfileObjects::Type unfile, bool continueOnFailure )
 {
     vector< string > failedIds;
@@ -168,13 +168,13 @@ vector< string > ObjectService::deleteTree( std::string repoId, std::string fold
     return failedIds;
 }
 
-void ObjectService::move( string repoId, string objectId, string destId, string srcId )
+void ObjectService::move( const string& repoId, const string& objectId, const string& destId, const string& srcId )
 {
     MoveObjectRequest request( repoId, objectId, destId, srcId );
     m_session->soapRequest( m_url, request );
 }
 
-boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, string objectId )
+boost::shared_ptr< istream > ObjectService::getContentStream( const string& repoId, const string& objectId )
 {
     boost::shared_ptr< istream > stream;
 
@@ -191,8 +191,8 @@ boost::shared_ptr< istream > ObjectService::getContentStream( string repoId, str
     return stream;
 }
 
-void ObjectService::setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-        boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName )
+void ObjectService::setContentStream( const std::string& repoId, const std::string& objectId, bool overwrite, const std::string& changeToken,
+        boost::shared_ptr< std::ostream > stream, const std::string& contentType, const std::string& fileName )
 {
     SetContentStreamRequest request( repoId, objectId, overwrite, changeToken, stream, contentType, fileName );
     m_session->soapRequest( m_url, request );
