@@ -341,7 +341,7 @@ namespace libcmis
         }
     }
 
-    string getXPathValue( xmlXPathContextPtr xpathCtx, string req )
+    string getXPathValue( xmlXPathContextPtr xpathCtx, const string& req )
     {
         string value;
         if ( xpathCtx != NULL )
@@ -387,7 +387,7 @@ namespace libcmis
         return value;
     }
 
-    boost::posix_time::ptime parseDateTime( string dateTimeStr )
+    boost::posix_time::ptime parseDateTime( const string& dateTimeStr )
     {
         boost::posix_time::ptime t( boost::date_time::not_a_date_time );
         // Get the time zone offset
@@ -466,7 +466,7 @@ namespace libcmis
         return str;
     }
 
-    bool parseBool( string boolStr )
+    bool parseBool( const string& boolStr )
     {
         bool value = false;
         if ( boolStr == "true" || boolStr == "1" )
@@ -478,7 +478,7 @@ namespace libcmis
         return value;
     }
 
-    long parseInteger( string intStr )
+    long parseInteger( const string& intStr )
     {
         char* end;
         errno = 0;
@@ -497,7 +497,7 @@ namespace libcmis
         return value;
     }
 
-    double parseDouble( string doubleStr )
+    double parseDouble( const string& doubleStr )
     {
         char* end;
         errno = 0;
@@ -559,13 +559,13 @@ namespace libcmis
         return 0;
     }
 
-    string escape( string str )
+    string escape( const string& str )
     {
         std::unique_ptr< char, void(*)( void* ) > escaped{ curl_easy_escape( NULL, str.c_str(), str.length() ), curl_free };
         return escaped.get();
     }
 
-    string unescape( string str )
+    string unescape( const string& str )
     {
         std::unique_ptr< char, void(*)( void* ) > unescaped{ curl_easy_unescape( NULL, str.c_str(), str.length(), NULL ), curl_free };
         return unescaped.get();

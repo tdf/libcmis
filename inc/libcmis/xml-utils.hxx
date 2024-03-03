@@ -124,7 +124,7 @@ namespace libcmis
       */
     LIBCMIS_API void registerSoapNamespaces( xmlXPathContextPtr xpathCtx );
 
-    LIBCMIS_API std::string getXPathValue( xmlXPathContextPtr xpathCtx, std::string req );
+    LIBCMIS_API std::string getXPathValue( xmlXPathContextPtr xpathCtx, const std::string& req );
 
     LIBCMIS_API xmlDocPtr wrapInDoc( xmlNodePtr entryNode );
 
@@ -138,16 +138,16 @@ namespace libcmis
 
     /** Parse a xsd:dateTime string and return the corresponding UTC posix time.
      */
-    LIBCMIS_API boost::posix_time::ptime parseDateTime( std::string dateTimeStr );
+    LIBCMIS_API boost::posix_time::ptime parseDateTime( const std::string& dateTimeStr );
 
     /// Write a UTC time object to an xsd:dateTime string
     LIBCMIS_API std::string writeDateTime( boost::posix_time::ptime time );
 
-    LIBCMIS_API bool parseBool( std::string str );
+    LIBCMIS_API bool parseBool( const std::string& str );
 
-    LIBCMIS_API long parseInteger( std::string str );
+    LIBCMIS_API long parseInteger( const std::string& str );
 
-    LIBCMIS_API double parseDouble( std::string str );
+    LIBCMIS_API double parseDouble( const std::string& str );
 
     /** Trim spaces on the left and right of a string.
      */
@@ -159,9 +159,9 @@ namespace libcmis
 
     LIBCMIS_API int stringstream_write_callback(void * context, const char * s, int len);
 
-    LIBCMIS_API std::string escape( std::string str );
+    LIBCMIS_API std::string escape( const std::string& str );
 
-    LIBCMIS_API std::string unescape( std::string str );
+    LIBCMIS_API std::string unescape( const std::string& str );
 }
 
 #endif
