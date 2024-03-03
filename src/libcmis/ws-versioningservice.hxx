@@ -48,16 +48,16 @@ class VersioningService
 
         VersioningService& operator=( const VersioningService& copy );
 
-        libcmis::DocumentPtr checkOut( std::string repoId, std::string documentId );
+        libcmis::DocumentPtr checkOut( const std::string& repoId, const std::string& documentId );
 
-        void cancelCheckOut( std::string repoId, std::string documentId );
+        void cancelCheckOut( const std::string& repoId, const std::string& documentId );
 
         libcmis::DocumentPtr checkIn( std::string repoId, std::string objectId, bool isMajor,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream, std::string contentType,
                 std::string fileName, std::string comment );
 
-        std::vector< libcmis::DocumentPtr > getAllVersions( std::string repoId, std::string objectId );
+        std::vector< libcmis::DocumentPtr > getAllVersions( const std::string& repoId, const std::string& objectId );
 
     private:
 
