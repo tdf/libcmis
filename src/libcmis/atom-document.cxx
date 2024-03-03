@@ -300,7 +300,7 @@ void AtomDocument::cancelCheckout( )
 
     // Use working-copy link if provided as a workaround
     // for some non-compliant repositories
-    AtomLink* link = getLink( "working-copy", "application/atom+xml;type=entry" );
+    const AtomLink* link = getLink( "working-copy", "application/atom+xml;type=entry" );
     if ( link )
         url = link->getHref( );
 
@@ -394,7 +394,7 @@ vector< libcmis::DocumentPtr > AtomDocument::getAllVersions( )
         throw libcmis::Exception( string( "GetAllVersions not allowed on node " ) + getId() );
 
     vector< libcmis::DocumentPtr > versions;
-    AtomLink* link = getLink( "version-history", string( ) );
+    const AtomLink* link = getLink( "version-history", string( ) );
     if ( link != NULL )
     {
         string pageUrl = link->getHref( );

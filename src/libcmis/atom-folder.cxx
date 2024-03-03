@@ -60,7 +60,7 @@ AtomFolder::~AtomFolder( )
 
 vector< libcmis::ObjectPtr > AtomFolder::getChildren( )
 {
-    AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
+    const AtomLink* childrenLink = getLink( "down", "application/atom+xml;type=feed" );
 
     // Some servers aren't giving the GetChildren properly... if not defined, we need to try
     // as we may have the right to proceed.
@@ -263,7 +263,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& propertie
 vector< string > AtomFolder::removeTree( bool allVersions, libcmis::UnfileObjects::Type unfile,
         bool continueOnError )
 {
-    AtomLink* treeLink = getLink( "down", "application/cmistree+xml" );
+    const AtomLink* treeLink = getLink( "down", "application/cmistree+xml" );
     if ( NULL == treeLink )
         treeLink = getLink( "http://docs.oasis-open.org/ns/cmis/link/200908/foldertree", "application/cmistree+xml" );
 

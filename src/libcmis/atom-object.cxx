@@ -257,7 +257,7 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     if ( NULL == atomDestination )
         throw libcmis::Exception( string( "Destination is not an AtomFolder" ) );
 
-    AtomLink* destChildrenLink = atomDestination->getLink( "down", "application/atom+xml;type=feed" );
+    const AtomLink* destChildrenLink = atomDestination->getLink( "down", "application/atom+xml;type=feed" );
 
     if ( ( NULL == destChildrenLink ) || ( getAllowableActions().get() &&
             !getAllowableActions()->isAllowed( libcmis::ObjectAction::MoveObject ) ) )
@@ -311,7 +311,7 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
 
 string AtomObject::getInfosUrl( )
 {
-    AtomLink* selfLink = getLink( "self", "application/atom+xml;type=entry" );
+    const AtomLink* selfLink = getLink( "self", "application/atom+xml;type=entry" );
     if ( NULL != selfLink )
         return selfLink->getHref( );
     return string( );
