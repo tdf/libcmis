@@ -55,12 +55,12 @@ class ObjectService
 
         ObjectService& operator=( const ObjectService& copy );
 
-        libcmis::ObjectPtr getObject( std::string repoId, std::string id );
+        libcmis::ObjectPtr getObject( const std::string& repoId, const std::string& id );
 
-        libcmis::ObjectPtr getObjectByPath( std::string repoId, std::string path );
+        libcmis::ObjectPtr getObjectByPath( const std::string& repoId, const std::string& path );
 
         std::vector< libcmis::RenditionPtr > getRenditions(
-                std::string repoId, std::string objectId, std::string filter );
+                const std::string& repoId, const std::string& objectId, const std::string& filter );
         
         libcmis::ObjectPtr updateProperties(
                 std::string repoId,
@@ -68,17 +68,17 @@ class ObjectService
                 const std::map< std::string, libcmis::PropertyPtr > & properties,
                 std::string changeToken );
 
-        void deleteObject( std::string repoId, std::string id, bool allVersions );
+        void deleteObject( const std::string& repoId, const std::string& id, bool allVersions );
         
-        std::vector< std::string > deleteTree( std::string repoId, std::string folderId, bool allVersions,
+        std::vector< std::string > deleteTree( const std::string& repoId, const std::string& folderId, bool allVersions,
                 libcmis::UnfileObjects::Type unfile, bool continueOnFailure );
 
-        void move( std::string repoId, std::string objectId, std::string destId, std::string srcId );
+        void move( const std::string& repoId, const std::string& objectId, const std::string& destId, const std::string& srcId );
 
-        boost::shared_ptr< std::istream > getContentStream( std::string repoId, std::string objectId );
+        boost::shared_ptr< std::istream > getContentStream( const std::string& repoId, const std::string& objectId );
 
-        void setContentStream( std::string repoId, std::string objectId, bool overwrite, std::string changeToken,
-                boost::shared_ptr< std::ostream > stream, std::string contentType, std::string fileName );
+        void setContentStream( const std::string& repoId, const std::string& objectId, bool overwrite, const std::string& changeToken,
+                boost::shared_ptr< std::ostream > stream, const std::string& contentType, const std::string& fileName );
 
         libcmis::FolderPtr createFolder( std::string repoId, const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId );

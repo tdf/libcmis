@@ -56,7 +56,7 @@ class RelatedPart
 
             \param cid the content Id to output
           */
-        std::string toString( std::string cid );
+        std::string toString( const std::string& cid );
 };
 typedef boost::shared_ptr< RelatedPart > RelatedPartPtr;
 

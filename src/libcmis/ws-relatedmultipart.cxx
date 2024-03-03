@@ -48,7 +48,7 @@ RelatedPart::RelatedPart( string& name, string& type, string& content ) :
 }
 
 // LCOV_EXCL_START
-string RelatedPart::toString( string cid )
+string RelatedPart::toString( const string& cid )
 {
     string buf;
 

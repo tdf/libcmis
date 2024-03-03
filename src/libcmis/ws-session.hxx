@@ -50,8 +50,8 @@ class WSSession : public BaseSession, public SoapSession
         SoapResponseFactory m_responseFactory;
 
     public:
-        WSSession( std::string bindingUrl, std::string repositoryId,
-                   std::string username, std::string password,
+        WSSession( const std::string& bindingUrl, const std::string& repositoryId,
+                   const std::string& username, const std::string& password,
                    bool noSslCheck = false,
                    libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(),
                    bool verbose = false );
@@ -60,7 +60,7 @@ class WSSession : public BaseSession, public SoapSession
             before to spare some HTTP request. This constructor has mostly
             been designed for the SessionFactory use.
           */
-        WSSession( std::string bindingUrl, std::string repositoryId,
+        WSSession( const std::string& bindingUrl, const std::string& repositoryId,
                    const HttpSession& HttpSession,
                    libcmis::HttpResponsePtr response );
         ~WSSession( );
@@ -112,9 +112,9 @@ class WSSession : public BaseSession, public SoapSession
         WSSession( const WSSession& copy ) = delete;
         WSSession& operator=( const WSSession& copy ) = delete;
 
-        void parseWsdl( std::string buf );
+        void parseWsdl( const std::string& buf );
         void initializeResponseFactory( );
-        void initializeRepositories( std::map< std::string, std::string > repositories );
+        void initializeRepositories( const std::map< std::string, std::string >& repositories );
         void initialize( libcmis::HttpResponsePtr response = libcmis::HttpResponsePtr() );
 
         std::map< std::string, SoapResponseCreator > getResponseMapping( );
