@@ -66,7 +66,7 @@ WSObjectType& WSObjectType::operator=( const WSObjectType& copy )
 void WSObjectType::refresh( )
 {
     libcmis::ObjectTypePtr type = m_session->getType( m_id );
-    const WSObjectType* const other = dynamic_cast< WSObjectType* >( type.get( ) );
+    const auto other = dynamic_cast< const WSObjectType* >( type.get( ) );
     if ( other != NULL )
         *this = *other;
 }
