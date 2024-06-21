@@ -94,8 +94,13 @@ namespace libcmis
                 {
                     response = httpSession->httpGetRequest( bindingUrl );
                 }
-                catch ( const CurlException& )
+                catch (const CurlException& e)
                 {
+                    if (strcmp(e.what(), "Invalid SSL certificate") == 0)
+                    {
+                        // no point in trying other protocols
+                        throw e.getCmisException();
+                    }
                     // Could be SharePoint - needs NTLM authentication
                     session = new SharePointSession( bindingUrl, username,
                                                       password, verbose );
