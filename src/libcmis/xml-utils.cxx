@@ -43,10 +43,6 @@
 #endif
 #include <curl/curl.h>
 
-#if LIBCURL_VERSION_VALUE < 0x070F04
-#define curl_easy_escape( dummy, str, len ) curl_escape( str, len )
-#define curl_easy_unescape( dummy, str, len, dummy2 ) curl_unescape( str, len )
-#endif
 
 using namespace std;
 

@@ -216,13 +216,8 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     if ( !getUsername().empty() && !getPassword().empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
-#if LIBCURL_VERSION_VALUE >= 0x071301
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
-#else
-        string userpwd = getUsername() + ":" + getPassword();
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
-#endif
     }
 
     curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
@@ -231,21 +226,14 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
-#if LIBCURL_VERSION_VALUE >= 0x071304
         curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
-#endif
         const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
         const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
         if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-#if LIBCURL_VERSION_VALUE >= 0X071301
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
-#else
-            string userpwd = proxyUser + ":" + proxyPass;
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, userpwd.c_str( ) );
-#endif
         }
     }
 
@@ -262,18 +250,12 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
     // We want to get the certificate infos in error cases
-#if LIBCURL_VERSION_VALUE >= 0X071301
     curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
-#endif
 
     if ( m_noSSLCheck )
     {
-#if LIBCURL_VERSION_VALUE >= 0x070801
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-#endif
-#if LIBCURL_VERSION_VALUE >= 0x070402
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-#endif
     }
 
     // Perform the query
@@ -287,7 +269,6 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
 
         bool errorFixed = false;
-#if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
         {
@@ -350,7 +331,6 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
                 }
             }
         }
-#endif
 
         if ( !errorFixed )
             throw CurlException( string( errBuff ), errCode, url, httpError );
