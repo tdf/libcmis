@@ -672,16 +672,17 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct curl_slist *headers_slist = NULL;
+    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
+    unique_ptr<struct curl_slist, deleter> headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
 
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
     if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
-        headers_slist = curl_slist_append( headers_slist,
-                                           m_oauth2Handler->getHttpHeader( ).c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(),
+                                           m_oauth2Handler->getHttpHeader().c_str()));
     }
     else if ( !getUsername().empty() )
     {
@@ -695,7 +696,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 #endif
     }
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
@@ -748,9 +749,6 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
-
-    // Free the headers list
-    curl_slist_free_all( headers_slist );
 
     // Process the response
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;

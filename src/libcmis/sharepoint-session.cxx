@@ -200,12 +200,13 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct curl_slist *headers_slist = NULL;
+    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
+    unique_ptr<struct curl_slist, deleter> headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
 
-    headers_slist = curl_slist_append( headers_slist, "accept:application/json; odata=verbose" );
-    headers_slist = curl_slist_append( headers_slist, ( "x-requestdigest:" + m_digestCode ).c_str( ) );
+    headers_slist.reset(curl_slist_append(headers_slist.release(), "accept:application/json; odata=verbose"));
+    headers_slist.reset(curl_slist_append(headers_slist.release(), ("x-requestdigest:" + m_digestCode).c_str()));
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {
@@ -219,7 +220,7 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
 #endif
     }
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
@@ -272,9 +273,6 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
-
-    // Free the headers list
-    curl_slist_free_all( headers_slist );
 
     // Process the response
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
