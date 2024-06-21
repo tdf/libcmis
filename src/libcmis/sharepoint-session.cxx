@@ -291,6 +291,7 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         if ( CURLE_SSL_CACERT == errCode )
         {
             vector< string > certificates;
+            string err(errBuff);
 
             // We somehow need to rerun the request to get the certificate
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
@@ -344,7 +345,7 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
                 }
                 else
                 {
-                    throw CurlException( "Invalid SSL certificate" );
+                    throw CurlException(err, CURLE_SSL_CACERT);
                 }
             }
         }

@@ -655,7 +655,7 @@ void HttpSession::checkCredentials( )
         m_authProvided = authProvider->authenticationQuery( m_username, m_password );
         if ( !m_authProvided )
         {
-            throw CurlException( "User cancelled authentication request" );
+            throw CurlException("User cancelled authentication request", CURLE_OK);
         }
     }
 }
@@ -763,6 +763,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
         if ( CURLE_SSL_CACERT == errCode )
         {
             vector< string > certificates;
+            string err(errBuff);
 
             // We somehow need to rerun the request to get the certificate
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
@@ -816,7 +817,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
                 }
                 else
                 {
-                    throw CurlException( "Invalid SSL certificate" );
+                    throw CurlException(err, CURLE_SSL_CACERT);
                 }
             }
         }
@@ -829,7 +830,6 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
 
 void HttpSession::checkOAuth2( string url )
-try
 {
     if ( m_oauth2Handler )
     {
@@ -837,10 +837,6 @@ try
         if ( m_oauth2Handler->getAccessToken().empty() && !m_inOAuth2Authentication )
             oauth2Authenticate( );
     }
-}
-catch ( const libcmis::Exception& e )
-{
-    throw CurlException( e.what( ) );
 }
 
 long HttpSession::getHttpStatus( )
@@ -908,14 +904,9 @@ string HttpSession::getRefreshToken( )
 }
 
 void HttpSession::oauth2Refresh( )
-try
 {
     const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
     m_oauth2Handler->refresh( );
-}
-catch ( const libcmis::Exception& e )
-{
-    throw CurlException( e.what() );
 }
 
 void HttpSession::initProtocols( )
@@ -983,11 +974,45 @@ libcmis::Exception CurlException::getCmisException( ) const
             break;
         default:
             msg = what();
-            if ( !isCancelled( ) )
-                msg += ": " + m_url;
-            else
-                type = "permissionDenied";
-            break;
+            switch (m_code)
+            {
+                case CURLE_COULDNT_RESOLVE_PROXY:
+                case CURLE_COULDNT_RESOLVE_HOST:
+                    type = "dnsFailed";
+                    break;
+                case CURLE_COULDNT_CONNECT:
+                case CURLE_SSL_CONNECT_ERROR:
+                case CURLE_SSL_CERTPROBLEM:
+                case CURLE_SSL_CIPHER:
+                case CURLE_PEER_FAILED_VERIFICATION:
+#if CURL_AT_LEAST_VERSION(7, 19, 0)
+                case CURLE_SSL_ISSUER_ERROR:
+#endif
+                case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
+                case CURLE_SSL_INVALIDCERTSTATUS:
+                case CURLE_FAILED_INIT:
+#if CURL_AT_LEAST_VERSION(7, 69, 0)
+                case CURLE_QUIC_CONNECT_ERROR:
+#endif
+                    type = "connectFailed";
+                    break;
+                case CURLE_OPERATION_TIMEDOUT:
+                    type = "connectTimeout";
+                    break;
+                case CURLE_WRITE_ERROR:
+                case CURLE_READ_ERROR: // error returned from our callbacks
+                case CURLE_ABORTED_BY_CALLBACK:
+                case CURLE_SEND_ERROR:
+                case CURLE_RECV_ERROR:
+                    type = "transferFailed";
+                    break;
+                default:
+                    if ( !isCancelled( ) )
+                        msg += ": " + m_url;
+                    else if (msg == "User cancelled authentication request")
+                        type = "permissionDenied";
+                    break;
+            }
     }
 
     return libcmis::Exception( msg, type );

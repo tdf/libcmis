@@ -96,7 +96,7 @@ namespace libcmis
                 }
                 catch (const CurlException& e)
                 {
-                    if (strcmp(e.what(), "Invalid SSL certificate") == 0)
+                    if (e.getErrorCode() == CURLE_SSL_CACERT)
                     {
                         // no point in trying other protocols
                         throw e.getCmisException();
