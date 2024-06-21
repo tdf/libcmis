@@ -207,6 +207,10 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
 
     headers_slist.reset(curl_slist_append(headers_slist.release(), "accept:application/json; odata=verbose"));
     headers_slist.reset(curl_slist_append(headers_slist.release(), ("x-requestdigest:" + m_digestCode).c_str()));
+    // newer Sharepoint requires this; this can be detected based on header
+    // "x-msdavext_error" starting with "917656;" typically with a 403 status
+    // but since this class is specifically for SharePoint just add it always
+    headers_slist.reset(curl_slist_append(headers_slist.release(), "X-FORMS_BASED_AUTH_ACCEPTED: f"));
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {
