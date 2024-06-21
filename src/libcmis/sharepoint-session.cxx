@@ -42,9 +42,10 @@ using namespace std;
 SharePointSession::SharePointSession ( string baseUrl,
                                string username,
                                string password,
-                               bool verbose ) :
+                               bool verbose,
+                               libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     BaseSession( baseUrl, string(), username, password, false,
-                 libcmis::OAuth2DataPtr(), verbose ),
+                 libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction ),
     m_digestCode( string( ) ) 
 
 {

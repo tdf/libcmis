@@ -980,6 +980,7 @@ libcmis::Exception CurlException::getCmisException( ) const
                 case CURLE_COULDNT_RESOLVE_HOST:
                     type = "dnsFailed";
                     break;
+                case CURLE_UNSUPPORTED_PROTOCOL:
                 case CURLE_COULDNT_CONNECT:
                 case CURLE_SSL_CONNECT_ERROR:
                 case CURLE_SSL_CERTPROBLEM:

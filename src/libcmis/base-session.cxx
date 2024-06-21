@@ -43,9 +43,10 @@
 using namespace std;
 
 BaseSession::BaseSession( string bindingUrl, string repositoryId, string username,
-        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose ) :
+        string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose,
+        libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     Session( ),
-    HttpSession( username, password, noSslCheck, oauth2, verbose ),
+    HttpSession( username, password, noSslCheck, oauth2, verbose, initProtocolsFunction ),
     m_bindingUrl( bindingUrl ),
     m_repositoryId( repositoryId ),
     m_repositories( )

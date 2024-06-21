@@ -59,7 +59,8 @@ class BaseSession : public libcmis::Session,
         BaseSession( std::string sBindingUrl, std::string repository,
                      std::string username, std::string password,
                      bool noSslCheck = false,
-                     libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false );
+                     libcmis::OAuth2DataPtr oauth2 = libcmis::OAuth2DataPtr(), bool verbose = false,
+                     libcmis::CurlInitProtocolsFunction = nullptr);
 
         /** This constructor copies an existing http session.
             This has been mostly designed for SessionFactory to save
