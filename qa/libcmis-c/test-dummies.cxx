@@ -31,6 +31,10 @@
 using namespace std;
 using libcmis::PropertyPtrMap;
 
+#if defined __GNUC__
+#pragma GCC diagnostic ignored "-Wmismatched-new-delete"
+#endif
+
 bool isOutOfMemory = false;
 
 /// Ignore all tests results depending on this when running in valgrind
@@ -426,7 +430,7 @@ namespace dummies
 
     Folder::Folder( bool isRoot, bool triggersFaults ) :
         libcmis::Object( NULL ),
-        libcmis::Folder( NULL ),
+        libcmis::Folder(),
         dummies::Object( triggersFaults, "Folder" ),
         m_isRoot( isRoot )
     {
@@ -510,7 +514,7 @@ namespace dummies
 
     Document::Document( bool isFiled, bool triggersFaults ) :
         libcmis::Object( NULL ),
-        libcmis::Document( NULL ),
+        libcmis::Document(),
         dummies::Object( triggersFaults, "Document" ),
         m_isFiled( isFiled ),
         m_contentString( "Document::ContentStream" )

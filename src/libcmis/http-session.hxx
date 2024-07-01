@@ -71,10 +71,10 @@ class CurlException : public std::exception
         {
         }
 
-        CurlException( std::string message ) :
+        CurlException(std::string message, CURLcode const code) :
             exception( ),
             m_message( message ),
-            m_code( CURLE_OK ),
+            m_code(code),
             m_url( ),
             m_httpStatus( 0 ),
             m_cancelled( true ),

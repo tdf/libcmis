@@ -39,7 +39,8 @@ class SharePointSession : public BaseSession
         SharePointSession( std::string baseUrl,
                        std::string username, 
                        std::string password,
-                       bool verbose = false );
+                       bool verbose = false,
+                       libcmis::CurlInitProtocolsFunction = nullptr);
 
         SharePointSession( std::string baseUrl,
                         const HttpSession& httpSession,

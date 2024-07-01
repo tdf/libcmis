@@ -151,7 +151,7 @@ AS_IF([test x"$GCC" = xyes], [
 ])
 
 # Check for curl
-PKG_CHECK_MODULES(CURL, [libcurl])
+PKG_CHECK_MODULES(CURL, [libcurl >= 7.29])
 AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 

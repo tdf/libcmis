@@ -43,9 +43,10 @@ GDriveSession::GDriveSession ( string baseUrl,
                                string username,
                                string password,
                                libcmis::OAuth2DataPtr oauth2,
-                               bool verbose ) :
+                               bool verbose,
+                               libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     BaseSession( baseUrl, string(), username, password, false,
-                 libcmis::OAuth2DataPtr(), verbose )
+                 libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction )
 
 {
     // Add the dummy repository, even if we don't have OAuth2

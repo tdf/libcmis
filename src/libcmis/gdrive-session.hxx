@@ -39,7 +39,8 @@ class GDriveSession : public BaseSession
                        std::string username,
                        std::string password,
                        libcmis::OAuth2DataPtr oauth2,
-                       bool verbose = false );
+                       bool verbose = false,
+                       libcmis::CurlInitProtocolsFunction = nullptr);
 
         ~GDriveSession ( );
 

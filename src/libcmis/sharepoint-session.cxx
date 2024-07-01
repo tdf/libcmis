@@ -42,9 +42,10 @@ using namespace std;
 SharePointSession::SharePointSession ( string baseUrl,
                                string username,
                                string password,
-                               bool verbose ) :
+                               bool verbose,
+                               libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     BaseSession( baseUrl, string(), username, password, false,
-                 libcmis::OAuth2DataPtr(), verbose ),
+                 libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction ),
     m_digestCode( string( ) ) 
 
 {
@@ -200,46 +201,39 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct curl_slist *headers_slist = NULL;
+    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
+    unique_ptr<struct curl_slist, deleter> headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
 
-    headers_slist = curl_slist_append( headers_slist, "accept:application/json; odata=verbose" );
-    headers_slist = curl_slist_append( headers_slist, ( "x-requestdigest:" + m_digestCode ).c_str( ) );
+    headers_slist.reset(curl_slist_append(headers_slist.release(), "accept:application/json; odata=verbose"));
+    headers_slist.reset(curl_slist_append(headers_slist.release(), ("x-requestdigest:" + m_digestCode).c_str()));
+    // newer Sharepoint requires this; this can be detected based on header
+    // "x-msdavext_error" starting with "917656;" typically with a 403 status
+    // but since this class is specifically for SharePoint just add it always
+    headers_slist.reset(curl_slist_append(headers_slist.release(), "X-FORMS_BASED_AUTH_ACCEPTED: f"));
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
-#if LIBCURL_VERSION_VALUE >= 0x071301
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
-#else
-        string userpwd = getUsername() + ":" + getPassword();
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
-#endif
     }
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
-#if LIBCURL_VERSION_VALUE >= 0x071304
         curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
-#endif
         const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
         const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
         if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-#if LIBCURL_VERSION_VALUE >= 0X071301
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
-#else
-            string userpwd = proxyUser + ":" + proxyPass;
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, userpwd.c_str( ) );
-#endif
         }
     }
 
@@ -256,25 +250,16 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
     // We want to get the certificate infos in error cases
-#if LIBCURL_VERSION_VALUE >= 0X071301
     curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
-#endif
 
     if ( m_noSSLCheck )
     {
-#if LIBCURL_VERSION_VALUE >= 0x070801
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-#endif
-#if LIBCURL_VERSION_VALUE >= 0x070402
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-#endif
     }
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
-
-    // Free the headers list
-    curl_slist_free_all( headers_slist );
 
     // Process the response
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
@@ -284,11 +269,11 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
 
         bool errorFixed = false;
-#if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
         {
             vector< string > certificates;
+            string err(errBuff);
 
             // We somehow need to rerun the request to get the certificate
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
@@ -342,11 +327,10 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
                 }
                 else
                 {
-                    throw CurlException( "Invalid SSL certificate" );
+                    throw CurlException(err, CURLE_SSL_CACERT);
                 }
             }
         }
-#endif
 
         if ( !errorFixed )
             throw CurlException( string( errBuff ), errCode, url, httpError );

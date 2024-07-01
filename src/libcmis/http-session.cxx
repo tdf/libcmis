@@ -655,7 +655,7 @@ void HttpSession::checkCredentials( )
         m_authProvided = authProvider->authenticationQuery( m_username, m_password );
         if ( !m_authProvided )
         {
-            throw CurlException( "User cancelled authentication request" );
+            throw CurlException("User cancelled authentication request", CURLE_OK);
         }
     }
 }
@@ -672,50 +672,39 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct curl_slist *headers_slist = NULL;
+    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
+    unique_ptr<struct curl_slist, deleter> headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist = curl_slist_append( headers_slist, it->c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
 
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
     if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
-        headers_slist = curl_slist_append( headers_slist,
-                                           m_oauth2Handler->getHttpHeader( ).c_str( ) );
+        headers_slist.reset(curl_slist_append(headers_slist.release(),
+                                           m_oauth2Handler->getHttpHeader().c_str()));
     }
     else if ( !getUsername().empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
-#if LIBCURL_VERSION_VALUE >= 0x071301
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
-#else
-        string userpwd = getUsername() + ":" + getPassword();
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userpwd.c_str( ) );
-#endif
     }
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, headers_slist );
+    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
         curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
-#if LIBCURL_VERSION_VALUE >= 0x071304
         curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
-#endif
         const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
         const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
         if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-#if LIBCURL_VERSION_VALUE >= 0X071301
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
             curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
-#else
-            string userpwd = proxyUser + ":" + proxyPass;
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, userpwd.c_str( ) );
-#endif
         }
     }
 
@@ -732,25 +721,16 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
         curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
     // We want to get the certificate infos in error cases
-#if LIBCURL_VERSION_VALUE >= 0X071301
     curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
-#endif
 
     if ( m_noSSLCheck )
     {
-#if LIBCURL_VERSION_VALUE >= 0x070801
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-#endif
-#if LIBCURL_VERSION_VALUE >= 0x070402
         curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-#endif
     }
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
-
-    // Free the headers list
-    curl_slist_free_all( headers_slist );
 
     // Process the response
     bool isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
@@ -760,11 +740,11 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
         curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
 
         bool errorFixed = false;
-#if LIBCURL_VERSION_VALUE >= 0X071301
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
         {
             vector< string > certificates;
+            string err(errBuff);
 
             // We somehow need to rerun the request to get the certificate
             curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
@@ -818,11 +798,10 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
                 }
                 else
                 {
-                    throw CurlException( "Invalid SSL certificate" );
+                    throw CurlException(err, CURLE_SSL_CACERT);
                 }
             }
         }
-#endif
 
         if ( !errorFixed )
             throw CurlException( string( errBuff ), errCode, url, httpError );
@@ -831,7 +810,6 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
 
 void HttpSession::checkOAuth2( string url )
-try
 {
     if ( m_oauth2Handler )
     {
@@ -839,10 +817,6 @@ try
         if ( m_oauth2Handler->getAccessToken().empty() && !m_inOAuth2Authentication )
             oauth2Authenticate( );
     }
-}
-catch ( const libcmis::Exception& e )
-{
-    throw CurlException( e.what( ) );
 }
 
 long HttpSession::getHttpStatus( )
@@ -910,14 +884,9 @@ string HttpSession::getRefreshToken( )
 }
 
 void HttpSession::oauth2Refresh( )
-try
 {
     const ScopeGuard<bool> inOauth2Guard(m_inOAuth2Authentication, true);
     m_oauth2Handler->refresh( );
-}
-catch ( const libcmis::Exception& e )
-{
-    throw CurlException( e.what() );
 }
 
 void HttpSession::initProtocols( )
@@ -985,11 +954,46 @@ libcmis::Exception CurlException::getCmisException( ) const
             break;
         default:
             msg = what();
-            if ( !isCancelled( ) )
-                msg += ": " + m_url;
-            else
-                type = "permissionDenied";
-            break;
+            switch (m_code)
+            {
+                case CURLE_COULDNT_RESOLVE_PROXY:
+                case CURLE_COULDNT_RESOLVE_HOST:
+                    type = "dnsFailed";
+                    break;
+                case CURLE_UNSUPPORTED_PROTOCOL:
+                case CURLE_COULDNT_CONNECT:
+                case CURLE_SSL_CONNECT_ERROR:
+                case CURLE_SSL_CERTPROBLEM:
+                case CURLE_SSL_CIPHER:
+                case CURLE_PEER_FAILED_VERIFICATION:
+#if CURL_AT_LEAST_VERSION(7, 19, 0)
+                case CURLE_SSL_ISSUER_ERROR:
+#endif
+                case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
+                case CURLE_SSL_INVALIDCERTSTATUS:
+                case CURLE_FAILED_INIT:
+#if CURL_AT_LEAST_VERSION(7, 69, 0)
+                case CURLE_QUIC_CONNECT_ERROR:
+#endif
+                    type = "connectFailed";
+                    break;
+                case CURLE_OPERATION_TIMEDOUT:
+                    type = "connectTimeout";
+                    break;
+                case CURLE_WRITE_ERROR:
+                case CURLE_READ_ERROR: // error returned from our callbacks
+                case CURLE_ABORTED_BY_CALLBACK:
+                case CURLE_SEND_ERROR:
+                case CURLE_RECV_ERROR:
+                    type = "transferFailed";
+                    break;
+                default:
+                    if ( !isCancelled( ) )
+                        msg += ": " + m_url;
+                    else if (msg == "User cancelled authentication request")
+                        type = "permissionDenied";
+                    break;
+            }
     }
 
     return libcmis::Exception( msg, type );

@@ -280,6 +280,9 @@ void AtomTest::authCallbackTest( )
         {
             CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
                     string( "User cancelled authentication request" ), string( e.what() ) );
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type",
+                    string( "permissionDenied" ), string( e.getType() ) );
+
         }
     }
 
@@ -323,8 +326,8 @@ void AtomTest::invalidSSLTest( )
         }
         catch ( const libcmis::Exception& e )
         {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception message",
-                    string( "Invalid SSL certificate" ), string( e.what() ) );
+            CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong exception type",
+                    string("connectFailed"), string(e.getType()) );
         }
     }
 }

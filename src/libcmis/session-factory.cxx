@@ -75,12 +75,15 @@ namespace libcmis
             if ( bindingUrl == "https://www.googleapis.com/drive/v3" )
             {
                 session = new GDriveSession( bindingUrl, username, password,
-                                             oauth2, verbose );
+                                             oauth2, verbose,
+                                             g_CurlInitProtocolsFunction);
+
             }
             else if ( bindingUrl == "https://graph.microsoft.com/v1.0" )
             {
                 session = new OneDriveSession( bindingUrl, username, password,
-                                               oauth2, verbose);
+                                               oauth2, verbose,
+                                               g_CurlInitProtocolsFunction);
             }
             else
             {
@@ -94,11 +97,16 @@ namespace libcmis
                 {
                     response = httpSession->httpGetRequest( bindingUrl );
                 }
-                catch ( const CurlException& )
+                catch (const CurlException& e)
                 {
+                    if (e.getErrorCode() == CURLE_SSL_CACERT)
+                    {
+                        // no point in trying other protocols
+                        throw e.getCmisException();
+                    }
                     // Could be SharePoint - needs NTLM authentication
                     session = new SharePointSession( bindingUrl, username,
-                                                      password, verbose );
+                          password, verbose, g_CurlInitProtocolsFunction);
                 }
 
                 // Try the CMIS cases: we need to autodetect the binding type
