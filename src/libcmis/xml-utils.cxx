@@ -536,17 +536,19 @@ namespace libcmis
         boost::uuids::detail::sha1::digest_type digest;
         sha1.get_digest( digest );
 
-        // by using a pointer to unsigned char, we can read the
-        // object representation of either typedef.
-        const unsigned char* ptr = reinterpret_cast<const unsigned char*>( digest );
-
         stringstream out;
         // Setup writing mode. Every number must produce two
         // hexadecimal digits, including possible leading 0s, or we get
         // less than 40 digits as result.
         out << hex << setfill('0') << right;
-        for ( int i = 0; i < sizeof( digest ); ++ptr, ++i )
+#if BOOST_VERSION < 108600
+        for ( int i = 0; i < 5; ++i )
+            out << setw(8) << digest[i];
+#else
+        const unsigned char* ptr = reinterpret_cast<const unsigned char*>( digest );
+        for ( size_t i = 0; i < sizeof( digest ); ++ptr, ++i )
             out << setw(2) << static_cast<int>( *ptr );
+#endif
         return out.str();
     }
 
