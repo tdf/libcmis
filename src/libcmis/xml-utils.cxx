@@ -36,10 +36,10 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/version.hpp>
 
-#if BOOST_VERSION >= 106800
-#include <boost/uuid/detail/sha1.hpp>
-#else
+#if BOOST_VERSION < 106600
 #include <boost/uuid/sha1.hpp>
+#else
+#include <boost/uuid/detail/sha1.hpp>
 #endif
 #include <curl/curl.h>
 
@@ -542,7 +542,7 @@ namespace libcmis
         sha1.get_digest( digest );
 
         stringstream out;
-        // Setup writing mode. Every number must produce two
+        // Setup writing mode. Every byte must produce two
         // hexadecimal digits, including possible leading 0s, or we get
         // less than 40 digits as result.
         out << hex << setfill('0') << right;
