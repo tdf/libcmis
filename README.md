@@ -14,3 +14,4 @@ Dependencies
   * libxml2
   * libcurl
   * boost
+  
