@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/tdf/libcmis.svg?branch=master)](https://travis-ci.org/tdf/libcmis)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/tdf/libcmis.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tdf/libcmis/alerts/)
+[![CI](https://github.com/tdf/libcmis/actions/workflows/ci.yml/badge.svg)](https://github.com/tdf/libcmis/actions/workflows/ci.yml)
 [![Coverity Scan](https://scan.coverity.com/projects/17516/badge.svg)](https://scan.coverity.com/projects/tdf-libcmis)
 
 Objective
