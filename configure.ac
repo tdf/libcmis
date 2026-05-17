@@ -140,15 +140,6 @@ AC_ARG_ENABLE([werror],
 	[enable_werror="$enableval"],
 	[enable_werror=yes]
 )
-AS_IF([test x"$enable_werror" != "xno"], [
-	CFLAGS="$CFLAGS -Werror"
-	CXXFLAGS="$CXXFLAGS -Werror"
-])
-AS_IF([test x"$GCC" = xyes], [
-	# Be tough with warnings and produce less careless code
-	CFLAGS="$CFLAGS -Wall -pedantic -Wshadow -Wendif-labels -Wextra"
-	CXXFLAGS="$CXXFLAGS -Wall -pedantic -Weffc++ -Wshadow -Wendif-labels -Wextra -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo"
-])
 
 # Check for curl
 PKG_CHECK_MODULES(CURL, [libcurl >= 7.29])
@@ -191,6 +182,18 @@ AC_TYPE_MODE_T
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
+
+# Apply strict warning flags only after the autoconf probes, so the
+# probes themselves (e.g. boost.m4's date_time test program) are not
+# rejected under -Werror by warnings like -Wunused-variable.
+AS_IF([test x"$enable_werror" != "xno"], [
+	CFLAGS="$CFLAGS -Werror"
+	CXXFLAGS="$CXXFLAGS -Werror"
+])
+AS_IF([test x"$GCC" = xyes], [
+	CFLAGS="$CFLAGS -Wall -pedantic -Wshadow -Wendif-labels -Wextra"
+	CXXFLAGS="$CXXFLAGS -Wall -pedantic -Weffc++ -Wshadow -Wendif-labels -Wextra -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo"
+])
 
 AC_CONFIG_FILES([
 	Makefile
