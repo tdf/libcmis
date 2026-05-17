@@ -2,8 +2,11 @@
 
 touch ChangeLog
 
+LIBTOOLIZE=libtoolize
+command -v glibtoolize >/dev/null 2>&1 && LIBTOOLIZE=glibtoolize
+
 if [ ! -e ltmain.sh ]; then
-    libtoolize
+    $LIBTOOLIZE
 fi
 
 aclocal -I m4
