@@ -15,7 +15,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 
 if ENABLE_MAN
 cmis-client.1: doc/cmis-client.xml
-	$(DOCBOOK2MAN) $<
+	$(XMLTO) -o $(@D) man $<
 
 man_MANS = cmis-client.1
 endif

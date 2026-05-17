@@ -115,14 +115,14 @@ AC_ARG_WITH(man,
 )
 AS_IF([test "x$with_man" != "xno"], [
 	build_man=yes
-	AS_IF([test -z "$DOCBOOK2MAN"], [
-		AC_PATH_PROGS([DOCBOOK2MAN], [docbook2x-man docbook-to-man docbook2man.pl docbook2man])
-		AS_IF([test -z "$DOCBOOK2MAN"], [
-			AC_MSG_ERROR([docbook-to-man is missing. Install docbook2X package.])
+	AS_IF([test -z "$XMLTO"], [
+		AC_PATH_PROG([XMLTO], [xmlto])
+		AS_IF([test -z "$XMLTO"], [
+			AC_MSG_ERROR([xmlto is required to build the man page; install it or pass --without-man])
 		])
 	])
 ], [build_man=no])
-AC_SUBST(DOCBOOK2MAN)
+AC_SUBST(XMLTO)
 AM_CONDITIONAL([ENABLE_MAN], [test "x$build_man" != "xno"])
 
 # ========
