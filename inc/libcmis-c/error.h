@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-LIBCMIS_C_API libcmis_ErrorPtr libcmis_error_create( );
+LIBCMIS_C_API libcmis_ErrorPtr libcmis_error_create( void );
 LIBCMIS_C_API void           libcmis_error_free( libcmis_ErrorPtr e );
 
 LIBCMIS_C_API const char* libcmis_error_getMessage( libcmis_ErrorPtr e );

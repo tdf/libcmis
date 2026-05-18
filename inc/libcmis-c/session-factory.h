@@ -38,7 +38,7 @@ extern "C" {
 LIBCMIS_C_API void libcmis_setAuthenticationCallback( libcmis_authenticationCallback callback );
 LIBCMIS_C_API void libcmis_setCertValidationCallback( libcmis_certValidationCallback callback );
 LIBCMIS_C_API void libcmis_setOAuth2AuthCodeProvider( libcmis_oauth2AuthCodeProvider callback );
-LIBCMIS_C_API libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( );
+LIBCMIS_C_API libcmis_oauth2AuthCodeProvider libcmis_getOAuth2AuthCodeProvider( void );
 
 LIBCMIS_C_API void libcmis_setProxySettings(
         char* proxy,
@@ -46,10 +46,10 @@ LIBCMIS_C_API void libcmis_setProxySettings(
         char* proxyUser,
         char* proxyPass );
 
-LIBCMIS_C_API const char* libcmis_getProxy( );
-LIBCMIS_C_API const char* libcmis_getNoProxy( );
-LIBCMIS_C_API const char* libcmis_getProxyUser( );
-LIBCMIS_C_API const char* libcmis_getProxyPass( );
+LIBCMIS_C_API const char* libcmis_getProxy( void );
+LIBCMIS_C_API const char* libcmis_getNoProxy( void );
+LIBCMIS_C_API const char* libcmis_getProxyUser( void );
+LIBCMIS_C_API const char* libcmis_getProxyPass( void );
 
 LIBCMIS_C_API libcmis_SessionPtr libcmis_createSession(
         char* bindingUrl,
