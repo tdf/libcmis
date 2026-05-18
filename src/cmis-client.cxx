@@ -481,7 +481,15 @@ void CmisClient::execute( )
                     streamId = m_vm["stream-id"].as<string>();
 
                 boost::shared_ptr< istream > in = document->getContentStream( streamId );
-                ofstream out( document->getContentFilename().c_str() );
+                string filename = document->getContentFilename();
+                if ( filename.empty() ||
+                     filename == "." || filename == ".." ||
+                     filename.find( '/' ) != string::npos ||
+                     filename.find( '\\' ) != string::npos )
+                {
+                    throw CommandException( "Refusing server-supplied filename: " + filename );
+                }
+                ofstream out( filename.c_str() );
                 out << in->rdbuf();
                 out.close();
             }
