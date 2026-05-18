@@ -148,15 +148,14 @@ void libcmis_document_getContentStream(
                 boost::shared_ptr< istream > stream = doc->getContentStream( );
 
                 stream->seekg( 0 );
-                int bufSize = 2048;
-                char* buf = new char[ bufSize ];
+                size_t bufSize = 2048;
+                std::vector< char > buf( bufSize );
                 while ( !stream->eof( ) )
                 {
-                    stream->read( buf, bufSize );
+                    stream->read( buf.data(), bufSize );
                     size_t read = stream->gcount( );
-                    writeFn( ( const void * )buf, size_t( 1 ), read, userData );
+                    writeFn( ( const void * )buf.data(), size_t( 1 ), read, userData );
                 }
-                delete[] buf;
             }
         }
         catch ( const libcmis::Exception& e )
@@ -203,14 +202,13 @@ void libcmis_document_setContentStream(
             boost::shared_ptr< std::ostream > stream( new stringstream( ) );
 
             size_t bufSize = 2048;
-            char* buf = new char[ bufSize ];
+            std::vector< char > buf( bufSize );
             size_t read = 0;
             do
             {
-                read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
-                stream->write( buf, read );
+                read = readFn( ( void * )buf.data(), size_t( 1 ), bufSize, userData );
+                stream->write( buf.data(), read );
             } while ( read == bufSize );
-            delete[] buf;
 
             DocumentPtr doc = dynamic_pointer_cast< libcmis::Document >( document->handle );
             if ( doc )
@@ -358,14 +356,13 @@ libcmis_DocumentPtr libcmis_document_checkIn(
                 boost::shared_ptr< std::ostream > stream( new stringstream( ) );
 
                 size_t bufSize = 2048;
-                char * buf = new char[ bufSize ];
+                std::vector< char > buf( bufSize );
                 size_t read = 0;
                 do
                 {
-                    read = readFn( ( void * )buf, size_t( 1 ), bufSize, userData );
-                    stream->write( buf, read );
+                    read = readFn( ( void * )buf.data(), size_t( 1 ), bufSize, userData );
+                    stream->write( buf.data(), read );
                 } while ( read == bufSize );
-                delete[] buf;
 
                 // Create the property map
                 PropertyPtrMap propertiesMap;
