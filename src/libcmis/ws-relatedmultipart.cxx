@@ -97,7 +97,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
         {
             string name = param.substr( 0, eqPos );
             string value = param.substr( eqPos + 1 );
-            if ( value[0] == '"' && value[value.length() - 1] == '"' )
+            if ( value.length() >= 2 && value[0] == '"' && value[value.length() - 1] == '"' )
                 value = value.substr( 1, value.length( ) - 2 );
 
             name = libcmis::trim( name );
@@ -106,7 +106,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             {
                 m_startId = value;
                 // Remove the '<' '>' around the id if any
-                if ( m_startId[0] == '<' && m_startId[m_startId.size()-1] == '>' )
+                if ( m_startId.length() >= 2 && m_startId[0] == '<' && m_startId[m_startId.size()-1] == '>' )
                     m_startId = m_startId.substr( 1, m_startId.size() - 2 );
             }
             else if ( name == "boundary" )
@@ -127,7 +127,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
     if ( boost::starts_with( bodyFixed, "--" + m_boundary + "\r\n" ) )
         bodyFixed = "\r\n" + bodyFixed;
 
-    if ( bodyFixed[bodyFixed.length() - 1 ] != '\n' )
+    if ( bodyFixed.empty() || bodyFixed[bodyFixed.length() - 1 ] != '\n' )
         bodyFixed += '\n';
 
     string lineEnd( "\n" );
@@ -153,7 +153,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
             if ( !cid.empty() && !type.empty( ) )
             {
                 // Remove potential \r at the end of the body part
-                if ( partBody[partBody.length() - 1] == '\r' )
+                if ( !partBody.empty() && partBody[partBody.length() - 1] == '\r' )
                     partBody.pop_back();
 
                 RelatedPartPtr relatedPart( new RelatedPart( name, type, partBody ) );
@@ -185,7 +185,7 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
                     {
                         cid = libcmis::trim( headerValue );
                         // Remove the '<' '>' around the id if any
-                        if ( cid[0] == '<' && cid[cid.size()-1] == '>' )
+                        if ( cid.length() >= 2 && cid[0] == '<' && cid[cid.size()-1] == '>' )
                             cid = cid.substr( 1, cid.size() - 2 );
                     }
                     else if ( headerName == "Content-Type" )

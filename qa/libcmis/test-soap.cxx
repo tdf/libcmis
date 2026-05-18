@@ -76,6 +76,7 @@ class SoapTest : public CppUnit::TestFixture
         void serializeMultipartSimpleTest( );
         void serializeMultipartComplexTest( );
         void parseMultipartTest( );
+        void parseMultipartEmptyFieldsTest( );
         void getStreamFromNodeXopTest( );
         void getStreamFromNodeBase64Test( );
 
@@ -97,6 +98,7 @@ class SoapTest : public CppUnit::TestFixture
         CPPUNIT_TEST( serializeMultipartSimpleTest );
         CPPUNIT_TEST( serializeMultipartComplexTest );
         CPPUNIT_TEST( parseMultipartTest );
+        CPPUNIT_TEST( parseMultipartEmptyFieldsTest );
         CPPUNIT_TEST( getStreamFromNodeXopTest );
         CPPUNIT_TEST( getStreamFromNodeBase64Test );
 
@@ -458,6 +460,32 @@ void SoapTest::parseMultipartTest( )
     CPPUNIT_ASSERT_MESSAGE( "No part corresponding to part2 cid", actualPart2.get( ) != NULL );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong part2 part content type", part2Type, actualPart2->getContentType( ) );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong part2 part content", part2Content, actualPart2->getContent( ) );
+}
+
+void SoapTest::parseMultipartEmptyFieldsTest( )
+{
+    // Body, contentType params and Content-ID can all be empty in a
+    // bogus response.
+    string boundary = "abc";
+
+    {
+        // Empty start= and an empty body.
+        string contentType = "multipart/related; start=\"\"; boundary=\"" + boundary + "\"";
+        RelatedMultipart multipart( "", contentType );
+        CPPUNIT_ASSERT_EQUAL( string( ), multipart.getStartId( ) );
+    }
+
+    {
+        // A part with an empty Content-Id and an empty body.
+        string body = "\r\n--" + boundary + "\r\n" +
+                      "Content-Id: \r\n" +
+                      "Content-Type: text/plain\r\n" +
+                      "\r\n" +
+                      "\r\n--" + boundary + "--\r\n";
+        string contentType = "multipart/related; boundary=\"" + boundary + "\"";
+        RelatedMultipart multipart( body, contentType );
+        CPPUNIT_ASSERT_EQUAL( boundary, multipart.getBoundary( ) );
+    }
 }
 
 void SoapTest::getStreamFromNodeXopTest( )
