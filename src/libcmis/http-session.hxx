@@ -46,6 +46,12 @@ class OAuth2Handler;
 
 namespace libcmis {
     typedef void(*CurlInitProtocolsFunction)(CURL *);
+
+    /** Throw libcmis::Exception if s contains CR, LF or NUL. libcurl
+        started rejecting these in CURLOPT_URL at 7.84 and in
+        curl_slist_append at 7.86.
+      */
+    void rejectControlChars(const std::string& s, const char* what);
 }
 
 class CurlException : public std::exception

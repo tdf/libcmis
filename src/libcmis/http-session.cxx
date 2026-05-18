@@ -156,6 +156,17 @@ namespace
     };
 }
 
+namespace libcmis {
+
+void rejectControlChars( const string& s, const char* what )
+{
+    if ( s.find_first_of( "\r\n", 0 ) != string::npos ||
+         s.find( '\0' ) != string::npos )
+        throw Exception( string( "Invalid character in " ) + what );
+}
+
+}
+
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
                           libcmis::OAuth2DataPtr oauth2, bool verbose,
                           libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
@@ -665,6 +676,10 @@ void HttpSession::checkCredentials( )
 
 void HttpSession::httpRunRequest( string url, vector< string > headers, bool redirect )
 {
+    libcmis::rejectControlChars( url, "URL" );
+    for ( vector< string >::const_iterator it = headers.begin( ); it != headers.end( ); ++it )
+        libcmis::rejectControlChars( *it, "header" );
+
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
 
@@ -684,11 +699,15 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     // Otherwise, just set the credentials normally using in libcurl options
     if ( m_oauth2Handler && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
+        string oauthHeader = m_oauth2Handler->getHttpHeader();
+        libcmis::rejectControlChars( oauthHeader, "OAuth header" );
         headers_slist.reset(curl_slist_append(headers_slist.release(),
-                                           m_oauth2Handler->getHttpHeader().c_str()));
+                                           oauthHeader.c_str()));
     }
     else if ( !getUsername().empty() )
     {
+        libcmis::rejectControlChars( getUsername(), "username" );
+        libcmis::rejectControlChars( getPassword(), "password" );
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
