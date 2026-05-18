@@ -56,6 +56,7 @@ class JsonTest : public CppUnit::TestFixture
 {
     public:
         void parseTest( );
+        void parseDeepNestingTest( );
         void parseTypeTest( );
         void createFromPropertyTest( );
         void createFromPropertiesTest( );
@@ -64,6 +65,7 @@ class JsonTest : public CppUnit::TestFixture
 
         CPPUNIT_TEST_SUITE( JsonTest );
         CPPUNIT_TEST( parseTest );
+        CPPUNIT_TEST( parseDeepNestingTest );
         CPPUNIT_TEST( parseTypeTest );
         CPPUNIT_TEST( createFromPropertyTest );
         CPPUNIT_TEST( createFromPropertiesTest );  
@@ -112,6 +114,18 @@ void JsonTest::parseTest( )
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong intTest", string("-123"), intTest );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong doubleTest", string("-123.456"), doubleTest );
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong editable", string( "true"), editable );
+}
+
+void JsonTest::parseDeepNestingTest( )
+{
+    // A response with thousands of [[[[...]]]] would blow the stack inside
+    // boost::property_tree::json_parser::read_json. Json::parse must
+    // refuse to feed it to read_json, falling back to the malformed-input
+    // path.
+    string deep( 5000, '[' );
+    deep.append( 5000, ']' );
+    Json json = Json::parse( deep );
+    CPPUNIT_ASSERT_EQUAL( deep, json.toString( ) );
 }
 
 void JsonTest::parseTypeTest( )
