@@ -54,8 +54,11 @@ namespace libcmis
         try
         {
             xmlChar* content = xmlNodeGetContent( node );
-            m_enabled = parseBool( string( ( char* )content ) );
-            xmlFree( content );
+            if ( content )
+            {
+                m_enabled = parseBool( string( ( char* )content ) );
+                xmlFree( content );
+            }
         }
         catch ( const Exception& )
         {

@@ -214,8 +214,11 @@ namespace libcmis
                         if ( xmlStrEqual( child->name, BAD_CAST( "value" ) ) )
                         {
                             xmlChar* content = xmlNodeGetContent( child );
-                            values.push_back( string( ( char * ) content ) );
-                            xmlFree( content );
+                            if ( content )
+                            {
+                                values.push_back( string( ( char * ) content ) );
+                                xmlFree( content );
+                            }
                         }
                     }
                     property.reset( new Property( propType, values ) );

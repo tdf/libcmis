@@ -320,6 +320,8 @@ boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipar
         {
             // Get the content from the multipart
             xmlChar* value = xmlGetProp( child, BAD_CAST( "href" ) );
+            if ( value == NULL )
+                continue;
             string href( ( char* )value );
             xmlFree( value );
             // Get the Content ID from the href (cid:content-id)
@@ -340,14 +342,16 @@ boost::shared_ptr< istream > getStreamFromNode( xmlNodePtr node, RelatedMultipar
     if ( stream.get( ) == NULL )
     {
         xmlChar* content = xmlNodeGetContent( node );
+        if ( content )
+        {
+            stream.reset( new stringstream( ) );
+            libcmis::EncodedData decoder( stream.get( ) );
+            decoder.setEncoding( "base64" );
+            decoder.decode( ( void* )content, 1, xmlStrlen( content ) );
+            decoder.finish( );
 
-        stream.reset( new stringstream( ) );
-        libcmis::EncodedData decoder( stream.get( ) );
-        decoder.setEncoding( "base64" );
-        decoder.decode( ( void* )content, 1, xmlStrlen( content ) );
-        decoder.finish( );
-        
-        xmlFree( content );
+            xmlFree( content );
+        }
     }
     return stream;
 }
