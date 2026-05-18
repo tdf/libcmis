@@ -59,6 +59,7 @@ test_utils_LDADD = \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_atom_SOURCES =	\
@@ -78,6 +79,7 @@ test_atom_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_gdrive_SOURCES =	\
@@ -97,6 +99,7 @@ test_gdrive_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_onedrive_SOURCES =	\
@@ -116,6 +119,7 @@ test_onedrive_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_sharepoint_SOURCES =	\
@@ -135,6 +139,7 @@ test_sharepoint_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 
@@ -155,6 +160,7 @@ test_ws_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_json_SOURCES =	\
@@ -174,6 +180,7 @@ test_json_LDADD = \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
 	$(CURL_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 
@@ -194,6 +201,7 @@ test_factory_LDADD = \
 	$(top_builddir)/qa/mockup/libcmis-mockup.la \
 	$(XML2_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 TESTS = test-utils test-json ${mockup_tests}
