@@ -182,6 +182,8 @@ namespace libcmis
                 decoded[1] = ( m_pendingValue & 0xFF00 ) >> 8;
                 decoded[2] = ( m_pendingValue & 0xFF );
 
+                if ( missingBytes > 3 )
+                    missingBytes = 3;
                 write( decoded, 1, 3 - missingBytes );
 
                 m_pendingRank = 0;
@@ -239,6 +241,8 @@ namespace libcmis
                 decoded[1] = ( blockValue & 0xFF00 ) >> 8;
                 decoded[2] = ( blockValue & 0xFF );
 
+                if ( missingBytes > 3 )
+                    missingBytes = 3;
                 write( decoded, 1, 3 - missingBytes );
 
                 byteRank = 0;

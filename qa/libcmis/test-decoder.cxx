@@ -61,6 +61,7 @@ class DecoderTest : public CppUnit::TestFixture
         void base64DecodePaddedBlockTest( );
         void base64DecodeNoEqualsPaddedBlockTest( );
         void base64DecodeSplitRunsTest( );
+        void base64DecodeExcessPaddingTest( );
 
         void base64EncodeSimpleBlockTest( );
         void base64EncodePaddedBlockTest( );
@@ -74,6 +75,7 @@ class DecoderTest : public CppUnit::TestFixture
         CPPUNIT_TEST( base64DecodePaddedBlockTest );
         CPPUNIT_TEST( base64DecodeNoEqualsPaddedBlockTest );
         CPPUNIT_TEST( base64DecodeSplitRunsTest );
+        CPPUNIT_TEST( base64DecodeExcessPaddingTest );
         CPPUNIT_TEST( base64EncodeSimpleBlockTest );
         CPPUNIT_TEST( base64EncodePaddedBlockTest );
         CPPUNIT_TEST( base64EncodeSplitRunsTest );
@@ -179,6 +181,18 @@ void DecoderTest::base64DecodeSplitRunsTest( )
     data->decode( ( void* )input1.c_str( ), 1, input1.size( ) );
     string input2( "mUu" );
     data->decode( ( void* )input2.c_str( ), 1, input2.size( ) );
+    data->finish( );
+    CPPUNIT_ASSERT_EQUAL( string( "pleasure." ), getActual( ) );
+}
+
+void DecoderTest::base64DecodeExcessPaddingTest( )
+{
+    // A corrupt stream with more '=' than a base64 block can have.  We must
+    // stay within the decodeBase64 buffer bounds.  Ignore the block and the
+    // previous valid run of "pleasure." must still get output.
+    data->setEncoding( BASE64_ENCODING );
+    string input( "cGxlYXN1cmUu========" );
+    data->decode( ( void* )input.c_str( ), 1, input.size( ) );
     data->finish( );
     CPPUNIT_ASSERT_EQUAL( string( "pleasure." ), getActual( ) );
 }
