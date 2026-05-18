@@ -132,6 +132,8 @@ namespace libcmis
             string localName( ( char* ) child->name );
 
             xmlChar* content = xmlNodeGetContent( child );
+            if ( content == NULL )
+                continue;
             string value( ( char* )content );
             xmlFree( content );
 
@@ -247,6 +249,8 @@ namespace libcmis
             string localName( ( char* ) child->name );
 
             xmlChar* content = xmlNodeGetContent( child );
+            if ( content == NULL )
+                continue;
             string value( ( char* )content );
             xmlFree( content );
 

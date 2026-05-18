@@ -467,8 +467,11 @@ void AtomDocument::extractInfos( xmlDocPtr doc )
             {
                 xmlNodePtr contentNd = xpathObj->nodesetval->nodeTab[0];
                 xmlChar* src = xmlGetProp( contentNd, BAD_CAST( "src" ) );
-                m_contentUrl = string( ( char* ) src );
-                xmlFree( src );
+                if ( src )
+                {
+                    m_contentUrl = string( ( char* ) src );
+                    xmlFree( src );
+                }
             }
             xmlXPathFreeObject( xpathObj );
         }

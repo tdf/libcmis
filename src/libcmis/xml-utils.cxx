@@ -350,8 +350,11 @@ namespace libcmis
             if ( xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0 )
             {
                 xmlChar* pContent = xmlNodeGetContent( xpathObj->nodesetval->nodeTab[0] );
-                value = string( ( char* )pContent );
-                xmlFree( pContent );
+                if ( pContent )
+                {
+                    value = string( ( char* )pContent );
+                    xmlFree( pContent );
+                }
             }
             xmlXPathFreeObject( xpathObj );
         }

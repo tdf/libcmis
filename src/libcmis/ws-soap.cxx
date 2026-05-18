@@ -52,20 +52,29 @@ SoapFault::SoapFault( xmlNodePtr node, SoapResponseFactory* factory ) :
         if ( xmlStrEqual( child->name, BAD_CAST( "faultcode" ) ) )
         {
             xmlChar* content = xmlNodeGetContent( child );
-            xmlChar* prefix = NULL;
-            xmlChar* localName = xmlSplitQName2( content, &prefix );
-            if (localName == NULL)
-                localName = xmlStrdup( content );
-            m_faultcode = string( ( char* )localName );
-            xmlFree( content );
-            xmlFree( prefix );
-            xmlFree( localName );
+            if ( content )
+            {
+                xmlChar* prefix = NULL;
+                xmlChar* localName = xmlSplitQName2( content, &prefix );
+                if (localName == NULL)
+                    localName = xmlStrdup( content );
+                if ( localName )
+                {
+                    m_faultcode = string( ( char* )localName );
+                    xmlFree( localName );
+                }
+                xmlFree( content );
+                xmlFree( prefix );
+            }
         }
         else if ( xmlStrEqual( child->name, BAD_CAST( "faultstring" ) ) )
         {
             xmlChar* content = xmlNodeGetContent( child );
-            m_faultstring = string( ( char* )content );
-            xmlFree( content );
+            if ( content )
+            {
+                m_faultstring = string( ( char* )content );
+                xmlFree( content );
+            }
         }
         else if ( xmlStrEqual( child->name, BAD_CAST( "detail" ) ) )
         {

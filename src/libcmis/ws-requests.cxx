@@ -48,6 +48,8 @@ CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
     for ( xmlNodePtr child = node->children; child; child = child->next )
     {
         xmlChar* content = xmlNodeGetContent( child );
+        if ( content == NULL )
+            continue;
         string value( ( char * )content );
         xmlFree( content );
 
@@ -155,6 +157,8 @@ SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipa
             for ( xmlNodePtr repoChild = child->children; repoChild; repoChild = repoChild->next )
             {
                 xmlChar* content = xmlNodeGetContent( repoChild );
+                if ( content == NULL )
+                    continue;
                 string value( ( char* ) content );
                 xmlFree( content );
 
