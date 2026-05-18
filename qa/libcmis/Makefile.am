@@ -35,6 +35,7 @@ libtest_a_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(CURL_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
@@ -48,6 +49,7 @@ test_utils_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(CURL_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
@@ -67,6 +69,7 @@ test_atom_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -85,6 +88,7 @@ test_gdrive_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -103,6 +107,7 @@ test_onedrive_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -121,6 +126,7 @@ test_sharepoint_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -140,6 +146,7 @@ test_ws_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -157,6 +164,7 @@ test_json_CPPFLAGS = \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
@@ -177,6 +185,7 @@ test_factory_CPPFLAGS = \
 	-I$(top_srcdir)/src/libcmis \
 	-I$(top_srcdir)/qa/mockup \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS) \
 	-DDATA_DIR=\"$(top_srcdir)/qa/libcmis/data\"
 
