@@ -29,6 +29,7 @@
 #include "atom-document.hxx"
 
 #include <algorithm>
+#include <memory>
 #include <stdlib.h>
 #include <sstream>
 
@@ -277,12 +278,11 @@ libcmis::DocumentPtr AtomDocument::checkOut( )
     }
 
     string respBuf = resp->getStream( )->str();
-    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkedOutUrl.c_str(), NULL, 0 );
-    if ( NULL == doc )
+    std::shared_ptr< xmlDoc > doc( xmlReadMemory( respBuf.c_str(), respBuf.size(), checkedOutUrl.c_str(), NULL, 0 ), xmlFreeDoc );
+    if ( !doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_DOCUMENT );
-    xmlFreeDoc( doc );
+    libcmis::ObjectPtr created = getSession( )->createObjectFromEntryDoc( doc.get(), AtomPubSession::RESULT_DOCUMENT );
 
     libcmis::DocumentPtr pwc = boost::dynamic_pointer_cast< libcmis::Document >( created );
     if ( !pwc.get( ) )
@@ -373,16 +373,15 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     
     // Get the returned entry and update using it
     string respBuf = response->getStream( )->str( );
-    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), checkInUrl.c_str(), NULL, 0 );
-    if ( NULL == doc )
+    std::shared_ptr< xmlDoc > doc( xmlReadMemory( respBuf.c_str(), respBuf.size(), checkInUrl.c_str(), NULL, 0 ), xmlFreeDoc );
+    if ( !doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
 
-    libcmis::ObjectPtr newVersion = getSession( )->createObjectFromEntryDoc( doc, AtomPubSession::RESULT_DOCUMENT );
+    libcmis::ObjectPtr newVersion = getSession( )->createObjectFromEntryDoc( doc.get(), AtomPubSession::RESULT_DOCUMENT );
 
     if ( newVersion->getId( ) == getId( ) )
-        refreshImpl( doc );
-    xmlFreeDoc( doc );
+        refreshImpl( doc.get() );
 
     return boost::dynamic_pointer_cast< libcmis::Document >( newVersion );
 }
