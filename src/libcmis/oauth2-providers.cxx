@@ -126,7 +126,11 @@ int OAuth2Providers::parseResponse ( const char* response, string& post, string&
             HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
     if ( doc == NULL ) return 0;
     xmlTextReaderPtr reader =   xmlReaderWalker( doc );
-    if ( reader == NULL ) return 0;
+    if ( reader == NULL )
+    {
+        xmlFreeDoc( doc );
+        return 0;
+    }
 
     bool readInputField = false;
     bool bIsRightForm = false;
@@ -209,7 +213,11 @@ string OAuth2Providers::parseCode( const char* response )
             HTML_PARSE_NOWARNING | HTML_PARSE_RECOVER | HTML_PARSE_NOERROR );
     if ( doc == NULL ) return authCode;
     xmlTextReaderPtr reader = xmlReaderWalker( doc );
-    if ( reader == NULL ) return authCode;
+    if ( reader == NULL )
+    {
+        xmlFreeDoc( doc );
+        return authCode;
+    }
 
     while ( true )
     {
