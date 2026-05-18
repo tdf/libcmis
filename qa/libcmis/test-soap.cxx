@@ -69,6 +69,7 @@ class SoapTest : public CppUnit::TestFixture
         void parseResponseTest( );
         void parseResponseXmlTest( );
         void parseResponseFaultTest( );
+        void parseResponseNoNamespaceTest( );
 
         // RelatedMultipart tests
 
@@ -91,6 +92,7 @@ class SoapTest : public CppUnit::TestFixture
         CPPUNIT_TEST( parseResponseTest );
         CPPUNIT_TEST( parseResponseXmlTest );
         CPPUNIT_TEST( parseResponseFaultTest );
+        CPPUNIT_TEST( parseResponseNoNamespaceTest );
 
         CPPUNIT_TEST( serializeMultipartSimpleTest );
         CPPUNIT_TEST( serializeMultipartComplexTest );
@@ -314,6 +316,21 @@ void SoapTest::parseResponseFaultTest( )
         CPPUNIT_ASSERT_MESSAGE( "Wrong fault detail created",
                 dynamic_cast< TestFaultDetail* >( e.getDetail( ).front( ).get( ) ) != NULL );
     }
+}
+
+void SoapTest::parseResponseNoNamespaceTest( )
+{
+    SoapResponseFactory factory;
+    factory.setMapping( getTestMapping() );
+    factory.setNamespaces( getTestNamespaces( ) );
+    factory.setDetailMapping( getTestDetailMapping( ) );
+
+    string xml = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body>"
+                 "<evil/>"
+                 "</S:Body></S:Envelope>";
+
+    vector< SoapResponsePtr > actual = factory.parseResponse( xml );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( "Wrong number of responses", size_t( 0 ), actual.size( ) );
 }
 
 void SoapTest::serializeMultipartSimpleTest( )
