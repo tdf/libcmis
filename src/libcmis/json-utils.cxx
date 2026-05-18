@@ -178,19 +178,59 @@ void Json::add( const Json& json )
     }
 }
 
+namespace
+{
+    // boost::property_tree::json_parser::read_json has with no nesting cap.
+    // Refuse to feed read_json input whose bracket/brace nesting goes past
+    // some arbitrary large value.
+    constexpr size_t MAX_JSON_DEPTH = 100;
+
+    bool exceedsMaxJsonDepth( const std::string& s )
+    {
+        size_t depth = 0;
+        bool inString = false;
+        bool escape = false;
+        for ( char c : s )
+        {
+            if ( escape ) { escape = false; continue; }
+            if ( inString )
+            {
+                if ( c == '\\' ) escape = true;
+                else if ( c == '"' ) inString = false;
+                continue;
+            }
+            if ( c == '"' ) inString = true;
+            else if ( c == '[' || c == '{' )
+            {
+                if ( ++depth > MAX_JSON_DEPTH ) return true;
+            }
+            else if ( ( c == ']' || c == '}' ) && depth > 0 ) --depth;
+        }
+        return false;
+    }
+
+    Json malformedJsonFallback( const std::string& str )
+    {
+        return Json( str.c_str( ) );
+    }
+}
+
 Json Json::parse( const string& str )
 {
+    if ( exceedsMaxJsonDepth( str ) )
+        return malformedJsonFallback( str );
+
     ptree pTree;
-    std::stringstream ss( str ); 
+    std::stringstream ss( str );
     if ( ss.good( ) )
     {
-        try 
+        try
         {
             property_tree::json_parser::read_json( ss, pTree );
         }
         catch ( boost::exception const& )
         {
-            return Json( str.c_str( ) );
+            return malformedJsonFallback( str );
         }
     }
     return Json( pTree );
