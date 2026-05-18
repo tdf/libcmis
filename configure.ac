@@ -170,6 +170,10 @@ BOOST_UUID
 AS_IF([test "x$enable_client" != "xno"], [
 	BOOST_PROGRAM_OPTIONS
 ])
+# Treat boost headers as system headers so -Wshadow / -Weffc++ etc.
+# inside them do not break the build under -Werror. boost.m4 emits
+# -I$prefix; rewrite to -isystem $prefix.
+BOOST_CPPFLAGS=`echo "$BOOST_CPPFLAGS" | sed 's|-I|-isystem |g'`
 AC_SUBST(BOOST_CPPFLAGS)
 
 # Checks for header files.
