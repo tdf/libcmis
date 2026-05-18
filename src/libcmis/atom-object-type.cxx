@@ -28,6 +28,7 @@
 
 #include "atom-object-type.hxx"
 
+#include <memory>
 #include <sstream>
 
 #include <libcmis/xml-utils.hxx>
@@ -99,8 +100,8 @@ vector< libcmis::ObjectTypePtr > AtomObjectType::getChildren( )
 
 void AtomObjectType::refreshImpl( xmlDocPtr doc )
 {
-    bool createdDoc = ( NULL == doc );
-    if ( createdDoc )
+    std::shared_ptr< xmlDoc > ownedDoc;
+    if ( NULL == doc )
     {
         string pattern = m_session->getAtomRepository()->getUriTemplate( UriTemplate::TypeById );
         map< string, string > vars;
@@ -125,16 +126,15 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc )
                 throw e.getCmisException( );
         }
 
-        doc = xmlReadMemory( buf.c_str(), buf.size(), m_selfUrl.c_str(), NULL, 0 );
+        ownedDoc.reset( xmlReadMemory( buf.c_str(), buf.size(), m_selfUrl.c_str(), NULL, 0 ), xmlFreeDoc );
 
-        if ( NULL == doc )
+        if ( !ownedDoc )
             throw libcmis::Exception( "Failed to parse object infos" );
+
+        doc = ownedDoc.get();
     }
 
     extractInfos( doc );
-    
-    if ( createdDoc )
-        xmlFreeDoc( doc );
 }
 
 void AtomObjectType::extractInfos( xmlDocPtr doc )

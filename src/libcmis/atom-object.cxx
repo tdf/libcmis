@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <locale>
+#include <memory>
 #include <sstream>
 
 #include <boost/algorithm/string.hpp>
@@ -149,14 +150,13 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
     }
 
     string respBuf = response->getStream( )->str( );
-    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
-    if ( NULL == doc )
+    std::shared_ptr< xmlDoc > doc( xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 ), xmlFreeDoc );
+    if ( !doc )
         throw libcmis::Exception( "Failed to parse object infos" );
 
-    libcmis::ObjectPtr updated = getSession( )->createObjectFromEntryDoc( doc );
+    libcmis::ObjectPtr updated = getSession( )->createObjectFromEntryDoc( doc.get() );
     if ( updated->getId( ) == getId( ) )
-        refreshImpl( doc );
-    xmlFreeDoc( doc );
+        refreshImpl( doc.get() );
 
     return updated;
 }
@@ -173,12 +173,10 @@ libcmis::AllowableActionsPtr AtomObject::getAllowableActions( )
             {
                 libcmis::HttpResponsePtr response = getSession()->httpGetRequest( link->getHref() );
                 string buf = response->getStream()->str();
-                xmlDocPtr doc = xmlReadMemory( buf.c_str(), buf.size(), link->getHref().c_str(), NULL, 0 );
-                xmlNodePtr actionsNode = xmlDocGetRootElement( doc );
+                std::shared_ptr< xmlDoc > doc( xmlReadMemory( buf.c_str(), buf.size(), link->getHref().c_str(), NULL, 0 ), xmlFreeDoc );
+                xmlNodePtr actionsNode = xmlDocGetRootElement( doc.get() );
                 if ( actionsNode )
                     m_allowableActions.reset( new libcmis::AllowableActions( actionsNode ) );
-
-                xmlFreeDoc( doc );
             }
             catch ( CurlException& )
             {
@@ -191,8 +189,8 @@ libcmis::AllowableActionsPtr AtomObject::getAllowableActions( )
 
 void AtomObject::refreshImpl( xmlDocPtr doc )
 {
-    bool createdDoc = ( NULL == doc );
-    if ( createdDoc )
+    std::shared_ptr< xmlDoc > ownedDoc;
+    if ( NULL == doc )
     {
         string buf;
         try
@@ -204,11 +202,12 @@ void AtomObject::refreshImpl( xmlDocPtr doc )
             throw e.getCmisException( );
         }
 
-        doc = xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 );
+        ownedDoc.reset( xmlReadMemory( buf.c_str(), buf.size(), getInfosUrl().c_str(), NULL, 0 ), xmlFreeDoc );
 
-        if ( NULL == doc )
+        if ( !ownedDoc )
             throw libcmis::Exception( "Failed to parse object infos" );
 
+        doc = ownedDoc.get();
     }
 
     // Cleanup the structures before setting them again
@@ -219,9 +218,6 @@ void AtomObject::refreshImpl( xmlDocPtr doc )
     m_renditions.clear( );
 
     extractInfos( doc );
-
-    if ( createdDoc )
-        xmlFreeDoc( doc );
 }
 
 void AtomObject::remove( bool allVersions )
@@ -302,11 +298,10 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
 
     // refresh self from response
     string respBuf = response->getStream( )->str( );
-    xmlDocPtr doc = xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 );
-    if ( NULL == doc )
+    std::shared_ptr< xmlDoc > doc( xmlReadMemory( respBuf.c_str(), respBuf.size(), getInfosUrl().c_str(), NULL, 0 ), xmlFreeDoc );
+    if ( !doc )
         throw libcmis::Exception( "Failed to parse object infos" );
-    refreshImpl( doc );
-    xmlFreeDoc( doc );
+    refreshImpl( doc.get() );
 }
 
 string AtomObject::getInfosUrl( )
