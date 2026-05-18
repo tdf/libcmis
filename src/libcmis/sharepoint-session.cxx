@@ -191,6 +191,10 @@ Json SharePointSession::getJsonFromUrl( string url )
 /* Overwriting HttpSession::httpRunRequest to add the "accept:application/json" header */
 void SharePointSession::httpRunRequest( string url, vector< string > headers, bool redirect )
 {
+    libcmis::rejectControlChars( url, "URL" );
+    for ( vector< string >::const_iterator it = headers.begin( ); it != headers.end( ); ++it )
+        libcmis::rejectControlChars( *it, "header" );
+
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
 
@@ -215,6 +219,8 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {
+        libcmis::rejectControlChars( getUsername(), "username" );
+        libcmis::rejectControlChars( getPassword(), "password" );
         curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
         curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
         curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
@@ -405,4 +411,5 @@ void SharePointSession::fetchDigestCodeCurl( )
     string res = response->getStream( )->str( );
     Json jsonRes = Json::parse( res );
     m_digestCode = jsonRes["d"]["GetContextWebInformation"]["FormDigestValue"].toString( );
+    libcmis::rejectControlChars( m_digestCode, "FormDigestValue" );
 }

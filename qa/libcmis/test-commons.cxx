@@ -64,11 +64,14 @@ class CommonsTest : public CppUnit::TestFixture
         // Methods that should never be called
         void objectTypeNocallTest();
 
+        void httpSessionCRLFInjectionTest();
+
         CPPUNIT_TEST_SUITE( CommonsTest );
         CPPUNIT_TEST( oauth2DataCopyTest );
         CPPUNIT_TEST( oauth2HandlerCopyTest );
         CPPUNIT_TEST( objectTypeCopyTest );
         CPPUNIT_TEST( objectTypeNocallTest );
+        CPPUNIT_TEST( httpSessionCRLFInjectionTest );
         CPPUNIT_TEST_SUITE_END( );
 };
 
@@ -206,6 +209,23 @@ void CommonsTest::objectTypeNocallTest( )
         CPPUNIT_FAIL( "getChildren() shouldn't succeed" );
     }
     catch ( const Exception& e )
+    {
+    }
+}
+
+void CommonsTest::httpSessionCRLFInjectionTest( )
+{
+    HttpSession session( "user", "pass" );
+    std::string body( "hi" );
+    std::istringstream is( body );
+    try
+    {
+        session.httpPostRequest( "http://example.test/",
+                                 is,
+                                 "text/plain\r\nX-Injected: yes" );
+        CPPUNIT_FAIL( "httpPostRequest with CRLF in contentType should throw" );
+    }
+    catch ( const Exception& )
     {
     }
 }
