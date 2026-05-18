@@ -29,6 +29,7 @@ test_api_LDADD = \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 test_c_build_SOURCES = \
@@ -44,6 +45,7 @@ test_c_build_LDADD = \
 	$(XML2_LIBS) \
 	$(CURL_LIBS) \
 	$(CPPUNIT_LIBS) \
+	$(BOOST_DATE_TIME_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIBS)
 
 TESTS = test-api
