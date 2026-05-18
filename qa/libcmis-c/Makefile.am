@@ -20,6 +20,7 @@ test_api_CXXFLAGS = \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/libcmis-c/ \
 	$(XML2_CFLAGS) \
+	$(CPPUNIT_CFLAGS) \
 	$(BOOST_CPPFLAGS)
 
 test_api_LDADD = \
