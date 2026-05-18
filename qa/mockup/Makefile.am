@@ -8,6 +8,8 @@ libcmis_mockup_la_SOURCES = \
 	mockup-config.h \
 	curl/curl.h
 
+libcmis_mockup_la_CPPFLAGS = $(BOOST_CPPFLAGS)
+
 libcmis_mockup_la_LIBADD = \
 	$(top_builddir)/src/libcmis/libcmis.la
 
