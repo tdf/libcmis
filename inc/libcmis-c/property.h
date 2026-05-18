@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-LIBCMIS_C_API libcmis_vector_property_Ptr libcmis_vector_property_create( );
+LIBCMIS_C_API libcmis_vector_property_Ptr libcmis_vector_property_create( void );
 LIBCMIS_C_API void libcmis_vector_property_free( libcmis_vector_property_Ptr vector );
 LIBCMIS_C_API size_t libcmis_vector_property_size( libcmis_vector_property_Ptr vector );
 LIBCMIS_C_API libcmis_PropertyPtr libcmis_vector_property_get( libcmis_vector_property_Ptr vector, size_t i );
