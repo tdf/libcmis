@@ -29,6 +29,7 @@
 #define _HTTP_SESSION_HXX_
 
 #include <istream>
+#include <memory>
 #include <sstream>
 #include <vector>
 #include <string>
@@ -101,7 +102,7 @@ class HttpSession
     private:
         bool  m_no100Continue;
     protected:
-        OAuth2Handler* m_oauth2Handler;
+        std::unique_ptr<OAuth2Handler> m_oauth2Handler;
         std::string m_username;
         std::string m_password;
         bool m_authProvided;

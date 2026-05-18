@@ -107,32 +107,22 @@ void CommonsTest::oauth2HandlerCopyTest( )
 {
     OAuth2DataPtr data( new OAuth2Data ( "url", "token", "scope", "redirect",
                                          "clientid", "clientsecret" ) );
-    HttpSession session( "user", "pass" );
-    OAuth2Handler handler( &session, data );
+    HttpSession source( "user", "pass" );
+    HttpSession owner( "user", "pass" );
+    OAuth2Handler handler( &source, data );
     handler.m_access = "access";
     handler.m_refresh = "refresh";
     handler.m_oauth2Parser = &DummyOAuth2Parser;
 
-    {
-        OAuth2Handler copy;
-        copy = handler;
+    OAuth2Handler copy( &owner, handler );
 
-        CPPUNIT_ASSERT_EQUAL( &session, copy.m_session );
-        CPPUNIT_ASSERT_EQUAL( data, copy.m_data );
-        CPPUNIT_ASSERT_EQUAL( handler.m_access, copy.m_access );
-        CPPUNIT_ASSERT_EQUAL( handler.m_refresh, copy.m_refresh );
-        CPPUNIT_ASSERT_EQUAL( &DummyOAuth2Parser, copy.m_oauth2Parser );
-    }
-
-    {
-        OAuth2Handler copy( handler );
-
-        CPPUNIT_ASSERT_EQUAL( &session, copy.m_session );
-        CPPUNIT_ASSERT_EQUAL( data, copy.m_data );
-        CPPUNIT_ASSERT_EQUAL( handler.m_access, copy.m_access );
-        CPPUNIT_ASSERT_EQUAL( handler.m_refresh, copy.m_refresh );
-        CPPUNIT_ASSERT_EQUAL( &DummyOAuth2Parser, copy.m_oauth2Parser );
-    }
+    // m_session must follow the new owner, not the source, so that the
+    // copy keeps working after `source` is destroyed.
+    CPPUNIT_ASSERT_EQUAL( &owner, copy.m_session );
+    CPPUNIT_ASSERT_EQUAL( data, copy.m_data );
+    CPPUNIT_ASSERT_EQUAL( handler.m_access, copy.m_access );
+    CPPUNIT_ASSERT_EQUAL( handler.m_refresh, copy.m_refresh );
+    CPPUNIT_ASSERT_EQUAL( &DummyOAuth2Parser, copy.m_oauth2Parser );
 }
 
 static void assertObjectTypeEquals( const ObjectType& expected, const ObjectType& actual )

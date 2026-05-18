@@ -162,7 +162,7 @@ HttpSession::HttpSession( string username, string password, bool noSslCheck,
     m_curlHandle( NULL ),
     m_CurlInitProtocolsFunction(initProtocolsFunction),
     m_no100Continue( false ),
-    m_oauth2Handler( NULL ),
+    m_oauth2Handler( ),
     m_username( username ),
     m_password( password ),
     m_authProvided( false ),
@@ -185,7 +185,9 @@ HttpSession::HttpSession( const HttpSession& copy ) :
     m_curlHandle( NULL ),
     m_CurlInitProtocolsFunction( copy.m_CurlInitProtocolsFunction ),
     m_no100Continue( copy.m_no100Continue ),
-    m_oauth2Handler( copy.m_oauth2Handler ),
+    m_oauth2Handler( copy.m_oauth2Handler ?
+                     new OAuth2Handler( this, *copy.m_oauth2Handler ) :
+                     nullptr ),
     m_username( copy.m_username ),
     m_password( copy.m_password ),
     m_authProvided( copy.m_authProvided ),
@@ -204,7 +206,7 @@ HttpSession::HttpSession( const HttpSession& copy ) :
 HttpSession::HttpSession( ) :
     m_curlHandle( NULL ),
     m_no100Continue( false ),
-    m_oauth2Handler( NULL ),
+    m_oauth2Handler( ),
     m_username( ),
     m_password( ),
     m_authProvided( false ),
@@ -227,7 +229,9 @@ HttpSession& HttpSession::operator=( const HttpSession& copy )
         m_curlHandle = NULL;
         m_CurlInitProtocolsFunction = copy.m_CurlInitProtocolsFunction;
         m_no100Continue = copy.m_no100Continue;
-        m_oauth2Handler = copy.m_oauth2Handler;
+        m_oauth2Handler.reset( copy.m_oauth2Handler ?
+                               new OAuth2Handler( this, *copy.m_oauth2Handler ) :
+                               nullptr );
         m_username = copy.m_username;
         m_password = copy.m_password;
         m_authProvided = copy.m_authProvided;
@@ -250,7 +254,6 @@ HttpSession::~HttpSession( )
 {
     if ( NULL != m_curlHandle )
         curl_easy_cleanup( m_curlHandle );
-    delete( m_oauth2Handler );
 }
 
 string& HttpSession::getUsername( )
@@ -679,7 +682,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
 
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
-    if ( m_oauth2Handler != NULL && !m_oauth2Handler->getHttpHeader( ).empty() )
+    if ( m_oauth2Handler && !m_oauth2Handler->getHttpHeader( ).empty() )
     {
         headers_slist.reset(curl_slist_append(headers_slist.release(),
                                            m_oauth2Handler->getHttpHeader().c_str()));
@@ -829,7 +832,7 @@ long HttpSession::getHttpStatus( )
 
 void HttpSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
 {
-    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
+    m_oauth2Handler.reset( new OAuth2Handler( this, oauth2 ) );
 }
 
 void HttpSession::oauth2Authenticate( )

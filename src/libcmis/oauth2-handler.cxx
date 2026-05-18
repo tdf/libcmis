@@ -50,8 +50,8 @@ OAuth2Handler::OAuth2Handler(HttpSession* session, libcmis::OAuth2DataPtr data) 
 
 }
 
-OAuth2Handler::OAuth2Handler( const OAuth2Handler& copy ) :
-        m_session( copy.m_session ),
+OAuth2Handler::OAuth2Handler( HttpSession* session, const OAuth2Handler& copy ) :
+        m_session( session ),
         m_data( copy.m_data ),
         m_access( copy.m_access ),
         m_refresh( copy.m_refresh ),
@@ -67,20 +67,6 @@ OAuth2Handler::OAuth2Handler( ):
         m_oauth2Parser( )
 {
     m_data.reset( new libcmis::OAuth2Data() );
-}
-
-OAuth2Handler& OAuth2Handler::operator=( const OAuth2Handler& copy )
-{
-    if ( this != &copy )
-    {
-        m_session = copy.m_session;
-        m_data = copy.m_data;
-        m_access = copy.m_access;
-        m_refresh = copy.m_refresh;
-        m_oauth2Parser = copy.m_oauth2Parser;
-    }
-
-    return *this;
 }
 
 OAuth2Handler::~OAuth2Handler( )
