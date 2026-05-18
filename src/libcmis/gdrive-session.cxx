@@ -69,7 +69,7 @@ GDriveSession::~GDriveSession()
 
 void GDriveSession::setOAuth2Data( libcmis::OAuth2DataPtr oauth2 )
 {
-    m_oauth2Handler = new OAuth2Handler( this, oauth2 );
+    m_oauth2Handler.reset( new OAuth2Handler( this, oauth2 ) );
     m_oauth2Handler->setOAuth2Parser( OAuth2Providers::getOAuth2Parser( getBindingUrl( ) ) );
 
     oauth2Authenticate( );

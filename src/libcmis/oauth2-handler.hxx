@@ -52,10 +52,14 @@ class OAuth2Handler
 
         OAuth2Handler( HttpSession* session, libcmis::OAuth2DataPtr data );
 
-        OAuth2Handler( const OAuth2Handler& copy );
-        ~OAuth2Handler( );
+        // Deep-copy into a new owning session. m_session must point at the
+        // new owner, not at the soon-to-be-destroyed source HttpSession.
+        OAuth2Handler( HttpSession* session, const OAuth2Handler& copy );
 
-        OAuth2Handler& operator=( const OAuth2Handler& copy );
+        OAuth2Handler( const OAuth2Handler& ) = delete;
+        OAuth2Handler& operator=( const OAuth2Handler& ) = delete;
+
+        ~OAuth2Handler( );
 
         std::string getAuthURL();
 
