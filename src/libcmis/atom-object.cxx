@@ -131,7 +131,7 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
     AtomObject::writeAtomEntry( writer, properties, stream, string( ) );
 
     xmlTextWriterEndDocument( writer );
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
     xmlFreeTextWriter( writer );
@@ -268,7 +268,7 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     AtomObject::writeAtomEntry( writer, getProperties( ), stream, string( ) );
     xmlTextWriterEndDocument( writer );
 
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );

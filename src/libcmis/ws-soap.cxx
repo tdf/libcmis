@@ -338,7 +338,7 @@ string SoapRequest::createEnvelope( const string& username, const string& passwo
     xmlTextWriterEndElement( writer );  // End of S:Envelope
     xmlTextWriterEndDocument( writer );
 
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
 
     xmlFreeTextWriter( writer );
     xmlBufferFree( buf );

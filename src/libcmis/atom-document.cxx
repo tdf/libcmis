@@ -250,7 +250,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( )
     AtomObject::writeAtomEntry( writer, props, stream, string( ) );
 
     xmlTextWriterEndDocument( writer );
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
     xmlFreeTextWriter( writer );
@@ -352,7 +352,7 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     AtomObject::writeAtomEntry( writer, properties, stream, contentType );
 
     xmlTextWriterEndDocument( writer );
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
     xmlFreeTextWriter( writer );
