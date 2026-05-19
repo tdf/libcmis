@@ -152,7 +152,7 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
     AtomObject::writeAtomEntry( writer, properties, stream, string( ) );
 
     xmlTextWriterEndDocument( writer );
-    string str( ( const char * )xmlBufferContent( buf ) );
+    string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
     xmlFreeTextWriter( writer );
