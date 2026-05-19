@@ -30,6 +30,7 @@
 
 #include "oauth2-handler.hxx"
 
+#include <libcmis/exception.hxx>
 #include <libcmis/session-factory.hxx>
 #include <libcmis/xml-utils.hxx>
 
@@ -37,6 +38,29 @@
 #include "oauth2-providers.hxx"
 
 using namespace std;
+
+namespace
+{
+    // Turn an RFC 6749 token-endpoint error response into a libcmis::Exception
+    // whose message names the failure mode the server reported (the standard
+    // "error" and "error_description" fields), so callers can distinguish
+    // "invalid_grant: refresh token expired" from "your network is down."
+    libcmis::Exception tokenError( const string& what, const Json& jresp )
+    {
+        string err = jresp[ "error" ].toString( );
+        string desc = jresp[ "error_description" ].toString( );
+        string msg = what;
+        if ( !err.empty( ) )
+        {
+            msg += " (";
+            msg += err;
+            if ( !desc.empty( ) )
+                msg += ": " + desc;
+            msg += ")";
+        }
+        return libcmis::Exception( msg );
+    }
+}
 
 OAuth2Handler::OAuth2Handler(HttpSession* session, libcmis::OAuth2DataPtr data) :
         m_session( session ),
@@ -104,6 +128,9 @@ void OAuth2Handler::fetchTokens( string authCode )
     Json jresp = Json::parse( resp->getStream( )->str( ) );
     m_access = jresp[ "access_token" ].toString( );
     m_refresh = jresp[ "refresh_token" ].toString( );
+
+    if ( m_access.empty( ) )
+        throw tokenError( "Token request returned no access_token", jresp );
 }
 
 void OAuth2Handler::refresh( )
@@ -130,6 +157,9 @@ void OAuth2Handler::refresh( )
 
     Json jresp = Json::parse( resp->getStream( )->str( ) );
     m_access = jresp[ "access_token" ].toString();
+
+    if ( m_access.empty( ) )
+        throw tokenError( "Token refresh returned no access_token", jresp );
 }
 
 string OAuth2Handler::getAuthURL( )
