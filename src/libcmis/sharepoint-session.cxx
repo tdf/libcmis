@@ -195,6 +195,8 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     for ( vector< string >::const_iterator it = headers.begin( ); it != headers.end( ); ++it )
         libcmis::rejectControlChars( *it, "header" );
 
+    libcmis::applyTransferLimits( m_curlHandle );
+
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
 

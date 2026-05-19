@@ -165,6 +165,16 @@ void rejectControlChars( const string& s, const char* what )
         throw Exception( string( "Invalid character in " ) + what );
 }
 
+void applyTransferLimits( CURL* curlHandle )
+{
+    constexpr curl_off_t MAX_RESPONSE_SIZE = 1024L * 1024L * 1024L; // 1 GiB
+    constexpr long       LOW_SPEED_TIME_SECS = 30L;
+
+    curl_easy_setopt( curlHandle, CURLOPT_MAXFILESIZE_LARGE, MAX_RESPONSE_SIZE );
+    curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_LIMIT, 1L );
+    curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME_SECS );
+}
+
 }
 
 HttpSession::HttpSession( string username, string password, bool noSslCheck,
@@ -679,6 +689,8 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     libcmis::rejectControlChars( url, "URL" );
     for ( vector< string >::const_iterator it = headers.begin( ); it != headers.end( ); ++it )
         libcmis::rejectControlChars( *it, "header" );
+
+    libcmis::applyTransferLimits( m_curlHandle );
 
     // Redirect
     curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
