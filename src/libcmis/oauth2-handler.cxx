@@ -77,12 +77,12 @@ OAuth2Handler::~OAuth2Handler( )
 void OAuth2Handler::fetchTokens( string authCode )
 {
     string post =
-        "code="              + authCode +
-        "&client_id="        + m_data->getClientId() +
-        "&redirect_uri="     + m_data->getRedirectUri() +
+        "code="              + libcmis::escape( authCode ) +
+        "&client_id="        + libcmis::escape( m_data->getClientId() ) +
+        "&redirect_uri="     + libcmis::escape( m_data->getRedirectUri() ) +
         "&grant_type=authorization_code" ;
     if(boost::starts_with(m_data->getTokenUrl(), "https://oauth2.googleapis.com/"))
-        post += "&client_secret="    + m_data->getClientSecret();
+        post += "&client_secret="    + libcmis::escape( m_data->getClientSecret() );
     else
         post += "&scope="            + libcmis::escape( m_data->getScope() );
 
@@ -110,11 +110,11 @@ void OAuth2Handler::refresh( )
 {
     m_access = string( );
     string post =
-        "refresh_token="     + m_refresh +
-        "&client_id="        + m_data->getClientId() +
+        "refresh_token="     + libcmis::escape( m_refresh ) +
+        "&client_id="        + libcmis::escape( m_data->getClientId() ) +
         "&grant_type=refresh_token" ;
     if(boost::starts_with(m_data->getTokenUrl(), "https://oauth2.googleapis.com/"))
-        post += "&client_secret="    + m_data->getClientSecret();
+        post += "&client_secret="    + libcmis::escape( m_data->getClientSecret() );
 
     istringstream is( post );
     libcmis::HttpResponsePtr resp;
@@ -136,9 +136,9 @@ string OAuth2Handler::getAuthURL( )
 {
     return m_data->getAuthUrl() +
             "?scope=" + libcmis::escape( m_data->getScope( ) ) +
-            "&redirect_uri="+ m_data->getRedirectUri( ) +
+            "&redirect_uri=" + libcmis::escape( m_data->getRedirectUri( ) ) +
             "&response_type=code" +
-            "&client_id=" + m_data->getClientId( );
+            "&client_id=" + libcmis::escape( m_data->getClientId( ) );
 }
 
 string OAuth2Handler::getAccessToken( )

@@ -74,10 +74,10 @@ string OAuth2Providers::OAuth2Alfresco( HttpSession* session, const string& auth
     if ( !parseResponse( res.c_str( ), loginPost, loginLink ) ) 
         return string( );
     
-    loginPost += "username=";  
-    loginPost += string( username );
+    loginPost += "username=";
+    loginPost += libcmis::escape( string( username ) );
     loginPost += "&password=";
-    loginPost += string( password );
+    loginPost += libcmis::escape( string( password ) );
     loginPost += "&action=Grant";
 
     istringstream loginIs( loginPost );
