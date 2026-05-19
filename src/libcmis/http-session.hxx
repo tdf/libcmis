@@ -52,6 +52,13 @@ namespace libcmis {
         curl_slist_append at 7.86.
       */
     void rejectControlChars(const std::string& s, const char* what);
+
+    /** Bound a single HTTP request so a remote that wanted to grow the
+        client's buffer or pin its connection cannot do so indefinitely.
+        Cap response size at 1 GB and abort the transfer if there is no
+        data transfer for 30s.
+      */
+    void applyTransferLimits(CURL* curlHandle);
 }
 
 class CurlException : public std::exception
