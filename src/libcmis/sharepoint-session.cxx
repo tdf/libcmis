@@ -195,6 +195,11 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     for ( vector< string >::const_iterator it = headers.begin( ); it != headers.end( ); ++it )
         libcmis::rejectControlChars( *it, "header" );
 
+    // The base class entry points already call initProtocols() right after
+    // their curl_easy_reset, but re-assert it here so this override stays
+    // safe if a future caller skips the reset+initProtocols pattern.
+    initProtocols();
+
     libcmis::applyTransferLimits( m_curlHandle );
 
     // Redirect

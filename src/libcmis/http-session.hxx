@@ -182,12 +182,12 @@ class HttpSession
         virtual void httpRunRequest( std::string url,
                                     std::vector< std::string > headers = std::vector< std::string > ( ),
                                     bool redirect = true );
+        void initProtocols( );
 
     private:
         void checkCredentials( );
         void checkOAuth2( std::string url );
         void oauth2Refresh( );
-        void initProtocols( );
 };
 
 #endif
