@@ -757,11 +757,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     // We want to get the certificate infos in error cases
     curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
 
-    if ( m_noSSLCheck )
-    {
-        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-    }
+    applySslVerifyForRequest( );
 
     // Perform the query
     CURLcode errCode = curl_easy_perform( m_curlHandle );
@@ -776,66 +772,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
         bool errorFixed = false;
         // If we had a bad certificate, then try to get more details
         if ( CURLE_SSL_CACERT == errCode )
-        {
-            vector< string > certificates;
-            string err(errBuff);
-
-            // We somehow need to rerun the request to get the certificate
-            curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-            errCode = curl_easy_perform( m_curlHandle );
-
-            union {
-                struct curl_slist    *to_info;
-                struct curl_certinfo *to_certinfo;
-            } ptr;
-
-            ptr.to_info = NULL;
-
-            CURLcode res = curl_easy_getinfo(m_curlHandle, CURLINFO_CERTINFO, &ptr.to_info);
-
-            if ( !res && ptr.to_info )
-            {
-                // We need the first certificate in the chain only
-                if ( ptr.to_certinfo->num_of_certs > 0 )
-                {
-                    struct curl_slist *slist;
-
-                    string certStart( "Cert:" );
-                    for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
-                    {
-                        string data( slist->data );
-                        size_t startPos = data.find( certStart );
-                        if ( startPos == 0 )
-                        {
-                            startPos = certStart.length();
-                            data = data.substr( startPos );
-                            certificates.push_back( data );
-                        }
-                    }
-                }
-            }
-
-            if ( !certificates.empty() )
-            {
-                libcmis::CertValidationHandlerPtr validationHandler =
-                    libcmis::SessionFactory::getCertificateValidationHandler( );
-                bool ignoreCert = validationHandler && validationHandler->validateCertificate( certificates );
-                if ( ignoreCert )
-                {
-                    m_noSSLCheck = true;
-
-                    isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
-                    errorFixed = ( CURLE_OK == errCode || ( m_noHttpErrors && isHttpError ) );
-                    if ( !errorFixed )
-                        curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
-                }
-                else
-                {
-                    throw CurlException(err, CURLE_SSL_CACERT);
-                }
-            }
-        }
+            handleSslCacertRecovery( errBuff, errCode, httpError, isHttpError, errorFixed );
 
         if ( !errorFixed )
             throw CurlException( string( errBuff ), errCode, url, httpError );
@@ -907,6 +844,81 @@ void HttpSession::oauth2Authenticate( )
 void HttpSession::setNoSSLCertificateCheck( bool noCheck )
 {
     m_noSSLCheck = noCheck;
+}
+
+void HttpSession::applySslVerifyForRequest( )
+{
+    if ( m_noSSLCheck )
+    {
+        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+    }
+}
+
+void HttpSession::handleSslCacertRecovery( const char* errBuff,
+                                           CURLcode& errCode,
+                                           long& httpError,
+                                           bool& isHttpError,
+                                           bool& errorFixed )
+{
+    vector< string > certificates;
+    string err(errBuff);
+
+    // We somehow need to rerun the request to get the certificate
+    curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+    errCode = curl_easy_perform( m_curlHandle );
+
+    union {
+        struct curl_slist    *to_info;
+        struct curl_certinfo *to_certinfo;
+    } ptr;
+
+    ptr.to_info = NULL;
+
+    CURLcode res = curl_easy_getinfo(m_curlHandle, CURLINFO_CERTINFO, &ptr.to_info);
+
+    if ( !res && ptr.to_info )
+    {
+        // We need the first certificate in the chain only
+        if ( ptr.to_certinfo->num_of_certs > 0 )
+        {
+            struct curl_slist *slist;
+
+            string certStart( "Cert:" );
+            for ( slist = ptr.to_certinfo->certinfo[0]; slist; slist = slist->next )
+            {
+                string data( slist->data );
+                size_t startPos = data.find( certStart );
+                if ( startPos == 0 )
+                {
+                    startPos = certStart.length();
+                    data = data.substr( startPos );
+                    certificates.push_back( data );
+                }
+            }
+        }
+    }
+
+    if ( !certificates.empty() )
+    {
+        libcmis::CertValidationHandlerPtr validationHandler =
+            libcmis::SessionFactory::getCertificateValidationHandler( );
+        bool ignoreCert = validationHandler && validationHandler->validateCertificate( certificates );
+        if ( ignoreCert )
+        {
+            m_noSSLCheck = true;
+
+            isHttpError = errCode == CURLE_HTTP_RETURNED_ERROR;
+            errorFixed = ( CURLE_OK == errCode || ( m_noHttpErrors && isHttpError ) );
+            if ( !errorFixed )
+                curl_easy_getinfo( m_curlHandle, CURLINFO_RESPONSE_CODE, &httpError );
+        }
+        else
+        {
+            throw CurlException(err, CURLE_SSL_CACERT);
+        }
+    }
 }
 
 string HttpSession::getRefreshToken( )

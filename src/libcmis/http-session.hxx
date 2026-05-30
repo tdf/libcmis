@@ -184,6 +184,21 @@ class HttpSession
                                     bool redirect = true );
         void initProtocols( );
 
+        /** Apply CURLOPT_SSL_VERIFY{PEER,HOST} for the request about to run. */
+        void applySslVerifyForRequest( );
+
+        /** Handle a CURLE_SSL_CACERT failure: re-run with verification off
+            to obtain the cert chain, prompt the caller's
+            CertValidationHandler, and on accept update the by-reference
+            outputs as for a recovered request. Throws CurlException if the
+            user rejects or there is no handler.
+          */
+        void handleSslCacertRecovery( const char* errBuff,
+                                      CURLcode& errCode,
+                                      long& httpError,
+                                      bool& isHttpError,
+                                      bool& errorFixed );
+
     private:
         void checkCredentials( );
         void checkOAuth2( std::string url );
