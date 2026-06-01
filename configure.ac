@@ -170,10 +170,12 @@ BOOST_UUID
 AS_IF([test "x$enable_client" != "xno"], [
 	BOOST_PROGRAM_OPTIONS
 ])
-# Treat boost headers as system headers so -Wshadow / -Weffc++ etc.
-# inside them do not break the build under -Werror. boost.m4 emits
-# -I$prefix; rewrite to -isystem $prefix.
-BOOST_CPPFLAGS=`echo "$BOOST_CPPFLAGS" | sed 's|-I|-isystem |g'`
+# Our macOS CI uses --with-boost=/opt/homebrew and then has warnings which trip
+# up -Werror. So rewrite the -I that boost.m4 emits to -isystem so -Wshadow, etc
+# inside boost don't make ci fail
+AS_IF([test -n "$with_boost" -a "x$with_boost" != "xyes" -a "x$with_boost" != "xno"], [
+	BOOST_CPPFLAGS=`echo "$BOOST_CPPFLAGS" | sed 's|-I|-isystem |g'`
+])
 AC_SUBST(BOOST_CPPFLAGS)
 
 # Checks for header files.
