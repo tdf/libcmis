@@ -48,6 +48,7 @@ namespace libcmis
     class LIBCMIS_API Document : public virtual Object
     {
         public:
+            using Object::Object;
             virtual ~Document( ) { }
 
             /** Get the folder parents for the document.

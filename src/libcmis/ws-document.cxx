@@ -33,6 +33,7 @@ using libcmis::PropertyPtrMap;
 
 WSDocument::WSDocument( const WSObject& object ) :
     libcmis::Object( object ),
+    libcmis::Document( m_session ),
     WSObject( object )
 {
 }

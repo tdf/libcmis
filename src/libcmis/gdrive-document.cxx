@@ -40,6 +40,7 @@ using namespace libcmis;
 
 GDriveDocument::GDriveDocument( GDriveSession* session ) :
     libcmis::Object( session),
+    libcmis::Document( session ),
     GDriveObject( session ),
     m_isGoogleDoc( false )
 {
@@ -47,6 +48,7 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
 
 GDriveDocument::GDriveDocument( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
+    libcmis::Document( session ),
     GDriveObject( session, json, id, name ),
     m_isGoogleDoc( false )
 {

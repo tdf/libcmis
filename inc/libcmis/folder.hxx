@@ -55,6 +55,7 @@ namespace libcmis
     class LIBCMIS_API Folder : public virtual Object
     {
         public:
+            using Object::Object;
             virtual ~Folder() { }
 
             virtual std::vector< std::string > getPaths( );
