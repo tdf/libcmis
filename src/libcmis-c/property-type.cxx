@@ -28,6 +28,8 @@
 
 #include <libcmis-c/property-type.h>
 
+#include <utility>
+
 #include "internals.hxx"
 
 void libcmis_vector_property_type_free( libcmis_vector_property_type* vector )
@@ -196,6 +198,6 @@ void libcmis_property_type_update( libcmis_PropertyTypePtr propDef,
     if ( propDef != NULL && propDef->handle.get( ) != NULL && types != NULL )
     {
         std::vector< libcmis::ObjectTypePtr > typesHandle = types->handle;
-        propDef->handle->update( typesHandle );
+        propDef->handle->update( std::move(typesHandle) );
     }
 }

@@ -28,6 +28,8 @@
 
 #include <libcmis-c/folder.h>
 
+#include <utility>
+
 #include "internals.hxx"
 
 using namespace std;
@@ -152,7 +154,7 @@ libcmis_vector_object_Ptr libcmis_folder_getChildren( libcmis_FolderPtr folder, 
             {
                 std::vector< libcmis::ObjectPtr > handles = folderHandle->getChildren( );
                 result = new libcmis_vector_object( );
-                result->handle = handles;
+                result->handle = std::move(handles);
             }
         }
         catch ( const libcmis::Exception& e )
@@ -344,7 +346,7 @@ libcmis_vector_string_Ptr libcmis_folder_removeTree( libcmis_FolderPtr folder,
             {
                 vector< string > handle = folderHandle->removeTree( allVersion,
                         libcmis::UnfileObjects::Type( unfile ), continueOnError );
-                failed->handle = handle;
+                failed->handle = std::move(handle);
             }
         }
     }

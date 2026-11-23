@@ -28,6 +28,8 @@
 
 #include <libcmis-c/property.h>
 
+#include <utility>
+
 #include "internals.hxx"
 
 using namespace std;
@@ -89,7 +91,7 @@ libcmis_PropertyPtr libcmis_property_create( libcmis_PropertyTypePtr type, const
             vector< string > values;
             for ( size_t i = 0; i < size; ++i )
                 values.push_back( string( strValues[i] ) );
-            libcmis::PropertyPtr prop( new ( nothrow ) libcmis::Property( type->handle, values ) );
+            libcmis::PropertyPtr prop( new ( nothrow ) libcmis::Property( type->handle, std::move(values) ) );
             property->handle = prop;
         }
     }
@@ -126,7 +128,7 @@ libcmis_vector_time_Ptr libcmis_property_getDateTimes( libcmis_PropertyPtr prope
         vector< boost::posix_time::ptime > handles = property->handle->getDateTimes( );
         times = new ( nothrow ) libcmis_vector_time( );
         if ( times )
-            times->handle = handles;
+            times->handle = std::move(handles);
     }
    return times; 
 }
@@ -140,7 +142,7 @@ libcmis_vector_bool_Ptr libcmis_property_getBools( libcmis_PropertyPtr property 
         vector< bool > handles = property->handle->getBools( );
         values = new ( nothrow ) libcmis_vector_bool( );
         if ( values )
-            values->handle = handles;
+            values->handle = std::move(handles);
     }
     return values;
 }
@@ -154,7 +156,7 @@ libcmis_vector_string_Ptr libcmis_property_getStrings( libcmis_PropertyPtr prope
         vector< string > handles = property->handle->getStrings( );
         values = new ( nothrow ) libcmis_vector_string( );
         if ( values ) 
-            values->handle = handles;
+            values->handle = std::move(handles);
     }
     return values;
 }
@@ -168,7 +170,7 @@ libcmis_vector_long_Ptr libcmis_property_getLongs( libcmis_PropertyPtr property 
         vector< long > handles = property->handle->getLongs( );
         values = new ( nothrow ) libcmis_vector_long( );
         if ( values )
-            values->handle = handles;
+            values->handle = std::move(handles);
     }
     return values;
 }
@@ -182,7 +184,7 @@ libcmis_vector_double_Ptr libcmis_property_getDoubles( libcmis_PropertyPtr prope
         vector< double > handles = property->handle->getDoubles( );
         values = new ( nothrow ) libcmis_vector_double( );
         if ( values )
-            values->handle = handles;
+            values->handle = std::move(handles);
     }
     return values;
 }
@@ -195,6 +197,6 @@ void libcmis_property_setValues( libcmis_PropertyPtr property, const char** strV
         vector< string > values;
         for ( size_t i = 0; i < size; ++i )
             values.push_back( string( strValues[i] ) );
-        property->handle->setValues( values );
+        property->handle->setValues( std::move(values) );
     }
 }

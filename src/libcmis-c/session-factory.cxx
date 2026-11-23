@@ -30,6 +30,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <stdlib.h> 
 
 #include <libcmis/session-factory.hxx>
@@ -110,7 +111,7 @@ namespace
     {
         libcmis_vector_string_Ptr chain = new ( nothrow ) libcmis_vector_string( );
         if ( chain )
-            chain->handle = certificatesChain;
+            chain->handle = std::move(certificatesChain);
 
         bool result = m_callback( chain );
 

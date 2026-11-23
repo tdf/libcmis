@@ -28,6 +28,8 @@
 
 #include <libcmis-c/document.h>
 
+#include <utility>
+
 #include "internals.hxx"
 
 using namespace std;
@@ -108,7 +110,7 @@ libcmis_vector_folder_Ptr libcmis_document_getParents( libcmis_DocumentPtr docum
             {
                 vector< libcmis::FolderPtr > handles = doc->getParents( );
                 parents = new libcmis_vector_folder( );
-                parents->handle = handles;
+                parents->handle = std::move(handles);
             }
         }
         catch ( const libcmis::Exception& e )
@@ -421,7 +423,7 @@ libcmis_vector_document_Ptr libcmis_document_getAllVersions(
             {
                 std::vector< libcmis::DocumentPtr > handles = doc->getAllVersions( );
                 result = new libcmis_vector_document( );
-                result->handle = handles;
+                result->handle = std::move(handles);
             }
         }
         catch ( const libcmis::Exception& e )

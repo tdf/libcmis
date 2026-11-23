@@ -28,6 +28,8 @@
 
 #include <libcmis-c/object.h>
 
+#include <utility>
+
 #include <libcmis-c/folder.h>
 
 #include "internals.hxx"
@@ -122,7 +124,7 @@ libcmis_vector_string_Ptr libcmis_object_getPaths( libcmis_ObjectPtr object )
         std::vector< std::string > paths = object->handle->getPaths( );
         c_paths = new ( nothrow ) libcmis_vector_string( );
         if ( c_paths )
-            c_paths->handle = paths;
+            c_paths->handle = std::move(paths);
     }
     return c_paths;
 }
@@ -213,7 +215,7 @@ libcmis_vector_rendition_Ptr libcmis_object_getRenditions( libcmis_ObjectPtr obj
         {
             std::vector< libcmis::RenditionPtr > handles = object->handle->getRenditions( );
             result = new libcmis_vector_rendition( );
-            result->handle = handles;
+            result->handle = std::move(handles);
         }
 
         catch ( const bad_alloc& e )
@@ -244,7 +246,7 @@ libcmis_vector_string_Ptr libcmis_object_getSecondaryTypes( libcmis_ObjectPtr ob
         vector< string > types = object->handle->getSecondaryTypes( );
         c_types = new ( nothrow ) libcmis_vector_string( );
         if ( c_types )
-            c_types->handle = types;
+            c_types->handle = std::move(types);
     }
     return c_types;
 }
@@ -263,7 +265,7 @@ libcmis_object_addSecondaryType( libcmis_ObjectPtr object,
             PropertyPtrMap propertiesMap = lcl_createPropertiesMap( properties );
             libcmis::ObjectPtr result = object->handle->addSecondaryType(
                                                     lcl_stdString( id ),
-                                                    propertiesMap );
+                                                    std::move(propertiesMap) );
             updated = new libcmis_object( );
             updated->handle = result;
         }

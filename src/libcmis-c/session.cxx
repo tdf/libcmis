@@ -82,7 +82,7 @@ libcmis_vector_Repository_Ptr libcmis_session_getRepositories( libcmis_SessionPt
         vector< libcmis::RepositoryPtr > handles = session->handle->getRepositories();
         result = new ( nothrow ) libcmis_vector_repository( );
         if ( result )
-            result->handle = handles;
+            result->handle = std::move(handles);
     }
 
     return result;
@@ -282,7 +282,7 @@ libcmis_vector_object_type_Ptr libcmis_session_getBaseTypes(
         {
             vector< libcmis::ObjectTypePtr > handles = session->handle->getBaseTypes( );
             types = new libcmis_vector_object_type( );
-            types->handle = handles;
+            types->handle = std::move(handles);
         }
         catch ( const libcmis::Exception& e )
         {

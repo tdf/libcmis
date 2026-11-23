@@ -28,6 +28,8 @@
 
 #include <libcmis-c/object-type.h>
 
+#include <utility>
+
 #include "internals.hxx"
 
 using namespace std;
@@ -229,7 +231,7 @@ libcmis_vector_object_type_Ptr libcmis_object_type_getChildren(
         {
             std::vector< libcmis::ObjectTypePtr > types = type->handle->getChildren( );
             children = new libcmis_vector_object_type( );
-            children->handle = types;
+            children->handle = std::move(types);
         }
         catch( const libcmis::Exception& e )
         {
