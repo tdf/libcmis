@@ -28,6 +28,8 @@
 
 #include "gdrive-object.hxx"
 
+#include <utility>
+
 #include "gdrive-property.hxx"
 #include "gdrive-allowable-actions.hxx"
 #include "gdrive-repository.hxx"
@@ -44,7 +46,7 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 GDriveObject::GDriveObject( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, id, name ); 
+   initializeFromJson( json, std::move(id), std::move(name) ); 
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -147,7 +149,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
         if ( !mimeType.empty( ) )
         {
             RenditionPtr rendition(
-                new Rendition( mimeType, mimeType, mimeType, downloadUrl ));
+                new Rendition( mimeType, mimeType, mimeType, std::move(downloadUrl) ));
             m_renditions.push_back( rendition );
         }
 
@@ -159,7 +161,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
             mimeType = (*it).substr( 0, pos );
             string url = (*it).substr( pos + 2, (*it).length( ) - pos - 3 );
             RenditionPtr rendition(
-                new Rendition( mimeType, mimeType, mimeType, url ) );
+                new Rendition( mimeType, mimeType, mimeType, std::move(url) ) );
             m_renditions.push_back( rendition );
         }
 
@@ -169,7 +171,7 @@ vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
         {
             mimeType = "cmis:thumbnail";
             RenditionPtr rendition( 
-                new Rendition( mimeType, mimeType, mimeType, thumbnailLink ));
+                new Rendition( mimeType, mimeType, mimeType, std::move(thumbnailLink) ));
             m_renditions.push_back( rendition );
         }
     }
@@ -189,7 +191,7 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {   
@@ -245,7 +247,7 @@ void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {   

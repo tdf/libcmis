@@ -28,6 +28,8 @@
 
 #include "gdrive-session.hxx"
 
+#include <utility>
+
 #include <libcmis/object-type.hxx>
 
 #include "oauth2-handler.hxx"
@@ -45,7 +47,7 @@ GDriveSession::GDriveSession ( string baseUrl,
                                libcmis::OAuth2DataPtr oauth2,
                                bool verbose,
                                libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
-    BaseSession( baseUrl, string(), username, password, false,
+    BaseSession( std::move(baseUrl), string(), std::move(username), std::move(password), false,
                  libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction )
 
 {
@@ -129,7 +131,7 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
          "?fields=kind,id,name,parents,mimeType,createdTime,modifiedTime,thumbnailLink,size";
     try
     {
-        res = httpGetRequest( objectLink )->getStream()->str();
+        res = httpGetRequest( std::move(objectLink) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -196,7 +198,7 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
             string res;
             try
             {
-                res = httpGetRequest( childIdUrl )->getStream()->str();
+                res = httpGetRequest( std::move(childIdUrl) )->getStream()->str();
             }
             catch ( const CurlException& e )
             {
@@ -217,7 +219,7 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
         pos = endpos + 1;
     } while ( endpos != string::npos );
 
-    return getObject( objectId );
+    return getObject( std::move(objectId) );
 }
 
 libcmis::FolderPtr GDriveSession::getRootFolder()

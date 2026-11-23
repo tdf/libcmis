@@ -28,6 +28,8 @@
 
 #include "gdrive-property.hxx"
 
+#include <utility>
+
 #include <libcmis/property-type.hxx>
 
 #include "gdrive-utils.hxx"
@@ -60,7 +62,7 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
     setPropertyType( propertyType );    
     
     vector< string > values = GdriveUtils::parseGdriveProperty( key, json );
-    setValues( values );
+    setValues( std::move(values) );
 }
 
 GDriveProperty::GDriveProperty( const GDriveProperty& copy ) :

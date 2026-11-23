@@ -28,6 +28,8 @@
 
 #include "gdrive-utils.hxx"
 
+#include <utility>
+
 #include <libcmis/xml-utils.hxx>
 
 #include "json-utils.hxx"
@@ -160,18 +162,18 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
                 it != owners.end( ); ++it )
         {
             string ownerName = ( *it )["displayName"].toString( );
-            values.push_back( ownerName);
+            values.push_back( std::move(ownerName));
         }
     }
     else if ( key == "lastModifyingUser" )
     {
         string ownerName = json["displayName"].toString( );
-        values.push_back( ownerName);
+        values.push_back( std::move(ownerName));
     }
     else if ( key == "userPermission" )
     {
         string ownerName = json["role"].toString( );
-        values.push_back( ownerName);
+        values.push_back( std::move(ownerName));
     }
     else if ( key == "ownerNames" )
     {
@@ -180,7 +182,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
                 it != owners.end( ); ++it )
         {
             string ownerName = ( *it )[""].toString( );
-            values.push_back( ownerName);
+            values.push_back( std::move(ownerName));
         }
     }
     else if ( key == "parents" )
@@ -190,7 +192,7 @@ vector< string > GdriveUtils::parseGdriveProperty( string key, Json json )
                 it != owners.end( ); ++it )
         {
             string ownerName = ( *it )["id"].toString( );
-            values.push_back( ownerName);
+            values.push_back( std::move(ownerName));
         }
     }
     else if ( key == "exportLinks" )

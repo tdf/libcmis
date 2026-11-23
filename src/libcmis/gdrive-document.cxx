@@ -28,6 +28,8 @@
 
 #include "gdrive-document.hxx"
 
+#include <utility>
+
 #include <libcmis/rendition.hxx>
 
 #include "gdrive-folder.hxx"
@@ -47,7 +49,7 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
 
 GDriveDocument::GDriveDocument( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
-    GDriveObject( session, json, id, name ),
+    GDriveObject( session, json, std::move(id), std::move(name) ),
     m_isGoogleDoc( false )
 {
     m_isGoogleDoc = getContentType( ).find( "google" ) != string::npos;
@@ -108,7 +110,7 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
     for ( vector< string >::iterator it = parentsId.begin( ); it != parentsId.end( ); ++it)
 	{
         string parentId = ( *it );
-		libcmis::ObjectPtr obj = getSession( )->getObject( parentId );
+		libcmis::ObjectPtr obj = getSession( )->getObject( std::move(parentId) );
         libcmis::FolderPtr parent = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
         parents.push_back( parent );
 	}
@@ -118,13 +120,13 @@ vector< libcmis::FolderPtr > GDriveDocument::getParents( )
 boost::shared_ptr< istream > GDriveDocument::getContentStream( string streamId )
 {
     boost::shared_ptr< istream > stream;
-    string streamUrl = getDownloadUrl( streamId );
+    string streamUrl = getDownloadUrl( std::move(streamId) );
     if ( streamUrl.empty( ) )
         throw libcmis::Exception( "can not found stream url" );
 
     try
     {
-        stream = getSession( )->httpGetRequest( streamUrl )->getStream( );
+        stream = getSession( )->httpGetRequest( std::move(streamUrl) )->getStream( );
     }
     catch ( const CurlException& e )
     {
@@ -147,7 +149,7 @@ void GDriveDocument::uploadStream( boost::shared_ptr< ostream > os,
     headers.push_back( string( "Content-Type: " ) + contentType );
     try
     {
-        string res = getSession()->httpPatchRequest( putUrl, *is, headers )->getStream()->str();
+        string res = getSession()->httpPatchRequest( std::move(putUrl), *is, std::move(headers) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -173,7 +175,7 @@ void GDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         std::cout << "filename change is not implemented in setContentStream" << std::endl;
 
     // Upload stream
-    uploadStream( os, contentType );
+    uploadStream( os, std::move(contentType) );
 }
 
 libcmis::DocumentPtr GDriveDocument::checkOut( )
@@ -201,7 +203,7 @@ libcmis::DocumentPtr GDriveDocument::checkIn(
     // GDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
     updateProperties( properties );
-    setContentStream( stream, contentType, fileName );
+    setContentStream( stream, std::move(contentType), std::move(fileName) );
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
     libcmis::DocumentPtr checkin = 
         boost::dynamic_pointer_cast< libcmis::Document > ( obj );
@@ -217,7 +219,7 @@ vector< libcmis::DocumentPtr > GDriveDocument::getAllVersions( )
     string res;
     try
     {
-        res = getSession()->httpGetRequest( versionUrl )->getStream()->str();
+        res = getSession()->httpGetRequest( std::move(versionUrl) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {

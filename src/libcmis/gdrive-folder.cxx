@@ -28,6 +28,8 @@
 
 #include "gdrive-folder.hxx"
 
+#include <utility>
+
 #include "gdrive-session.hxx"
 #include "gdrive-document.hxx"
 #include "gdrive-property.hxx"
@@ -66,7 +68,7 @@ vector< libcmis::ObjectPtr > GDriveFolder::getChildren( )
     string res;
     try
     {
-        res = getSession( )->httpGetRequest( query )->getStream()->str();
+        res = getSession( )->httpGetRequest( std::move(query) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -165,7 +167,7 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
       gDocument( new GDriveDocument( getSession( ), jsonRes ) );
 
     // Upload stream
-    gDocument->uploadStream( os, contentType);    
+    gDocument->uploadStream( os, std::move(contentType));    
 
     return gDocument;
 }
