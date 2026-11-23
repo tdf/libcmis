@@ -229,7 +229,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc, Resu
     return cmisObject;
 }
 
-libcmis::ObjectPtr AtomPubSession::getObject( string id )
+libcmis::ObjectPtr AtomPubSession::getObject( const string id )
 {
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectById );
     map< string, string > vars;
@@ -259,7 +259,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id )
     }
 }
 
-libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path )
+libcmis::ObjectPtr AtomPubSession::getObjectByPath( const string path )
 {
     string pattern = getAtomRepository()->getUriTemplate( UriTemplate::ObjectByPath );
     map< string, string > vars;

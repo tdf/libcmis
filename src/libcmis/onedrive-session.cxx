@@ -149,7 +149,7 @@ libcmis::ObjectPtr OneDriveSession::getObjectFromJson( Json& jsonRes )
     return object;
 }
 
-libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
+libcmis::ObjectPtr OneDriveSession::getObjectByPath( const string path )
 {
     string res;
     string objectQuery = m_bindingUrl + "/me/drive/root:" + libcmis::escape( path );

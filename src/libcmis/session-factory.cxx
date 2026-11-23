@@ -73,8 +73,8 @@ namespace libcmis
         SessionFactory::s_proxyPass = std::move(proxyPass);
     }
 
-    Session* SessionFactory::createSession( string bindingUrl, string username,
-            string password, string repository, bool noSslCheck,
+    Session* SessionFactory::createSession( string bindingUrl, const string username,
+            const string password, string repository, bool noSslCheck,
             libcmis::OAuth2DataPtr oauth2, bool verbose )
     {
         Session* session = NULL;
@@ -84,14 +84,14 @@ namespace libcmis
             // Try the special cases based on the binding URL
             if ( bindingUrl == "https://www.googleapis.com/drive/v3" )
             {
-                session = new GDriveSession( std::move(bindingUrl), std::move(username), std::move(password),
+                session = new GDriveSession( std::move(bindingUrl), username, password,
                                              oauth2, verbose,
                                              g_CurlInitProtocolsFunction);
 
             }
             else if ( bindingUrl == "https://graph.microsoft.com/v1.0" )
             {
-                session = new OneDriveSession( std::move(bindingUrl), std::move(username), std::move(password),
+                session = new OneDriveSession( std::move(bindingUrl), username, password,
                                                oauth2, verbose,
                                                g_CurlInitProtocolsFunction);
             }
@@ -115,8 +115,8 @@ namespace libcmis
                         throw e.getCmisException();
                     }
                     // Could be SharePoint - needs NTLM authentication
-                    session = new SharePointSession( bindingUrl, std::move(username),
-                          std::move(password), verbose, g_CurlInitProtocolsFunction);
+                    session = new SharePointSession( bindingUrl, username,
+                          password, verbose, g_CurlInitProtocolsFunction);
                 }
 
                 // Try the CMIS cases: we need to autodetect the binding type
