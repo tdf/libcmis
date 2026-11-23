@@ -28,6 +28,8 @@
 
 #include "onedrive-utils.hxx"
 
+#include <utility>
+
 #include <libcmis/xml-utils.hxx>
 
 #include "json-utils.hxx"
@@ -99,12 +101,12 @@ vector< string > OneDriveUtils::parseOneDriveProperty( string key, Json json )
     if ( key == "from" )
     {
         string ownerName = json["name"].toString( );
-        values.push_back( ownerName);
+        values.push_back( std::move(ownerName));
     }
     else if ( key == "shared_with" )
     {
         string sharedWith = json["access"].toString( );
-        values.push_back( sharedWith );
+        values.push_back( std::move(sharedWith) );
     }
     else values.push_back( json.toString( ) );
     return values;

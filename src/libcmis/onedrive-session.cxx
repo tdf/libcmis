@@ -28,6 +28,8 @@
 
 #include "onedrive-session.hxx"
 
+#include <utility>
+
 #include "oauth2-handler.hxx"
 #include "onedrive-object-type.hxx"
 #include "onedrive-document.hxx"
@@ -43,7 +45,7 @@ OneDriveSession::OneDriveSession ( string baseUrl,
                                libcmis::OAuth2DataPtr oauth2,
                                bool verbose,
                                libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
-    BaseSession( baseUrl, string(), username, password, false,
+    BaseSession( std::move(baseUrl), string(), std::move(username), std::move(password), false,
                  libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction)
 
 {
@@ -119,7 +121,7 @@ libcmis::ObjectPtr OneDriveSession::getObject( string objectId )
         objectLink = m_bindingUrl + objectId;
     try
     {
-        res = httpGetRequest( objectLink )->getStream()->str();
+        res = httpGetRequest( std::move(objectLink) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -153,7 +155,7 @@ libcmis::ObjectPtr OneDriveSession::getObjectByPath( string path )
     string objectQuery = m_bindingUrl + "/me/drive/root:" + libcmis::escape( path );
     try
     {
-        res = httpGetRequest( objectQuery )->getStream( )->str( );
+        res = httpGetRequest( std::move(objectQuery) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -185,14 +187,14 @@ bool OneDriveSession::isAPathMatch( Json objectJson, string path )
     string parentUrl = m_bindingUrl + "/" + parentId;
     try
     {
-        res = httpGetRequest( parentUrl )->getStream( )->str( );
+        res = httpGetRequest( std::move(parentUrl) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
         throw e.getCmisException( );
     }
     Json jsonRes = Json::parse( res );
-    return isAPathMatch( jsonRes, truncatedPath );
+    return isAPathMatch( jsonRes, std::move(truncatedPath) );
 }
 
 libcmis::ObjectTypePtr OneDriveSession::getType( string id )

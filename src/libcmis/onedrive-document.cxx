@@ -28,6 +28,8 @@
 
 #include "onedrive-document.hxx"
 
+#include <utility>
+
 #include <libcmis/rendition.hxx>
 
 #include "onedrive-folder.hxx"
@@ -46,7 +48,7 @@ OneDriveDocument::OneDriveDocument( OneDriveSession* session ) :
 
 OneDriveDocument::OneDriveDocument( OneDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
-    OneDriveObject( session, json, id, name )
+    OneDriveObject( session, json, std::move(id), std::move(name) )
 {
 }
 
@@ -60,7 +62,7 @@ vector< libcmis::FolderPtr > OneDriveDocument::getParents( )
 
     string parentId = getStringProperty( "cmis:parentId" );
    
-    libcmis::ObjectPtr obj = getSession( )->getObject( parentId );
+    libcmis::ObjectPtr obj = getSession( )->getObject( std::move(parentId) );
     libcmis::FolderPtr parent = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
     parents.push_back( parent );
     return parents;
@@ -75,7 +77,7 @@ boost::shared_ptr< istream > OneDriveDocument::getContentStream( string /*stream
 
     try
     {
-        stream = getSession( )->httpGetRequest( streamUrl )->getStream( );
+        stream = getSession( )->httpGetRequest( std::move(streamUrl) )->getStream( );
     }
     catch ( const CurlException& e )
     {
@@ -106,7 +108,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
         headers.push_back( "Content-Type: application/json" );
         try
         {
-            getSession()->httpPatchRequest( metaUrl, is, headers );
+            getSession()->httpPatchRequest( std::move(metaUrl), is, std::move(headers) );
         }
         catch ( const CurlException& e )
         {
@@ -124,7 +126,7 @@ void OneDriveDocument::setContentStream( boost::shared_ptr< ostream > os,
     try
     {
         vector <string> headers;
-        getSession()->httpPutRequest( putUrl, *is, headers );
+        getSession()->httpPutRequest( std::move(putUrl), *is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {
@@ -162,7 +164,7 @@ libcmis::DocumentPtr OneDriveDocument::checkIn( bool /*isMajor*/,
     // OneDrive doesn't have CheckIn, so just upload the properties, 
     // the content stream and fetch the new document resource.
     updateProperties( properties );
-    setContentStream( stream, contentType, fileName );
+    setContentStream( stream, std::move(contentType), std::move(fileName) );
     libcmis::ObjectPtr obj = getSession( )->getObject( getId( ) );
     libcmis::DocumentPtr checkin = 
         boost::dynamic_pointer_cast< libcmis::Document > ( obj );

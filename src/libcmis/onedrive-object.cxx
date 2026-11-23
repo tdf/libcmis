@@ -27,6 +27,8 @@
 
 #include "onedrive-object.hxx"
 
+#include <utility>
+
 #include "onedrive-allowable-actions.hxx"
 #include "onedrive-property.hxx"
 #include "onedrive-repository.hxx"
@@ -43,7 +45,7 @@ OneDriveObject::OneDriveObject( OneDriveSession* session ) :
 OneDriveObject::OneDriveObject( OneDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, id, name ); 
+   initializeFromJson( json, std::move(id), std::move(name) ); 
 }
 
 OneDriveObject::OneDriveObject( const OneDriveObject& copy ) :
@@ -157,7 +159,7 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
     {   
         vector< string > headers;
         headers.push_back( "Content-Type: application/json" );
-        response = getSession( )->httpPatchRequest( getUrl( ), is, headers );
+        response = getSession( )->httpPatchRequest( getUrl( ), is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {   

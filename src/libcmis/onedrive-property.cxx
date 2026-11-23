@@ -28,6 +28,8 @@
 
 #include "onedrive-property.hxx"
 
+#include <utility>
+
 #include <libcmis/property-type.hxx>
 
 #include "onedrive-utils.hxx"
@@ -60,7 +62,7 @@ OneDriveProperty::OneDriveProperty( const string& key, Json json ):
     setPropertyType( propertyType );    
     
     vector< string > values = OneDriveUtils::parseOneDriveProperty( key, json );
-    setValues( values );
+    setValues( std::move(values) );
 }
 
 OneDriveProperty::OneDriveProperty( const OneDriveProperty& copy ) :

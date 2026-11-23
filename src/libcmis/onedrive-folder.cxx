@@ -28,6 +28,8 @@
 
 #include "onedrive-folder.hxx"
 
+#include <utility>
+
 #include "onedrive-document.hxx"
 #include "onedrive-session.hxx"
 #include "onedrive-property.hxx"
@@ -62,7 +64,7 @@ vector< libcmis::ObjectPtr > OneDriveFolder::getChildren( )
     string res;
     try
     {
-        res = getSession( )->httpGetRequest( query )->getStream()->str();
+        res = getSession( )->httpGetRequest( std::move(query) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -135,7 +137,7 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     try
     {
         vector< string > headers;
-        res = getSession( )->httpPutRequest( newDocUrl, *is, headers )
+        res = getSession( )->httpPutRequest( std::move(newDocUrl), *is, std::move(headers) )
                                 ->getStream( )->str( );
     }
     catch (const CurlException& e)
