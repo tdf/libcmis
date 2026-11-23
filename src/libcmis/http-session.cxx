@@ -163,6 +163,12 @@ namespace
         T& m_var;
         const T m_origValue;
     };
+
+    void checkCurlOption( CURLcode code, const char* option )
+    {
+        if ( code != CURLE_OK )
+            throw CurlException( string( "Could not set " ) + option, code, string( ), 0 );
+    }
 }
 
 namespace libcmis {
@@ -955,12 +961,12 @@ void HttpSession::initProtocols( )
 {
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
     auto const protocols = "https,http";
-    curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS_STR, protocols);
-    curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
+    checkCurlOption(curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS_STR, protocols), "CURLOPT_PROTOCOLS_STR");
+    checkCurlOption(curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS_STR, protocols), "CURLOPT_REDIR_PROTOCOLS_STR");
 #else
     const unsigned long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
-    curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols);
-    curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols);
+    checkCurlOption(curl_easy_setopt(m_curlHandle, CURLOPT_PROTOCOLS, protocols), "CURLOPT_PROTOCOLS");
+    checkCurlOption(curl_easy_setopt(m_curlHandle, CURLOPT_REDIR_PROTOCOLS, protocols), "CURLOPT_REDIR_PROTOCOLS");
 #endif
     if (m_CurlInitProtocolsFunction)
     {
