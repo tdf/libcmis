@@ -30,6 +30,7 @@
 
 #include <exception>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
@@ -117,14 +118,14 @@ class SoapResponseFactory
 
         SoapResponseFactory& operator=( const SoapResponseFactory& copy );
 
-        void setMapping( std::map< std::string, SoapResponseCreator > mapping ) { m_mapping = mapping; }
+        void setMapping( std::map< std::string, SoapResponseCreator > mapping ) { m_mapping = std::move(mapping); }
 
         /** Set the additional namespaces to parse the responses. There is no need to
             add the soap / wsdl namespaces... they are automatically added.
           */
-        void setNamespaces( std::map< std::string, std::string > namespaces ) { m_namespaces = namespaces; }
+        void setNamespaces( std::map< std::string, std::string > namespaces ) { m_namespaces = std::move(namespaces); }
 
-        void setDetailMapping( std::map< std::string, SoapFaultDetailCreator > mapping ) { m_detailMapping = mapping; }
+        void setDetailMapping( std::map< std::string, SoapFaultDetailCreator > mapping ) { m_detailMapping = std::move(mapping); }
 
         void setSession( SoapSession* session ) { m_session = session; }
 

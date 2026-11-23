@@ -28,6 +28,8 @@
 
 #include "ws-document.hxx"
 
+#include <utility>
+
 using namespace std;
 using libcmis::PropertyPtrMap;
 
@@ -44,7 +46,7 @@ WSDocument::~WSDocument( )
 vector< libcmis::FolderPtr > WSDocument::getParents( )
 {
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getNavigationService( ).getObjectParents( repoId, getId( ) );
+    return getSession( )->getNavigationService( ).getObjectParents( std::move(repoId), getId( ) );
 }
 
 boost::shared_ptr< istream > WSDocument::getContentStream( std::string /* streamId */ ) 
@@ -105,12 +107,12 @@ libcmis::DocumentPtr WSDocument::checkIn( bool isMajor, string comment,
     if ( tryNoStream )
     {
         // Set the content stream first
-        setContentStream( stream, contentType, fileName );
+        setContentStream( stream, std::move(contentType), std::move(fileName) );
 
         // Then check-in
         boost::shared_ptr< ostream > nostream;
-        newVersion = getSession( )->getVersioningService( ).checkIn( repoId, getId( ),
-                isMajor, properties, nostream, string( ), string( ), comment );
+        newVersion = getSession( )->getVersioningService( ).checkIn( std::move(repoId), getId( ),
+                isMajor, properties, nostream, string( ), string( ), std::move(comment) );
     }
 
     if ( newVersion->getId( ) == getId( ) )

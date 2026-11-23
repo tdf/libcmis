@@ -28,6 +28,8 @@
 
 #include "ws-requests.hxx"
 
+#include <utility>
+
 #include <libcmis/xml-utils.hxx>
 
 #include "ws-document.hxx"
@@ -55,13 +57,13 @@ CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
 
         if ( xmlStrEqual( child->name, BAD_CAST( "type" ) ) )
         {
-            m_type = value;
+            m_type = std::move(value);
         }
         else if ( xmlStrEqual( child->name, BAD_CAST( "code" ) ) )
         {
             try
             {
-                m_code = libcmis::parseInteger( value );
+                m_code = libcmis::parseInteger( std::move(value) );
             }
             catch ( const libcmis::Exception& )
             {
@@ -70,7 +72,7 @@ CmisSoapFaultDetail::CmisSoapFaultDetail( xmlNodePtr node ) :
         }
         else if ( xmlStrEqual( child->name, BAD_CAST( "message" ) ) )
         {
-            m_message = value;
+            m_message = std::move(value);
         }
     }
 }
@@ -164,17 +166,17 @@ SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipa
 
                 if ( xmlStrEqual( repoChild->name, BAD_CAST( "repositoryId" ) ) )
                 {
-                    id = value;
+                    id = std::move(value);
                 }
                 else if ( xmlStrEqual( repoChild->name, BAD_CAST( "repositoryName" ) ) )
                 {
-                    name = value;
+                    name = std::move(value);
                 }
 
             }
 
             if ( !id.empty( ) )
-                response->m_repositories[ id ] = name;
+                response->m_repositories[ id ] = std::move(name);
         }
     }
 
@@ -374,7 +376,7 @@ SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultip
             {
                 string value( ( char* ) content );
                 xmlFree( content );
-                response->m_id = value;
+                response->m_id = std::move(value);
             }
         }
     }
@@ -456,7 +458,7 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
                     {
                         string value( ( char* ) content );
                         xmlFree( content );
-                        response->m_failedIds.push_back( value );
+                        response->m_failedIds.push_back( std::move(value) );
                     }
                 }
             }
@@ -654,7 +656,7 @@ SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&
             {
                 string value( ( char* ) content );
                 xmlFree( content );
-                response->m_id = value;
+                response->m_id = std::move(value);
             }
         }
     }
@@ -767,7 +769,7 @@ SoapResponsePtr CheckOutResponse::create( xmlNodePtr node, RelatedMultipart&, So
             {
                 string value( ( char* ) content );
                 xmlFree( content );
-                response->m_objectId = value;
+                response->m_objectId = std::move(value);
             }
         }
     }
@@ -838,7 +840,7 @@ SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, Soa
             {
                 string value( ( char* ) content );
                 xmlFree( content );
-                response->m_objectId = value;
+                response->m_objectId = std::move(value);
             }
         }
     }

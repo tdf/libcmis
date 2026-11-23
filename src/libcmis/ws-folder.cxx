@@ -28,6 +28,8 @@
 
 #include "ws-folder.hxx"
 
+#include <utility>
+
 using namespace std;
 using libcmis::PropertyPtrMap;
 
@@ -44,20 +46,20 @@ WSFolder::~WSFolder( )
 vector< libcmis::ObjectPtr > WSFolder::getChildren( )
 {
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getNavigationService( ).getChildren( repoId, getId( ) );
+    return getSession( )->getNavigationService( ).getChildren( std::move(repoId), getId( ) );
 }
 
 libcmis::FolderPtr WSFolder::createFolder( const PropertyPtrMap& properties )
 {
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getObjectService( ).createFolder( repoId, properties, getId( ) );
+    return getSession( )->getObjectService( ).createFolder( std::move(repoId), properties, getId( ) );
 }
 
 libcmis::DocumentPtr WSFolder::createDocument( const PropertyPtrMap& properties,
                         boost::shared_ptr< ostream > os, string contentType, string fileName )
 {
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getObjectService( ).createDocument( repoId, properties, getId( ), os, contentType, fileName );
+    return getSession( )->getObjectService( ).createDocument( std::move(repoId), properties, getId( ), os, std::move(contentType), std::move(fileName) );
 }
 
 vector< string > WSFolder::removeTree( bool allVersion, libcmis::UnfileObjects::Type unfile, bool continueOnError )

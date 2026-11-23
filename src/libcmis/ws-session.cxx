@@ -29,6 +29,7 @@
 #include "ws-session.hxx"
 
 #include <sstream>
+#include <utility>
 
 #include <boost/date_time.hpp>
 #include <libxml/parser.h>
@@ -134,7 +135,7 @@ string WSSession::getWsdl( string url, libcmis::HttpResponsePtr response )
             url += "&";
         url += "wsdl";
 
-        buf = httpGetRequest( url )->getStream( )->str( );
+        buf = httpGetRequest( std::move(url) )->getStream( )->str( );
     }
 
     return buf;
@@ -222,9 +223,9 @@ void WSSession::parseWsdl( const string& buf )
 
                     // Gimme you soap:address location attribute
                     string locationXPath = serviceXPath + "[@name='" + name + "']/wsdl:port/soap:address/attribute::location";
-                    string location = libcmis::getXPathValue( xpathCtx, locationXPath );
+                    string location = libcmis::getXPathValue( xpathCtx, std::move(locationXPath) );
 
-                    m_servicesUrls[name] = location;
+                    m_servicesUrls[name] = std::move(location);
                 }
             }
             xmlXPathFreeObject( xpathObj );
@@ -243,7 +244,7 @@ void WSSession::initializeResponseFactory( )
     ns[ "cmism" ] = NS_CMISM_URL;
     ns[ "cmisw" ] = NS_CMISW_URL;
     ns[ "cmis" ] = NS_CMIS_URL;
-    m_responseFactory.setNamespaces( ns );
+    m_responseFactory.setNamespaces( std::move(ns) );
     m_responseFactory.setMapping( getResponseMapping() );
     m_responseFactory.setDetailMapping( getDetailMapping( ) );
     m_responseFactory.setSession( this );
@@ -386,7 +387,7 @@ bool WSSession::setRepository( string repositoryId )
     {
         libcmis::RepositoryPtr repo = getRepositoryService( ).getRepositoryInfo( repositoryId );
         if (repo && repo->getId( ) == repositoryId )
-            m_repositoryId = repositoryId;
+            m_repositoryId = std::move(repositoryId);
         success = true;
     }
     catch ( const libcmis::Exception& )

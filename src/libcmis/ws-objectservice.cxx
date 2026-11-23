@@ -28,6 +28,8 @@
 
 #include "ws-objectservice.hxx"
 
+#include <utility>
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
 
@@ -128,7 +130,7 @@ libcmis::ObjectPtr ObjectService::updateProperties(
 {
     libcmis::ObjectPtr object;
 
-    UpdatePropertiesRequest request( repoId, objectId, properties, changeToken );
+    UpdatePropertiesRequest request( repoId, std::move(objectId), properties, std::move(changeToken) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
@@ -203,7 +205,7 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyPtr
 {
     libcmis::FolderPtr folder;
 
-    CreateFolderRequest request( repoId, properties, folderId );
+    CreateFolderRequest request( std::move(repoId), properties, std::move(folderId) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
@@ -212,7 +214,7 @@ libcmis::FolderPtr ObjectService::createFolder( string repoId, const PropertyPtr
         if ( response != NULL )
         {
             string id = response->getObjectId( );
-            folder = m_session->getFolder( id );
+            folder = m_session->getFolder( std::move(id) );
         }
     }
 
@@ -224,7 +226,7 @@ libcmis::DocumentPtr ObjectService::createDocument( string repoId, const Propert
 {
     libcmis::DocumentPtr document;
 
-    CreateDocumentRequest request( repoId, properties, folderId, stream, contentType, fileName );
+    CreateDocumentRequest request( std::move(repoId), properties, std::move(folderId), stream, std::move(contentType), std::move(fileName) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
@@ -233,7 +235,7 @@ libcmis::DocumentPtr ObjectService::createDocument( string repoId, const Propert
         if ( response != NULL )
         {
             string id = response->getObjectId( );
-            libcmis::ObjectPtr object = m_session->getObject( id );
+            libcmis::ObjectPtr object = m_session->getObject( std::move(id) );
             document = boost::dynamic_pointer_cast< libcmis::Document >( object );
         }
     }

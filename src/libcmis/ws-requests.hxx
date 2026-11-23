@@ -32,6 +32,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
@@ -107,7 +108,7 @@ class GetRepositoryInfoRequest : public SoapRequest
         std::string m_id;
 
     public:
-        GetRepositoryInfoRequest( std::string id ) : m_id( id ) { };
+        GetRepositoryInfoRequest( std::string id ) : m_id( std::move(id) ) { };
         ~GetRepositoryInfoRequest( ) { };
 
         void toXml( xmlTextWriterPtr writer );
@@ -139,8 +140,8 @@ class GetTypeDefinitionRequest : public SoapRequest
 
     public:
         GetTypeDefinitionRequest( std::string repoId, std::string typeId ) :
-            m_repositoryId( repoId ),
-            m_typeId( typeId )
+            m_repositoryId( std::move(repoId) ),
+            m_typeId( std::move(typeId) )
         {
         }
 
@@ -175,8 +176,8 @@ class GetTypeChildrenRequest : public SoapRequest
 
     public:
         GetTypeChildrenRequest( std::string repoId, std::string typeId ) :
-            m_repositoryId( repoId ),
-            m_typeId( typeId )
+            m_repositoryId( std::move(repoId) ),
+            m_typeId( std::move(typeId) )
         {
         }
 
@@ -211,8 +212,8 @@ class GetObjectRequest : public SoapRequest
 
     public:
         GetObjectRequest( std::string repoId, std::string id ) :
-            m_repositoryId( repoId ),
-            m_id( id )
+            m_repositoryId( std::move(repoId) ),
+            m_id( std::move(id) )
         {
         }
 
@@ -247,8 +248,8 @@ class GetObjectByPathRequest : public SoapRequest
 
     public:
         GetObjectByPathRequest( std::string repoId, std::string path ) :
-            m_repositoryId( repoId ),
-            m_path( path )
+            m_repositoryId( std::move(repoId) ),
+            m_path( std::move(path) )
         {
         }
 
@@ -269,10 +270,10 @@ class UpdatePropertiesRequest : public SoapRequest
         UpdatePropertiesRequest( std::string repoId, std::string objectId,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string changeToken ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
             m_properties( properties ),
-            m_changeToken( changeToken )
+            m_changeToken( std::move(changeToken) )
         {
         }
 
@@ -308,8 +309,8 @@ class DeleteObjectRequest : public SoapRequest
 
     public:
         DeleteObjectRequest( std::string repoId, std::string objectId, bool allVersions ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
             m_allVersions( allVersions )
         {
         }
@@ -334,8 +335,8 @@ class DeleteTreeRequest : public SoapRequest
                 bool allVersions,
                 libcmis::UnfileObjects::Type unfile,
                 bool continueOnFailure ) :
-            m_repositoryId( repoId ),
-            m_folderId( folderId ),
+            m_repositoryId( std::move(repoId) ),
+            m_folderId( std::move(folderId) ),
             m_allVersions( allVersions ),
             m_unfile( unfile ),
             m_continueOnFailure( continueOnFailure )
@@ -375,10 +376,10 @@ class MoveObjectRequest : public SoapRequest
 
     public:
         MoveObjectRequest( std::string repoId, std::string objectId, std::string destId, std::string srcId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
-            m_destId( destId ),
-            m_srcId( srcId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
+            m_destId( std::move(destId) ),
+            m_srcId( std::move(srcId) )
         {
         }
 
@@ -395,8 +396,8 @@ class GetContentStreamRequest : public SoapRequest
 
     public:
         GetContentStreamRequest( std::string repoId, std::string objectId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) )
         {
         }
 
@@ -432,8 +433,8 @@ class GetObjectParentsRequest : public SoapRequest
     public:
         GetObjectParentsRequest( std::string repoId,
                 std::string objectId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) )
         {
         }
 
@@ -469,8 +470,8 @@ class GetChildrenRequest : public SoapRequest
     public:
         GetChildrenRequest( std::string repoId,
                 std::string folderId ) :
-            m_repositoryId( repoId ),
-            m_folderId( folderId )
+            m_repositoryId( std::move(repoId) ),
+            m_folderId( std::move(folderId) )
         {
         }
 
@@ -508,9 +509,9 @@ class CreateFolderRequest : public SoapRequest
         CreateFolderRequest( std::string repoId,
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 std::string folderId ) :
-            m_repositoryId( repoId ),
+            m_repositoryId( std::move(repoId) ),
             m_properties( properties ),
-            m_folderId( folderId )
+            m_folderId( std::move(folderId) )
         {
         }
 
@@ -553,12 +554,12 @@ class CreateDocumentRequest : public SoapRequest
                 std::string folderId, boost::shared_ptr< std::ostream > stream,
                 std::string contentType,
                 std::string filename ) :
-            m_repositoryId( repoId ),
+            m_repositoryId( std::move(repoId) ),
             m_properties( properties ),
-            m_folderId( folderId ),
+            m_folderId( std::move(folderId) ),
             m_stream( stream ),
-            m_contentType( contentType ),
-            m_filename( filename )
+            m_contentType( std::move(contentType) ),
+            m_filename( std::move(filename) )
         {
         }
 
@@ -586,13 +587,13 @@ class SetContentStreamRequest : public SoapRequest
                 boost::shared_ptr< std::ostream > stream,
                 std::string contentType,
                 std::string filename ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
             m_overwrite( overwrite ),
-            m_changeToken( changeToken ),
+            m_changeToken( std::move(changeToken) ),
             m_stream( stream ),
-            m_contentType( contentType ),
-            m_filename( filename )
+            m_contentType( std::move(contentType) ),
+            m_filename( std::move(filename) )
         {
         }
 
@@ -610,9 +611,9 @@ class GetRenditionsRequest : public SoapRequest
 
     public:
         GetRenditionsRequest( std::string repoId, std::string objectId, std::string filter ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
-            m_filter( filter )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
+            m_filter( std::move(filter) )
         {
         }
 
@@ -648,8 +649,8 @@ class CheckOutRequest : public SoapRequest
     public:
         CheckOutRequest( std::string repoId,
                 std::string objectId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) )
         {
         }
 
@@ -685,8 +686,8 @@ class CancelCheckOutRequest : public SoapRequest
     public:
         CancelCheckOutRequest( std::string repoId,
                 std::string objectId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) )
         {
         }
 
@@ -713,14 +714,14 @@ class CheckInRequest : public SoapRequest
                 const std::map< std::string, libcmis::PropertyPtr >& properties,
                 boost::shared_ptr< std::ostream > stream,
                 std::string contentType, std::string fileName, std::string comment ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId ),
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) ),
             m_isMajor( isMajor ),
             m_properties( properties ),
             m_stream( stream ),
-            m_contentType( contentType ),
-            m_fileName( fileName ),
-            m_comment( comment )
+            m_contentType( std::move(contentType) ),
+            m_fileName( std::move(fileName) ),
+            m_comment( std::move(comment) )
         {
         }
 
@@ -755,8 +756,8 @@ class GetAllVersionsRequest : public SoapRequest
 
     public:
         GetAllVersionsRequest( std::string repoId, std::string objectId ) :
-            m_repositoryId( repoId ),
-            m_objectId( objectId )
+            m_repositoryId( std::move(repoId) ),
+            m_objectId( std::move(objectId) )
         {
         }
 

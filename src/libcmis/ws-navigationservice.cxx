@@ -28,6 +28,8 @@
 
 #include "ws-navigationservice.hxx"
 
+#include <utility>
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
 
@@ -70,7 +72,7 @@ vector< libcmis::FolderPtr > NavigationService::getObjectParents( std::string re
 {
     vector< libcmis::FolderPtr > parents;
 
-    GetObjectParentsRequest request( repoId, objectId );
+    GetObjectParentsRequest request( std::move(repoId), std::move(objectId) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
@@ -87,7 +89,7 @@ vector< libcmis::ObjectPtr > NavigationService::getChildren( string repoId, stri
 {
     vector< libcmis::ObjectPtr > children;
 
-    GetChildrenRequest request( repoId, folderId );
+    GetChildrenRequest request( std::move(repoId), std::move(folderId) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {

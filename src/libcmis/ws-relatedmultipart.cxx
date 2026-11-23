@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <utility>
 #include <boost/algorithm/string.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -104,15 +105,15 @@ RelatedMultipart::RelatedMultipart( const string& body, const string& contentTyp
 
             if ( name == "start" )
             {
-                m_startId = value;
+                m_startId = std::move(value);
                 // Remove the '<' '>' around the id if any
                 if ( m_startId.length() >= 2 && m_startId[0] == '<' && m_startId[m_startId.size()-1] == '>' )
                     m_startId = m_startId.substr( 1, m_startId.size() - 2 );
             }
             else if ( name == "boundary" )
-                m_boundary = value;
+                m_boundary = std::move(value);
             else if ( name == "start-info" )
-                m_startInfo = value;
+                m_startInfo = std::move(value);
         }
 
         if ( pos != string::npos )

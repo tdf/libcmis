@@ -28,6 +28,8 @@
 
 #include "ws-versioningservice.hxx"
 
+#include <utility>
+
 #include "ws-requests.hxx"
 #include "ws-session.hxx"
 
@@ -80,7 +82,7 @@ libcmis::DocumentPtr VersioningService::checkOut( const string& repoId, const st
         if ( response != NULL )
         {
             string pwcId = response->getObjectId( );
-            libcmis::ObjectPtr object = m_session->getObject( pwcId );
+            libcmis::ObjectPtr object = m_session->getObject( std::move(pwcId) );
             pwc = boost::dynamic_pointer_cast< libcmis::Document >( object );
         }
     }
@@ -101,7 +103,7 @@ libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId,
 {
     libcmis::DocumentPtr newVersion;
 
-    CheckInRequest request( repoId, objectId, isMajor, properties, stream, contentType, fileName, comment );
+    CheckInRequest request( std::move(repoId), std::move(objectId), isMajor, properties, stream, std::move(contentType), std::move(fileName), std::move(comment) );
     vector< SoapResponsePtr > responses = m_session->soapRequest( m_url, request );
     if ( responses.size( ) == 1 )
     {
@@ -110,7 +112,7 @@ libcmis::DocumentPtr VersioningService::checkIn( string repoId, string objectId,
         if ( response != NULL )
         {
             string newId = response->getObjectId( );
-            libcmis::ObjectPtr object = m_session->getObject( newId );
+            libcmis::ObjectPtr object = m_session->getObject( std::move(newId) );
             newVersion = boost::dynamic_pointer_cast< libcmis::Document >( object );
         }
     }

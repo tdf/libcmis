@@ -28,6 +28,8 @@
 
 #include "ws-object.hxx"
 
+#include <utility>
+
 #include "ws-document.hxx"
 #include "ws-folder.hxx"
 
@@ -99,7 +101,7 @@ libcmis::ObjectPtr WSObject::updateProperties(
         return object;
     }
     string repoId = getSession( )->getRepositoryId( );
-    return getSession( )->getObjectService( ).updateProperties( repoId, this->getId( ), properties, this->getChangeToken( ) );
+    return getSession( )->getObjectService( ).updateProperties( std::move(repoId), this->getId( ), properties, this->getChangeToken( ) );
 }
 
 void WSObject::refresh( )
