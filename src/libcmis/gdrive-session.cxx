@@ -216,7 +216,8 @@ libcmis::ObjectPtr GDriveSession::getObjectByPath( string path )
                 throw libcmis::Exception( "Object not found: " + path, "objectNotFound" );
         }
 
-        pos = endpos + 1;
+        if ( endpos != string::npos )
+            pos = endpos + 1;
     } while ( endpos != string::npos );
 
     return getObject( std::move(objectId) );
