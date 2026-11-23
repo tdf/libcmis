@@ -150,15 +150,15 @@ libcmis::ObjectPtr GDriveSession::getObject( string objectId )
 
         // Folder is a file with a special mimeType
         if ( mimeType == GDRIVE_FOLDER_MIME_TYPE )
-            object.reset( new GDriveFolder( this, jsonRes ) );
+            object.reset( new GDriveFolder( this, std::move(jsonRes) ) );
         else
-            object.reset( new GDriveDocument( this, jsonRes ) );
+            object.reset( new GDriveDocument( this, std::move(jsonRes) ) );
     } else if ( kind == "drive#revision" ) // A revision is a document too
     {
-        object.reset( new GDriveDocument( this, jsonRes ) );
+        object.reset( new GDriveDocument( this, std::move(jsonRes) ) );
     }
     else // not a folder nor file, maybe a permission or changes,...
-        object.reset( new GDriveObject( this, jsonRes ) );
+        object.reset( new GDriveObject( this, std::move(jsonRes) ) );
 
     return object;
 }
@@ -239,7 +239,7 @@ libcmis::FolderPtr GDriveSession::getRootFolder()
     // Upload meta-datas
     propsJson.add("cmis:name", "VirtualRoot");
 
-    libcmis::FolderPtr folderPtr( new GDriveFolder( this, propsJson ) );
+    libcmis::FolderPtr folderPtr( new GDriveFolder( this, std::move(propsJson) ) );
 
     return folderPtr;
 }

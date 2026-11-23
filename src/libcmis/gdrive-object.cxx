@@ -46,7 +46,7 @@ GDriveObject::GDriveObject( GDriveSession* session ) :
 GDriveObject::GDriveObject( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, std::move(id), std::move(name) ); 
+   initializeFromJson( std::move(json), std::move(id), std::move(name) ); 
 }
 
 GDriveObject::GDriveObject( const GDriveObject& copy ) :
@@ -75,7 +75,7 @@ void GDriveObject::initializeFromJson ( Json json, string id, string name )
         if ( !id.empty( ) && it->first == "id" )
         {
             Json idJson( id.c_str( ) );
-            property.reset( new GDriveProperty( "id", idJson ) );
+            property.reset( new GDriveProperty( "id", std::move(idJson) ) );
             m_properties[ property->getPropertyType( )->getId()] = property;
             property.reset( new GDriveProperty( "revisionId", it->second ) );
             m_properties[ property->getPropertyType( )->getId()] = property;
@@ -83,7 +83,7 @@ void GDriveObject::initializeFromJson ( Json json, string id, string name )
             Json nameJson( name.c_str( ) );
             property.reset( new GDriveProperty( "cmis:name", nameJson) );
             m_properties[ property->getPropertyType( )->getId()] = property;
-            property.reset( new GDriveProperty( "cmis:contentStreamFileName", nameJson) );
+            property.reset( new GDriveProperty( "cmis:contentStreamFileName", std::move(nameJson)) );
             m_properties[ property->getPropertyType( )->getId()] = property;
         }
         else 
@@ -137,7 +137,7 @@ void GDriveObject::refreshImpl( Json json )
 {
     m_typeDescription.reset( );
     m_properties.clear( );
-    initializeFromJson( json );
+    initializeFromJson( std::move(json) );
 }
 
 vector< RenditionPtr> GDriveObject::getRenditions( string /* filter */ )
@@ -203,7 +203,7 @@ libcmis::ObjectPtr GDriveObject::updateProperties(
     libcmis::ObjectPtr updated( new GDriveObject ( getSession( ), jsonRes ) );
 
     if ( updated->getId( ) == getId( ) )
-         refreshImpl( jsonRes );
+         refreshImpl( std::move(jsonRes) );
 
     return updated;
 }
@@ -220,7 +220,7 @@ void GDriveObject::refresh( )
         throw e.getCmisException( );
     }
     Json json = Json::parse( res );
-    refreshImpl( json );
+    refreshImpl( std::move(json) );
 }
 
 void GDriveObject::remove( bool /*allVersions*/ )
@@ -256,7 +256,7 @@ void GDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
     string res = response->getStream( )->str( );
     Json jsonRes = Json::parse( res );
 
-    refreshImpl( jsonRes );
+    refreshImpl( std::move(jsonRes) );
 }
 
 string GDriveObject::getUrl( )

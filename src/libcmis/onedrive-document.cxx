@@ -48,7 +48,7 @@ OneDriveDocument::OneDriveDocument( OneDriveSession* session ) :
 
 OneDriveDocument::OneDriveDocument( OneDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
-    OneDriveObject( session, json, std::move(id), std::move(name) )
+    OneDriveObject( session, std::move(json), std::move(id), std::move(name) )
 {
 }
 

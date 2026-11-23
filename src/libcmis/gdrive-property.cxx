@@ -61,7 +61,7 @@ GDriveProperty::GDriveProperty( const string& key, Json json ):
 
     setPropertyType( propertyType );    
     
-    vector< string > values = GdriveUtils::parseGdriveProperty( key, json );
+    vector< string > values = GdriveUtils::parseGdriveProperty( key, std::move(json) );
     setValues( std::move(values) );
 }
 

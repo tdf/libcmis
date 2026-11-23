@@ -46,7 +46,7 @@ OneDriveFolder::OneDriveFolder( OneDriveSession* session ):
 
 OneDriveFolder::OneDriveFolder( OneDriveSession* session, Json json ):
     libcmis::Object( session ),
-    OneDriveObject( session, json )
+    OneDriveObject( session, std::move(json) )
 {
 }
 
@@ -101,7 +101,7 @@ libcmis::FolderPtr OneDriveFolder::createFolder(
         throw e.getCmisException( );
     }
     Json jsonRes = Json::parse( response );
-    libcmis::FolderPtr folderPtr( new OneDriveFolder( getSession( ), jsonRes ) );
+    libcmis::FolderPtr folderPtr( new OneDriveFolder( getSession( ), std::move(jsonRes) ) );
 
     refresh( );
     return folderPtr;
@@ -146,7 +146,7 @@ libcmis::DocumentPtr OneDriveFolder::createDocument(
     }
     
     Json jsonRes = Json::parse( res );
-    DocumentPtr document( new OneDriveDocument( getSession( ), jsonRes ) );
+    DocumentPtr document( new OneDriveDocument( getSession( ), std::move(jsonRes) ) );
 
     // Upload the properties
     ObjectPtr object = document->updateProperties( properties );

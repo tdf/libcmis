@@ -45,7 +45,7 @@ SharePointDocument::SharePointDocument( SharePointSession* session ) :
 
 SharePointDocument::SharePointDocument( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session),
-    SharePointObject( session, json, std::move(parentId), std::move(name) )
+    SharePointObject( session, std::move(json), std::move(parentId), std::move(name) )
 {
 }
 

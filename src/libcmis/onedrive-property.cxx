@@ -61,7 +61,7 @@ OneDriveProperty::OneDriveProperty( const string& key, Json json ):
 
     setPropertyType( propertyType );    
     
-    vector< string > values = OneDriveUtils::parseOneDriveProperty( key, json );
+    vector< string > values = OneDriveUtils::parseOneDriveProperty( key, std::move(json) );
     setValues( std::move(values) );
 }
 

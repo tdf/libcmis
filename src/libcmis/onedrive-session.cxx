@@ -194,7 +194,7 @@ bool OneDriveSession::isAPathMatch( Json objectJson, string path )
         throw e.getCmisException( );
     }
     Json jsonRes = Json::parse( res );
-    return isAPathMatch( jsonRes, std::move(truncatedPath) );
+    return isAPathMatch( std::move(jsonRes), std::move(truncatedPath) );
 }
 
 libcmis::ObjectTypePtr OneDriveSession::getType( string id )

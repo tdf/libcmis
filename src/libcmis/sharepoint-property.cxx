@@ -62,7 +62,7 @@ SharePointProperty::SharePointProperty( const string& key, Json json ):
 
     setPropertyType( propertyType );    
     
-    vector< string > values = SharePointUtils::parseSharePointProperty( key, json );
+    vector< string > values = SharePointUtils::parseSharePointProperty( key, std::move(json) );
     setValues( std::move(values) );
 }
 

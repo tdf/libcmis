@@ -46,7 +46,7 @@ SharePointFolder::SharePointFolder( SharePointSession* session ):
 
 SharePointFolder::SharePointFolder( SharePointSession* session, Json json, string parentId ):
     libcmis::Object( session ),
-    SharePointObject( session, json, std::move(parentId) )
+    SharePointObject( session, std::move(json), std::move(parentId) )
 {
 }
 
@@ -150,7 +150,7 @@ libcmis::FolderPtr SharePointFolder::createFolder( const PropertyPtrMap& propert
     }
     Json jsonRes = Json::parse( res );
 
-    libcmis::FolderPtr newFolder( new SharePointFolder( getSession( ), jsonRes, getId( ) ) );
+    libcmis::FolderPtr newFolder( new SharePointFolder( getSession( ), std::move(jsonRes), getId( ) ) );
     return newFolder;
 }
 
@@ -191,7 +191,7 @@ libcmis::DocumentPtr SharePointFolder::createDocument( const PropertyPtrMap& pro
     }
 
     Json jsonRes = Json::parse( res );
-    DocumentPtr document( new SharePointDocument( getSession( ), jsonRes, getId( ) ) );
+    DocumentPtr document( new SharePointDocument( getSession( ), std::move(jsonRes), getId( ) ) );
     return document;
 }
 

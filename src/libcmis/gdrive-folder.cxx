@@ -46,7 +46,7 @@ GDriveFolder::GDriveFolder( GDriveSession* session ):
 
 GDriveFolder::GDriveFolder( GDriveSession* session, Json json ):
     libcmis::Object( session ),
-    GDriveObject( session, json )
+    GDriveObject( session, std::move(json) )
 {
 }
 
@@ -129,10 +129,10 @@ libcmis::FolderPtr GDriveFolder::createFolder(
     propsJson.add( "mimeType", jsonMimeType );
     
     // Upload meta-datas
-    string response = uploadProperties( propsJson );
+    string response = uploadProperties( std::move(propsJson) );
     
     Json jsonRes = Json::parse( response );
-    libcmis::FolderPtr folderPtr( new GDriveFolder( getSession( ), jsonRes ) );
+    libcmis::FolderPtr folderPtr( new GDriveFolder( getSession( ), std::move(jsonRes) ) );
 
     return folderPtr;
 }
@@ -158,13 +158,13 @@ libcmis::DocumentPtr GDriveFolder::createDocument(
     }
     
     // Upload meta-datas
-    string res = uploadProperties( propsJson);
+    string res = uploadProperties( std::move(propsJson));
 
     // parse the document
     Json jsonRes = Json::parse( res );
 
     boost::shared_ptr< GDriveDocument >
-      gDocument( new GDriveDocument( getSession( ), jsonRes ) );
+      gDocument( new GDriveDocument( getSession( ), std::move(jsonRes) ) );
 
     // Upload stream
     gDocument->uploadStream( os, std::move(contentType));    

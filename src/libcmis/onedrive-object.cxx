@@ -45,7 +45,7 @@ OneDriveObject::OneDriveObject( OneDriveSession* session ) :
 OneDriveObject::OneDriveObject( OneDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, std::move(id), std::move(name) ); 
+   initializeFromJson( std::move(json), std::move(id), std::move(name) ); 
 }
 
 OneDriveObject::OneDriveObject( const OneDriveObject& copy ) :
@@ -97,7 +97,7 @@ void OneDriveObject::refreshImpl( Json json )
 {
     m_typeDescription.reset( );
     m_properties.clear( );
-    initializeFromJson( json );
+    initializeFromJson( std::move(json) );
 }
 
 void OneDriveObject::refresh( )
@@ -112,7 +112,7 @@ void OneDriveObject::refresh( )
         throw e.getCmisException( );
     }
     Json json = Json::parse( res );
-    refreshImpl( json );
+    refreshImpl( std::move(json) );
 }
 
 void OneDriveObject::remove( bool /*allVersions*/ )
@@ -171,7 +171,7 @@ libcmis::ObjectPtr OneDriveObject::updateProperties(
     libcmis::ObjectPtr updated = getSession()->getObjectFromJson( jsonRes );
 
     if ( updated->getId( ) == getId( ) )
-         refreshImpl( jsonRes );
+         refreshImpl( std::move(jsonRes) );
 
     return updated;
 }
@@ -196,5 +196,5 @@ void OneDriveObject::move( FolderPtr /*source*/, FolderPtr destination )
     string res = response->getStream( )->str( );
     Json jsonRes = Json::parse( res );
 
-    refreshImpl( jsonRes );
+    refreshImpl( std::move(jsonRes) );
 }

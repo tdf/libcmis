@@ -49,7 +49,7 @@ GDriveDocument::GDriveDocument( GDriveSession* session ) :
 
 GDriveDocument::GDriveDocument( GDriveSession* session, Json json, string id, string name ) :
     libcmis::Object( session),
-    GDriveObject( session, json, std::move(id), std::move(name) ),
+    GDriveObject( session, std::move(json), std::move(id), std::move(name) ),
     m_isGoogleDoc( false )
 {
     m_isGoogleDoc = getContentType( ).find( "google" ) != string::npos;

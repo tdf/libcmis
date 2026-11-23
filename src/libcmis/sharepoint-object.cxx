@@ -45,7 +45,7 @@ SharePointObject::SharePointObject( SharePointSession* session ) :
 SharePointObject::SharePointObject( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, std::move(parentId), std::move(name) ); 
+   initializeFromJson( std::move(json), std::move(parentId), std::move(name) ); 
 }
 
 SharePointObject::SharePointObject( const SharePointObject& copy ) :
@@ -131,7 +131,7 @@ void SharePointObject::refreshImpl( Json json )
 {
     m_typeDescription.reset( );
     m_properties.clear( );
-    initializeFromJson( json );
+    initializeFromJson( std::move(json) );
 }
 
 void SharePointObject::refresh( )
@@ -146,7 +146,7 @@ void SharePointObject::refresh( )
         throw e.getCmisException( );
     }
     Json json = Json::parse( res );
-    refreshImpl( json );
+    refreshImpl( std::move(json) );
 }
 
 void SharePointObject::remove( bool /*allVersions*/ )
