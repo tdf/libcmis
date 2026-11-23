@@ -195,8 +195,8 @@ void appendCurlHeader( CurlSlistPtr& headers, const char* header )
     curl_slist* appended = curl_slist_append( headers.get( ), header );
     if ( !appended )
         throw std::bad_alloc( );
-    headers.release( );
-    headers.reset( appended );
+    if ( !headers )
+        headers.reset( appended );
 }
 
 }
