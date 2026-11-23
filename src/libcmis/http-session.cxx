@@ -185,9 +185,9 @@ void applyTransferLimits( CURL* curlHandle )
     constexpr curl_off_t MAX_RESPONSE_SIZE = 1024L * 1024L * 1024L; // 1 GiB
     constexpr long       LOW_SPEED_TIME_SECS = 30L;
 
-    curl_easy_setopt( curlHandle, CURLOPT_MAXFILESIZE_LARGE, MAX_RESPONSE_SIZE );
-    curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_LIMIT, 1L );
-    curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME_SECS );
+    (void)curl_easy_setopt( curlHandle, CURLOPT_MAXFILESIZE_LARGE, MAX_RESPONSE_SIZE );
+    (void)curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_LIMIT, 1L );
+    (void)curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME_SECS );
 }
 
 void appendCurlHeader( CurlSlistPtr& headers, const char* header )
@@ -323,16 +323,16 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url )
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
     // fix Cloudoku too many redirects error
     // note: though curl doc says -1 is the default for MAXREDIRS, the error i got
     // said it was 0
-    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
 
     try
     {
@@ -384,29 +384,29 @@ libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is,
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
 
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
     is.seekg( 0, ios::beg );
-    curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "PATCH" );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
 #endif
 
     // If we know for sure that 100-Continue won't be accepted,
@@ -477,28 +477,28 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
 
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
     is.seekg( 0, ios::beg );
-    curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_INFILESIZE, size );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_UPLOAD, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
 #endif
 
     // If we know for sure that 100-Continue won't be accepted,
@@ -570,28 +570,28 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
 
     libcmis::HttpResponsePtr response( new libcmis::HttpResponse( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, lcl_bufferData );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, response->getData( ).get( ) );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_HEADERFUNCTION, &lcl_getHeaders );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_WRITEHEADER, response.get() );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_MAXREDIRS, 20);
 
     // Get the stream length
     is.seekg( 0, ios::end );
     long size = is.tellg( );
     is.seekg( 0, ios::beg );
-    curl_easy_setopt( m_curlHandle, CURLOPT_POSTFIELDSIZE, size );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
-    curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_POSTFIELDSIZE, size );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_READFUNCTION, lcl_readStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
 #if (LIBCURL_VERSION_MAJOR > 7) || (LIBCURL_VERSION_MAJOR == 7 && LIBCURL_VERSION_MINOR >= 85)
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKFUNCTION, lcl_seekStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_SEEKDATA, &isOriginal );
 #else
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
-    curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLFUNCTION, lcl_ioctlStream );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_IOCTLDATA, &isOriginal );
 #endif
 
     vector< string > headers;
@@ -660,7 +660,7 @@ void HttpSession::httpDeleteRequest( string url )
     curl_easy_reset( m_curlHandle );
     initProtocols( );
 
-    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
     try
     {
         httpRunRequest( url );
@@ -717,13 +717,13 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     libcmis::applyTransferLimits( m_curlHandle );
 
     // Redirect
-    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
 
     // Activate the cookie engine
-    curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );
 
     // Grab something from the web
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
     libcmis::CurlSlistPtr headers_slist;
@@ -742,42 +742,42 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     {
         libcmis::rejectControlChars( getUsername(), "username" );
         libcmis::rejectControlChars( getPassword(), "password" );
-        curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
     }
 
-    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
+    (void)curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
-        curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
         const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
         const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
         if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
         }
     }
 
     // Get some feedback when something wrong happens
     char errBuff[CURL_ERROR_SIZE];
     errBuff[0] = 0;
-    curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
 
     // We want to get the response even if there is an Http error
     if ( !m_noHttpErrors )
-        curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
 
     if ( m_verbose )
-        curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
     // We want to get the certificate infos in error cases
-    curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
 
     applySslVerifyForRequest( );
 
@@ -872,8 +872,8 @@ void HttpSession::applySslVerifyForRequest( )
 {
     if ( m_noSSLCheck )
     {
-        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+        (void)curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+        (void)curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
     }
 }
 
@@ -887,8 +887,8 @@ void HttpSession::handleSslCacertRecovery( const char* errBuff,
     string err(errBuff);
 
     // We somehow need to rerun the request to get the certificate
-    curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+    (void)curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
+    (void)curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
     errCode = curl_easy_perform( m_curlHandle );
 
     union {

@@ -205,13 +205,13 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     libcmis::applyTransferLimits( m_curlHandle );
 
     // Redirect
-    curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_FOLLOWLOCATION, redirect);
 
     // Activate the cookie engine
-    curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_COOKIEFILE, "" );
 
     // Grab something from the web
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
     libcmis::CurlSlistPtr headers_slist;
@@ -229,42 +229,42 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     {
         libcmis::rejectControlChars( getUsername(), "username" );
         libcmis::rejectControlChars( getPassword(), "password" );
-        curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_HTTPAUTH, m_authMethod );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_USERNAME, getUsername().c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_PASSWORD, getPassword().c_str() );
     }
 
-    curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
+    (void)curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, headers_slist.get());
 
     // Set the proxy configuration if any
     if ( !libcmis::SessionFactory::getProxy( ).empty() )
     {
-        curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, libcmis::SessionFactory::getProxy( ).c_str() );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_NOPROXY, libcmis::SessionFactory::getNoProxy( ).c_str() );
         const string& proxyUser = libcmis::SessionFactory::getProxyUser( );
         const string& proxyPass = libcmis::SessionFactory::getProxyPass( );
         if ( !proxyUser.empty( ) && !proxyPass.empty( ) )
         {
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
-            curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERNAME, proxyUser.c_str( ) );
+            (void)curl_easy_setopt( m_curlHandle, CURLOPT_PROXYPASSWORD, proxyPass.c_str( ) );
         }
     }
 
     // Get some feedback when something wrong happens
     char errBuff[CURL_ERROR_SIZE];
     errBuff[0] = 0;
-    curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, errBuff );
 
     // We want to get the response even if there is an Http error
     if ( !m_noHttpErrors )
-        curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
 
     if ( m_verbose )
-        curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
+        (void)curl_easy_setopt( m_curlHandle, CURLOPT_VERBOSE, 1 );
 
     // We want to get the certificate infos in error cases
-    curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
+    (void)curl_easy_setopt( m_curlHandle, CURLOPT_CERTINFO, 1 );
 
     applySslVerifyForRequest( );
 
