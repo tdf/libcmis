@@ -34,6 +34,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include <boost/program_options.hpp>
 
@@ -68,7 +69,7 @@ namespace
     string AuthCodeProvider::m_authCode = string( );
     void AuthCodeProvider::setAuthCode( string authCode )
     {
-        m_authCode = authCode;
+        m_authCode = std::move(authCode);
     }
     
     char* AuthCodeProvider::getAuthCode( const char* /*url*/, const char* /*username*/, const char* /*password*/ ) 
@@ -162,7 +163,7 @@ class CommandException : public exception
         string m_msg;
 
     public:
-        CommandException( string msg ) : m_msg( msg ) { }
+        CommandException( string msg ) : m_msg( std::move(msg) ) { }
         ~CommandException( ) noexcept { }
         CommandException( const CommandException& copy ) : m_msg( copy.m_msg ) { }
 
@@ -259,7 +260,7 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories )
         if ( m_vm.count( "noproxy" ) > 0 )
             noproxy = m_vm["noproxy"].as< string >();
 
-        libcmis::SessionFactory::setProxySettings( proxyUrl, noproxy, proxyUser, proxyPass );
+        libcmis::SessionFactory::setProxySettings( std::move(proxyUrl), std::move(noproxy), std::move(proxyUser), std::move(proxyPass) );
     }
 
     bool verbose = m_vm.count( "verbose" ) > 0;
@@ -339,7 +340,7 @@ libcmis::Session* CmisClient::getSession( bool inGetRepositories )
             oauth2Data.reset( );
         }
 
-        session = libcmis::SessionFactory::createSession( url, username, password, repoId, noSslCheck, oauth2Data, verbose );
+        session = libcmis::SessionFactory::createSession( std::move(url), std::move(username), std::move(password), std::move(repoId), noSslCheck, oauth2Data, verbose );
     }
 
     return session;
@@ -480,7 +481,7 @@ void CmisClient::execute( )
                 if ( m_vm.count( "stream-id" ) > 0 )
                     streamId = m_vm["stream-id"].as<string>();
 
-                boost::shared_ptr< istream > in = document->getContentStream( streamId );
+                boost::shared_ptr< istream > in = document->getContentStream( std::move(streamId) );
                 string filename = document->getContentFilename();
                 if ( filename.empty() ||
                      filename == "." || filename == ".." ||
@@ -523,7 +524,7 @@ void CmisClient::execute( )
                 if ( is.fail( ) )
                     throw CommandException( string( "Unable to open file " ) + file );
 
-                document->setContentStream( os, type, filename );
+                document->setContentStream( os, std::move(type), std::move(filename) );
 
                 is.close( );
             }
@@ -562,8 +563,8 @@ void CmisClient::execute( )
             {
                 newFolderName += " " + args[i];
             }
-            nameValues.push_back( newFolderName );
-            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+            nameValues.push_back( std::move(newFolderName) );
+            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, std::move(nameValues) ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
             
             // Set the objectTypeId
@@ -571,8 +572,8 @@ void CmisClient::execute( )
             if ( typeIt == propertiesTypes.end( ) )
                 throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
             vector< string > typeIdValues;
-            typeIdValues.push_back( folderType );
-            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+            typeIdValues.push_back( std::move(folderType) );
+            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, std::move(typeIdValues) ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
             
             // Checks for the properties to set if any
@@ -585,7 +586,7 @@ void CmisClient::execute( )
                 {
                     vector< string > values;
                     values.push_back( it->second );
-                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, std::move(values) ) );
                     properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
                 }
             }
@@ -627,8 +628,8 @@ void CmisClient::execute( )
             {
                 newDocumentName += " " + args[i];
             }
-            nameValues.push_back( newDocumentName );
-            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, nameValues ) );
+            nameValues.push_back( std::move(newDocumentName) );
+            libcmis::PropertyPtr nameProperty( new libcmis::Property( typeIt->second, std::move(nameValues) ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:name" ), nameProperty ) );
             
             // Set the objectTypeId
@@ -636,8 +637,8 @@ void CmisClient::execute( )
             if ( typeIt == propertiesTypes.end( ) )
                 throw CommandException( string( "No cmis:objectTypeId on the object type... weird" ) );
             vector< string > typeIdValues;
-            typeIdValues.push_back( documentType );
-            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, typeIdValues ) );
+            typeIdValues.push_back( std::move(documentType) );
+            libcmis::PropertyPtr typeIdProperty( new libcmis::Property( typeIt->second, std::move(typeIdValues) ) );
             properties.insert( pair< string, libcmis::PropertyPtr >( string( "cmis:objectTypeId" ), typeIdProperty ) );
             
             // Checks for the properties to set if any
@@ -650,7 +651,7 @@ void CmisClient::execute( )
                 {
                     vector< string > values;
                     values.push_back( it->second );
-                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, values ) );
+                    libcmis::PropertyPtr cmisProperty( new libcmis::Property( typeIt->second, std::move(values) ) );
                     properties.insert( pair< string, libcmis::PropertyPtr >( it->first, cmisProperty ) );
                 }
             }
@@ -685,7 +686,7 @@ void CmisClient::execute( )
                 filename = m_vm[ "input-name" ].as< string >( );
 
             // Actually create the document
-            libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, contentType, filename );
+            libcmis::DocumentPtr created = parent->createDocument( properties, contentStream, std::move(contentType), std::move(filename) );
 
             cout << "------------------------------------------------" << endl;
             cout << created->toString() << endl;
@@ -714,7 +715,7 @@ void CmisClient::execute( )
                 {
                     vector< string > values;
                     values.push_back( it->second );
-                    libcmis::PropertyPtr property( new libcmis::Property( typeIt->second, values ) );
+                    libcmis::PropertyPtr property( new libcmis::Property( typeIt->second, std::move(values) ) );
                     properties[ it->first ] = property;
                 }
             }
@@ -784,12 +785,12 @@ void CmisClient::execute( )
                             error = *dumpIt;
                         }
                         if ( !error.empty( ) )
-                            errors.push_back( error );
+                            errors.push_back( std::move(error) );
                     }
                     catch ( const libcmis::Exception& e )
                     {
                         string msg = *it + ": " + e.what( );
-                        errors.push_back( msg );
+                        errors.push_back( std::move(msg) );
                     }
                 }
                 else if ( cmisObj.get() )
@@ -801,13 +802,13 @@ void CmisClient::execute( )
                     catch ( const libcmis::Exception& e )
                     {
                         string msg = *it + ": " + e.what( );
-                        errors.push_back( msg );
+                        errors.push_back( std::move(msg) );
                     }
                 }
                 else
                 {
                     string msg = "No such node: " + *it;
-                    errors.push_back( msg );
+                    errors.push_back( std::move(msg) );
                 }
             }
 
@@ -909,7 +910,7 @@ void CmisClient::execute( )
                     {
                         vector< string > values;
                         values.push_back( propIt->second );
-                        libcmis::PropertyPtr prop( new libcmis::Property( typeIt->second, values ) );
+                        libcmis::PropertyPtr prop( new libcmis::Property( typeIt->second, std::move(values) ) );
                         properties.insert( pair< string, libcmis::PropertyPtr >( name, prop ) );
                     }
                 }
@@ -952,7 +953,7 @@ void CmisClient::execute( )
                 libcmis::Document* doc = dynamic_cast< libcmis::Document* >( object.get() );
                 if ( NULL != doc )
                 {
-                    libcmis::DocumentPtr newDoc = doc->checkIn( major, comment, properties, stream, contentType, filename );
+                    libcmis::DocumentPtr newDoc = doc->checkIn( major, std::move(comment), properties, stream, std::move(contentType), std::move(filename) );
 
                     cout << "------------------------------------------------" << endl;
                     cout << newDoc->toString() << endl;
