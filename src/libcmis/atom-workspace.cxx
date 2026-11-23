@@ -28,6 +28,8 @@
 
 #include "atom-workspace.hxx"
 
+#include <utility>
+
 #include <libcmis/xml-utils.hxx>
 
 using namespace std;
@@ -223,6 +225,6 @@ void AtomRepository::readUriTemplates( xmlNodeSetPtr nodeSet )
         }
 
         if ( !templateUri.empty() && typeDefined )
-            m_uriTemplates[ type ] = templateUri;
+            m_uriTemplates[ type ] = std::move(templateUri);
     }
 }

@@ -29,6 +29,7 @@
 #include "atom-folder.hxx"
 
 #include <sstream>
+#include <utility>
 
 #include <boost/shared_ptr.hpp>
 
@@ -98,7 +99,7 @@ vector< libcmis::ObjectPtr > AtomFolder::getChildren( )
                 string nextHref = libcmis::getXPathValue( xpathCtx, nextReq );
                 hasNext = !nextHref.empty( );
                 if ( hasNext )
-                    pageUrl = nextHref;
+                    pageUrl = std::move(nextHref);
 
                 // Get the page entries
                 const string& entriesReq( "//atom:entry" );
@@ -203,7 +204,7 @@ libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& propertie
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    AtomObject::writeAtomEntry( writer, properties, os, contentType );
+    AtomObject::writeAtomEntry( writer, properties, os, std::move(contentType) );
 
     xmlTextWriterEndDocument( writer );
     xmlFreeTextWriter( writer );
@@ -309,7 +310,7 @@ vector< string > AtomFolder::removeTree( bool allVersions, libcmis::UnfileObject
             continueOnErrorStr = "FALSE";
         deleteUrl += "&continueOnFailure=" + continueOnErrorStr;
 
-        getSession( )->httpDeleteRequest( deleteUrl );
+        getSession( )->httpDeleteRequest( std::move(deleteUrl) );
     }
     catch ( const CurlException& e )
     {

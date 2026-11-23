@@ -32,6 +32,7 @@
 #include <locale>
 #include <memory>
 #include <sstream>
+#include <utility>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -55,7 +56,7 @@ namespace
             string m_type;
 
         public:
-            MatchLink( string rel, string type ) : m_rel( rel ), m_type( type ) { }
+            MatchLink( string rel, string type ) : m_rel( std::move(rel) ), m_type( std::move(type) ) { }
             bool operator() ( const AtomLink &link )
             {
                 bool matchesRel = link.getRel( ) == m_rel;
@@ -142,7 +143,7 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
     {
         vector< string > headers;
         headers.push_back( "Content-Type: application/atom+xml;type=entry" );
-        response = getSession( )->httpPutRequest( getInfosUrl( ), is, headers );
+        response = getSession( )->httpPutRequest( getInfosUrl( ), is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {
@@ -238,7 +239,7 @@ void AtomObject::remove( bool allVersions )
             allVersionsStr = "FALSE";
         deleteUrl += "allVersions=" + allVersionsStr;
 
-        getSession( )->httpDeleteRequest( deleteUrl );
+        getSession( )->httpDeleteRequest( std::move(deleteUrl) );
     }
     catch ( const CurlException& e )
     {
@@ -283,7 +284,7 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     // Session::CreateUrl is used to properly escape the id
     map< string, string > params;
     params[ "sourceFolderId" ] = source->getId();
-    postUrl = getSession( )->createUrl( postUrl, params );
+    postUrl = getSession( )->createUrl( postUrl, std::move(params) );
 
     // post it
     libcmis::HttpResponsePtr response;
@@ -354,8 +355,8 @@ void AtomObject::extractInfos( xmlDocPtr doc )
                             length = libcmis::parseInteger( it->second );
 
                         libcmis::RenditionPtr rendition( new libcmis::Rendition(
-                                    string(), link.getType(), kind,
-                                    link.getHref( ), title, length ) );
+                                    string(), link.getType(), std::move(kind),
+                                    link.getHref( ), std::move(title), length ) );
 
                         m_renditions.push_back( rendition );
                     }
@@ -449,7 +450,7 @@ void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
 AtomLink* AtomObject::getLink( std::string rel, std::string type )
 {
     AtomLink* link = NULL;
-    vector< AtomLink >::iterator it = find_if( m_links.begin(), m_links.end(), MatchLink( rel, type ) );
+    vector< AtomLink >::iterator it = find_if( m_links.begin(), m_links.end(), MatchLink( std::move(rel), std::move(type) ) );
     if ( it != m_links.end() )
         link = &( *it );
     return link;
@@ -465,15 +466,15 @@ AtomLink::AtomLink( xmlNodePtr node ):
         string value( ( char * ) xmlStr );
 
         if ( xmlStrEqual( prop->name, BAD_CAST( "id" ) ) )
-            m_id = value;
+            m_id = std::move(value);
         else if ( xmlStrEqual( prop->name, BAD_CAST( "type" ) ) )
-            m_type = value;
+            m_type = std::move(value);
         else if ( xmlStrEqual( prop->name, BAD_CAST( "rel" ) ) )
-            m_rel = value;
+            m_rel = std::move(value);
         else if ( xmlStrEqual( prop->name, BAD_CAST( "href" ) ) )
-            m_href = value;
+            m_href = std::move(value);
         else
-            m_others[ string( ( char * ) prop->name ) ] = value;
+            m_others[ string( ( char * ) prop->name ) ] = std::move(value);
 
         free( xmlStr );
         prop = prop->next;

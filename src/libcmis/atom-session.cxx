@@ -29,6 +29,7 @@
 #include "atom-session.hxx"
 
 #include <string>
+#include <utility>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/shared_ptr.hpp>
@@ -48,7 +49,7 @@ using namespace std;
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
         string username, string password, bool noSslCheck,
         libcmis::OAuth2DataPtr oauth2, bool verbose ) :
-    BaseSession( atomPubUrl, repositoryId, username, password, noSslCheck, oauth2, verbose ),
+    BaseSession( std::move(atomPubUrl), std::move(repositoryId), std::move(username), std::move(password), noSslCheck, oauth2, verbose ),
     m_repository( )
 {
     libcmis::HttpResponsePtr response;
@@ -57,7 +58,7 @@ AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
 
 AtomPubSession::AtomPubSession( string atomPubUrl, string repositoryId,
         const HttpSession& httpSession, libcmis::HttpResponsePtr response ) :
-    BaseSession( atomPubUrl, repositoryId, httpSession ),
+    BaseSession( std::move(atomPubUrl), std::move(repositoryId), httpSession ),
     m_repository( )
 {
     initialize( response );
@@ -204,7 +205,7 @@ libcmis::ObjectPtr AtomPubSession::createObjectFromEntryDoc( xmlDocPtr doc, Resu
             {
                 // Get the entry's base type
                 string baseTypeReq = "//atom:entry[1]//cmis:propertyId[@propertyDefinitionId='cmis:baseTypeId']/cmis:value/text()";
-                string baseType = libcmis::getXPathValue( xpathCtx, baseTypeReq );
+                string baseType = libcmis::getXPathValue( xpathCtx, std::move(baseTypeReq) );
 
                 xmlNodePtr node = xpathObj->nodesetval->nodeTab[0];
                 if ( res == RESULT_FOLDER || baseType == "cmis:folder" )
@@ -234,7 +235,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id )
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_ID] = id;
     vars[string( "includeAllowableActions" )] = string( "true" );
-    string url = createUrl( pattern, vars );
+    string url = createUrl( pattern, std::move(vars) );
 
     try
     {
@@ -251,7 +252,7 @@ libcmis::ObjectPtr AtomPubSession::getObject( string id )
         {
             string msg = "No such node: ";
             msg += id;
-            throw libcmis::Exception( msg, "objectNotFound" );
+            throw libcmis::Exception( std::move(msg), "objectNotFound" );
         }
         else
             throw e.getCmisException();
@@ -264,7 +265,7 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path )
     map< string, string > vars;
     vars[URI_TEMPLATE_VAR_PATH] = path;
     vars[string( "includeAllowableActions" )] = string( "true" );
-    string url = createUrl( pattern, vars );
+    string url = createUrl( pattern, std::move(vars) );
 
     try
     {
@@ -281,7 +282,7 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path )
         {
             string msg = "No node corresponding to path: ";
             msg += path;
-            throw libcmis::Exception( msg, "objectNotFound" );
+            throw libcmis::Exception( std::move(msg), "objectNotFound" );
         }
         else
             throw e.getCmisException();
@@ -290,14 +291,14 @@ libcmis::ObjectPtr AtomPubSession::getObjectByPath( string path )
 
 libcmis::ObjectTypePtr AtomPubSession::getType( string id )
 {
-    libcmis::ObjectTypePtr type( new AtomObjectType( this, id ) );
+    libcmis::ObjectTypePtr type( new AtomObjectType( this, std::move(id) ) );
     return type;
 }
 
 vector< libcmis::ObjectTypePtr > AtomPubSession::getBaseTypes( )
 {
     string url = getAtomRepository( )->getCollectionUrl( Collection::Types );
-    return getChildrenTypes( url );
+    return getChildrenTypes( std::move(url) );
 }
 
 vector< libcmis::ObjectTypePtr > AtomPubSession::getChildrenTypes( string url )

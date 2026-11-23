@@ -30,6 +30,7 @@
 
 #include <memory>
 #include <sstream>
+#include <utility>
 
 #include <libcmis/xml-utils.hxx>
 
@@ -43,7 +44,7 @@ AtomObjectType::AtomObjectType( AtomPubSession* session, string id ) :
     m_selfUrl( ),
     m_childrenUrl( )
 {
-    m_id = id;
+    m_id = std::move(id);
     refresh( );
 }
 
@@ -106,12 +107,12 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc )
         string pattern = m_session->getAtomRepository()->getUriTemplate( UriTemplate::TypeById );
         map< string, string > vars;
         vars[URI_TEMPLATE_VAR_ID] = getId( );
-        string url = m_session->createUrl( pattern, vars );
+        string url = m_session->createUrl( pattern, std::move(vars) );
 
         string buf;
         try
         {
-            buf  = m_session->httpGetRequest( url )->getStream()->str();
+            buf  = m_session->httpGetRequest( std::move(url) )->getStream()->str();
         }
         catch ( const CurlException& e )
         {
@@ -120,7 +121,7 @@ void AtomObjectType::refreshImpl( xmlDocPtr doc )
             {
                 string msg = "No such type: ";
                 msg += getId( );
-                throw libcmis::Exception( msg, "objectNotFound" );
+                throw libcmis::Exception( std::move(msg), "objectNotFound" );
             }
             else
                 throw e.getCmisException( );
@@ -148,11 +149,11 @@ void AtomObjectType::extractInfos( xmlDocPtr doc )
     {
         // Get the self URL
         string selfUrlReq( "//atom:link[@rel='self']/attribute::href" );
-        m_selfUrl = libcmis::getXPathValue( xpathCtx, selfUrlReq );
+        m_selfUrl = libcmis::getXPathValue( xpathCtx, std::move(selfUrlReq) );
         
         // Get the children URL
         string childrenUrlReq( "//atom:link[@rel='down' and @type='application/atom+xml;type=feed']/attribute::href" );
-        m_childrenUrl = libcmis::getXPathValue( xpathCtx, childrenUrlReq );
+        m_childrenUrl = libcmis::getXPathValue( xpathCtx, std::move(childrenUrlReq) );
         
         // Get the cmisra:type node
         xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression( BAD_CAST( "//cmisra:type" ), xpathCtx );

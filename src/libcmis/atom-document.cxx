@@ -32,6 +32,7 @@
 #include <memory>
 #include <stdlib.h>
 #include <sstream>
+#include <utility>
 
 #include <curl/curl.h>
 
@@ -162,7 +163,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
     urlPattern += "overwriteFlag={overwriteFlag}";
 
     map< string, string > params;
-    params["overwriteFlag"] = overwriteStr;
+    params["overwriteFlag"] = std::move(overwriteStr);
 
     // Use the changeToken if set on the object
     if ( !getChangeToken().empty() )
@@ -171,7 +172,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
         params["changeToken"] = getChangeToken();
     }
 
-    string putUrl = getSession()->createUrl( urlPattern, params );       
+    string putUrl = getSession()->createUrl( urlPattern, std::move(params) );       
 
     bool tryBase64 = false;
     do
@@ -208,7 +209,7 @@ void AtomDocument::setContentStream( boost::shared_ptr< ostream > os, string con
             headers.push_back( string( "Content-Type: " ) + contentType );
             if ( !fileName.empty( ) )
                 headers.push_back( string( "Content-Disposition: attachment; filename=" ) + fileName );
-            getSession()->httpPutRequest( putUrl, *is, headers );
+            getSession()->httpPutRequest( putUrl, *is, std::move(headers) );
 
             long httpStatus = getSession( )->getHttpStatus( );
             if ( httpStatus < 200 || httpStatus >= 300 )
@@ -266,7 +267,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( )
 
     map< string, string > params;
     params[ "objectId" ] = getId( );
-    string checkedOutUrl = getSession( )->createUrl( urlPattern, params );
+    string checkedOutUrl = getSession( )->createUrl( urlPattern, std::move(params) );
 
     try
     {
@@ -306,7 +307,7 @@ void AtomDocument::cancelCheckout( )
 
     try
     {
-        getSession( )->httpDeleteRequest( url );
+        getSession( )->httpDeleteRequest( std::move(url) );
     }
     catch ( CurlException const& e )
     {
@@ -340,16 +341,16 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     string majorStr = "false";
     if ( isMajor )
         majorStr = "true";
-    params[ "major" ] = majorStr;
-    params[ "checkinComment" ] = comment;
-    string checkInUrl = getSession( )->createUrl( urlPattern, params );
+    params[ "major" ] = std::move(majorStr);
+    params[ "checkinComment" ] = std::move(comment);
+    string checkInUrl = getSession( )->createUrl( urlPattern, std::move(params) );
 
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
     xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
-    AtomObject::writeAtomEntry( writer, properties, stream, contentType );
+    AtomObject::writeAtomEntry( writer, properties, stream, std::move(contentType) );
 
     xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
@@ -364,7 +365,7 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     {
         vector< string > headers;
         headers.push_back( string( "Content-Type: application/atom+xml;type=entry" ) );
-        response = getSession( )->httpPutRequest( checkInUrl, is, headers );
+        response = getSession( )->httpPutRequest( checkInUrl, is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {
