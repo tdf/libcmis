@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <utility>
 
 #include <boost/algorithm/string.hpp>
 
@@ -66,26 +67,26 @@ namespace
 namespace mockup
 {
     Response::Response( string response, unsigned int status, bool isFilePath, string headers ) :
-        m_response( response ),
+        m_response( std::move(response) ),
         m_status( status ),
         m_isFilePath( isFilePath ),
-        m_headers( headers )
+        m_headers( std::move(headers) )
     {
     }
 
     Request::Request( string url, string method, string body, vector< string > headers ) :
-        m_url( url ),
-        m_method( method ),
-        m_body( body ),
-        m_headers( headers )
+        m_url( std::move(url) ),
+        m_method( std::move(method) ),
+        m_body( std::move(body) ),
+        m_headers( std::move(headers) )
     {
     }
 
     RequestMatcher::RequestMatcher( string baseUrl, string matchParam, string method, string matchBody ) :
-        m_baseUrl( baseUrl ),
-        m_matchParam( matchParam ),
-        m_method( method ),
-        m_matchBody( matchBody )
+        m_baseUrl( std::move(baseUrl) ),
+        m_matchParam( std::move(matchParam) ),
+        m_method( std::move(method) ),
+        m_matchBody( std::move(matchBody) )
     {
     }
 
@@ -233,7 +234,7 @@ void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const
     string matchBodyStr;
     if ( matchBody )
         matchBodyStr = matchBody;
-    mockup::RequestMatcher matcher( urlBase, matchParam, method, matchBodyStr );
+    mockup::RequestMatcher matcher( urlBase, matchParam, method, std::move(matchBodyStr) );
     map< mockup::RequestMatcher, mockup::Response >::iterator it = mockup::config->m_responses.find( matcher );
     if ( it != mockup::config->m_responses.end( ) )
         mockup::config->m_responses.erase( it );
@@ -241,7 +242,7 @@ void curl_mockup_addResponse( const char* urlBase, const char* matchParam, const
     string headersStr;
     if ( headers != NULL )
         headersStr = headers;
-    mockup::Response responseDesc( response, status, isFilePath, headersStr );
+    mockup::Response responseDesc( response, status, isFilePath, std::move(headersStr) );
     mockup::config->m_responses.insert( pair< mockup::RequestMatcher, mockup::Response >( matcher, responseDesc ) );
 }
 
