@@ -28,6 +28,8 @@
 
 #include <libcmis/document.hxx>
 
+#include <utility>
+
 #include <libcmis/folder.hxx>
 
 using namespace std;
@@ -50,7 +52,7 @@ namespace libcmis
                 if ( path[path.size() - 1] != '/' )
                     path += "/";
                 path += getName( );
-                paths.push_back( path );
+                paths.push_back( std::move(path) );
             }
         }
         catch ( const libcmis::Exception& )

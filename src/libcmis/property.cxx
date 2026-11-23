@@ -28,6 +28,8 @@
 
 #include <libcmis/property.hxx>
 
+#include <utility>
+
 #include <boost/algorithm/string.hpp>
 
 #include <libcmis/object-type.hxx>
@@ -55,7 +57,7 @@ namespace libcmis
         m_doubleValues( ),
         m_dateTimeValues( )
     {
-        setValues( strValues );
+        setValues( std::move(strValues) );
     }
 
     void Property::setValues( vector< string > strValues )
@@ -197,9 +199,9 @@ namespace libcmis
                         boost::to_lower( xmlType );
                     }
 
-                    propType.reset( new PropertyType( xmlType, propDefinitionId,
-                                                      localName, displayName,
-                                                      queryName ) );
+                    propType.reset( new PropertyType( std::move(xmlType), std::move(propDefinitionId),
+                                                      std::move(localName), std::move(displayName),
+                                                      std::move(queryName) ) );
                 }
             }
 
@@ -221,7 +223,7 @@ namespace libcmis
                             }
                         }
                     }
-                    property.reset( new Property( propType, values ) );
+                    property.reset( new Property( propType, std::move(values) ) );
                 }
                 catch ( const Exception& )
                 {

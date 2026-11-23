@@ -28,6 +28,8 @@
 
 #include "json-utils.hxx"
 
+#include <utility>
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -281,7 +283,7 @@ Json::Type Json::parseType( )
             type = json_int;
             try
             {
-                parseInteger( str );
+                parseInteger( std::move(str) );
             }
             catch(...) 
             { 
@@ -294,7 +296,7 @@ Json::Type Json::parseType( )
             type = json_double;
             try
             {
-                parseDouble( str );
+                parseDouble( std::move(str) );
             }
             catch(...) 
             { 

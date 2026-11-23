@@ -29,6 +29,7 @@
 #include <libcmis/rendition.hxx>
 
 #include <sstream>
+#include <utility>
 
 #include <libcmis/xml-utils.hxx>
 
@@ -52,15 +53,15 @@ Rendition::Rendition( ):
 Rendition::Rendition( string streamId, string mimeType, 
                       string kind, string href, string title, long length,
                       long width, long height, string renditionDocumentId ):
-    m_streamId( streamId ),
-    m_mimeType( mimeType ),
-    m_kind( kind ),
-    m_href( href ),
-    m_title( title ),
+    m_streamId( std::move(streamId) ),
+    m_mimeType( std::move(mimeType) ),
+    m_kind( std::move(kind) ),
+    m_href( std::move(href) ),
+    m_title( std::move(title) ),
     m_length( length ),
     m_width ( width ),
     m_height( height ),
-    m_renditionDocumentId( renditionDocumentId )
+    m_renditionDocumentId( std::move(renditionDocumentId) )
 {  
 }
 
@@ -82,21 +83,21 @@ Rendition::Rendition( xmlNodePtr node ):
         xmlFree( content );
 
         if ( xmlStrEqual( child->name, BAD_CAST( "streamId" ) ) )
-            m_streamId = value;
+            m_streamId = std::move(value);
         else if ( xmlStrEqual( child->name, BAD_CAST( "mimetype" ) ) )
-            m_mimeType = value;
+            m_mimeType = std::move(value);
         else if ( xmlStrEqual( child->name, BAD_CAST( "length" ) ) )
-            m_length = libcmis::parseInteger( value );
+            m_length = libcmis::parseInteger( std::move(value) );
         else if ( xmlStrEqual( child->name, BAD_CAST( "kind" ) ) )
-            m_kind = value;
+            m_kind = std::move(value);
         else if ( xmlStrEqual( child->name, BAD_CAST( "title" ) ) )
-            m_title = value;
+            m_title = std::move(value);
         else if ( xmlStrEqual( child->name, BAD_CAST( "height" ) ) )
-            m_height = libcmis::parseInteger( value );
+            m_height = libcmis::parseInteger( std::move(value) );
         else if ( xmlStrEqual( child->name, BAD_CAST( "width" ) ) )
-            m_width = libcmis::parseInteger( value );
+            m_width = libcmis::parseInteger( std::move(value) );
         else if ( xmlStrEqual( child->name, BAD_CAST( "renditionDocumentId" ) ) )
-            m_renditionDocumentId = value;
+            m_renditionDocumentId = std::move(value);
     }
 }
 

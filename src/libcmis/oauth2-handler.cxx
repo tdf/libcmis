@@ -26,6 +26,8 @@
  * instead of those above.
  */
 
+#include <utility>
+
 #include <boost/algorithm/string.hpp>
 
 #include "oauth2-handler.hxx"
@@ -58,7 +60,7 @@ namespace
                 msg += ": " + desc;
             msg += ")";
         }
-        return libcmis::Exception( msg );
+        return libcmis::Exception( std::move(msg) );
     }
 }
 
@@ -101,7 +103,7 @@ OAuth2Handler::~OAuth2Handler( )
 void OAuth2Handler::fetchTokens( string authCode )
 {
     string post =
-        "code="              + libcmis::escape( authCode ) +
+        "code="              + libcmis::escape( std::move(authCode) ) +
         "&client_id="        + libcmis::escape( m_data->getClientId() ) +
         "&redirect_uri="     + libcmis::escape( m_data->getRedirectUri() ) +
         "&grant_type=authorization_code" ;
@@ -183,7 +185,7 @@ string OAuth2Handler::getRefreshToken( )
 
 void OAuth2Handler::setRefreshToken( string refreshToken )
 {
-    m_refresh = refreshToken;
+    m_refresh = std::move(refreshToken);
 }
 
 string OAuth2Handler::getHttpHeader( )

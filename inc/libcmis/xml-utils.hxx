@@ -32,6 +32,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include <boost/date_time.hpp>
 #include <libxml/parser.h>
@@ -86,7 +87,7 @@ namespace libcmis
 
             EncodedData& operator=( const EncodedData& rCopy );
 
-            void setEncoding( std::string encoding ) { m_encoding = encoding; }
+            void setEncoding( std::string encoding ) { m_encoding = std::move(encoding); }
             void decode( void* buf, size_t size, size_t nmemb );
             void encode( void* buf, size_t size, size_t nmemb );
             void finish( );

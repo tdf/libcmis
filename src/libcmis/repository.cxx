@@ -29,6 +29,7 @@
 #include <libcmis/repository.hxx>
 
 #include <sstream>
+#include <utility>
 
 #include <libcmis/xml-utils.hxx>
 
@@ -138,27 +139,27 @@ namespace libcmis
             xmlFree( content );
 
             if ( localName == "repositoryId" )
-                m_id = value;
+                m_id = std::move(value);
             else if ( localName == "repositoryName" )
-                m_name = value;
+                m_name = std::move(value);
             else if ( localName == "repositoryDescription" )
-                m_description = value;
+                m_description = std::move(value);
             else if ( localName == "vendorName" )
-                m_vendorName = value;
+                m_vendorName = std::move(value);
             else if ( localName == "productName" )
-                m_productName = value;
+                m_productName = std::move(value);
             else if ( localName == "productVersion" )
-                m_productVersion = value;
+                m_productVersion = std::move(value);
             else if ( localName == "rootFolderId" )
-                m_rootId = value;
+                m_rootId = std::move(value);
             else if ( localName == "cmisVersionSupported" )
-                m_cmisVersionSupported = value;
+                m_cmisVersionSupported = std::move(value);
             else if ( localName == "thinClientURI" )
-                m_thinClientUri.reset( new string( value ) );
+                m_thinClientUri.reset( new string( std::move(value) ) );
             else if ( localName == "principalAnonymous" )
-                m_principalAnonymous.reset( new string( value ) );
+                m_principalAnonymous.reset( new string( std::move(value) ) );
             else if ( localName == "principalAnyone" )
-                m_principalAnyone.reset( new string( value ) );
+                m_principalAnyone.reset( new string( std::move(value) ) );
             else if ( localName == "capabilities" )
             {
                 m_capabilities = parseCapabilities( child );
@@ -183,7 +184,7 @@ namespace libcmis
        bool result = false;
        try
        {
-           result = libcmis::parseBool( value );
+           result = libcmis::parseBool( std::move(value) );
        }
        catch ( const Exception& )
        {
@@ -290,7 +291,7 @@ namespace libcmis
                 ignore = true;
 
             if ( !ignore )
-                capabilities[capability] = value;
+                capabilities[capability] = std::move(value);
         }
 
         return capabilities;

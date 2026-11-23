@@ -28,6 +28,8 @@
 
 #include <libcmis/session-factory.hxx>
 
+#include <utility>
+
 #include "atom-session.hxx"
 #include "gdrive-session.hxx"
 #include "onedrive-session.hxx"
@@ -65,10 +67,10 @@ namespace libcmis
         libcmis::rejectControlChars( proxyUser, "proxy username" );
         libcmis::rejectControlChars( proxyPass, "proxy password" );
 
-        SessionFactory::s_proxy = proxy;
-        SessionFactory::s_noProxy = noProxy;
-        SessionFactory::s_proxyUser = proxyUser;
-        SessionFactory::s_proxyPass = proxyPass;
+        SessionFactory::s_proxy = std::move(proxy);
+        SessionFactory::s_noProxy = std::move(noProxy);
+        SessionFactory::s_proxyUser = std::move(proxyUser);
+        SessionFactory::s_proxyPass = std::move(proxyPass);
     }
 
     Session* SessionFactory::createSession( string bindingUrl, string username,
@@ -82,14 +84,14 @@ namespace libcmis
             // Try the special cases based on the binding URL
             if ( bindingUrl == "https://www.googleapis.com/drive/v3" )
             {
-                session = new GDriveSession( bindingUrl, username, password,
+                session = new GDriveSession( std::move(bindingUrl), std::move(username), std::move(password),
                                              oauth2, verbose,
                                              g_CurlInitProtocolsFunction);
 
             }
             else if ( bindingUrl == "https://graph.microsoft.com/v1.0" )
             {
-                session = new OneDriveSession( bindingUrl, username, password,
+                session = new OneDriveSession( std::move(bindingUrl), std::move(username), std::move(password),
                                                oauth2, verbose,
                                                g_CurlInitProtocolsFunction);
             }
@@ -113,8 +115,8 @@ namespace libcmis
                         throw e.getCmisException();
                     }
                     // Could be SharePoint - needs NTLM authentication
-                    session = new SharePointSession( bindingUrl, username,
-                          password, verbose, g_CurlInitProtocolsFunction);
+                    session = new SharePointSession( bindingUrl, std::move(username),
+                          std::move(password), verbose, g_CurlInitProtocolsFunction);
                 }
 
                 // Try the CMIS cases: we need to autodetect the binding type
@@ -149,7 +151,7 @@ namespace libcmis
                     // succeeded so we need to double check for SharePoint 
                     try
                     {
-                        session = new SharePointSession( bindingUrl,
+                        session = new SharePointSession( std::move(bindingUrl),
                                       *httpSession, response );
                     }
                     catch ( const Exception& )
@@ -167,7 +169,7 @@ namespace libcmis
     {
         vector< RepositoryPtr > repos;
 
-        Session* session = createSession( bindingUrl, username, password,
+        Session* session = createSession( std::move(bindingUrl), std::move(username), std::move(password),
                                           string(), false, OAuth2DataPtr(), verbose );
         if ( session != NULL )
         {

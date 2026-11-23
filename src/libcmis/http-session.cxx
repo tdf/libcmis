@@ -32,6 +32,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <assert.h>
 
 #include <libxml/parser.h>
@@ -69,7 +70,7 @@ namespace
             response->getHeaders()[name] = value;
 
             if ( "Content-Transfer-Encoding" == name )
-                response->getData( )->setEncoding( value );
+                response->getData( )->setEncoding( std::move(value) );
         }
 
         return nmemb;
@@ -191,8 +192,8 @@ HttpSession::HttpSession( string username, string password, bool noSslCheck,
     m_CurlInitProtocolsFunction(initProtocolsFunction),
     m_no100Continue( false ),
     m_oauth2Handler( ),
-    m_username( username ),
-    m_password( password ),
+    m_username( std::move(username) ),
+    m_password( std::move(password) ),
     m_authProvided( false ),
     m_verbose( verbose ),
     m_noHttpErrors( false ),
@@ -336,7 +337,7 @@ libcmis::HttpResponsePtr HttpSession::httpGetRequest( string url )
             {
                 // Avoid infinite recursive call
                 m_refreshedToken = true;
-                response = httpGetRequest( url );
+                response = httpGetRequest( std::move(url) );
                 m_refreshedToken = false;
             }
             catch (const CurlException& )
@@ -428,7 +429,7 @@ libcmis::HttpResponsePtr HttpSession::httpPatchRequest( string url, istream& is,
             {
                 // Avoid infinite recursive call
                 m_refreshedToken = true;
-                response = httpPutRequest( url, isBackup, headers );
+                response = httpPutRequest( std::move(url), isBackup, std::move(headers) );
                 m_refreshedToken = false;
             }
             catch (const CurlException&)
@@ -520,7 +521,7 @@ libcmis::HttpResponsePtr HttpSession::httpPutRequest( string url, istream& is, v
             {
                 // Avoid infinite recursive call
                 m_refreshedToken = true;
-                response = httpPutRequest( url, isBackup, headers );
+                response = httpPutRequest( std::move(url), isBackup, std::move(headers) );
                 m_refreshedToken = false;
             }
             catch (const CurlException& )
@@ -586,7 +587,7 @@ libcmis::HttpResponsePtr HttpSession::httpPostRequest( const string& url, istrea
         headers.push_back( "Expect:" );
     try
     {
-        httpRunRequest( url, headers, redirect );
+        httpRunRequest( url, std::move(headers), redirect );
         response->getData( )->finish();
     }
     catch ( const CurlException& )
@@ -663,7 +664,7 @@ void HttpSession::httpDeleteRequest( string url )
             {
                 // Avoid infinite recursive call
                 m_refreshedToken = true;
-                httpDeleteRequest( url );
+                httpDeleteRequest( std::move(url) );
                 m_refreshedToken = false;
             }
             catch (const CurlException& )
@@ -782,7 +783,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
             handleSslCacertRecovery( errBuff, errCode, httpError, isHttpError, errorFixed );
 
         if ( !errorFixed )
-            throw CurlException( string( errBuff ), errCode, url, httpError );
+            throw CurlException( string( errBuff ), errCode, std::move(url), httpError );
     }
 }
 
@@ -845,7 +846,7 @@ void HttpSession::oauth2Authenticate( )
     if ( authCode.empty( ) )
         throw libcmis::Exception( "Couldn't get OAuth authentication code", "permissionDenied" );
 
-    m_oauth2Handler->fetchTokens( string( authCode ) );
+    m_oauth2Handler->fetchTokens( string( std::move(authCode) ) );
 }
 
 void HttpSession::setNoSSLCertificateCheck( bool noCheck )
@@ -901,7 +902,7 @@ void HttpSession::handleSslCacertRecovery( const char* errBuff,
                 {
                     startPos = certStart.length();
                     data = data.substr( startPos );
-                    certificates.push_back( data );
+                    certificates.push_back( std::move(data) );
                 }
             }
         }
@@ -911,7 +912,7 @@ void HttpSession::handleSslCacertRecovery( const char* errBuff,
     {
         libcmis::CertValidationHandlerPtr validationHandler =
             libcmis::SessionFactory::getCertificateValidationHandler( );
-        bool ignoreCert = validationHandler && validationHandler->validateCertificate( certificates );
+        bool ignoreCert = validationHandler && validationHandler->validateCertificate( std::move(certificates) );
         if ( ignoreCert )
         {
             m_noSSLCheck = true;
@@ -923,7 +924,7 @@ void HttpSession::handleSslCacertRecovery( const char* errBuff,
         }
         else
         {
-            throw CurlException(err, CURLE_SSL_CACERT);
+            throw CurlException(std::move(err), CURLE_SSL_CACERT);
         }
     }
 }
@@ -1049,5 +1050,5 @@ libcmis::Exception CurlException::getCmisException( ) const
             }
     }
 
-    return libcmis::Exception( msg, type );
+    return libcmis::Exception( std::move(msg), std::move(type) );
 }

@@ -29,6 +29,7 @@
 #include <libcmis/object.hxx>
 
 #include <algorithm>
+#include <utility>
 
 #include <libcmis/session.hxx>
 #include <libcmis/xml-utils.hxx>
@@ -113,7 +114,7 @@ namespace libcmis
             //   * Prevents from getting Alfresco additional properties
             // First get the type id as it will give us the property definitions
             string typeIdReq( "/*/cmis:properties/cmis:propertyId[@propertyDefinitionId='cmis:objectTypeId']/cmis:value/text()" );
-            m_typeId = libcmis::getXPathValue( xpathCtx, typeIdReq );
+            m_typeId = libcmis::getXPathValue( xpathCtx, std::move(typeIdReq) );
 
             string propertiesReq( "/*/cmis:properties/*" );
             xpathObj = xmlXPathEvalExpression( BAD_CAST( propertiesReq.c_str() ), xpathCtx );
@@ -240,14 +241,14 @@ namespace libcmis
         // defined in the secondary type definition: that would
         // require one more HTTP request and the server will complain
         // anyway if it's not good.
-        PropertyPtrMap newProperties( properties );
+        PropertyPtrMap newProperties( std::move(properties) );
 
         // Prepare the new cmis:secondaryObjectTypeIds property
         vector< string > secTypes = getSecondaryTypes( );
         if ( find( secTypes.begin(), secTypes.end(), id ) == secTypes.end( ) )
         {
-            secTypes.push_back( id );
-            PropertyPtr newSecTypes( new Property( it->second, secTypes ) );
+            secTypes.push_back( std::move(id) );
+            PropertyPtr newSecTypes( new Property( it->second, std::move(secTypes) ) );
             newProperties["cmis:secondaryObjectTypeIds"] = newSecTypes;
         }
         return updateProperties( newProperties );
@@ -277,7 +278,7 @@ namespace libcmis
         // No need to update the property if it didn't change
         if ( newSecTypes.size( ) != secTypes.size( ) )
         {
-            PropertyPtr property ( new Property( it->second, newSecTypes ) );
+            PropertyPtr property ( new Property( it->second, std::move(newSecTypes) ) );
             newProperties["cmis:secondaryObjectTypeIds"] = property;
         }
 

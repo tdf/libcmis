@@ -28,6 +28,8 @@
 
 #include <libcmis/object-type.hxx>
 
+#include <utility>
+
 #include <libcmis/xml-utils.hxx>
 #include <libcmis/property.hxx>
 
@@ -240,37 +242,37 @@ namespace libcmis
                     string value( ( const char * ) content, xmlStrlen( content ) );
 
                     if ( xmlStrEqual( child->name, BAD_CAST( "id" ) ) )
-                        m_id = value;
+                        m_id = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "localName" ) ) )
-                        m_localName = value;
+                        m_localName = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "localNamespace" ) ) )
-                        m_localNamespace = value;
+                        m_localNamespace = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "displayName" ) ) )
-                        m_displayName = value;
+                        m_displayName = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "queryName" ) ) )
-                        m_queryName = value;
+                        m_queryName = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "description" ) ) )
-                        m_description = value;
+                        m_description = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "baseId" ) ) )
-                        m_baseTypeId = value;
+                        m_baseTypeId = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "parentId" ) ) )
-                        m_parentTypeId = value;
+                        m_parentTypeId = std::move(value);
                     else if ( xmlStrEqual( child->name, BAD_CAST( "creatable" ) ) )
-                        m_creatable = libcmis::parseBool( value );
+                        m_creatable = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "fileable" ) ) )
-                        m_fileable = libcmis::parseBool( value );
+                        m_fileable = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "queryable" ) ) )
-                        m_queryable = libcmis::parseBool( value );
+                        m_queryable = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "fulltextIndexed" ) ) )
-                        m_fulltextIndexed = libcmis::parseBool( value );
+                        m_fulltextIndexed = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "includedInSupertypeQuery" ) ) )
-                        m_includedInSupertypeQuery = libcmis::parseBool( value );
+                        m_includedInSupertypeQuery = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "controllablePolicy" ) ) )
-                        m_controllablePolicy = libcmis::parseBool( value );
+                        m_controllablePolicy = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "controllableACL" ) ) )
-                        m_controllableAcl = libcmis::parseBool( value );
+                        m_controllableAcl = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "versionable" ) ) )
-                        m_versionable = libcmis::parseBool( value );
+                        m_versionable = libcmis::parseBool( std::move(value) );
                     else if ( xmlStrEqual( child->name, BAD_CAST( "contentStreamAllowed" ) ) )
                     {
                         libcmis::ObjectType::ContentStreamAllowed streamAllowed = libcmis::ObjectType::Allowed;

@@ -28,6 +28,8 @@
 
 #include <libcmis/property-type.hxx>
 
+#include <utility>
+
 #include <libcmis/object-type.hxx>
 #include <libcmis/xml-utils.hxx>
 
@@ -88,21 +90,21 @@ namespace libcmis
             else if ( xmlStrEqual( child->name, BAD_CAST( "queryName" ) ) )
                 setQueryName( value );
             else if ( xmlStrEqual( child->name, BAD_CAST( "propertyType" ) ) )
-                setTypeFromXml( value );
+                setTypeFromXml( std::move(value) );
             else if ( xmlStrEqual( child->name, BAD_CAST( "cardinality" ) ) )
                 setMultiValued( value == "multi" );
             else if ( xmlStrEqual( child->name, BAD_CAST( "updatability" ) ) )
                 setUpdatable( value == "readwrite" );
             else if ( xmlStrEqual( child->name, BAD_CAST( "inherited" ) ) )
-                setInherited( libcmis::parseBool( value ) );
+                setInherited( libcmis::parseBool( std::move(value) ) );
             else if ( xmlStrEqual( child->name, BAD_CAST( "required" ) ) )
-                setRequired( libcmis::parseBool( value ) );
+                setRequired( libcmis::parseBool( std::move(value) ) );
             else if ( xmlStrEqual( child->name, BAD_CAST( "queryable" ) ) )
-                setQueryable( libcmis::parseBool( value ) );
+                setQueryable( libcmis::parseBool( std::move(value) ) );
             else if ( xmlStrEqual( child->name, BAD_CAST( "orderable" ) ) )
-                setOrderable( libcmis::parseBool( value ) );
+                setOrderable( libcmis::parseBool( std::move(value) ) );
             else if ( xmlStrEqual( child->name, BAD_CAST( "openChoice" ) ) )
-                setOpenChoice( libcmis::parseBool( value ) );
+                setOpenChoice( libcmis::parseBool( std::move(value) ) );
         }
     }
 
@@ -130,13 +132,13 @@ namespace libcmis
                                 string localName,
                                 string displayName,
                                 string queryName ) :
-        m_id ( id ),
-        m_localName ( localName ),
+        m_id ( std::move(id) ),
+        m_localName ( std::move(localName) ),
         m_localNamespace ( ),
-        m_displayName ( displayName ),
-        m_queryName ( queryName ),
+        m_displayName ( std::move(displayName) ),
+        m_queryName ( std::move(queryName) ),
         m_type ( ),
-        m_xmlType( type ),
+        m_xmlType( std::move(type) ),
         m_multiValued( false ),
         m_updatable( false ),
         m_inherited( false ),

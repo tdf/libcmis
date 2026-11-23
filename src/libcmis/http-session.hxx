@@ -31,6 +31,7 @@
 #include <istream>
 #include <memory>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <string>
 
@@ -76,9 +77,9 @@ class CurlException : public std::exception
     public:
         CurlException( std::string message, CURLcode code, std::string url, long httpStatus ) :
             exception( ),
-            m_message( message ),
+            m_message( std::move(message) ),
             m_code( code ),
-            m_url( url ),
+            m_url( std::move(url) ),
             m_httpStatus( httpStatus ),
             m_cancelled( false ),
             m_errorMessage( )
@@ -87,7 +88,7 @@ class CurlException : public std::exception
 
         CurlException(std::string message, CURLcode const code) :
             exception( ),
-            m_message( message ),
+            m_message( std::move(message) ),
             m_code(code),
             m_url( ),
             m_httpStatus( 0 ),

@@ -30,6 +30,7 @@
 
 #include <cctype>
 #include <string>
+#include <utility>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -46,9 +47,9 @@ BaseSession::BaseSession( string bindingUrl, string repositoryId, string usernam
         string password, bool noSslCheck, libcmis::OAuth2DataPtr oauth2, bool verbose,
         libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
     Session( ),
-    HttpSession( username, password, noSslCheck, oauth2, verbose, initProtocolsFunction ),
-    m_bindingUrl( bindingUrl ),
-    m_repositoryId( repositoryId ),
+    HttpSession( std::move(username), std::move(password), noSslCheck, oauth2, verbose, initProtocolsFunction ),
+    m_bindingUrl( std::move(bindingUrl) ),
+    m_repositoryId( std::move(repositoryId) ),
     m_repositories( )
 {
 }
@@ -57,8 +58,8 @@ BaseSession::BaseSession( string sBindingUrl, string repository,
              const HttpSession& httpSession ) :
     Session( ),
     HttpSession( httpSession ),
-    m_bindingUrl( sBindingUrl ),
-    m_repositoryId( repository ),
+    m_bindingUrl( std::move(sBindingUrl) ),
+    m_repositoryId( std::move(repository) ),
     m_repositories( )
 {
 }
@@ -94,7 +95,7 @@ string BaseSession::createUrl( const string& pattern, map< string, string > vari
         if ( pos != string::npos )
         {
             // Escape the URL by chunks
-            url = url.replace( pos, name.size(), libcmis::escape( value ) );
+            url = url.replace( pos, name.size(), libcmis::escape( std::move(value) ) );
         }
 
         ++it;
@@ -141,7 +142,7 @@ libcmis::FolderPtr BaseSession::getRootFolder()
 
 libcmis::FolderPtr BaseSession::getFolder( string id )
 {
-    libcmis::ObjectPtr object = getObject( id );
+    libcmis::ObjectPtr object = getObject( std::move(id) );
     libcmis::FolderPtr folder = boost::dynamic_pointer_cast< libcmis::Folder >( object );
     return folder;
 }
