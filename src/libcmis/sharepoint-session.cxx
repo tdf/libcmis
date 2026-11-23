@@ -214,17 +214,16 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
-    unique_ptr<struct curl_slist, deleter> headers_slist;
+    libcmis::CurlSlistPtr headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
+        libcmis::appendCurlHeader(headers_slist, it->c_str());
 
-    headers_slist.reset(curl_slist_append(headers_slist.release(), "accept:application/json; odata=verbose"));
-    headers_slist.reset(curl_slist_append(headers_slist.release(), ("x-requestdigest:" + m_digestCode).c_str()));
+    libcmis::appendCurlHeader(headers_slist, "accept:application/json; odata=verbose");
+    libcmis::appendCurlHeader(headers_slist, ("x-requestdigest:" + m_digestCode).c_str());
     // newer Sharepoint requires this; this can be detected based on header
     // "x-msdavext_error" starting with "917656;" typically with a 403 status
     // but since this class is specifically for SharePoint just add it always
-    headers_slist.reset(curl_slist_append(headers_slist.release(), "X-FORMS_BASED_AUTH_ACCEPTED: f"));
+    libcmis::appendCurlHeader(headers_slist, "X-FORMS_BASED_AUTH_ACCEPTED: f");
 
     if ( !getUsername().empty() && !getPassword().empty() )
     {

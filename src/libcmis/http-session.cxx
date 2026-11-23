@@ -31,6 +31,7 @@
 #include <cctype>
 #include <memory>
 #include <mutex>
+#include <new>
 #include <string>
 #include <utility>
 #include <assert.h>
@@ -181,6 +182,15 @@ void applyTransferLimits( CURL* curlHandle )
     curl_easy_setopt( curlHandle, CURLOPT_MAXFILESIZE_LARGE, MAX_RESPONSE_SIZE );
     curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_LIMIT, 1L );
     curl_easy_setopt( curlHandle, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME_SECS );
+}
+
+void appendCurlHeader( CurlSlistPtr& headers, const char* header )
+{
+    curl_slist* appended = curl_slist_append( headers.get( ), header );
+    if ( !appended )
+        throw std::bad_alloc( );
+    headers.release( );
+    headers.reset( appended );
 }
 
 }
@@ -710,10 +720,9 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 
     // Set the headers
-    struct deleter { void operator()(curl_slist* p) const { curl_slist_free_all(p); } };
-    unique_ptr<struct curl_slist, deleter> headers_slist;
+    libcmis::CurlSlistPtr headers_slist;
     for ( vector< string >::iterator it = headers.begin( ); it != headers.end( ); ++it )
-        headers_slist.reset(curl_slist_append(headers_slist.release(), it->c_str()));
+        libcmis::appendCurlHeader(headers_slist, it->c_str());
 
     // If we are using OAuth2, then add the proper header with token to authenticate
     // Otherwise, just set the credentials normally using in libcurl options
@@ -721,8 +730,7 @@ void HttpSession::httpRunRequest( string url, vector< string > headers, bool red
     {
         string oauthHeader = m_oauth2Handler->getHttpHeader();
         libcmis::rejectControlChars( oauthHeader, "OAuth header" );
-        headers_slist.reset(curl_slist_append(headers_slist.release(),
-                                           oauthHeader.c_str()));
+        libcmis::appendCurlHeader(headers_slist, oauthHeader.c_str());
     }
     else if ( !getUsername().empty() )
     {

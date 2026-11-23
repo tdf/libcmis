@@ -60,6 +60,17 @@ namespace libcmis {
         data transfer for 30s.
       */
     void applyTransferLimits(CURL* curlHandle);
+
+    struct CurlSlistDeleter
+    {
+        void operator()(curl_slist* p) const { curl_slist_free_all(p); }
+    };
+    typedef std::unique_ptr<curl_slist, CurlSlistDeleter> CurlSlistPtr;
+
+    /** Append a copy of header to headers. If libcurl cannot allocate,
+        headers is left unchanged and std::bad_alloc is thrown.
+      */
+    void appendCurlHeader(CurlSlistPtr& headers, const char* header);
 }
 
 class CurlException : public std::exception
