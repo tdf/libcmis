@@ -570,7 +570,7 @@ void SoapTest::writeCmismStreamTest( )
     // Initialize the writer
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Test writeCmismStream
     RelatedMultipart multipart;
@@ -581,7 +581,7 @@ void SoapTest::writeCmismStreamTest( )
     writeCmismStream( writer, multipart, os, contentType, filename );
 
     // Close the writer and check the results
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ) );
 
     vector< string > ids = multipart.getIds( );

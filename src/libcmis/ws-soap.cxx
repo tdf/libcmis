@@ -261,7 +261,7 @@ string SoapRequest::createEnvelope( const string& username, const string& passwo
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     /* Sample envelope:
      <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
@@ -296,47 +296,47 @@ string SoapRequest::createEnvelope( const string& username, const string& passwo
     string createdStr = libcmis::writeDateTime( created );
     string expiresStr = libcmis::writeDateTime( expires );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsu" ), wsuUrl );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsse" ), wsseUrl );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "S:Envelope" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:S" ), BAD_CAST( NS_SOAP_ENV_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsu" ), wsuUrl );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:wsse" ), wsseUrl );
     
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Header" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "S:Header" ) );
 
     // Write out the Basic Security Profile 1.0 compliant headers
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Security" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Security" ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Timestamp" ) );
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Created" ) );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Created
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Expires" ) );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( expiresStr.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Expires
-    xmlTextWriterEndElement( writer ); // End of Timestamp
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Timestamp" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Created" ) );
+    (void)xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
+    (void)xmlTextWriterEndElement( writer ); // End of Created
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Expires" ) );
+    (void)xmlTextWriterWriteRaw( writer, BAD_CAST( expiresStr.c_str( ) ) );
+    (void)xmlTextWriterEndElement( writer ); // End of Expires
+    (void)xmlTextWriterEndElement( writer ); // End of Timestamp
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:UsernameToken" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "wsse:Username" ), BAD_CAST( username.c_str( ) ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:UsernameToken" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "wsse:Username" ), BAD_CAST( username.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Password" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( password.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Password
-    xmlTextWriterStartElement( writer, BAD_CAST( "wsu:Created" ) );
-    xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // End of Created
-    xmlTextWriterEndElement( writer ); // End of UsernameToken
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsse:Password" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "Type" ), passTypeStr );
+    (void)xmlTextWriterWriteRaw( writer, BAD_CAST( password.c_str( ) ) );
+    (void)xmlTextWriterEndElement( writer ); // End of Password
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "wsu:Created" ) );
+    (void)xmlTextWriterWriteRaw( writer, BAD_CAST( createdStr.c_str( ) ) );
+    (void)xmlTextWriterEndElement( writer ); // End of Created
+    (void)xmlTextWriterEndElement( writer ); // End of UsernameToken
 
-    xmlTextWriterEndElement( writer ); // End of Security
+    (void)xmlTextWriterEndElement( writer ); // End of Security
 
-    xmlTextWriterEndElement( writer ); // End of S:Header
+    (void)xmlTextWriterEndElement( writer ); // End of S:Header
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "S:Body" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "S:Body" ) );
     toXml( writer );
-    xmlTextWriterEndElement( writer ); // End of S:Body
+    (void)xmlTextWriterEndElement( writer ); // End of S:Body
 
-    xmlTextWriterEndElement( writer );  // End of S:Envelope
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndElement( writer );  // End of S:Envelope
+    (void)xmlTextWriterEndDocument( writer );
 
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
 

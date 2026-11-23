@@ -112,22 +112,22 @@ void writeCmismStream( xmlTextWriterPtr writer, RelatedMultipart& multipart, boo
     string content( buf, size );
     delete[ ] buf;
 
-    xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", static_cast<long int>(content.size( )) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:mimeType" ), BAD_CAST( contentType.c_str( ) ) );
+    (void)xmlTextWriterWriteFormatElement( writer, BAD_CAST( "cmism:length" ), "%ld", static_cast<long int>(content.size( )) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:mimeType" ), BAD_CAST( contentType.c_str( ) ) );
     if ( !filename.empty( ) )
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:filename" ), BAD_CAST( filename.c_str( ) ) );
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:stream" ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:filename" ), BAD_CAST( filename.c_str( ) ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:stream" ) );
 
     string name( "stream" );
     RelatedPartPtr streamPart( new RelatedPart( name, contentType, content ) );
     string partHref = "cid:";
     partHref += multipart.addPart( streamPart );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "xop:Include" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:xop" ), BAD_CAST( "http://www.w3.org/2004/08/xop/include" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "href" ), BAD_CAST( partHref.c_str( ) ) );
-    xmlTextWriterEndElement( writer ); // xop:Include
-    xmlTextWriterEndElement( writer ); // cmism:stream
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "xop:Include" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:xop" ), BAD_CAST( "http://www.w3.org/2004/08/xop/include" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "href" ), BAD_CAST( partHref.c_str( ) ) );
+    (void)xmlTextWriterEndElement( writer ); // xop:Include
+    (void)xmlTextWriterEndElement( writer ); // cmism:stream
 }
 
 SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
@@ -137,10 +137,10 @@ SoapFaultDetailPtr CmisSoapFaultDetail::create( xmlNodePtr node )
 
 void GetRepositoriesRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositories" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -185,13 +185,13 @@ SoapResponsePtr GetRepositoriesResponse::create( xmlNodePtr node, RelatedMultipa
 
 void GetRepositoryInfoRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositoryInfo" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRepositoryInfo" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_id.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_id.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -212,14 +212,14 @@ SoapResponsePtr GetRepositoryInfoResponse::create( xmlNodePtr node, RelatedMulti
 
 void GetTypeDefinitionRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeDefinition" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeDefinition" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetTypeDefinitionResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
@@ -241,15 +241,15 @@ SoapResponsePtr GetTypeDefinitionResponse::create( xmlNodePtr node, RelatedMulti
 
 void GetTypeChildrenRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeChildren" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getTypeChildren" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includePropertyDefinitions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:typeId" ), BAD_CAST( m_typeId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includePropertyDefinitions" ), BAD_CAST( "true" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetTypeChildrenResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
@@ -277,19 +277,19 @@ SoapResponsePtr GetTypeChildrenResponse::create( xmlNodePtr node, RelatedMultipa
 
 void GetObjectRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObject" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObject" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_id.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_id.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
 
     // Ask for renditions... some servers like Alfresco are providing them only this way
     // and it saves time (another HTTP request) anyway.
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
@@ -325,31 +325,31 @@ SoapResponsePtr GetObjectResponse::create( xmlNodePtr node, RelatedMultipart&, S
 
 void GetObjectByPathRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectByPath" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectByPath" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:path" ), BAD_CAST( m_path.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:path" ), BAD_CAST( m_path.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void UpdatePropertiesRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:updateProperties" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:updateProperties" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
     if ( !m_changeToken.empty( ) )
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
     for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
@@ -357,10 +357,10 @@ void UpdatePropertiesRequest::toXml( xmlTextWriterPtr writer )
         if( property->getPropertyType( )->isUpdatable( ) )
             property->toXml( writer );
     }
-    xmlTextWriterEndElement( writer ); // cmis:properties
+    (void)xmlTextWriterEndElement( writer ); // cmis:properties
 
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -386,34 +386,34 @@ SoapResponsePtr UpdatePropertiesResponse::create( xmlNodePtr node, RelatedMultip
 
 void DeleteObjectRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteObject" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteObject" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
     string allVersionsStr( "false" );
     if ( m_allVersions )
         allVersionsStr = "true";
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void DeleteTreeRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteTree" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:deleteTree" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
 
     string allVersionsStr( "false" );
     if ( m_allVersions )
         allVersionsStr = "true";
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:allVersions" ), BAD_CAST( allVersionsStr.c_str( ) ) );
 
     string unfileStr( "" );
     switch ( m_unfile )
@@ -431,14 +431,14 @@ void DeleteTreeRequest::toXml( xmlTextWriterPtr writer )
             break;
     }
     if ( !unfileStr.empty( ) )
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:unfileObjects" ), BAD_CAST( unfileStr.c_str( ) ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:unfileObjects" ), BAD_CAST( unfileStr.c_str( ) ) );
 
     string continueStr( "false" );
     if ( m_continueOnFailure )
         continueStr = "true";
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:continueOnFailure" ), BAD_CAST( continueStr.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:continueOnFailure" ), BAD_CAST( continueStr.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -470,28 +470,28 @@ SoapResponsePtr DeleteTreeResponse::create( xmlNodePtr node, RelatedMultipart&, 
 
 void MoveObjectRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:moveObject" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:moveObject" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:targetFolderId" ), BAD_CAST( m_destId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:sourceFolderId" ), BAD_CAST( m_srcId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:targetFolderId" ), BAD_CAST( m_destId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:sourceFolderId" ), BAD_CAST( m_srcId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void GetContentStreamRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getContentStream" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getContentStream" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultipart& multipart, SoapSession* )
@@ -524,16 +524,16 @@ SoapResponsePtr GetContentStreamResponse::create( xmlNodePtr node, RelatedMultip
 
 void GetObjectParentsRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectParents" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getObjectParents" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetObjectParentsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
@@ -566,16 +566,16 @@ SoapResponsePtr GetObjectParentsResponse::create( xmlNodePtr node, RelatedMultip
 
 void GetChildrenRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getChildren" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getChildren" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( "*" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetChildrenResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )
@@ -623,24 +623,24 @@ SoapResponsePtr GetChildrenResponse::create( xmlNodePtr node, RelatedMultipart&,
 
 void CreateFolderRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createFolder" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createFolder" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
     for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;
         property->toXml( writer );
     }
-    xmlTextWriterEndElement( writer ); // cmis:properties
+    (void)xmlTextWriterEndElement( writer ); // cmis:properties
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -666,66 +666,66 @@ SoapResponsePtr CreateFolderResponse::create( xmlNodePtr node, RelatedMultipart&
 
 void CreateDocumentRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createDocument" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:createDocument" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
     for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
             it != m_properties.end( ); ++it )
     {
         libcmis::PropertyPtr property = it->second;
         property->toXml( writer );
     }
-    xmlTextWriterEndElement( writer ); // cmis:properties
+    (void)xmlTextWriterEndElement( writer ); // cmis:properties
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:folderId" ), BAD_CAST( m_folderId.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
     writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_filename );
-    xmlTextWriterEndElement( writer ); // cmism:contentStream
+    (void)xmlTextWriterEndElement( writer ); // cmism:contentStream
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void SetContentStreamRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:setContentStream" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:setContentStream" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
     string overwrite( "false" );
     if ( m_overwrite )
         overwrite = "true";
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:overwriteFlag" ), BAD_CAST( overwrite.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:overwriteFlag" ), BAD_CAST( overwrite.c_str( ) ) );
 
     if ( !m_changeToken.empty( ) )
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:changeToken" ), BAD_CAST( m_changeToken.c_str( ) ) );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
     writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_filename );
 
-    xmlTextWriterEndElement( writer ); // cmism:contentStream
+    (void)xmlTextWriterEndElement( writer ); // cmism:contentStream
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void GetRenditionsRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRenditions" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getRenditions" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( m_filter.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:renditionFilter" ), BAD_CAST( m_filter.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetRenditionsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -746,14 +746,14 @@ SoapResponsePtr GetRenditionsResponse::create( xmlNodePtr node, RelatedMultipart
 
 void CheckOutRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkOut" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkOut" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr CheckOutResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -779,52 +779,52 @@ SoapResponsePtr CheckOutResponse::create( xmlNodePtr node, RelatedMultipart&, So
 
 void CancelCheckOutRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:cancelCheckOut" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:cancelCheckOut" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 void CheckInRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkIn" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:checkIn" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
 
     string major = "false";
     if ( m_isMajor )
         major = "true";
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:major" ), BAD_CAST( major.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:major" ), BAD_CAST( major.c_str( ) ) );
 
     if ( m_properties.empty( ) )
     {
-        xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
+        (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:properties" ) );
         for ( PropertyPtrMap::const_iterator it = m_properties.begin( );
                 it != m_properties.end( ); ++it )
         {
             libcmis::PropertyPtr property = it->second;
             property->toXml( writer );
         }
-        xmlTextWriterEndElement( writer ); // cmis:properties
+        (void)xmlTextWriterEndElement( writer ); // cmis:properties
     }
 
     if ( m_stream.get( ) )
     {
-        xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
+        (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:contentStream" ) );
         writeCmismStream( writer, m_multipart, m_stream, m_contentType, m_fileName );
-        xmlTextWriterEndElement( writer ); // cmism:contentStream
+        (void)xmlTextWriterEndElement( writer ); // cmism:contentStream
     }
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:checkinComment" ), BAD_CAST( m_comment.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:checkinComment" ), BAD_CAST( m_comment.c_str( ) ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* )
@@ -850,15 +850,15 @@ SoapResponsePtr CheckInResponse::create( xmlNodePtr node, RelatedMultipart&, Soa
 
 void GetAllVersionsRequest::toXml( xmlTextWriterPtr writer )
 {
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getAllVersions" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmism:getAllVersions" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmism" ), BAD_CAST( NS_CMISM_URL ) );
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:repositoryId" ), BAD_CAST( m_repositoryId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:objectId" ), BAD_CAST( m_objectId.c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmism:includeAllowableActions" ), BAD_CAST( "true" ) );
 
-    xmlTextWriterEndElement( writer );
+    (void)xmlTextWriterEndElement( writer );
 }
 
 SoapResponsePtr GetAllVersionsResponse::create( xmlNodePtr node, RelatedMultipart&, SoapSession* session )

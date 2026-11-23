@@ -146,13 +146,13 @@ libcmis::FolderPtr AtomFolder::createFolder( const PropertyPtrMap& properties )
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Copy and remove the readonly properties before serializing
     boost::shared_ptr< ostream > stream;
     AtomObject::writeAtomEntry( writer, properties, stream, string( ) );
 
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
@@ -202,11 +202,11 @@ libcmis::DocumentPtr AtomFolder::createDocument( const PropertyPtrMap& propertie
     xmlOutputBufferPtr buf = xmlOutputBufferCreateIO(libcmis::stringstream_write_callback, NULL, &ss, NULL);
     xmlTextWriterPtr writer = xmlNewTextWriter(buf);
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     AtomObject::writeAtomEntry( writer, properties, os, std::move(contentType) );
 
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     xmlFreeTextWriter( writer );
 
     libcmis::HttpResponsePtr response;

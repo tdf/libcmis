@@ -237,7 +237,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( )
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Create a document with only the needed properties
     PropertyPtrMap props; 
@@ -250,7 +250,7 @@ libcmis::DocumentPtr AtomDocument::checkOut( )
     boost::shared_ptr< ostream > stream;
     AtomObject::writeAtomEntry( writer, props, stream, string( ) );
 
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
@@ -348,11 +348,11 @@ libcmis::DocumentPtr AtomDocument::checkIn( bool isMajor, string comment,
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     AtomObject::writeAtomEntry( writer, properties, stream, std::move(contentType) );
 
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 

@@ -388,12 +388,12 @@ namespace libcmis
     void Object::toXml( xmlTextWriterPtr writer )
     {
         // Output the properties
-        xmlTextWriterStartElement( writer, BAD_CAST( "cmis:properties" ) );
+        (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmis:properties" ) );
         for ( PropertyPtrMap::iterator it = getProperties( ).begin( );
                 it != getProperties( ).end( ); ++it )
         {
             it->second->toXml( writer );
         }
-        xmlTextWriterEndElement( writer ); // cmis:properties
+        (void)xmlTextWriterEndElement( writer ); // cmis:properties
     }
 }

@@ -83,9 +83,9 @@ namespace test
         xmlBufferPtr buf = xmlBufferCreate( );
         xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-        xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+        (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
         serializable->toXml( writer );
-        xmlTextWriterEndDocument( writer );
+        (void)xmlTextWriterEndDocument( writer );
 
         string str( ( const char * )xmlBufferContent( buf ) );
 

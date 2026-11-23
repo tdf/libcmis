@@ -137,7 +137,7 @@ namespace libcmis
     void EncodedData::write( void* buf, size_t size, size_t nmemb )
     {
         if ( m_writer )
-            xmlTextWriterWriteRawLen( m_writer, ( xmlChar* )buf, size * nmemb );
+            (void)xmlTextWriterWriteRawLen( m_writer, ( xmlChar* )buf, size * nmemb );
         else if ( m_stream )
             fwrite( buf, size, nmemb, m_stream );
         else if ( m_outStream )

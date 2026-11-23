@@ -125,13 +125,13 @@ libcmis::ObjectPtr AtomObject::updateProperties( const PropertyPtrMap& propertie
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
 
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     // Copy and remove the readonly properties before serializing
     boost::shared_ptr< ostream > stream;
     AtomObject::writeAtomEntry( writer, properties, stream, string( ) );
 
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
 
@@ -263,11 +263,11 @@ void AtomObject::move( boost::shared_ptr< libcmis::Folder > source, boost::share
     // create object xml
     xmlBufferPtr buf = xmlBufferCreate( );
     xmlTextWriterPtr writer = xmlNewTextWriterMemory( buf, 0 );
-    xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
+    (void)xmlTextWriterStartDocument( writer, NULL, NULL, NULL );
 
     boost::shared_ptr< ostream > stream;
     AtomObject::writeAtomEntry( writer, getProperties( ), stream, string( ) );
-    xmlTextWriterEndDocument( writer );
+    (void)xmlTextWriterEndDocument( writer );
 
     string str( ( const char * )xmlBufferContent( buf ), xmlBufferLength( buf ) );
     istringstream is( str );
@@ -397,28 +397,28 @@ void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
     PropertyPtrMap propertiesCopy( properties );
     tmp.m_properties.swap( propertiesCopy );
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:atom" ), BAD_CAST( NS_ATOM_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
-    xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "atom:entry" ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:atom" ), BAD_CAST( NS_ATOM_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmis" ), BAD_CAST( NS_CMIS_URL ) );
+    (void)xmlTextWriterWriteAttribute( writer, BAD_CAST( "xmlns:cmisra" ), BAD_CAST( NS_CMISRA_URL ) );
 
     if ( !tmp.getCreatedBy( ).empty( ) )
     {
-        xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
-        xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( tmp.getCreatedBy( ).c_str( ) ) );
-        xmlTextWriterEndElement( writer );
+        (void)xmlTextWriterStartElement( writer, BAD_CAST( "atom:author" ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "atom:name" ), BAD_CAST( tmp.getCreatedBy( ).c_str( ) ) );
+        (void)xmlTextWriterEndElement( writer );
     }
 
-    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( tmp.getName( ).c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "atom:title" ), BAD_CAST( tmp.getName( ).c_str( ) ) );
 
     boost::posix_time::ptime now( boost::posix_time::second_clock::universal_time( ) );
-    xmlTextWriterWriteElement( writer, BAD_CAST( "atom:updated" ), BAD_CAST( libcmis::writeDateTime( now ).c_str( ) ) );
+    (void)xmlTextWriterWriteElement( writer, BAD_CAST( "atom:updated" ), BAD_CAST( libcmis::writeDateTime( now ).c_str( ) ) );
 
     if ( os.get( ) )
     {
-        xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:content" ) );
-        xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( contentType.c_str() ) );
-        xmlTextWriterStartElement(writer, BAD_CAST( "cmisra:base64" ) );
+        (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:content" ) );
+        (void)xmlTextWriterWriteElement( writer, BAD_CAST( "cmisra:mediatype" ), BAD_CAST( contentType.c_str() ) );
+        (void)xmlTextWriterStartElement(writer, BAD_CAST( "cmisra:base64" ) );
 
         libcmis::EncodedData encoder( writer );
         encoder.setEncoding( "base64" );
@@ -433,18 +433,18 @@ void AtomObject::writeAtomEntry( xmlTextWriterPtr writer,
         } while ( !is.eof( ) && !is.fail( ) );
         delete[] buf;
         encoder.finish( );
-        xmlTextWriterEndElement( writer ); // "cmisra:base64"
+        (void)xmlTextWriterEndElement( writer ); // "cmisra:base64"
 
-        xmlTextWriterEndElement( writer );
+        (void)xmlTextWriterEndElement( writer );
     }
 
-    xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
+    (void)xmlTextWriterStartElement( writer, BAD_CAST( "cmisra:object" ) );
 
     tmp.toXml( writer );
 
-    xmlTextWriterEndElement( writer ); // cmisra:object
+    (void)xmlTextWriterEndElement( writer ); // cmisra:object
 
-    xmlTextWriterEndElement( writer ); // atom:entry
+    (void)xmlTextWriterEndElement( writer ); // atom:entry
 }
 
 AtomLink* AtomObject::getLink( std::string rel, std::string type )
