@@ -27,6 +27,8 @@
 
 #include "sharepoint-object.hxx"
 
+#include <utility>
+
 #include "sharepoint-allowable-actions.hxx"
 #include "sharepoint-property.hxx"
 #include "sharepoint-repository.hxx"
@@ -43,7 +45,7 @@ SharePointObject::SharePointObject( SharePointSession* session ) :
 SharePointObject::SharePointObject( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session )
 {
-   initializeFromJson( json, parentId, name ); 
+   initializeFromJson( json, std::move(parentId), std::move(name) ); 
 }
 
 SharePointObject::SharePointObject( const SharePointObject& copy ) :
@@ -97,7 +99,7 @@ void SharePointObject::initializeFromJson ( Json json, string parentId, string /
             // it's a file version
            authorUrl = getStringProperty( "CreatedBy" );
         }
-        Json authorJson = getSession( )->getJsonFromUrl( authorUrl );
+        Json authorJson = getSession( )->getJsonFromUrl( std::move(authorUrl) );
         property.reset( new SharePointProperty( "cmis:createdBy", 
                     authorJson["d"]["Title"] ) );
         m_properties[ property->getPropertyType( )->getId( ) ] = property;

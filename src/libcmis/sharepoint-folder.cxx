@@ -28,6 +28,8 @@
 
 #include "sharepoint-folder.hxx"
 
+#include <utility>
+
 #include "sharepoint-document.hxx"
 #include "sharepoint-session.hxx"
 #include "sharepoint-property.hxx"
@@ -44,7 +46,7 @@ SharePointFolder::SharePointFolder( SharePointSession* session ):
 
 SharePointFolder::SharePointFolder( SharePointSession* session, Json json, string parentId ):
     libcmis::Object( session ),
-    SharePointObject( session, json, parentId )
+    SharePointObject( session, json, std::move(parentId) )
 {
 }
 
@@ -61,7 +63,7 @@ string SharePointFolder::getParentId( )
         string res;
         try
         {
-            res = getSession( )->httpGetRequest( parentUrl )->getStream( )->str( );
+            res = getSession( )->httpGetRequest( std::move(parentUrl) )->getStream( )->str( );
         }
         catch ( const CurlException& e )
         {
@@ -84,8 +86,8 @@ vector< libcmis::ObjectPtr > SharePointFolder::getChildren( )
     string filesUrl = getStringProperty( "Files" );
     string foldersUrl = getStringProperty( "Folders" );
 
-    Json::JsonVector objs = getChildrenImpl( filesUrl );
-    Json::JsonVector folders = getChildrenImpl( foldersUrl );
+    Json::JsonVector objs = getChildrenImpl( std::move(filesUrl) );
+    Json::JsonVector folders = getChildrenImpl( std::move(foldersUrl) );
     objs.insert( objs.begin( ), folders.begin( ), folders.end( ) );
 
     for ( unsigned int i = 0; i < objs.size( ); i++)
@@ -100,7 +102,7 @@ Json::JsonVector SharePointFolder::getChildrenImpl( string url )
     string res;
     try
     {
-        res = getSession( )->httpGetRequest( url )->getStream( )->str( );
+        res = getSession( )->httpGetRequest( std::move(url) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {

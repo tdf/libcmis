@@ -28,6 +28,8 @@
 
 #include "sharepoint-property.hxx"
 
+#include <utility>
+
 #include <libcmis/property-type.hxx>
 
 #include "sharepoint-utils.hxx"
@@ -61,7 +63,7 @@ SharePointProperty::SharePointProperty( const string& key, Json json ):
     setPropertyType( propertyType );    
     
     vector< string > values = SharePointUtils::parseSharePointProperty( key, json );
-    setValues( values );
+    setValues( std::move(values) );
 }
 
 SharePointProperty::SharePointProperty( const SharePointProperty& copy ) :

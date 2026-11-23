@@ -28,6 +28,8 @@
 
 #include "sharepoint-session.hxx"
 
+#include <utility>
+
 #include <libcmis/session-factory.hxx>
 
 #include "sharepoint-document.hxx"
@@ -44,7 +46,7 @@ SharePointSession::SharePointSession ( string baseUrl,
                                string password,
                                bool verbose,
                                libcmis::CurlInitProtocolsFunction initProtocolsFunction) :
-    BaseSession( baseUrl, string(), username, password, false,
+    BaseSession( baseUrl, string(), std::move(username), std::move(password), false,
                  libcmis::OAuth2DataPtr(), verbose, initProtocolsFunction ),
     m_digestCode( string( ) ) 
 
@@ -69,7 +71,7 @@ SharePointSession::SharePointSession ( string baseUrl,
 SharePointSession::SharePointSession( string baseUrl,
                                       const HttpSession& httpSession,
                                       libcmis::HttpResponsePtr response ) :
-    BaseSession( baseUrl, string(), httpSession ),
+    BaseSession( std::move(baseUrl), string(), httpSession ),
     m_digestCode( string( ) ) 
 {
     if ( !SharePointUtils::isSharePoint( response->getStream( )->str( ) ) )
@@ -108,7 +110,7 @@ libcmis::ObjectPtr SharePointSession::getObject( string objectId )
     string res;
     try
     {
-        res = httpGetRequest( objectId )->getStream()->str();
+        res = httpGetRequest( std::move(objectId) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -128,15 +130,15 @@ libcmis::ObjectPtr SharePointSession::getObjectFromJson( Json& jsonRes, string p
     // only SharePointObject available for now
     if ( kind == "SP.Folder" )
     {
-        object.reset( new SharePointFolder( this, jsonRes, parentId ) );
+        object.reset( new SharePointFolder( this, jsonRes, std::move(parentId) ) );
     }
     else if ( kind == "SP.File" || kind == "SP.FileVersion" )
     {
-        object.reset( new SharePointDocument( this, jsonRes, parentId ) );
+        object.reset( new SharePointDocument( this, jsonRes, std::move(parentId) ) );
     }
     else
     {
-        object.reset( new SharePointObject( this, jsonRes, parentId ) );
+        object.reset( new SharePointObject( this, jsonRes, std::move(parentId) ) );
     }
     return object;
 }
@@ -150,14 +152,14 @@ libcmis::ObjectPtr SharePointSession::getObjectByPath( string path )
     {
         string folderUrl = getBindingUrl( ) + "/getFolderByServerRelativeUrl";
         folderUrl += "('" + path + "')";
-        object = getObject( folderUrl );
+        object = getObject( std::move(folderUrl) );
     }
     catch ( const libcmis::Exception &e )
     {
         // it's not a Folder, maybe it's a File
         string fileUrl = getBindingUrl( ) + "/getFileByServerRelativeUrl";
         fileUrl += "('" + path + "')";
-        object = getObject( fileUrl );
+        object = getObject( std::move(fileUrl) );
     }
     return object;
 }
@@ -179,7 +181,7 @@ Json SharePointSession::getJsonFromUrl( string url )
     string response;
     try
     {
-        response = httpGetRequest( url )->getStream()->str();
+        response = httpGetRequest( std::move(url) )->getStream()->str();
     }
     catch ( const CurlException& e )
     {
@@ -283,7 +285,7 @@ void SharePointSession::httpRunRequest( string url, vector< string > headers, bo
             handleSslCacertRecovery( errBuff, errCode, httpError, isHttpError, errorFixed );
 
         if ( !errorFixed )
-            throw CurlException( string( errBuff ), errCode, url, httpError );
+            throw CurlException( string( errBuff ), errCode, std::move(url), httpError );
     }
 }
 
@@ -299,7 +301,7 @@ libcmis::HttpResponsePtr SharePointSession::httpPutRequest( std::string url,
     catch ( const CurlException& e )
     {
         fetchDigestCodeCurl( );
-        response = HttpSession::httpPutRequest( url, is, headers );
+        response = HttpSession::httpPutRequest( std::move(url), is, std::move(headers) );
     }
     return response;
 }
@@ -331,7 +333,7 @@ void SharePointSession::httpDeleteRequest( std::string url )
     catch ( const CurlException& e )
     {
         fetchDigestCodeCurl( );
-        HttpSession::httpDeleteRequest( url );
+        HttpSession::httpDeleteRequest( std::move(url) );
     }
 }
 

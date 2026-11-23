@@ -28,6 +28,8 @@
 
 #include "sharepoint-utils.hxx"
 
+#include <utility>
+
 #include <boost/shared_ptr.hpp>
 
 #include <libcmis/xml-utils.hxx>
@@ -92,7 +94,7 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
     if ( key == "__metadata" )
     {
         string id = json["uri"].toString( );
-        values.push_back( id );
+        values.push_back( std::move(id) );
     }
     if ( key == "Author" ||
          key == "CheckedOutByUser" ||
@@ -107,7 +109,7 @@ vector< string > SharePointUtils::parseSharePointProperty( string key, Json json
          key == "Versions" )
     {
         string propertyUri = json["__deferred"]["uri"].toString( );
-        values.push_back( propertyUri );
+        values.push_back( std::move(propertyUri) );
     }
     if ( key == "CheckOutType" )
     {

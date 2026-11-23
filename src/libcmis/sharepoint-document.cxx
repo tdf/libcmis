@@ -28,6 +28,8 @@
 
 #include "sharepoint-document.hxx"
 
+#include <utility>
+
 #include "sharepoint-session.hxx"
 #include "sharepoint-utils.hxx"
 #include "json-utils.hxx"
@@ -43,7 +45,7 @@ SharePointDocument::SharePointDocument( SharePointSession* session ) :
 
 SharePointDocument::SharePointDocument( SharePointSession* session, Json json, string parentId, string name ) :
     libcmis::Object( session),
-    SharePointObject( session, json, parentId, name )
+    SharePointObject( session, json, std::move(parentId), std::move(name) )
 {
 }
 
@@ -57,7 +59,7 @@ vector< libcmis::FolderPtr > SharePointDocument::getParents( )
 
     string parentId = getStringProperty( "cmis:parentId" );
    
-    libcmis::ObjectPtr obj = getSession( )->getObject( parentId );
+    libcmis::ObjectPtr obj = getSession( )->getObject( std::move(parentId) );
     libcmis::FolderPtr parent = boost::dynamic_pointer_cast< libcmis::Folder >( obj );
     parents.push_back( parent );
     return parents;
@@ -70,7 +72,7 @@ boost::shared_ptr< istream > SharePointDocument::getContentStream( string /*stre
     string streamUrl = getId( ) + "/%24value";
     try
     {
-        stream = getSession( )->httpGetRequest( streamUrl )->getStream( );
+        stream = getSession( )->httpGetRequest( std::move(streamUrl) )->getStream( );
     }
     catch ( const CurlException& e )
     {
@@ -95,7 +97,7 @@ void SharePointDocument::setContentStream( boost::shared_ptr< ostream > os,
     headers.push_back( string( "Content-Type: " ) + contentType );
     try
     {
-        getSession()->httpPutRequest( putUrl, *is, headers );
+        getSession()->httpPutRequest( std::move(putUrl), *is, std::move(headers) );
     }
     catch ( const CurlException& e )
     {
@@ -149,7 +151,7 @@ libcmis::DocumentPtr SharePointDocument::checkIn( bool isMajor,
                                                   std::string contentType, 
                                                   std::string fileName ) 
 {     
-    setContentStream( stream, contentType, fileName );
+    setContentStream( stream, std::move(contentType), std::move(fileName) );
     comment = libcmis::escape( comment );
     string url = getId( ) + "/checkin(comment='" + comment + "'";
     if ( isMajor )
@@ -183,7 +185,7 @@ vector< libcmis::DocumentPtr > SharePointDocument::getAllVersions( )
     vector< libcmis::DocumentPtr > allVersions;
     try
     {
-        res = getSession( )->httpGetRequest( url )->getStream( )->str( );
+        res = getSession( )->httpGetRequest( std::move(url) )->getStream( )->str( );
     }
     catch ( const CurlException& e )
     {
@@ -202,7 +204,7 @@ vector< libcmis::DocumentPtr > SharePointDocument::getAllVersions( )
     {
         string versionNumber = objs[i]["ID"].toString( );
         string versionId = getId( ) + "/Versions(" + versionNumber + ")";
-        obj = getSession( )->getObject( versionId );
+        obj = getSession( )->getObject( std::move(versionId) );
         doc = boost::dynamic_pointer_cast< libcmis::Document > ( obj );
         allVersions.push_back( doc );
     }
