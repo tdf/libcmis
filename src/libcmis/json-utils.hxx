@@ -47,18 +47,13 @@ class Json
             json_array, json_string, json_datetime } ;
 
         Json( );
-        Json( const Json& copy );
         Json( const char *str );
         Json( const libcmis::PropertyPtr& property );
         Json( const libcmis::PropertyPtrMap& properties );
         Json( const JsonVector& arr );
         Json( const JsonObject& obj );
 
-        ~Json( ) ;
-
         Json operator[]( std::string key ) const;
-
-        Json& operator=( const Json& rhs ) ;
 
         void swap( Json& other ) ;
 

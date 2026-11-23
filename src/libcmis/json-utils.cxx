@@ -86,12 +86,6 @@ Json::Json( const PropertyPtrMap& properties ) :
         }
 }
 
-Json::Json( const Json& copy ) :
-    m_tJson( copy.m_tJson ),
-    m_type( copy.m_type )
-{
-}
-
 Json::Json( const JsonObject& obj ) :
     m_tJson( ptree( ) ),
     m_type( json_array )
@@ -106,21 +100,6 @@ Json::Json( const JsonVector& arr ) :
 {
     for ( std::vector<Json>::const_iterator i = arr.begin(); i != arr.end(); ++i )
         add( *i ) ;
-}
-
-
-Json::~Json( )
-{
-}
-
-Json& Json::operator=( const Json& rhs )
-{
-    if ( this != &rhs )
-    {
-        m_tJson = rhs.m_tJson;
-        m_type = rhs.m_type;
-    }
-    return *this ;
 }
 
 void Json::swap( Json& rhs )
