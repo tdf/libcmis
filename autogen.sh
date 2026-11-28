@@ -12,4 +12,4 @@ fi
 aclocal -I m4
 automake -a -c --foreign
 autoconf
-test x$NOCONFIGURE = x && ./configure $@
+if test x$NOCONFIGURE = x; then ./configure "$@"; fi
